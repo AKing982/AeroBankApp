@@ -1,0 +1,43 @@
+.table-view{
+    -fx-background-color: white;
+    -fx-font-size: 18px;
+    -fx-border-color: derive(white, -60%);
+}
+
+.table-view:focused{
+    -fx-background-color: derive(-fx-primary, 20%);
+}
+
+.table-row-cell{
+    -fx-cell-size: 40px;
+    -fx-border-style: white;
+    -fx-border-width: 0;
+}
+
+.table-view .column-header-background{
+    -fx-background-color: white;
+}
+
+.table-view .column-header{
+    -fx-background-color: white;
+    -fx-border-style: none;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-background-insets: 0;
+}
+
+.table-row-cell:even{
+    -fx-background-color: derive(white, -10%);
+}
+
+.table-row-cell:odd{
+    -fx-background-color: white;
+}
+
+
+.table-row-cell:selected .table-cell{
+    -fx-text-fill: black;
+}

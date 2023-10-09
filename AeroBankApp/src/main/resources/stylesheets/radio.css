@@ -1,0 +1,22 @@
+.radio-button .radio{
+    -fx-border-width: 1px;
+    -fx-border-color: #145;
+    -fx-background-color: linear-gradient(#99b2b1, #2A5058);
+    -fx-background-image: null;
+    -fx-border-radius: 15px;
+    -fx-padding: 4px;
+    -fx-font-size:18;
+    -fx-effect: dropshadow(three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1);
+}
+
+.radio-button .radio:selected{
+    -fx-background-color: linear-gradient(#61a2,#611);
+    -fx-background-image: null;
+    -fx-font-size:18;
+    -fx-font-weight:bold;
+}
+
+.radio-button .label{
+    -fx-font-family: SansSerif;
+    -fx-font-size:24px ;
+}

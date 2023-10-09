@@ -1,0 +1,12 @@
+.vbox{
+    -fx-text-fill:white;
+    -fx-font-family: "System";
+    -fx-font-weight: regular;
+    -fx-font-size:18;
+    -fx-background-color: linear-gradient(#99b2b1, #818181);
+     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0.0, 0, 1);
+}
+
+.vbox:hover{
+    -fx-background-color: linear-gradient(#61a2b1, #4B6EAF);
+}
