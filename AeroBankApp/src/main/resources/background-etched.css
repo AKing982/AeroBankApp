@@ -7,6 +7,6 @@
     -fx-background-color: -fx-border-shadow, -fx-background;
     -fx-background-insets: 5 8 8 8, 2;
     -fx-padding: 4;
-    -fx-background-image: url("/resources/stylesheets/background.jpg");
+    -fx-background-image: url("background.jpg");
     /*-fx-effect: innershadow(gaussian, rgba(557, 255, 255, 0.5), 1, 10, 0, 0); */
 }
