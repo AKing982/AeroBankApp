@@ -1,12 +1,14 @@
 package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Entity
 @NoArgsConstructor
+@Data
 @Table(name="userLog")
 public class UserLog
 {
@@ -29,45 +31,4 @@ public class UserLog
         this.lastLogin = lastLogin;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public int getUserID() {
-        return userID;
-    }
-
-    public void setUserID(int userID) {
-        this.userID = userID;
-    }
-
-    public Date getLastLogin() {
-        return lastLogin;
-    }
-
-    public void setLastLogin(Date lastLogin) {
-        this.lastLogin = lastLogin;
-    }
-
-    @Override
-    public String toString() {
-        return "UserLog{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", userID=" + userID +
-                ", lastLogin=" + lastLogin +
-                '}';
-    }
 }

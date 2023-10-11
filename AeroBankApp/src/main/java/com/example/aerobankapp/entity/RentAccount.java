@@ -13,18 +13,9 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @Table(name="rentAccount")
-public class RentAccount implements Account
+public class RentAccount
 {
     @Id
     private String id;
 
-    @Override
-    public void deposit(BigDecimal amount) {
-
-    }
-
-    @Override
-    public void withdraw(BigDecimal amount) {
-
-    }
 }

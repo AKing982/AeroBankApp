@@ -30,9 +30,9 @@ public class User
     private String pinNumber;
 
     @Column(name="isAdmin")
-    private String isAdmin;
+    private boolean isAdmin;
 
-    public User(String username, String email, String accountNumber, char[] password, String pinNumber, String isAdmin) {
+    public User(String username, String email, String accountNumber, char[] password, String pinNumber, boolean isAdmin) {
         this.username = username;
         this.email = email;
         this.accountNumber = accountNumber;
