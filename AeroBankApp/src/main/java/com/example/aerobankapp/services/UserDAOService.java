@@ -1,11 +1,11 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.User;
-import com.example.aerobankapp.model.ServiceModel;
+import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
 
-public interface UserService extends ServiceModel<User>
+public interface UserDAOService extends ServiceDAOModel<User>
 {
     @Override
     List<User> findAll();

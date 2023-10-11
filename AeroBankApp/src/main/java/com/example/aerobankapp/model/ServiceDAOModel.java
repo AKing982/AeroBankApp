@@ -2,7 +2,7 @@ package com.example.aerobankapp.model;
 
 import java.util.List;
 
-public interface ServiceModel<T>
+public interface ServiceDAOModel<T>
 {
     List<T> findAll();
     void save(T obj);

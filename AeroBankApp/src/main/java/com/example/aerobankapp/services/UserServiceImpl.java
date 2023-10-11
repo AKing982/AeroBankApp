@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService
+public class UserServiceImpl implements UserDAOService
 {
     private UserRepository userRepository;
     private AeroLogger aeroLogger = new AeroLogger(UserServiceImpl.class);

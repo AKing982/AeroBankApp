@@ -2,11 +2,13 @@ package com.example.aerobankapp.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
+@Component
 public class UserLogDTO
 {
     private int id;

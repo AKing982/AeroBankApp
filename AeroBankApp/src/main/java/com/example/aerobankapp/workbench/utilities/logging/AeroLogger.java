@@ -13,9 +13,11 @@ public class AeroLogger
 {
     private static Logger LOGGER;
 
-    public AeroLogger(Class clazz)
+    public AeroLogger(Class<?> clazz)
     {
-        LOGGER = LoggerFactory.getLogger(clazz.getClass());
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        String callingClassName = stackTrace[2].getClassName();
+        LOGGER = LoggerFactory.getLogger(callingClassName);
     }
 
     public Logger getLogger()
@@ -46,6 +48,11 @@ public class AeroLogger
     public void error(String msg, Object var)
     {
         LOGGER.error(msg, var);
+    }
+
+    public void error(String msg)
+    {
+        LOGGER.error(msg);
     }
 
     public void handleException(Exception e)
