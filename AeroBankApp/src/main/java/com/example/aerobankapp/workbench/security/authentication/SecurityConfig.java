@@ -18,12 +18,11 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception
     {
         http
-                .authorizeRequests(authorizeRequests ->
-                        authorizeRequests
-                               // .dispatcherTypeMatchers("/public/**").permitAll()
-                                .anyRequest().authenticated()
+                .authorizeRequests(authorize -> authorize
+                        .anyRequest().authenticated()
                 )
-                .formLogin(withDefaults());
+                .formLogin(withDefaults())
+                .httpBasic(withDefaults());
         return http.build();
     }
 }
