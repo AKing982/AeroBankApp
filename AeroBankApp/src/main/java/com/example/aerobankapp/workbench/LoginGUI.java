@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.net.URL;
 
 
-public class LoginGUI extends Application implements Loader
+public class LoginGUI extends Application
 {
     private static TextField usernameField = null;
     private static PasswordField passwordField = null;
@@ -126,7 +126,7 @@ public class LoginGUI extends Application implements Loader
         Scene scene = new Scene(pane, 410, 260);
         stage.setScene(scene);
         stage.show();
-        FXMLLoader loader = getLoader();
+
     }
 
     public String getCSSAsString(String path){
@@ -145,24 +145,6 @@ public class LoginGUI extends Application implements Loader
         }
         return loginAlert;
     }
-
-
-    @Override
-    public FXMLLoader getLoader()
-    {
-        FXMLLoader loader = null;
-        try
-        {
-            loader = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
-
-        }catch(IOException ex)
-        {
-
-        }
-        return loader;
-    }
-
-
 
     public TextField getUsernameField(){
         if(usernameField == null){
@@ -241,7 +223,7 @@ public class LoginGUI extends Application implements Loader
     public PasswordField getPasswordField(){
         if(passwordField == null){
             passwordField = new PasswordField();
-            passwordField.getStylesheets().add(getCSSAsString("/password.css"));
+            passwordField.getStylesheets().add(getCSSAsString("/textfield.css"));
             passwordField.setFont(Font.font("Sans Serif", FontWeight.NORMAL, 16));
             passwordField.setId("password");
         }

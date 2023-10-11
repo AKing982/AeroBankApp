@@ -21,12 +21,12 @@
          <children>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" styleClass="root" stylesheets="@../background-etched.css">
                <children>
-                  <Button mnemonicParsing="false" stylesheets="@../stylesheets/button.css" text="Login">
+                  <Button mnemonicParsing="false" stylesheets="@../button.css" text="Login">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Button>
-                  <Button mnemonicParsing="false" stylesheets="@../stylesheets/button.css" text="Lost Password" />
+                  <Button mnemonicParsing="false" stylesheets="@../button.css" text="Lost Password" />
                </children>
             </HBox>
          </children>
@@ -46,18 +46,18 @@
                 <RowConstraints maxHeight="35.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" stylesheets="@../stylesheets/label.css" text="User Name: ">
+                  <Label alignment="CENTER" contentDisplay="CENTER" stylesheets="@../label.css" text="User Name: ">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <TextField prefHeight="30.0" prefWidth="323.0" promptText="Enter User Name" stylesheets="@../stylesheets/textfield.css" GridPane.columnIndex="1" />
-                  <Label alignment="CENTER" contentDisplay="CENTER" stylesheets="@../stylesheets/label.css" text="Password: " GridPane.rowIndex="1">
+                  <TextField prefHeight="30.0" prefWidth="323.0" promptText="Enter User Name" stylesheets="@../textfield.css" GridPane.columnIndex="1" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" stylesheets="@../label.css" text="Password: " GridPane.rowIndex="1">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <TextField promptText="Enter Password" stylesheets="@../stylesheets/textfield.css" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField promptText="Enter Password" stylesheets="@../textfield.css" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
          </children>
