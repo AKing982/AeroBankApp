@@ -45,6 +45,15 @@ class YAMLConnectionWriterTest {
         assertNull(connectionDTO1);
     }
 
+    @Test
+    public void testYAMLResourcesPath()
+    {
+        String path = " ";
+        String actualPath = yamlConnectionWriter.getYAMLResourcesPath();
+
+        assertEquals(path, actualPath);
+    }
+
     @AfterEach
     void tearDown() {
     }

@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 @Component
 public class YAMLConnectionWriter
@@ -46,20 +48,22 @@ public class YAMLConnectionWriter
         }
     }
 
-        public ConnectionDTO readConfigFile(final File config) {
-        ConnectionDTO connectionDTO1 = null;
-        if(config.exists())
+        public ConnectionDTO readConfigFile(final File config)
         {
-            String fileName = config.getName();
-            try(FileReader fileReader = new FileReader(fileName))
+            ConnectionDTO connectionDTO1 = null;
+            if(config.exists())
             {
-                Yaml yaml = new Yaml();
-                connectionDTO1 = yaml.loadAs(fileReader, ConnectionDTO.class);
+                String fileName = config.getName();
+                try(FileReader fileReader = new FileReader(fileName))
+                {
+                    Yaml yaml = new Yaml();
+                    connectionDTO1 = yaml.loadAs(fileReader, ConnectionDTO.class);
 
-            }catch(IOException ex)
-            {
-                aeroLogger.error("Error Reading db-config.yaml file: " + ex);
-            }
+                }
+                catch(IOException ex)
+                {
+                    aeroLogger.error("Error Reading db-config.yaml file: " + ex);
+                }
         }
         else
         {
@@ -71,12 +75,32 @@ public class YAMLConnectionWriter
 
     public String getYAMLResourcesPath()
     {
-        String resourcesPath = getClass().getResource("db-config.yaml").getPath();
-        if(resourcesPath.equals(" "))
+        String rPath = "";
+        URL resourcesURL = getClass().getClassLoader().getResource(configName);
+        try
+        {
+            if(resourcesURL == null)
+            {
+                // Create a new File for db-config.yaml
+                rPath = "src/main/resources/" + configName;
+                resourcesURL = new URL(rPath);
+            }
+        }catch(MalformedURLException ex)
         {
 
         }
-        return getClass().getResource("db-config.yaml").getPath();
+        rPath = resourcesURL.getPath();
+        return rPath;
+    }
+
+    public File createYAMLFile(String name) {
+        File yamlFile = null;
+        String resourcePath = getYAMLResourcesPath();
+        if (resourcePath != null)
+        {
+            yamlFile = new File(name);
+        }
+        return yamlFile;
     }
 
 }
