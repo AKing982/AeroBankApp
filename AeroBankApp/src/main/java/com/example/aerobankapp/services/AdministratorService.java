@@ -1,11 +1,11 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.Administrator;
-import com.example.aerobankapp.model.ServiceModel;
+import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
 
-public interface AdministratorService extends ServiceModel<Administrator>
+public interface AdministratorService extends ServiceDAOModel<Administrator>
 {
     @Override
     List<Administrator> findAll();
