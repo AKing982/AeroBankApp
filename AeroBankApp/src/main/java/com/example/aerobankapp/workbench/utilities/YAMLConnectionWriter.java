@@ -1,6 +1,7 @@
 package com.example.aerobankapp.workbench.utilities;
 
-import com.example.aerobankapp.model.ConnectionDTO;
+import com.example.aerobankapp.workbench.utilities.connections.BasicDataSource;
+import com.example.aerobankapp.workbench.utilities.connections.BasicDataSourceImpl;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,22 +18,22 @@ import java.net.URL;
 public class YAMLConnectionWriter
 {
     private final String configName = "db-config.yaml";
-    private final ConnectionDTO connectionDTO;
+    private final BasicDataSource dataSource;
     private AeroLogger aeroLogger = new AeroLogger(YAMLConnectionWriter.class);
 
     @Autowired
-    public YAMLConnectionWriter(ConnectionDTO connectionDTO)
+    public YAMLConnectionWriter(BasicDataSourceImpl dataSource)
     {
-        if(connectionDTO == null)
+        if(dataSource == null)
         {
             throw new NullPointerException();
         }
-        this.connectionDTO = connectionDTO;
+        this.dataSource = dataSource;
     }
 
     public void writeToYAML()
     {
-        if(connectionDTO == null)
+        if(dataSource == null)
         {
             aeroLogger.error("ConnectionDTO Null Reference");
         }
@@ -40,7 +41,7 @@ public class YAMLConnectionWriter
         {
             Yaml yaml = new Yaml();
             FileWriter fw = new FileWriter(configName);
-            yaml.dump(connectionDTO, fw);
+            yaml.dump(dataSource, fw);
 
         }catch(IOException ex)
         {
@@ -48,16 +49,16 @@ public class YAMLConnectionWriter
         }
     }
 
-        public ConnectionDTO readConfigFile(final File config)
+        public BasicDataSourceImpl readConfigFile(final File config)
         {
-            ConnectionDTO connectionDTO1 = null;
+            BasicDataSourceImpl connectionDTO1 = null;
             if(config.exists())
             {
                 String fileName = config.getName();
                 try(FileReader fileReader = new FileReader(fileName))
                 {
                     Yaml yaml = new Yaml();
-                    connectionDTO1 = yaml.loadAs(fileReader, ConnectionDTO.class);
+                    connectionDTO1 = yaml.loadAs(fileReader, BasicDataSourceImpl.class);
 
                 }
                 catch(IOException ex)

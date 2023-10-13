@@ -1,6 +1,6 @@
 package com.example.aerobankapp.workbench.utilities;
 
-import com.example.aerobankapp.model.ConnectionDTO;
+import com.example.aerobankapp.workbench.utilities.connections.BasicDataSourceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,12 +19,12 @@ class YAMLConnectionWriterTest {
     @InjectMocks
     private YAMLConnectionWriter yamlConnectionWriter;
     @Mock
-    private ConnectionDTO connectionDTO;
+    private BasicDataSourceImpl connectionDTO;
 
     @BeforeEach
     void setUp()
     {
-        connectionDTO = mock(ConnectionDTO.class);
+        connectionDTO = mock(BasicDataSourceImpl.class);
         yamlConnectionWriter = new YAMLConnectionWriter(connectionDTO);
     }
 
@@ -40,7 +40,7 @@ class YAMLConnectionWriterTest {
     public void testReadConfigMethodFail()
     {
         File testFile = new File("random.yaml");
-        ConnectionDTO connectionDTO1 = yamlConnectionWriter.readConfigFile(testFile);
+        BasicDataSourceImpl connectionDTO1 = yamlConnectionWriter.readConfigFile(testFile);
 
         assertNull(connectionDTO1);
     }

@@ -1,0 +1,9 @@
+connections:
+  - name: quartzDB
+    jobStore: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+    quartzURL: jdbc:mysql://localhost:3306/quartz
+    qDriver: com.mysql.cj.jdbc.Driver
+    quartzUser: qUser
+    quartzPass: qPass
+    type: MYSQL
+    dateModified: '10-12-2023'

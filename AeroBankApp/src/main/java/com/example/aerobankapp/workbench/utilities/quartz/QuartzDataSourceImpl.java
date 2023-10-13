@@ -7,9 +7,11 @@ import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import jakarta.validation.constraints.Null;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Data
 @NoArgsConstructor
+@Component
 public class QuartzDataSourceImpl implements QuartzDataSource
 {
     private String dbQuartzURL;
@@ -66,7 +68,7 @@ public class QuartzDataSourceImpl implements QuartzDataSource
                 quartzURL.append(":");
                 quartzURL.append(dbSource.getDBPort());
                 quartzURL.append("/");
-                quartzURL.append(dbSource.getDbName());
+                quartzURL.append(dbSource.getDBName());
                 dbQuartzURL = quartzURL.toString();
                 break;
             case SQLSERVER:
@@ -77,7 +79,7 @@ public class QuartzDataSourceImpl implements QuartzDataSource
                 quartSSQL.append(":");
                 quartSSQL.append(dbSource.getDBPort());
                 quartSSQL.append(";databaseName=");
-                quartSSQL.append(dbSource.getDbName());
+                quartSSQL.append(dbSource.getDBName());
                 quartSSQL.append(";");
                 quartSSQL.append("integratedSecurity=false;");
                 quartSSQL.append("encrypt=true;");

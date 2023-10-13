@@ -5,9 +5,11 @@ import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import jakarta.persistence.Basic;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Data
 @NoArgsConstructor
+@Component
 public class BasicDataSourceImpl implements BasicDataSource
 {
 
@@ -28,6 +30,7 @@ public class BasicDataSourceImpl implements BasicDataSource
         this.dbPort = builder.dbPort;
         this.dbProtocol = getDBProtocol();
         this.dbDriver = getDBDriver();
+        this.dbURL = getDBURL();
         this.dbUser = builder.dbUser;
         this.dbPass = builder.dbPass;
         this.dbType = builder.dbType;
@@ -53,6 +56,21 @@ public class BasicDataSourceImpl implements BasicDataSource
         dbDriver = driver;
         return dbDriver;
 
+    }
+
+    @Override
+    public String getDBName() {
+        return dbName;
+    }
+
+    @Override
+    public String getDBUser() {
+        return dbUser;
+    }
+
+    @Override
+    public String getDBPass() {
+        return dbPass;
     }
 
     @Override

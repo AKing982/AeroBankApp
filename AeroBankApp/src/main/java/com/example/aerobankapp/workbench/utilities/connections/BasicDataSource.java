@@ -3,6 +3,9 @@ package com.example.aerobankapp.workbench.utilities.connections;
 public interface BasicDataSource
 {
     String getDBDriver();
+    String getDBName();
+    String getDBUser();
+    String getDBPass();
     String getDBProtocol();
     String getDBServer();
     int getDBPort();
