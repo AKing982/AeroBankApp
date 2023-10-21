@@ -26,13 +26,14 @@ public class YAMLConnectionWriter
     {
         if(dataSource == null)
         {
-            throw new NullPointerException();
+           // throw new NullPointerException();
         }
         this.dataSource = dataSource;
     }
 
-    public void writeToYAML()
+    public boolean writeToYAML()
     {
+        boolean isWritten = false;
         if(dataSource == null)
         {
             aeroLogger.error("ConnectionDTO Null Reference");
@@ -42,11 +43,13 @@ public class YAMLConnectionWriter
             Yaml yaml = new Yaml();
             FileWriter fw = new FileWriter(configName);
             yaml.dump(dataSource, fw);
+            isWritten = true;
 
         }catch(IOException ex)
         {
             aeroLogger.error("Error Writing to YAML");
         }
+        return isWritten;
     }
 
         public BasicDataSourceImpl readConfigFile(final File config)
@@ -88,7 +91,7 @@ public class YAMLConnectionWriter
             }
         }catch(MalformedURLException ex)
         {
-
+            aeroLogger.error("Invalid Resources URL: " + ex);
         }
         rPath = resourcesURL.getPath();
         return rPath;

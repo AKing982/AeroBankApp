@@ -1,5 +1,7 @@
 package com.example.aerobankapp.workbench.utilities.connections;
 
+import com.example.aerobankapp.workbench.utilities.db.DBType;
+
 public interface BasicDataSource
 {
     String getDBDriver();
@@ -10,5 +12,7 @@ public interface BasicDataSource
     String getDBServer();
     int getDBPort();
     String getDBURL();
+
+    DBType getDBType();
 
 }

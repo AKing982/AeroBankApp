@@ -25,6 +25,7 @@ public class BasicDataSourceImpl implements BasicDataSource
     private AeroLogger aeroLogger = new AeroLogger(BasicDataSourceImpl.class);
 
     public BasicDataSourceImpl(BasicDataSourceBuilder builder) {
+        this.dbType = builder.dbType;
         this.dbServer = builder.dbServer;
         this.dbName = builder.dbName;
         this.dbPort = builder.dbPort;
@@ -33,14 +34,14 @@ public class BasicDataSourceImpl implements BasicDataSource
         this.dbURL = getDBURL();
         this.dbUser = builder.dbUser;
         this.dbPass = builder.dbPass;
-        this.dbType = builder.dbType;
+
     }
 
     @Override
     public String getDBDriver()
     {
         String driver = "";
-        switch(dbType)
+        switch(getDBType())
         {
             case MYSQL:
                 driver = "com.mysql.cj.jdbc.Driver";
@@ -77,7 +78,7 @@ public class BasicDataSourceImpl implements BasicDataSource
     public String getDBProtocol()
     {
         String protocol = "";
-        switch(dbType)
+        switch(getDBType())
         {
             case MYSQL:
                 protocol = "jdbc:mysql";
@@ -109,7 +110,7 @@ public class BasicDataSourceImpl implements BasicDataSource
     public String getDBURL()
     {
         StringBuilder dbURL = null;
-        switch(dbType)
+        switch(getDBType())
         {
             case SQLSERVER:
                 dbURL = new StringBuilder();
@@ -139,6 +140,12 @@ public class BasicDataSourceImpl implements BasicDataSource
 
         }
         return dbURL.toString();
+    }
+
+    @Override
+    public DBType getDBType()
+    {
+        return dbType;
     }
 
     @Override

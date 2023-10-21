@@ -1,5 +1,6 @@
 package com.example.aerobankapp.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,8 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Component
 public class RegistrationDTO
 {
@@ -28,10 +31,5 @@ public class RegistrationDTO
     private BigDecimal deposit;
 
     private boolean isAdmin;
-
-    public RegistrationDTO()
-    {
-
-    }
 
 }

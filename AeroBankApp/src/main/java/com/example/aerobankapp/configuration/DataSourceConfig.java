@@ -1,17 +1,24 @@
 package com.example.aerobankapp.configuration;
 
+import com.example.aerobankapp.workbench.utilities.connections.BasicDataSource;
+import com.example.aerobankapp.workbench.utilities.connections.BasicDataSourceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfig
 {
-    public DataSourceConfig()
-    {
+    private final BasicDataSource dbSource;
 
+    @Autowired
+    public DataSourceConfig(BasicDataSourceImpl dataSource)
+    {
+        this.dbSource = dataSource;
     }
 
     @Bean
@@ -19,10 +26,10 @@ public class DataSourceConfig
     {
         return DataSourceBuilder
                 .create()
-                .url("")
-                .username("")
-                .password("")
-                .driverClassName("")
+                .url(dbSource.getDBURL())
+                .username(dbSource.getDBUser())
+                .password(dbSource.getDBPass())
+                .driverClassName(dbSource.getDBDriver())
                 .build();
     }
 }

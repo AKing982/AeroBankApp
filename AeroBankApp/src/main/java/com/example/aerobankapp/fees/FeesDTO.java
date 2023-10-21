@@ -1,6 +1,7 @@
 package com.example.aerobankapp.fees;
 
 import com.example.aerobankapp.account.AccountType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,9 +13,12 @@ import java.util.Date;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Component
 public class FeesDTO
 {
+    private static long serialVersionUID = 1L;
     private String acctID;
     private BigDecimal standardFees;
     private BigDecimal annualFees;
@@ -25,10 +29,5 @@ public class FeesDTO
     private boolean isEnabled;
     private boolean isAuthorized;
     private LocalDate postingDate;
-
-    public FeesDTO()
-    {
-
-    }
 
 }

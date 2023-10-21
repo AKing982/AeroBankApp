@@ -20,7 +20,7 @@ public class QuartzDataSourceImpl implements QuartzDataSource
     private DBType dbType;
     private AeroLogger aeroLogger = new AeroLogger(QuartzDataSourceImpl.class);
 
-    public QuartzDataSourceImpl(BasicDataSourceImpl basicDataSource, DBType dbType)
+    public QuartzDataSourceImpl(final BasicDataSourceImpl basicDataSource, DBType dbType)
     {
         nullCheck(basicDataSource);
         this.dbSource = basicDataSource;
@@ -29,11 +29,11 @@ public class QuartzDataSourceImpl implements QuartzDataSource
         this.jobStore = getJobStore();
     }
 
-    public QuartzDataSourceImpl(BasicDataSourceImpl basicDataSource)
+    public QuartzDataSourceImpl(final BasicDataSourceImpl basicDataSource)
     {
         nullCheck(basicDataSource);
         this.dbSource = basicDataSource;
-        this.dbType = basicDataSource.getDbType();
+        this.dbType = basicDataSource.getDBType();
         this.dbQuartzURL = getQuartzURL();
         this.jobStore = getJobStore();
     }

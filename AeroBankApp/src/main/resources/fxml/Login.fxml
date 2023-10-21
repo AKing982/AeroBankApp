@@ -53,7 +53,59 @@
                   </Label>
                   <TextField prefHeight="30.0" prefWidth="323.0" promptText="Enter User Name" stylesheets="@../textfield.css" GridPane.columnIndex="1" />
                   <Label alignment="CENTER" contentDisplay="CENTER" stylesheets="@../label.css" text="Password: " GridPane.rowIndex="1">
-                     <font>
+                      <?xml version="1.0" encoding="UTF-8"?>
+
+                      <?import javafx.scene.control.Button?>
+                      <?import javafx.scene.control.Label?>
+                      <?import javafx.scene.control.TextField?>
+                      <?import javafx.scene.layout.BorderPane?>
+                      <?import javafx.scene.layout.ColumnConstraints?>
+                      <?import javafx.scene.layout.GridPane?>
+                      <?import javafx.scene.layout.HBox?>
+                      <?import javafx.scene.layout.RowConstraints?>
+                      <?import javafx.scene.layout.VBox?>
+                      <?import javafx.scene.text.Font?>
+
+
+                      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+                          <top>
+                              <VBox prefHeight="172.0" prefWidth="600.0" styleClass="root" stylesheets="@../background-etched.css" BorderPane.alignment="CENTER" />
+                          </top>
+                          <bottom>
+                              <VBox alignment="CENTER" prefHeight="81.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+                                  <children>
+                                      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" styleClass="root" stylesheets="@../background-etched.css">
+                                          <children>
+                                              <Button mnemonicParsing="false" stylesheets="@../button.css" text="Login">
+                                                  <font>
+                                                      <Font size="18.0" />
+                                                  </font>
+                                              </Button>
+                                              <Button mnemonicParsing="false" stylesheets="@../button.css" text="Lost Password" />
+                                          </children>
+                                      </HBox>
+                                  </children>
+                              </VBox>
+                          </bottom>
+                          <center>
+                              <VBox prefHeight="154.0" prefWidth="600.0" styleClass="root" stylesheets="@../stylesheets/background.css" BorderPane.alignment="CENTER">
+                                  <children>
+                                      <GridPane prefHeight="147.0" prefWidth="537.0" styleClass="root" stylesheets="@../background-etched.css">
+                                          <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="10.0" prefWidth="257.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="424.0" minWidth="10.0" prefWidth="313.0" />
+                                          </columnConstraints>
+                                          <rowConstraints>
+                                              <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="57.0" vgrow="SOMETIMES" />
+                                              <RowConstraints maxHeight="93.0" minHeight="10.0" prefHeight="59.0" vgrow="SOMETIMES" />
+                                              <RowConstraints maxHeight="35.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+                                          </rowConstraints>
+                                          <children>
+                                              <Label alignment="CENTER" contentDisplay="CENTER" stylesheets="@../label.css" text="User Name: ">
+                                                  <font>
+                                                      <Font size="18.0" />
+                                                  </font>
+                                                  <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
