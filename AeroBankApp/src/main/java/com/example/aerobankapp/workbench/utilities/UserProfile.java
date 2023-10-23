@@ -1,12 +1,11 @@
 package com.example.aerobankapp.workbench.utilities;
 
-import com.example.aerobankapp.entity.User;
-import org.springframework.stereotype.Component;
+import com.example.aerobankapp.entity.Users;
 
 public class UserProfile extends AbstractUserProfile
 {
     private LoggedUser loggedUser;
-    private User user;
+    private Users user;
 
     public UserProfile(String name)
     {

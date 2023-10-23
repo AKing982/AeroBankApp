@@ -22,4 +22,9 @@ public class UserLogDTO
         this.username = username;
         this.lastLogin = lastLogin;
     }
+
+    public String getLoggedUser()
+    {
+        return username;
+    }
 }

@@ -23,9 +23,13 @@ public class CheckingAccountDTO extends AbstractAccountBase
 {
     private String id;
     private final AccountType accountType = AccountType.CHECKING;
+    private BigDecimal interestRate = new BigDecimal("2.56");
+    private BigDecimal minBalance = new BigDecimal("150.00");
 
-    private BigDecimal interestRate = BigDecimal.ZERO;
-
+    public CheckingAccountDTO(BigDecimal interest, BigDecimal min_balance)
+    {
+        super(interest, min_balance);
+    }
 
     @Override
     public void deposit(BigDecimal amount)

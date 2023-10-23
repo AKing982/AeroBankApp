@@ -31,6 +31,12 @@ public abstract class AbstractAccountBase
         this.maxDeposits = maxDeposits;
     }
 
+    public AbstractAccountBase(BigDecimal interestRate, BigDecimal minimumBalance)
+    {
+        this.interestRate = interestRate;
+        this.minimumBalance = minimumBalance;
+    }
+
     protected abstract void deposit(BigDecimal amount);
 
     protected abstract void withdraw(BigDecimal amount);

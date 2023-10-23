@@ -1,23 +1,19 @@
 package com.example.aerobankapp.entity;
 
-import com.example.aerobankapp.account.Account;
-import com.example.aerobankapp.model.UserDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Entity
-@Data
+@Table(name="mortgageAccount")
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="checkingAccount")
-public class CheckingAccount
+public class MortgageAccount
 {
     @Id
     private String id;
@@ -31,8 +27,8 @@ public class CheckingAccount
     @Column(name="accountName")
     private String accountName;
 
-    @Column(name="userName")
-    private String userName;
+    @Column(name="user")
+    private String user;
 
     @Column(name="balance")
     private BigDecimal balance;
@@ -40,7 +36,7 @@ public class CheckingAccount
     @Column(name="interestRate")
     private BigDecimal interestRate;
 
-    @Column(name="minimum_balance")
-    private BigDecimal minimumBalance;
+    @Column(name="min_balance")
+    private BigDecimal min_balance;
 
 }

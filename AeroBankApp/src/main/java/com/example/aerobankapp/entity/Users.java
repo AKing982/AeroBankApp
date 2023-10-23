@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name="user")
-public class User
+@Table(name="users")
+public class Users
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,7 +32,7 @@ public class User
     @Column(name="isAdmin")
     private boolean isAdmin;
 
-    public User(String username, String email, String accountNumber, char[] password, String pinNumber, boolean isAdmin) {
+    public Users(String username, String email, String accountNumber, char[] password, String pinNumber, boolean isAdmin) {
         this.username = username;
         this.email = email;
         this.accountNumber = accountNumber;

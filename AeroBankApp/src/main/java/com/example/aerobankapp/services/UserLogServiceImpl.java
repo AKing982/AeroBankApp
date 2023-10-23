@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserLog;
 import com.example.aerobankapp.repositories.UserLogRepository;
+import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import java.util.List;
 public class UserLogServiceImpl implements UserLogService
 {
     private final UserLogRepository userLogRepo;
+    private AeroLogger aeroLogger = new AeroLogger(UserLogServiceImpl.class);
 
     @Autowired
     public UserLogServiceImpl(UserLogRepository userLogRepo)
@@ -19,10 +21,10 @@ public class UserLogServiceImpl implements UserLogService
         this.userLogRepo = userLogRepo;
     }
 
-
     @Override
     public List<UserLog> findAll()
     {
+        aeroLogger.info("UserLog's Found: " + userLogRepo.findAll());
         return userLogRepo.findAll();
     }
 
