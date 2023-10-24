@@ -40,4 +40,6 @@ public abstract class AbstractAccountBase
     protected abstract void deposit(BigDecimal amount);
 
     protected abstract void withdraw(BigDecimal amount);
+
+    protected abstract BigDecimal getBalance();
 }

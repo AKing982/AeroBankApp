@@ -42,4 +42,10 @@ public class CheckingAccountDTO extends AbstractAccountBase
     {
 
     }
+
+    @Override
+    protected BigDecimal getBalance()
+    {
+        return balance;
+    }
 }
