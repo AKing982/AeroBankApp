@@ -31,4 +31,9 @@ public class SavingsAccount extends AbstractAccountBase
     {
 
     }
+
+    @Override
+    protected BigDecimal getBalance() {
+        return null;
+    }
 }

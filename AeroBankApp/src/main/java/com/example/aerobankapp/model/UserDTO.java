@@ -43,6 +43,12 @@ public class UserDTO implements Serializable, UserDetails
     }
 
     @Override
+    public String getPassword()
+    {
+        return password.toString();
+    }
+
+    @Override
     public boolean isAccountNonExpired()
     {
         return isAccountNonExpired;
