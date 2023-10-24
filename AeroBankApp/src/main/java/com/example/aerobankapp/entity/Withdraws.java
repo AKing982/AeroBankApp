@@ -1,6 +1,8 @@
 package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +17,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Withdraws
 {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -24,12 +25,16 @@ public class Withdraws
     private int userID;
 
     @Column(name="fromAccountID")
+    @NotNull
     private String fromAccountID;
 
     @Column(name="toAccountID")
+    @NotNull
     private String toAccountID;
 
     @Column(name="description")
+    @NotNull
+    @Size(min=35, message="Must have atleast 35 characters")
     private String description;
 
     @Column(name="amount")

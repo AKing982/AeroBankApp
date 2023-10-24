@@ -1,6 +1,8 @@
 package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,18 +17,24 @@ public class Users
     private int id;
 
     @Column(name="username")
+    @NotNull
+    @Size(min=8, message="You must choose at least 8 characters")
     private String username;
 
     @Column(name="email")
+    @NotNull
     private String email;
 
     @Column(name="accountNumber")
+    @NotNull
     private String accountNumber;
 
     @Column(name="password")
     private char[] password;
 
     @Column(name="pinNumber")
+    @NotNull
+    @Size(min=6, message="You must choose at least 6 characters")
     private String pinNumber;
 
     @Column(name="isAdmin")
