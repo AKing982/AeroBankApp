@@ -41,7 +41,8 @@ public class VButton extends VBox
     }
 
 
-    private VBox getBtnBox(){
+    private VBox getBtnBox()
+    {
         if(btnBox == null){
             btnBox = new VBox();
         }

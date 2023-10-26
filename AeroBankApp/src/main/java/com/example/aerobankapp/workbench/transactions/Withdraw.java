@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
+@Builder
 public class Withdraw extends TransactionBase implements Serializable
 {
     private Long id;
@@ -23,5 +23,7 @@ public class Withdraw extends TransactionBase implements Serializable
     private String fromAccountID;
     private AbstractAccountBase toAccount;
     private AbstractAccountBase fromAccount;
+
+
 
 }

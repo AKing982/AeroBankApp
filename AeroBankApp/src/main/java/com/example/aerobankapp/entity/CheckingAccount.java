@@ -1,7 +1,6 @@
 package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.account.Account;
-import com.example.aerobankapp.model.UserDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

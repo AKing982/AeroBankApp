@@ -18,4 +18,12 @@ public abstract class TransactionBase
     protected LocalDate date_posted;
     protected boolean isDebit;
     protected boolean isProcessed;
+
+    public TransactionBase(String descr, BigDecimal amount, LocalDate date, boolean isDebit)
+    {
+        this.description = descr;
+        this.amount = amount;
+        this.date_posted = date;
+        this.isDebit = isDebit;
+    }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 public abstract class AbstractUserProfile
 {
-    protected String username;
+    private String username;
     protected List<CheckingAccount> checkingAccounts;
     protected List<SavingsAccount> savingsAccounts;
     protected List<InvestmentAccount> investmentAccounts;

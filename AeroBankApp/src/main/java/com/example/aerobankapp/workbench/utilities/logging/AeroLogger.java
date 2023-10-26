@@ -20,6 +20,11 @@ public class AeroLogger
         LOGGER = LoggerFactory.getLogger(callingClassName);
     }
 
+    public AeroLogger()
+    {
+
+    }
+
     public Logger getLogger()
     {
         return LOGGER;

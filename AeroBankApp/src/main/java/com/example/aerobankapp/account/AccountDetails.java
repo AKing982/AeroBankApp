@@ -1,16 +1,16 @@
 package com.example.aerobankapp.account;
 
 import com.example.aerobankapp.model.Balance;
-import com.example.aerobankapp.model.UserDTO;
+import com.example.aerobankapp.model.User;
 
 import java.math.BigDecimal;
 
 public class AccountDetails implements Balance
 {
-    private UserDTO user;
+    private User user;
     private BigDecimal balance;
 
-    public AccountDetails(UserDTO user, BigDecimal balance)
+    public AccountDetails(User user, BigDecimal balance)
     {
         this.user = user;
         this.balance = balance;

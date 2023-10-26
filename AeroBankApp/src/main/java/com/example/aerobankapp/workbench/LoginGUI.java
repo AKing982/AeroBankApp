@@ -1,5 +1,6 @@
 package com.example.aerobankapp.workbench;
 
+import com.example.aerobankapp.workbench.home.Home;
 import com.example.aerobankapp.workbench.utilities.Loader;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import javafx.application.Application;
@@ -21,10 +22,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.http.HttpHeaders;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class LoginGUI extends Application
@@ -96,10 +103,32 @@ public class LoginGUI extends Application
         getSignIn().setOnAction(e -> {
             try
             {
-               // Login(stage);
-            } catch (Exception ex) {
+                String username = usernameField.getText();
+                String password = passwordField.getText();
 
-                //AeroLogger.handleException(ex);
+               // HttpHeaders headers = new HttpHeaders();
+
+                Map<String, String> request = new HashMap<>();
+                request.put("username", username);
+                request.put("password", password);
+
+               // HttpEntity<Map<String, String>> entity = new HttpEntity<>();
+
+                // Make a POST request to the authentication endpoint
+                RestTemplate restTemplate = new RestTemplate();
+              //  ResponseEntity<String> response = restTemplate.postForEntity("http://your-api-url/login", entity, String.class);
+
+             //   if (response.getStatusCode().is2xxSuccessful()) {
+                    // Authentication successful, proceed to the main application
+                  //  stage.setScene(new Scene(new Home(), 800, 600));
+              //  } else {
+                    // Authentication failed, show an error message
+              //      getLoginAlert().setText("Login failed. Please check your credentials.");
+              //  }
+
+            }catch(Exception ex)
+            {
+
             }
         });
 

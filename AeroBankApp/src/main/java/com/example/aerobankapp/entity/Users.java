@@ -40,6 +40,18 @@ public class Users
     @Column(name="isAdmin")
     private boolean isAdmin;
 
+    @Column(name="isEnabled")
+    private boolean isEnabled;
+
+    @Column(name="isCredentialsNonExpired")
+    private boolean isCredentialsNonExpired;
+
+    @Column(name="isAccountNonLocked")
+    private boolean isAccountNonLocked;
+
+    @Column(name="isAccountNonExpired")
+    private boolean isAccountNonExpired;
+
     public Users(String username, String email, String accountNumber, char[] password, String pinNumber, boolean isAdmin) {
         this.username = username;
         this.email = email;

@@ -1,6 +1,7 @@
 package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,15 +18,18 @@ public class UserLog
     private int id;
 
     @Column(name="username")
+    @NotNull
     private String username;
 
     @Column(name="userID")
     private int userID;
 
     @Column(name="lastLogin")
+    @NotNull
     private Date lastLogin;
 
-    public UserLog(String username, int userID, Date lastLogin) {
+    public UserLog(String username, int userID, Date lastLogin)
+    {
         this.username = username;
         this.userID = userID;
         this.lastLogin = lastLogin;

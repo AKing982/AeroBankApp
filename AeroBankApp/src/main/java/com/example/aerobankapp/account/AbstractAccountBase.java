@@ -1,7 +1,7 @@
 package com.example.aerobankapp.account;
 
 import com.example.aerobankapp.fees.FeesDTO;
-import com.example.aerobankapp.model.UserDTO;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;

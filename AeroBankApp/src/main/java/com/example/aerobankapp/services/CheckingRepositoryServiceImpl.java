@@ -2,12 +2,10 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.CheckingAccount;
 import com.example.aerobankapp.repositories.CheckingRepository;
-import org.hibernate.collection.spi.PersistentBag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

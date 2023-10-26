@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<HBox fx:id="accountBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="275.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.aerobank.controllers.fxml.AccountBoxController">
+    <children>
+        <StackPane prefHeight="100.0" prefWidth="388.0" styleClass="stack-pane" stylesheets="@../stylesheets/accountBox.css">
+            <children>
+                <Circle fx:id="circle" fill="#f56a00" radius="41.0" stroke="BLACK" strokeType="OUTSIDE" />
+                <Label fx:id="acctID" stylesheets="@../label.css" text="A1" textFill="#000f1b">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+                <Button fx:id="acctBtn" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" opacity="0.11" pickOnBounds="false" prefHeight="88.0" prefWidth="86.0" visible="false" />
+            </children>
+        </StackPane>
+        <VBox alignment="CENTER" prefHeight="400.0" prefWidth="448.0" styleClass="vbox" stylesheets="@../stylesheets/AccountVBox.css">
+            <children>
+                <Label fx:id="account" prefHeight="63.0" prefWidth="162.0" stylesheets="@../label.css" text="Checking">
+                    <font>
+                        <Font size="24.0" />
+                    </font>
+                </Label>
+                <!-- <Label fx:id="available" prefHeight="76.0" prefWidth="150.0" stylesheets="@../label.css" text="Available: "> -->
+                <Label fx:id="available" prefHeight="76.0" prefWidth="289.0" stylesheets="@../label.css" text="Available: ">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+                <Label fx:id="pending" layoutX="10.0" layoutY="73.0" prefHeight="76.0" prefWidth="150.0" stylesheets="@../label.css" text="Pending: ">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+    </children>
+</HBox>
