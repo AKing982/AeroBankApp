@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 class CardNumberTest {
@@ -44,7 +45,26 @@ class CardNumberTest {
         CardNumber cardNumber = new CardNumber(visa, type, iin, accountNumber);
         String expectedCardNumber = "4758-4705-0209-7760";
 
+        assertTrue(cardNumber.isValid());
+        assertTrue(cardNumber.validInput(visa, type, iin, accountNumber));
+        assertNotNull(cardNumber);
         assertEquals(expectedCardNumber, cardNumber.getCardNumber(4, type, iin, accountNumber));
+    }
+
+    @Test
+    public void testAMEXCardSuccess()
+    {
+        CardType amex = CardType.AMEX;
+        String type = "7978";
+        String iin = "992831";
+        String acctNum = "2323";
+
+        CardNumber cardNumber1 = new CardNumber(amex, type, iin, acctNum);
+        String expectedCardNumber = "3797-899283-12323";
+        assertTrue(cardNumber1.isValid());
+        assertTrue(cardNumber1.validInput(amex, type, iin, acctNum));
+        assertNotNull(cardNumber1);
+        assertEquals(expectedCardNumber, cardNumber1.getCardNumber(3, type, iin, acctNum));
     }
 
     @Test

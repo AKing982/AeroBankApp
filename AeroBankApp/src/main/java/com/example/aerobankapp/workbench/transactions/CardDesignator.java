@@ -16,7 +16,7 @@ public class CardDesignator
     private String cardHolder;
     private CardNumber cardNo;
     private String expiration_date;
-    private String issuedBank;
+    private String issuer;
     private int cvv;
     private boolean cardStatus;
 

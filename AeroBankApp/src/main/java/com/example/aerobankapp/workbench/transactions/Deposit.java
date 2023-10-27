@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 @Component
 public class Deposit extends TransactionBase implements Serializable
 {
-    private int id;
+    private Long id;
     private String acctID;
     private String accountName;
     private BigDecimal debitAmount;

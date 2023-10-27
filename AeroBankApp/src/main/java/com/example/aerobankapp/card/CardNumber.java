@@ -17,10 +17,10 @@ public class CardNumber
     private StringBuilder cardNumber;
     private String cardNo;
     private boolean isValid;
-    private final int VISA_DESIGNATOR = 4;
-    private final int AMEX_DESIGNATOR = 3;
-    private final int MASTERCARD_DESIGNATOR = 5;
-    private final int DISCOVER_DESIGNATOR = 6;
+    private static final int VISA_DESIGNATOR = 4;
+    private static final int AMEX_DESIGNATOR = 3;
+    private static final int MASTERCARD_DESIGNATOR = 5;
+    private static final int DISCOVER_DESIGNATOR = 6;
     private AeroLogger aeroLogger = new AeroLogger(CardNumber.class);
 
     public CardNumber(CardType ctype, String type, String iin_no, String accountNo) {
@@ -30,7 +30,7 @@ public class CardNumber
     public void initialize(CardType card, String type, String iin, String acctNo) {
         boolean isValidCard = validInput(card, type, iin, acctNo);
         this.cardType = card;
-        if (isValid) {
+        if(isValidCard) {
             aeroLogger.info("Card Type: " + cardType);
             this.type = type;
             this.iin_number = iin;

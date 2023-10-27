@@ -24,6 +24,16 @@ public class Withdraw extends TransactionBase implements Serializable
     private AbstractAccountBase toAccount;
     private AbstractAccountBase fromAccount;
 
+    public Withdraw(String descr, String toAccountID, String fromAccountID, BigDecimal amount, LocalDate date,
+                    boolean isDebit, AbstractAccountBase toAccount, AbstractAccountBase fromAccount)
+    {
+        super(descr, amount, date, isDebit);
+        this.toAccountID = toAccountID;
+        this.fromAccountID = fromAccountID;
+        this.toAccount = toAccount;
+        this.fromAccount = fromAccount;
+    }
+
 
 
 }
