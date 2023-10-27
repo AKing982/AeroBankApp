@@ -1,13 +1,17 @@
 package com.example.aerobankapp.model;
 
+import com.example.aerobankapp.workbench.transactions.CardDesignator;
+import javafx.scene.image.ImageView;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @Builder
@@ -28,6 +32,8 @@ public class User implements Serializable, UserDetails
     private boolean isCredentialsNonExpired;
     private boolean isAccountNonLocked;
     private boolean isAccountNonExpired;
+    private List<CardDesignator> cards = new ArrayList<>();
+    private List<ImageView> cardImages = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities()

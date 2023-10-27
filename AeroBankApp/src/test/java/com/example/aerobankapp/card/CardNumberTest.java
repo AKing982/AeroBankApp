@@ -44,6 +44,7 @@ class CardNumberTest {
         String accountNumber = "502097760";
         CardNumber cardNumber = new CardNumber(visa, type, iin, accountNumber);
         String expectedCardNumber = "4758-4705-0209-7760";
+        StringBuilder sb = new StringBuilder(expectedCardNumber);
 
         assertTrue(cardNumber.isValid());
         assertTrue(cardNumber.validInput(visa, type, iin, accountNumber));

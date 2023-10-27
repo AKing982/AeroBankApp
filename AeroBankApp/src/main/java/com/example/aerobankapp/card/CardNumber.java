@@ -1,7 +1,6 @@
 package com.example.aerobankapp.card;
 
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
-import javafx.scene.image.ImageView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,7 +52,7 @@ public class CardNumber
         } else if (ctype == CardType.DISCOVER && type.length() == 1 && iin.length() == 6 && accountNo.length() == 8) {
             return true;
         }
-        return false;
+        else return ctype == CardType.MASTERCARD && type.length() == 1 && iin.length() == 6 && accountNo.length() == 8;
     }
 
     public String initializeCard() {
@@ -107,26 +106,48 @@ public class CardNumber
         return appendDigits(digits, start, end);
     }
 
-    private String[] convertCardNumberToSegments(StringBuilder builder)
+    public String[] getConvertCardNumberToSegments(StringBuilder builder)
     {
         String convertedString = builder.toString();
         return convertedString.split("-");
     }
 
+
     public boolean validateCardNumberFormat(StringBuilder card)
     {
         boolean result = false;
-        String[] segments = convertCardNumberToSegments(card);
+        String[] segments = getConvertCardNumberToSegments(card);
+        String typeSeg = "";
+        String iinSeg = "";
+        String accountNumSeg = "";
         switch(cardType)
         {
             case VISA:
-                String iinSeg = segments[0];
-                String accountNumSeg = segments[1];
+                aeroLogger.info("IIN Seg: " + iinSeg);
+                iinSeg = segments[0];
+                aeroLogger.info("AccountNum Seg: " + accountNumSeg);
+                accountNumSeg = segments[1];
                 result = iinSeg.length() == 6 && accountNumSeg.length() == 8;
                 break;
             case AMEX:
-
+                typeSeg = segments[0];
+                aeroLogger.info("TypeSeg: " + typeSeg);
+                iinSeg = segments[1];
+                aeroLogger.info("IIN Seg: " + iinSeg);
+                accountNumSeg = segments[2];
+                aeroLogger.info("AccountNumSeg: " + accountNumSeg);
+                result = typeSeg.length() == 4 && iinSeg.length() == 6 && accountNumSeg.length() == 4;
+                break;
+            case MASTERCARD, DISCOVER:
+                typeSeg = segments[0];
+                iinSeg = segments[1];
+                accountNumSeg = segments[2];
+                result = typeSeg.length() == 1 && iinSeg.length() == 6 && accountNumSeg.length() == 8;
+                break;
+            default:
+                aeroLogger.info("No Such Card Type exists");
         }
+        return result;
     }
 
     public String getCardNumber(final int designator, final String type, final String iin, final String accountNo)
@@ -135,6 +156,7 @@ public class CardNumber
         char[] typeDigits = getConversionToDigits(type);
         char[] iinDigits = getConversionToDigits(iin);
         char[] accountNumDigits = getConversionToDigits(accountNo);
+        boolean validCard = false;
 
         switch(cardType)
         {
@@ -148,7 +170,8 @@ public class CardNumber
                 appendDigits(cardNumber, iinDigits, 5, 6);
                 appendDigits(cardNumber, accountNumDigits, 0, 4);
                 aeroLogger.info("AMEX Card Number: " + cardNumber.toString());
-                return cardNumber.toString();
+                validCard = validateCardNumberFormat(cardNumber);
+                if(validCard){return cardNumber.toString();};
             case VISA:
                 cardNumber.append(designator);
                 appendDigits(cardNumber, iinDigits, 0, 3);
@@ -156,11 +179,13 @@ public class CardNumber
                 appendDigits(cardNumber, iinDigits, 3, 6);
                 appendDigits(cardNumber, accountNumDigits, 0, 1);
                 cardNumber.append("-");
-                appendDigits(cardNumber, accountNumDigits, 1, 5);
+                appendDigits(cardNumber, accountNumDigits, 1, 4);
                 cardNumber.append("-");
-                appendDigits(cardNumber, accountNumDigits, 5, 9);
+                appendDigits(cardNumber, accountNumDigits, 4, 8);
                 aeroLogger.info("VISA Card Number: " + cardNumber.toString());
-                return cardNumber.toString();
+                validCard = validateCardNumberFormat(cardNumber);
+                if(validCard) {return cardNumber.toString();}
+              //  return cardNumber.toString();
             case MASTERCARD:
                 cardNumber.append(designator);
                 appendDigits(cardNumber, typeDigits, 0, 2);
@@ -172,8 +197,8 @@ public class CardNumber
                 cardNumber.append("-");
                 appendDigits(cardNumber, accountNumDigits, 5, 8);
                 aeroLogger.info("MasterCard Number: " + cardNumber.toString());
-                return cardNumber.toString();
-
+                validCard = validateCardNumberFormat(cardNumber);
+                if(validCard){return cardNumber.toString();}
             case DISCOVER:
                 cardNumber.append(designator);
 

@@ -2,11 +2,11 @@ package com.example.aerobankapp.workbench.transactions;
 
 import com.example.aerobankapp.card.CardNumber;
 import com.example.aerobankapp.model.User;;
+import javafx.scene.image.ImageView;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.ImageView;
 
 @Data
 @Component
