@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import javax.swing.text.html.ImageView;
+
 @Data
 @Component
 @NoArgsConstructor
@@ -19,6 +21,7 @@ public class CardDesignator
     private String issuer;
     private int cvv;
     private boolean cardStatus;
+    private ImageView cardImage;
 
     public CardDesignator(String cardHolder, CardNumber cardNo, String expires, int cvv)
     {

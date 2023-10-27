@@ -22,7 +22,6 @@ public class CardNumber
     private static final int AMEX_DESIGNATOR = 3;
     private static final int MASTERCARD_DESIGNATOR = 5;
     private static final int DISCOVER_DESIGNATOR = 6;
-    private ImageView cardImage;
     private AeroLogger aeroLogger = new AeroLogger(CardNumber.class);
 
     public CardNumber(CardType ctype, String type, String iin_no, String accountNo) {
@@ -40,10 +39,7 @@ public class CardNumber
             this.isValid = isValidCard;
             cardNo = initializeCard();
         }
-        else
-        {
 
-        }
     }
 
     public boolean validInput(CardType ctype, String type, String iin, String accountNo) {
@@ -109,6 +105,28 @@ public class CardNumber
     private StringBuilder getSegment(char[] digits, int start, int end)
     {
         return appendDigits(digits, start, end);
+    }
+
+    private String[] convertCardNumberToSegments(StringBuilder builder)
+    {
+        String convertedString = builder.toString();
+        return convertedString.split("-");
+    }
+
+    public boolean validateCardNumberFormat(StringBuilder card)
+    {
+        boolean result = false;
+        String[] segments = convertCardNumberToSegments(card);
+        switch(cardType)
+        {
+            case VISA:
+                String iinSeg = segments[0];
+                String accountNumSeg = segments[1];
+                result = iinSeg.length() == 6 && accountNumSeg.length() == 8;
+                break;
+            case AMEX:
+
+        }
     }
 
     public String getCardNumber(final int designator, final String type, final String iin, final String accountNo)
