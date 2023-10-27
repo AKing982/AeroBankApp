@@ -1,6 +1,7 @@
 package com.example.aerobankapp.card;
 
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
+import javafx.scene.image.ImageView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class CardNumber
     private static final int AMEX_DESIGNATOR = 3;
     private static final int MASTERCARD_DESIGNATOR = 5;
     private static final int DISCOVER_DESIGNATOR = 6;
+    private ImageView cardImage;
     private AeroLogger aeroLogger = new AeroLogger(CardNumber.class);
 
     public CardNumber(CardType ctype, String type, String iin_no, String accountNo) {
@@ -127,6 +129,7 @@ public class CardNumber
                 cardNumber.append("-");
                 appendDigits(cardNumber, iinDigits, 5, 6);
                 appendDigits(cardNumber, accountNumDigits, 0, 4);
+                aeroLogger.info("AMEX Card Number: " + cardNumber.toString());
                 return cardNumber.toString();
             case VISA:
                 cardNumber.append(designator);
@@ -138,6 +141,7 @@ public class CardNumber
                 appendDigits(cardNumber, accountNumDigits, 1, 5);
                 cardNumber.append("-");
                 appendDigits(cardNumber, accountNumDigits, 5, 9);
+                aeroLogger.info("VISA Card Number: " + cardNumber.toString());
                 return cardNumber.toString();
             case MASTERCARD:
                 cardNumber.append(designator);
@@ -149,7 +153,9 @@ public class CardNumber
                 appendDigits(cardNumber, accountNumDigits, 0, 4);
                 cardNumber.append("-");
                 appendDigits(cardNumber, accountNumDigits, 5, 8);
+                aeroLogger.info("MasterCard Number: " + cardNumber.toString());
                 return cardNumber.toString();
+
             case DISCOVER:
                 cardNumber.append(designator);
 
