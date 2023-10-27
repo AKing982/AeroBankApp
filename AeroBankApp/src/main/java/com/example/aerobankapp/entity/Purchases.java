@@ -54,9 +54,4 @@ public class Purchases
 
     @Column(name="isDebit")
     private boolean isDebit;
-
-
-
-
-
 }
