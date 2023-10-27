@@ -1,5 +1,6 @@
 package com.example.aerobankapp.card;
 
+import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class CardNumber
     private final int AMEX_DESIGNATOR = 3;
     private final int MASTERCARD_DESIGNATOR = 5;
     private final int DISCOVER_DESIGNATOR = 6;
+    private AeroLogger aeroLogger = new AeroLogger(CardNumber.class);
 
     public CardNumber(CardType ctype, String type, String iin_no, String accountNo) {
         initialize(ctype, type, iin_no, accountNo);
@@ -27,11 +29,12 @@ public class CardNumber
 
     public void initialize(CardType card, String type, String iin, String acctNo) {
         boolean isValidCard = validInput(card, type, iin, acctNo);
+        this.cardType = card;
         if (isValid) {
+            aeroLogger.info("Card Type: " + cardType);
             this.type = type;
             this.iin_number = iin;
             this.accountNumber = acctNo;
-            this.cardType = card;
             this.isValid = isValidCard;
             cardNo = initializeCard();
         }
@@ -43,12 +46,13 @@ public class CardNumber
 
     public boolean validInput(CardType ctype, String type, String iin, String accountNo) {
         if (ctype == null) {
+            aeroLogger.info("CardType: " + ctype);
             return false;
-        } else if (ctype == CardType.VISA && type.length() == 3 && iin.length() == 3 && accountNo.length() == 10) {
+        } else if (ctype == CardType.VISA && type.isEmpty() && iin.length() == 6 && accountNo.length() == 9) {
             return true;
-        } else if (ctype == CardType.AMEX && type.length() == 3 && iin.length() == 6 && accountNo.length() == 5) {
+        } else if (ctype == CardType.AMEX && type.length() == 4 && iin.length() == 6 && accountNo.length() == 4) {
             return true;
-        } else if (ctype == CardType.DISCOVER && type.length() == 3 && iin.length() == 4 && accountNo.length() == 4) {
+        } else if (ctype == CardType.DISCOVER && type.length() == 1 && iin.length() == 6 && accountNo.length() == 8) {
             return true;
         }
         return false;
@@ -73,56 +77,83 @@ public class CardNumber
         return cardNumber.toString();
     }
 
-    public char[] getTypeToDigits(final String type)
+    public char[] getConversionToDigits(final String param)
     {
-        if(type.isEmpty() || type.equals(" "))
+        if(param.isEmpty() || param.equals(" "))
         {
             return null;
         }
-        return type.toCharArray();
+        return param.toCharArray();
     }
 
-    public char[] getIdentifierToDigits(final String identifier)
+    private void appendDigits(StringBuilder builder, char[] digits, int start, int end)
     {
-        if(identifier.isEmpty() || identifier.equals(" "))
+        for(int i = start; i < end; i++)
         {
-            return null;
+            builder.append(digits[i]);
         }
-        return identifier.toCharArray();
     }
 
-    public char[] getAccountNumberToDigits(final String accountNumber)
+    private StringBuilder appendDigits(char[] digits, int start, int end)
     {
-        if(accountNumber.isEmpty() || accountNumber.equals(" "))
+        StringBuilder builder = new StringBuilder();
+        for(int i = start; i < end; i++)
         {
-            return null;
+            builder.append(digits[i]);
         }
-        return accountNumber.toCharArray();
+        return builder;
     }
 
+    private StringBuilder getSegment(char[] digits, int start, int end)
+    {
+        return appendDigits(digits, start, end);
+    }
 
     public String getCardNumber(final int designator, final String type, final String iin, final String accountNo)
     {
         cardNumber = new StringBuilder();
-        char[] typeDigits = getTypeToDigits(type);
-        char[] iinDigits = getIdentifierToDigits(iin);
-        char[] accountNumDigits = getAccountNumberToDigits(accountNo);
+        char[] typeDigits = getConversionToDigits(type);
+        char[] iinDigits = getConversionToDigits(iin);
+        char[] accountNumDigits = getConversionToDigits(accountNo);
 
         switch(cardType)
         {
-            case VISA:
-
+            case AMEX:
                 cardNumber.append(designator);
-               // cardNumber.append()
+                appendDigits(cardNumber, typeDigits, 0, 3);
+                cardNumber.append("-");
+                appendDigits(cardNumber, typeDigits, 3, 4);
+                appendDigits(cardNumber, iinDigits, 0, 5);
+                cardNumber.append("-");
+                appendDigits(cardNumber, iinDigits, 5, 6);
+                appendDigits(cardNumber, accountNumDigits, 0, 4);
+                return cardNumber.toString();
+            case VISA:
+                cardNumber.append(designator);
+                appendDigits(cardNumber, iinDigits, 0, 3);
+                cardNumber.append("-");
+                appendDigits(cardNumber, iinDigits, 3, 6);
+                appendDigits(cardNumber, accountNumDigits, 0, 1);
+                cardNumber.append("-");
+                appendDigits(cardNumber, accountNumDigits, 1, 5);
+                cardNumber.append("-");
+                appendDigits(cardNumber, accountNumDigits, 5, 9);
+                return cardNumber.toString();
+            case MASTERCARD:
+                cardNumber.append(designator);
+                appendDigits(cardNumber, typeDigits, 0, 2);
+                appendDigits(cardNumber, iinDigits, 1, 3);
+                cardNumber.append("-");
+                appendDigits(cardNumber, iinDigits, 2, 6);
+                cardNumber.append("-");
+                appendDigits(cardNumber, accountNumDigits, 0, 4);
+                cardNumber.append("-");
+                appendDigits(cardNumber, accountNumDigits, 5, 8);
+                return cardNumber.toString();
+            case DISCOVER:
+                cardNumber.append(designator);
 
         }
-        cardNumber.append(designator);
-        cardNumber.append(" ");
-        cardNumber.append(type);
-        cardNumber.append(" ");
-        cardNumber.append(iin);
-        cardNumber.append(" ");
-        cardNumber.append(accountNo);
-        return cardNumber.toString();
+        return null;
     }
 }

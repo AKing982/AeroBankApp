@@ -2,7 +2,6 @@ package com.example.aerobankapp.workbench.transactions;
 
 import com.example.aerobankapp.card.CardNumber;
 import com.example.aerobankapp.model.User;;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @NoArgsConstructor
-public class Card
+public class CardDesignator
 {
     private int id;
     private User user;
@@ -21,7 +20,7 @@ public class Card
     private int cvv;
     private boolean cardStatus;
 
-    public Card(String cardHolder, CardNumber cardNo, String expires, int cvv)
+    public CardDesignator(String cardHolder, CardNumber cardNo, String expires, int cvv)
     {
         this.cardHolder = cardHolder;
         this.cardNo = cardNo;

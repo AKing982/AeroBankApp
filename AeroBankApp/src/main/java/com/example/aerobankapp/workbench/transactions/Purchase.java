@@ -17,9 +17,9 @@ public class Purchase extends TransactionBase implements Serializable
 {
     private Long id;
     private String accountID;
-    private Card card;
+    private CardDesignator card;
 
-    public Purchase(Long id, String acctID, Card card)
+    public Purchase(Long id, String acctID, CardDesignator card)
     {
         super();
         this.id = id;
@@ -27,7 +27,7 @@ public class Purchase extends TransactionBase implements Serializable
         this.card = card;
     }
 
-    public Purchase(String descr, String acctID, Card card, BigDecimal amount, LocalDate date, boolean isDebit)
+    public Purchase(String descr, String acctID, CardDesignator card, BigDecimal amount, LocalDate date, boolean isDebit)
     {
         super(descr, amount, date, isDebit);
         this.accountID = acctID;

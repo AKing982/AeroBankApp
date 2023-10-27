@@ -38,17 +38,20 @@ class CardNumberTest {
     public void testVISACardSuccess()
     {
         CardType visa = CardType.VISA;
-        String type = "758";
-        String iin = "4758";
-        String accountNumber = "0209 7760";
-        cardNumber = new CardNumber(visa, type, iin, accountNumber);
+        String type = "";
+        String iin = "758470";
+        String accountNumber = "502097760";
+        CardNumber cardNumber = new CardNumber(visa, type, iin, accountNumber);
+        String expectedCardNumber = "4758-4705-0209-7760";
+
+        assertEquals(expectedCardNumber, cardNumber.getCardNumber(4, type, iin, accountNumber));
     }
 
     @Test
     public void testGetTypeToDigits()
     {
         String type = "758";
-        char[] typeDigits = cardNumber.getTypeToDigits(type);
+        char[] typeDigits = cardNumber.getConversionToDigits(type);
         char[] expectedDigits = new char[]{'7', '5', '8'};
 
         assertArrayEquals(expectedDigits, typeDigits);
@@ -58,11 +61,12 @@ class CardNumberTest {
     public void testGetIdentifierToDigits()
     {
         String identifier = "758 470";
-        char[] identifierDigits = cardNumber.getIdentifierToDigits(identifier);
+        char[] identifierDigits = cardNumber.getConversionToDigits(identifier);
         char[] expectedIdentDigits = new char[]{'7', '5', '8', ' ', '4', '7', '0'};
 
         assertArrayEquals(identifierDigits, expectedIdentDigits);
     }
+
 
     @AfterEach
     void tearDown() {
