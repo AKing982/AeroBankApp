@@ -40,6 +40,9 @@ public class Users
     @Column(name="isAdmin")
     private boolean isAdmin;
 
+    @Column(name="role")
+    private String role;
+
     @Column(name="isEnabled")
     private boolean isEnabled;
 
