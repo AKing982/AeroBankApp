@@ -1,15 +1,22 @@
 package com.example.aerobankapp.workbench.utilities;
 
-import com.example.aerobankapp.entity.Users;
+import com.example.aerobankapp.entity.*;
 
-public class UserProfile extends AbstractUserProfile
+import java.util.List;
+
+public class UserProfile
 {
     private LoggedUser loggedUser;
     private Users user;
+    private String username;
+    protected List<CheckingAccount> checkingAccounts;
+    protected List<SavingsAccount> savingsAccounts;
+    protected List<InvestmentAccount> investmentAccounts;
+    protected List<RentAccount> rentAccounts;
 
     public UserProfile(String name)
     {
-        super(name);
+        this.username = name;
     }
 
 }
