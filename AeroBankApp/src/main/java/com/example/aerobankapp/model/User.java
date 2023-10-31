@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access=AccessLevel.PRIVATE, force=true)
