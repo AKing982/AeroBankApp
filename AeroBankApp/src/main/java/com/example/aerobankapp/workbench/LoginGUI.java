@@ -106,25 +106,15 @@ public class LoginGUI extends Application
                 String username = usernameField.getText();
                 String password = passwordField.getText();
 
-                HttpHeaders headers = new HttpHeaders();
+              //  HttpHeaders headers = new HttpHeaders();
 
                 Map<String, String> request = new HashMap<>();
                 request.put("username", username);
                 request.put("password", password);
 
-                HttpEntity<Map<String, String>> entity = new HttpEntity<>();
+                //HttpEntity<Map<String, String>> entity = new HttpEntity<>();
 
                 // Make a POST request to the authentication endpoint
-                RestTemplate restTemplate = new RestTemplate();
-                ResponseEntity<String> response = restTemplate.postForEntity("http://your-api-url/login", entity, String.class);
-
-                if (response.getStatusCode().is2xxSuccessful()) {
-                   //  Authentication successful, proceed to the main application
-                    stage.setScene(new Scene(new Home(), 800, 600));
-                } else {
-                    // Authentication failed, show an error message
-                    getLoginAlert().setText("Login failed. Please check your credentials.");
-                }
 
             }catch(Exception ex)
             {

@@ -31,12 +31,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final RsaKeyProperties rsaKeys;
 
-    public SecurityConfig(RsaKeyProperties rsaKeys)
-    {
-        this.rsaKeys = rsaKeys;
-    }
 
     @Bean
     public DataSource dataSource()
@@ -91,11 +86,6 @@ public class SecurityConfig {
 
 
 
-    @Bean
-    public JwtDecoder jwtDecoder()
-    {
-        return NimbusJwtDecoder.withPublicKey(rsaKeys.publicKey()).build();
-    }
 
     @Bean
     public JwtIssuerAuthenticationManagerResolver jwtIssuerAuthenticationManagerResolver()
@@ -103,18 +93,8 @@ public class SecurityConfig {
         return new JwtIssuerAuthenticationManagerResolver("");
     }
 
-    @Bean
-    public JwtValidators jwtValidators()
-    {
-        return new JwtValidatorsConfiguration().
-    }
 
-    @Bean
-    public JwtAuthenticationProvider jwtAuthenticationProvider(JwtDecoder jwtDecoder)
-    {
-        JwtAuthenticationProvider provider = new JwtAuthenticationProvider(jwtDecoder);
-        provider.setJwtAuthenticationConverter(jwtIss);
-    }
+
 
 
     @Bean
