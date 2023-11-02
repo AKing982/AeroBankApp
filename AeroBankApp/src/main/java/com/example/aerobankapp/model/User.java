@@ -1,11 +1,13 @@
 package com.example.aerobankapp.model;
 
+import com.example.aerobankapp.workbench.security.authentication.UserAuthority;
 import com.example.aerobankapp.workbench.transactions.CardDesignator;
 import javafx.scene.image.ImageView;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,9 +19,9 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@Component
 @AllArgsConstructor
-@NoArgsConstructor(access=AccessLevel.PRIVATE, force=true)
-public class User implements Serializable, UserDetails
+public class User implements Serializable, UserModel
 {
     private static long serialVersionUID = 1L;
 
@@ -29,53 +31,8 @@ public class User implements Serializable, UserDetails
     private String accountNumber;
     private char[] password;
     private int pinNumber;
-    private boolean isAdmin;
-    private boolean isEnabled;
-    private boolean isCredentialsNonExpired;
-    private boolean isAccountNonLocked;
-    private boolean isAccountNonExpired;
+    private UserAuthority userAuthority;
     private List<CardDesignator> cards = new ArrayList<>();
     private List<ImageView> cardImages = new ArrayList<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities()
-    {
-        return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    @Override
-    public String getUsername()
-    {
-        return user;
-    }
-
-    @Override
-    public String getPassword()
-    {
-        return password.toString();
-    }
-
-    @Override
-    public boolean isAccountNonExpired()
-    {
-        return isAccountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked()
-    {
-        return isAccountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired()
-    {
-        return isCredentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled()
-    {
-        return isEnabled;
-    }
 }

@@ -107,6 +107,7 @@ public class SecurityConfig {
     public JwtValidators jwtValidators()
     {
         return new JwtValidatorsConfiguration().
+
     }
 
     @Bean

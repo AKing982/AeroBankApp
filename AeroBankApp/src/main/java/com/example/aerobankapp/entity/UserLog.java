@@ -3,13 +3,14 @@ package com.example.aerobankapp.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 
 @Entity
 @NoArgsConstructor
-@Data
 @Table(name="userLog")
 public class UserLog
 {
