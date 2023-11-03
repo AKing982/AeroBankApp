@@ -19,7 +19,6 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@Component
 @AllArgsConstructor
 public class User implements Serializable, UserModel
 {

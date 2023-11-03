@@ -12,9 +12,5 @@ import org.springframework.stereotype.Component;
 @Builder
 public class Admin implements UserModel
 {
-    @Id
-    private int id;
-    private String username;
 
-    private
 }

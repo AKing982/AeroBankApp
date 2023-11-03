@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 
 import com.example.aerobankapp.entity.Users;
+import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,23 +23,23 @@ public class UserServiceImpl implements UserDAOService
     }
 
     @Override
-    public List<Users> findAll() {
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 
     @Override
-    public void save(Users obj) {
+    public void save(User obj) {
         userRepository.save(obj);
     }
 
     @Override
-    public void delete(Users obj)
+    public void delete(User obj)
     {
         userRepository.delete(obj);
     }
 
     @Override
-    public Users findAllById(int id)
+    public User findAllById(int id)
     {
         return userRepository.findById((long)id).orElse(null);
     }
