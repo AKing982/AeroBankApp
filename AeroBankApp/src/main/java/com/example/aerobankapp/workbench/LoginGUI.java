@@ -1,6 +1,9 @@
 package com.example.aerobankapp.workbench;
 
+
+import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
 import com.example.aerobankapp.workbench.home.Home;
+import com.example.aerobankapp.workbench.model.Login;
 import com.example.aerobankapp.workbench.utilities.Loader;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import javafx.application.Application;
@@ -105,14 +108,9 @@ public class LoginGUI extends Application
             {
                 String username = usernameField.getText();
                 String password = passwordField.getText();
-
-              //  HttpHeaders headers = new HttpHeaders();
-
-                Map<String, String> request = new HashMap<>();
-                request.put("username", username);
-                request.put("password", password);
-
-                //HttpEntity<Map<String, String>> entity = new HttpEntity<>();
+                Login login = new Login(username, password);
+                LoginController loginController = new LoginController(login);
+                loginController.authenticateLogin();
 
                 // Make a POST request to the authentication endpoint
 

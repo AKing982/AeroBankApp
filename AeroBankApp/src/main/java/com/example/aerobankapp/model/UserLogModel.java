@@ -9,14 +9,14 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @Component
-public class UserLogDTO
+public class UserLogModel
 {
     private int id;
     private int userID;
     private String username;
     private Date lastLogin;
 
-    public UserLogDTO(int userID, String username, Date lastLogin)
+    public UserLogModel(int userID, String username, Date lastLogin)
     {
         this.userID = userID;
         this.username = username;

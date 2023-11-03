@@ -7,19 +7,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtValidators;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
-import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
@@ -30,8 +22,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
-
 
     @Bean
     public DataSource dataSource()
@@ -48,7 +38,7 @@ public class SecurityConfig {
     public JdbcUserDetailsManager users(DataSource dataSource)
     {
         UserDetails admin = User.builder()
-                .username("admin")
+                .username("user")
                 .password("pass")
                 .roles("ADMIN")
                 .build();
@@ -58,19 +48,6 @@ public class SecurityConfig {
         return jdbcUserDetailsManager;
     }
 
-
-    @Bean
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception
-    {
-        return http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated())
-                .headers(headers -> headers.configure(http))
-                .formLogin(withDefaults())
-                .build();
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
     {
@@ -78,32 +55,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(withDefaults())
                 .build();
     }
-
-
-
-
-    @Bean
-    public JwtIssuerAuthenticationManagerResolver jwtIssuerAuthenticationManagerResolver()
-    {
-        return new JwtIssuerAuthenticationManagerResolver("");
-    }
-
-
-    @Bean
-    public JwtValidators jwtValidators()
-    {
-        return new JwtValidatorsConfiguration().
-
-    }
-
-
-
-
 
     @Bean
     public PasswordEncoder passwordEncoder()
@@ -111,11 +65,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public UserDetailsManager userDetailsManager()
-    {
-        JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager();
-        //userDetailsManager.setDataSource(dataSource);
-        return userDetailsManager;
-    }
 }

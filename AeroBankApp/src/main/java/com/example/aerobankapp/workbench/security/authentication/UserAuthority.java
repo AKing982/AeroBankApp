@@ -2,6 +2,7 @@ package com.example.aerobankapp.workbench.security.authentication;
 
 import com.example.aerobankapp.model.User;
 import jakarta.persistence.Column;
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,7 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-@Component
+
+@Builder
 public class UserAuthority implements UserDetails
 {
 
@@ -17,23 +19,22 @@ public class UserAuthority implements UserDetails
     private boolean isAccountNonLocked;
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
+    private boolean isAdmin;
+    private boolean isDepositEnabled;
+    private boolean isWithdrawEnabled;
+    private boolean isLoanApproved;
+    private boolean isPurchaseEnabled;
+    private boolean isSchedulingAllowed;
+    private boolean isInactive;
+
     private final User secureUser;
     private Collection<? extends GrantedAuthority> authorities;
 
-    @Autowired
     private UserAuthority(User user)
     {
         this.secureUser = user;
     }
 
-    public UserAuthority(User user, boolean isAccountNonExpired, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled)
-    {
-        this.isAccountNonExpired = isAccountNonExpired;
-        this.isAccountNonLocked = isAccountNonLocked;
-        this.isCredentialsNonExpired = isCredentialsNonExpired;
-        this.isEnabled = isEnabled;
-        this.secureUser = user;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -69,4 +70,32 @@ public class UserAuthority implements UserDetails
     public boolean isEnabled() {
         return isEnabled;
     }
+
+    public static UserAuthority createUserAuthority()
+    {
+        return new UserAuthorityBuilder()
+                .isEnabled(true)
+                .isCredentialsNonExpired(true)
+                .isAdmin(false)
+                .isDepositEnabled(true)
+                .isAccountNonLocked(true)
+                .isWithdrawEnabled(true)
+                .isLoanApproved(false)
+                .build();
+    }
+
+    public static UserAuthority createAdminAuthority()
+    {
+        return new UserAuthorityBuilder()
+                .isEnabled(true)
+                .isLoanApproved(false)
+                .isDepositEnabled(true)
+                .isWithdrawEnabled(true)
+                .isAdmin(true)
+                .isAccountNonLocked(true)
+                .isCredentialsNonExpired(true)
+                .isAccountNonExpired(true)
+                .build();
+    }
+
 }
