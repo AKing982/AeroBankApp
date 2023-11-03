@@ -12,7 +12,6 @@ import java.util.Collection;
 @Component
 public class UserAuthority implements UserDetails
 {
-
     private boolean isAccountNonExpired;
     private boolean isAccountNonLocked;
     private boolean isCredentialsNonExpired;
