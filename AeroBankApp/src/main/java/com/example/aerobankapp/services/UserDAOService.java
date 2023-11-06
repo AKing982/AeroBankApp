@@ -19,4 +19,6 @@ public interface UserDAOService extends ServiceDAOModel<User>
 
     @Override
     User findAllById(int id);
+
+
 }

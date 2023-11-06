@@ -15,6 +15,7 @@ public class AccountNumberGenerator implements Generator<AccountNumber>
     public AccountNumber generate()
     {
         AccountNumber accountNumber = null;
+        return accountNumber;
 
     }
 }

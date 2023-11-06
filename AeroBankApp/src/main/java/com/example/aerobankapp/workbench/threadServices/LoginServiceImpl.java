@@ -46,8 +46,15 @@ public class LoginServiceImpl implements LoginService
     }
 
     @Override
+    public void login()
+    {
+
+    }
+
+    @Override
     public boolean registerUser(RegistrationDTO registrationRequest)
     {
+        boolean isRegistered = false;
         if(registrationRequest != null)
         {
             // Build the user
@@ -57,36 +64,34 @@ public class LoginServiceImpl implements LoginService
                         .user(registrationRequest.getUserName())
                         .email(registrationRequest.getEmail())
                         .password(registrationRequest.getPassword())
-                        .accountNumber(AccountNumberGenerator::generate)
+                      //  .accountNumber(AccountNumberGenerator::generate)
                         .pinNumber(registrationRequest.getPinNumber())
                         .userAuthority(UserAuthority.createAdminAuthority())
                         .build();
+                isRegistered = true;
 
                 userRepo.save(admin);
             }
-            userRepo.save(userBuilder);
+            else
+            {
+                User user = User.builder()
+                        .user(registrationRequest.getUserName())
+                        .email(registrationRequest.getEmail())
+                        .password(registrationRequest.getPassword())
+                    //    .accountNumber(AccountNumberGenerator::generate)
+                        .pinNumber(registrationRequest.getPinNumber())
+                        .userAuthority(UserAuthority.createUserAuthority())
+                        .build();
+                isRegistered = true;
+
+                userRepo.save(user);
+            }
+
             //TODO:  Show Dialog that User Creation has been successful
 
-            return true;
+            return isRegistered;
         }
         return false;
     }
 
-    @Override
-    public void userPasswordReset(String email)
-    {
-
-    }
-
-    @Override
-    public void logout(String user)
-    {
-
-    }
-
-    @Override
-    public User getUserByUsername(String username)
-    {
-        return null;
-    }
 }

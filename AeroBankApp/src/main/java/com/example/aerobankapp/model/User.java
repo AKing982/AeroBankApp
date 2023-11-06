@@ -10,10 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Getter
@@ -31,7 +28,4 @@ public class User implements Serializable, UserModel
     private char[] password;
     private int pinNumber;
     private UserAuthority userAuthority;
-    private List<CardDesignator> cards = new ArrayList<>();
-    private List<ImageView> cardImages = new ArrayList<>();
-
 }

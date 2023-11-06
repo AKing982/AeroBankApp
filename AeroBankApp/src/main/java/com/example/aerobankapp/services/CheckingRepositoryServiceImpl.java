@@ -22,8 +22,7 @@ public class CheckingRepositoryServiceImpl implements CheckingRepositoryService
     @Override
     @Transactional
     public List<CheckingAccount> findAll() {
-        List<CheckingAccount> checkingAccounts = checkingRepo.findAll();
-        return checkingAccounts;
+        return checkingRepo.findAll();
     }
 
     @Override

@@ -1,9 +1,13 @@
 package com.example.aerobankapp.workbench.security.authentication;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,7 +25,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfig {
+public class SecurityConfig{
+
+    @Autowired
+    private DataSource dataSource;
 
     @Bean
     public DataSource dataSource()
@@ -34,18 +41,20 @@ public class SecurityConfig {
         return dataSource;
     }
 
+
     @Bean
     public JdbcUserDetailsManager users(DataSource dataSource)
     {
-        UserDetails admin = User.builder()
-                .username("user")
-                .password("pass")
-                .roles("ADMIN")
-                .build();
+        return new JdbcUserDetailsManager(dataSource);
+    }
 
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-        jdbcUserDetailsManager.createUser(admin);
-        return jdbcUserDetailsManager;
+    @Bean
+    public void configure(AuthenticationManagerBuilder auth) throws Exception
+    {
+        auth.jdbcAuthentication()
+                .dataSource(dataSource)
+                .usersByUsernameQuery("SELECT username, password FROM users WHERE username=?")
+                .authoritiesByUsernameQuery("SELECT username, password FROM users WHERE isAdmin=1 AND username=?");
     }
 
     @Bean
@@ -58,6 +67,7 @@ public class SecurityConfig {
                 .httpBasic(withDefaults())
                 .build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder()

@@ -1,17 +1,15 @@
 package com.example.aerobankapp.workbench.security.authentication;
 
 import com.example.aerobankapp.model.User;
-import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
 @Builder
+@AllArgsConstructor
 public class UserAuthority implements UserDetails
 {
     private boolean isAccountNonExpired;
@@ -25,7 +23,6 @@ public class UserAuthority implements UserDetails
     private boolean isPurchaseEnabled;
     private boolean isSchedulingAllowed;
     private boolean isInactive;
-
     private final User secureUser;
     private Collection<? extends GrantedAuthority> authorities;
 

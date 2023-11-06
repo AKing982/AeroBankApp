@@ -2,6 +2,7 @@ package com.example.aerobankapp.workbench.home;
 
 import com.example.aerobankapp.messages.CommonLabels;
 import com.example.aerobankapp.workbench.buttonHeader.ButtonHeader;
+import com.example.aerobankapp.workbench.home.depositPane.DepositPane;
 import com.example.aerobankapp.workbench.home.forecastPane.ForecastPane;
 import com.example.aerobankapp.workbench.home.loansPane.LoansPane;
 import com.example.aerobankapp.workbench.home.settingsPane.SettingsPane;
@@ -10,7 +11,6 @@ import com.example.aerobankapp.workbench.vbutton.VButton;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -18,7 +18,13 @@ import java.util.Date;
 public class ButtonHomePane extends GridPane
 {
     private VButton transactionBtn = null;
+
+    @Deprecated
     private VButton loanBtn = null;
+
+    private VButton depositBtn = null;
+
+    private VButton withdrawBtn = null;
     private VButton moneyTransferBtn = null;
     private VButton settingsBtn = null;
     private VButton forecastingBtn = null;
@@ -26,7 +32,12 @@ public class ButtonHomePane extends GridPane
     private Label welcomeLabel = null;
     private BigDecimal balance = null;
     private ButtonHeader transactionHeader = new ButtonHeader(new Label(CommonLabels.TRANSACTIONS));
+
+    @Deprecated
     private ButtonHeader loansHeader = new ButtonHeader(new Label(CommonLabels.LOANS));
+
+    private ButtonHeader depositHeader = new ButtonHeader(new Label(CommonLabels.DEPOSIT));
+
     private ButtonHeader forecastingHeader = new ButtonHeader(new Label(CommonLabels.FORECASTING));
     private ButtonHeader userSetupHeader = new ButtonHeader(new Label(CommonLabels.SETTINGS));
 
@@ -38,8 +49,10 @@ public class ButtonHomePane extends GridPane
 
         this.add(transactionHeader, 0, 0);
         this.add(new TransactionPane(), 0, 1);
-        this.add(loansHeader, 0, 2);
-        this.add(new LoansPane(), 0, 3);
+        this.add(depositHeader, 0 , 2);
+        this.add(new DepositPane(), 0, 3);
+      //  this.add(loansHeader, 0, 2);
+       // this.add(new LoansPane(), 0, 3);
         this.add(forecastingHeader, 0, 4);
         this.add(new ForecastPane(), 0, 5);
         this.add(userSetupHeader, 0, 6);

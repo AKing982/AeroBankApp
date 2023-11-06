@@ -1,6 +1,7 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserLog;
+import com.example.aerobankapp.model.UserLogModel;
 import com.example.aerobankapp.repositories.UserLogRepository;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +13,15 @@ import java.util.List;
 @Service
 public class UserLogServiceImpl implements UserLogService
 {
-    private final UserLogRepository userLogRepo;
+    @Autowired
+    private UserLogRepository userLogRepo;
     private AeroLogger aeroLogger = new AeroLogger(UserLogServiceImpl.class);
 
-    @Autowired
-    public UserLogServiceImpl(UserLogRepository userLogRepo)
-    {
-        this.userLogRepo = userLogRepo;
-    }
+
+
 
     @Override
-    public List<UserLog> findAll()
+    public List<UserLogModel> findAll()
     {
         aeroLogger.info("UserLog's Found: " + userLogRepo.findAll());
         return userLogRepo.findAll();
@@ -30,20 +29,20 @@ public class UserLogServiceImpl implements UserLogService
 
     @Override
     @Transactional
-    public void save(UserLog obj)
+    public void save(UserLogModel obj)
     {
         userLogRepo.save(obj);
     }
 
     @Override
     @Transactional
-    public void delete(UserLog obj)
+    public void delete(UserLogModel obj)
     {
         userLogRepo.delete(obj);
     }
 
     @Override
-    public UserLog findAllById(int id)
+    public UserLogModel findAllById(int id)
     {
         return userLogRepo.findById((long)id).orElse(null);
     }

@@ -1,7 +1,6 @@
 package com.example.aerobankapp.services;
 
 
-import com.example.aerobankapp.entity.Users;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
@@ -13,14 +12,9 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserDAOService
 {
+    @Autowired
     private UserRepository userRepository;
     private AeroLogger aeroLogger = new AeroLogger(UserServiceImpl.class);
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository)
-    {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public List<User> findAll() {
@@ -43,4 +37,6 @@ public class UserServiceImpl implements UserDAOService
     {
         return userRepository.findById((long)id).orElse(null);
     }
+
+
 }

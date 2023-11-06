@@ -2,13 +2,10 @@ package com.example.aerobankapp.workbench;
 
 
 import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
-import com.example.aerobankapp.workbench.home.Home;
 import com.example.aerobankapp.workbench.model.Login;
-import com.example.aerobankapp.workbench.utilities.Loader;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,18 +22,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.net.URL;
-import java.net.http.HttpHeaders;
-import java.util.HashMap;
-import java.util.Map;
 
-
+@Component
 public class LoginGUI extends Application
 {
     private static TextField usernameField = null;
@@ -109,8 +99,9 @@ public class LoginGUI extends Application
                 String username = usernameField.getText();
                 String password = passwordField.getText();
                 Login login = new Login(username, password);
-                LoginController loginController = new LoginController(login);
-                loginController.authenticateLogin();
+                LoginController loginController = new LoginController(this, login);
+                loginController.getLogin();
+                stage.close();
 
                 // Make a POST request to the authentication endpoint
 

@@ -13,6 +13,6 @@ public class AccountNumber
     private int firstSeg;
     private int secondSeg;
     private int lastSeg;
-    private UserType
+
     private AccountType accountType;
 }

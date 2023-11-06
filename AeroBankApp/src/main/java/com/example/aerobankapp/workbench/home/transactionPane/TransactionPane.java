@@ -30,7 +30,7 @@ public class TransactionPane extends HBox
             transactionBtn = new VButton();
             transactionBtn.setGraphic(new Image("/transaction-icon.jpeg"), 90, 90);
             transactionBtn.setVButtonFont(Font.font("Arial", FontWeight.NORMAL, FontPosture.REGULAR, 16));
-            transactionBtn.setLabel("\s\s\s\sMake a \nTransaction");
+            transactionBtn.setLabel("Transactions");
             //transactionBtn.setVButtonAlignment(Pos.CENTER);
            // transactionBtn.setButtonAction(e -> new BankThread().start());
         }
