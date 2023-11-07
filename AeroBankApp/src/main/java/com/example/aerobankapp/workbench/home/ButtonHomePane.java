@@ -18,12 +18,9 @@ import java.util.Date;
 public class ButtonHomePane extends GridPane
 {
     private VButton transactionBtn = null;
-
     @Deprecated
     private VButton loanBtn = null;
-
     private VButton depositBtn = null;
-
     private VButton withdrawBtn = null;
     private VButton moneyTransferBtn = null;
     private VButton settingsBtn = null;

@@ -3,9 +3,15 @@ package com.example.aerobankapp.workbench.session;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.workbench.tokens.TokenManager;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Getter
+@Setter
+@Slf4j
 public class SessionManager
 {
     private static SessionManager instance;
@@ -27,28 +33,9 @@ public class SessionManager
         return instance;
     }
 
-    public void setCurrentUser(User user)
-    {
-        currentUser = user;
-    }
-
-    public User getCurrentUser()
-    {
-        return currentUser;
-    }
-
     private String getTokenFromManager()
     {
         return tokenManager.generateUserToken(currentUser);
     }
 
-    public void setUserProfile(UserProfile userProfile)
-    {
-        this.currentProfile = userProfile;
-    }
-
-    private UserProfile getCurrentProfile()
-    {
-        return currentProfile;
-    }
 }
