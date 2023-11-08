@@ -1,116 +1,95 @@
 package com.example.aerobankapp.workbench.vbutton;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import lombok.Getter;
+import org.springframework.stereotype.Component;
 
+@Getter
+@Component
 public class VButton extends VBox
 {
-    private Button button = null;
-    private Label btnLabel = null;
-    private VBox btnBox = null;
+    private Button button;
+    private ImageView image;
+    private Font buttonFont;
+    private Label buttonLabel;
+    private boolean isPreserv;
 
-    private final String STYLE_PRESSED = "-fx-background-color: transparent; -fx-padding: 3, 1, 1, 3;";
-    private final String STYLE_NORMAL = "-fx-background-color: transparent; -fx-padding: 2, 2, 2, 2;";
-
-    public VButton(){
-        super();
-
-        this.initialize();
-    }
-
-    void initialize(){
-        getChildren().addAll(getButton(), getLabel());
-    }
-
-    private Button getButton(){
-        if(button == null){
-            button = new Button();
-        }
-        return button;
-    }
-
-
-    private VBox getBtnBox()
+    public VButton()
     {
-        if(btnBox == null){
-            btnBox = new VBox();
-        }
-        return btnBox;
+        // Should be empty
     }
 
-    public void setVButtonFont(Font font){
-        getBtnLabel().setFont(font);
+    public VButton(ImageView imageView)
+    {
+        initialize(imageView);
     }
 
-    public void setLabel(String name){
-        getBtnLabel().setText(name);
+    void initialize(ImageView imageView)
+    {
+        this.image = imageView;
+        this.button = new Button("", image);
+        this.buttonFont = Font.font("Arial", FontWeight.NORMAL, FontPosture.REGULAR, 16);
     }
 
-    public void setText(String name){
-        getBtnLabel().setText(name);
+    public ImageView getGraphic()
+    {
+        return image;
     }
 
-    public Label getLabel(){
-        return getBtnLabel();
+    public void setFont(Font fontExpected)
+    {
+        button.setFont(fontExpected);
     }
 
-    public Label getBtnLabel(){
-        if(btnLabel == null){
-            btnLabel = new Label();
-            btnLabel.getStylesheets().add("label.css");
-        }
-        return btnLabel;
+    public Font getFont()
+    {
+        return buttonFont;
     }
 
-    public Node getImage(){
-        return getButton().getGraphic();
+    public void setGraphic(Image btnImage, double height, double width, boolean ratio)
+    {
+        ImageView imageView = getImageView(btnImage);
+        setDimensions(imageView, height, width);
+        setRatio(imageView, ratio);
+        setButtonPreferences(height, width, imageView);
     }
 
-    public void setButtonStyle(String style){
-        this.setStyle(style);
+    private static ImageView getImageView(Image image)
+    {
+        return new ImageView(image);
     }
 
-    public void setGraphic(Image img, double height, double width){
-        ImageView image = new ImageView(img);
-        image.setFitHeight(height);
+    private static void setRatio(ImageView image, boolean ratio)
+    {
+        image.setPreserveRatio(ratio);
+    }
+
+    private static void setDimensions(ImageView image, double height, double width)
+    {
         image.setFitWidth(width);
-        image.setPreserveRatio(true);
+        image.setFitHeight(height);
+    }
+
+    public void setButtonPreferences(double height, double width, ImageView img)
+    {
         getButton().setPrefSize(height, width);
-
-        getButton().setGraphic(image);
+        getButton().setGraphic(img);
     }
 
-    public void setVButtonBorder(Border border){
-        getButton().setBorder(border);
+    public void setLabel(Label label)
+    {
+        this.buttonLabel = label;
     }
 
-    public void setButtonAction(EventHandler<ActionEvent> action){
-        getButton().setOnAction(action);
-    }
-
-    public void setOnMousePressedImage(EventHandler<? super MouseEvent> event){
-
-    }
-    public void setVButtonVisibility(boolean isVisible){
-        getButton().setVisible(isVisible);
-    }
-
-    public void setVButtonTooltip(Tooltip tip){
-        getButton().setTooltip(tip);
-    }
-
-    public void setVButtonAlignment(Pos alignment){
-        this.setAlignment(alignment);
+    public Label getLabel()
+    {
+        return buttonLabel;
     }
 }

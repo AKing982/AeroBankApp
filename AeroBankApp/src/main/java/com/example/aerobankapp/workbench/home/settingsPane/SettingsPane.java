@@ -2,6 +2,7 @@ package com.example.aerobankapp.workbench.home.settingsPane;
 
 import com.example.aerobankapp.messages.CommonLabels;
 import com.example.aerobankapp.workbench.vbutton.VButton;
+import com.example.aerobankapp.workbench.vbutton.VButtonOLD;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -11,7 +12,7 @@ import javafx.scene.text.FontWeight;
 
 public class SettingsPane extends HBox
 {
-    private VButton settingsBtn = null;
+    private VButtonOLD settingsBtn = null;
 
     public SettingsPane() {
         super();
@@ -26,9 +27,9 @@ public class SettingsPane extends HBox
         this.setAlignment(Pos.CENTER_LEFT);
     }
 
-    private VButton getSettingsBtn(){
+    public VButtonOLD getSettingsBtn(){
         if(settingsBtn == null){
-            settingsBtn = new VButton();
+            settingsBtn = new VButtonOLD();
             settingsBtn.setGraphic(new Image("/601.9-setting-icon-iconbunny.jpg"), 90, 90);
             settingsBtn.setLabel(CommonLabels.SETTINGS);
             settingsBtn.setVButtonFont(Font.font("Arial", FontWeight.NORMAL, FontPosture.REGULAR, 16));

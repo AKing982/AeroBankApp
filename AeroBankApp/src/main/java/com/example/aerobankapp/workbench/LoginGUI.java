@@ -100,8 +100,7 @@ public class LoginGUI extends Application
                 String password = passwordField.getText();
                 Login login = new Login(username, password);
                 LoginController loginController = new LoginController(this, login);
-                loginController.getLogin();
-                stage.close();
+                closeStage(stage);
 
                 // Make a POST request to the authentication endpoint
 
@@ -137,13 +136,18 @@ public class LoginGUI extends Application
 
     }
 
-    public String getCSSAsString(String path){
+    private String getCSSAsString(String path){
         String cssStr = "";
         URL URL = getClass().getResource(path);
         if(URL != null){
             cssStr = URL.toExternalForm();
         }
         return cssStr;
+    }
+
+    private void closeStage(Stage stage)
+    {
+        stage.close();
     }
 
     public Text getLoginAlert()  {
@@ -174,7 +178,7 @@ public class LoginGUI extends Application
         return textBox;
     }
 
-    public Text getWelcomeText(){
+    private Text getWelcomeText(){
         if(welcomeText == null){
             welcomeText = new Text("Welcome to \n\tAeroBank");
             welcomeText.setStyle(textStyle);
@@ -183,7 +187,7 @@ public class LoginGUI extends Application
         return welcomeText;
     }
 
-    public Button getSignIn(){
+    private Button getSignIn(){
         if(signIn == null){
             signIn = new Button("Sign In");
             signIn.setFont(Font.font("Sans Serif", FontWeight.NORMAL, 16));
@@ -194,7 +198,7 @@ public class LoginGUI extends Application
     }
 
 
-    public Button getSignUp(){
+    private Button getSignUp(){
         if(signUp == null){
             signUp = new Button("Sign Up");
             signUp.getStylesheets().add(getCSSAsString("/button.css"));
@@ -210,7 +214,7 @@ public class LoginGUI extends Application
         return signUp;
     }
 
-    public Label getUsernameLabel(){
+    private Label getUsernameLabel(){
         if(usernameLabel == null){
             usernameLabel = new Label("User Name: ");
             usernameLabel.getStylesheets().add(getCSSAsString("/label.css"));

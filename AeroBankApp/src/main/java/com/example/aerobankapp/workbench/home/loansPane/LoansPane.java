@@ -2,6 +2,7 @@ package com.example.aerobankapp.workbench.home.loansPane;
 
 import com.example.aerobankapp.messages.CommonLabels;
 import com.example.aerobankapp.workbench.vbutton.VButton;
+import com.example.aerobankapp.workbench.vbutton.VButtonOLD;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -10,7 +11,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
 public class LoansPane extends HBox {
-    private VButton loanBtn = null;
+    private VButtonOLD loanBtn = null;
 
     public LoansPane(){
         super();
@@ -26,9 +27,9 @@ public class LoansPane extends HBox {
 
     }
 
-    private VButton getLoanBtn(){
+    private VButtonOLD getLoanBtn(){
         if(loanBtn == null){
-            loanBtn = new VButton();
+            loanBtn = new VButtonOLD();
             loanBtn.setGraphic(new Image("/loan-vector-icon.jpeg"), 90, 90);
             loanBtn.setLabel(CommonLabels.LOAN);
             loanBtn.setVButtonFont(Font.font("Arial", FontWeight.NORMAL, FontPosture.REGULAR, 16));

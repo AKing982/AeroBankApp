@@ -13,7 +13,7 @@ public class Home extends Application
     @Override
     public void start(Stage stage) throws Exception
     {
-        Scene scene = new Scene(new ButtonHomePane(), 550, 680);
+        Scene scene = new Scene(new HomePane(), 550, 680);
         stage.setScene(scene);
         stage.setTitle(CommonLabels.HOME);
         stage.show();

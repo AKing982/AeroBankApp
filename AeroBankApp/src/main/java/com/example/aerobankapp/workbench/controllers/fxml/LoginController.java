@@ -4,6 +4,7 @@ import com.example.aerobankapp.services.AuthenticationServiceImpl;
 import com.example.aerobankapp.services.LoginThreadTaskService;
 import com.example.aerobankapp.workbench.LoginGUI;
 import com.example.aerobankapp.workbench.model.Login;
+import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class LoginController
 {
-    private Login currLogin;
+    private Login currentLogin;
     private LoginGUI loginGUI;
 
     @Autowired
@@ -26,14 +27,14 @@ public class LoginController
     @Autowired
     public LoginController(LoginGUI loginGUI, Login login)
     {
-        this.currLogin = login;
+        this.currentLogin = login;
         this.loginGUI = loginGUI;
     }
 
     public void getLogin()
     {
-        String user = getCurrLogin().getUsername();
-        String password = getCurrLogin().getPassword();
+        String user = getCurrentLogin().getUsername();
+        String password = getCurrentLogin().getPassword();
         boolean isAuthenticated = getAuthenticationService().authenticate(user, password);
         if(isAuthenticated)
         {
@@ -46,7 +47,6 @@ public class LoginController
             // TODO: Launch UserLogServiceTask Runnable
 
             // TODO: Launch Home
-
 
         }
         else

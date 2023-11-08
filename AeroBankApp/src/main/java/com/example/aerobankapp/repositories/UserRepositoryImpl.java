@@ -34,6 +34,7 @@ public class UserRepositoryImpl implements UserDAOService
     @Override
     public User findAllById(int id)
     {
-        return userRepository.findAllById((long)id).;
+        long longId = id;
+        return userRepository.findById(longId).orElse(null);
     }
 }
