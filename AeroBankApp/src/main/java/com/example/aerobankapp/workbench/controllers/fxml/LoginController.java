@@ -3,7 +3,7 @@ package com.example.aerobankapp.workbench.controllers.fxml;
 import com.example.aerobankapp.services.AuthenticationServiceImpl;
 import com.example.aerobankapp.services.LoginThreadTaskService;
 import com.example.aerobankapp.workbench.LoginGUI;
-import com.example.aerobankapp.workbench.model.Login;
+import com.example.aerobankapp.workbench.model.LoginModel;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,14 +18,14 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class LoginController
 {
-    private Login currentLogin;
+    private LoginModel currentLogin;
     private LoginGUI loginGUI;
 
     @Autowired
     private AuthenticationServiceImpl authenticationService;
 
     @Autowired
-    public LoginController(LoginGUI loginGUI, Login login)
+    public LoginController(LoginGUI loginGUI, LoginModel login)
     {
         this.currentLogin = login;
         this.loginGUI = loginGUI;

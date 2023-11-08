@@ -2,7 +2,7 @@ package com.example.aerobankapp.workbench;
 
 
 import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
-import com.example.aerobankapp.workbench.model.Login;
+import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -98,7 +98,7 @@ public class LoginGUI extends Application
             {
                 String username = usernameField.getText();
                 String password = passwordField.getText();
-                Login login = new Login(username, password);
+                LoginModel login = new LoginModel(username, password);
                 LoginController loginController = new LoginController(this, login);
                 closeStage(stage);
 

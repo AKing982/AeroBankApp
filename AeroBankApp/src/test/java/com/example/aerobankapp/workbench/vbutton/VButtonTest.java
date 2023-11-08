@@ -70,14 +70,22 @@ class VButtonTest
         button.setGraphic(expectedImage, expectedHeight, expectedWidth, e_ratio);
 
         ImageView actualDepositImage = button.getImage();
-        double actualWidth = actualDepositImage.getFitWidth();
-        double actualHeight = actualDepositImage.getFitHeight();
+        double actualFitWidth = actualDepositImage.getFitWidth();
+        double actualFitHeight = actualDepositImage.getFitHeight();
+        double actualWidth = button.getWidth();
+        double actualHeight = button.getHeight();
+        double prefHeight = button.getPrefHeight();
+        double prefWidth = button.getPrefWidth();
         boolean actualGraphicRatio = button.getGraphic().isPreserveRatio();
 
         assertNotNull(actualDepositImage);
        // assertEquals(expectedImage, actualDepositImage);
-        assertEquals(expectedHeight, actualHeight);
-        assertEquals(expectedWidth, actualWidth);
+        assertEquals(expectedHeight,actualFitHeight);
+        assertEquals(expectedWidth, actualFitWidth);
+        assertEquals(90, actualHeight);
+        assertEquals(90, actualWidth);
+        assertEquals(90, prefWidth);
+        assertEquals(90, prefHeight);
         assertEquals(e_ratio,actualGraphicRatio);
     }
 
@@ -85,11 +93,16 @@ class VButtonTest
     public void testButtonLabel()
     {
         Label expectedLabel = new Label("Transactions");
+        expectedLabel.getStylesheets().add("label.css");
         button.setLabel(expectedLabel);
+        String labelText = "Transactions";
+        String expectedStylesheet = "label.css";
 
         Label actualLabel = button.getLabel();
 
         assertNotNull(actualLabel);
+        assertEquals(expectedLabel.getText(), actualLabel.getText());
+        assertEquals(expectedLabel.getStylesheets().toString(), actualLabel.getStylesheets().toString());
         assertEquals(expectedLabel, actualLabel);
     }
 

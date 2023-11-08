@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 @NoArgsConstructor
-public class Login
+public class LoginModel
 {
     private String username;
     private String password;
     private String encryptedUsername;
     private char[] encryptedPassword;
 
-    public Login(String user, String pass)
+    public LoginModel(String user, String pass)
     {
         this.username = user;
         this.password = pass;
