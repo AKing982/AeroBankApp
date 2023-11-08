@@ -41,7 +41,7 @@ public class VButton extends VBox
         this.getChildren().addAll(getButton(), getLabel());
     }
 
-    void initialize(ImageView imageView, String text)
+    private void initialize(ImageView imageView, String text)
     {
         this.image = imageView;
         this.text = text;
@@ -67,10 +67,10 @@ public class VButton extends VBox
 
     public void setGraphic(Image btnImage, double height, double width, boolean ratio)
     {
-        ImageView imageView = getImageView(btnImage);
-        setDimensions(imageView, height, width);
-        setRatio(imageView, ratio);
-        setButtonPreferences(height, width, imageView);
+        this.image = getImageView(btnImage);
+        setDimensions(image, height, width);
+        setRatio(image, ratio);
+        setButtonPreferences(height, width, image);
     }
 
     private static ImageView getImageView(Image image)

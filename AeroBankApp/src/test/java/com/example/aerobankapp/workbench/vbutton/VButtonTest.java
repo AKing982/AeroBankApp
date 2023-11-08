@@ -69,9 +69,9 @@ class VButtonTest
         Image expectedImage = new Image("/forecasting.png");
         button.setGraphic(expectedImage, expectedHeight, expectedWidth, e_ratio);
 
-        Image actualDepositImage = button.getImage().getImage();
-        double actualWidth = button.getWidth();
-        double actualHeight = button.getHeight();
+        ImageView actualDepositImage = button.getImage();
+        double actualWidth = actualDepositImage.getFitWidth();
+        double actualHeight = actualDepositImage.getFitHeight();
         boolean actualGraphicRatio = button.getGraphic().isPreserveRatio();
 
         assertNotNull(actualDepositImage);
