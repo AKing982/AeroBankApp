@@ -9,9 +9,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Getter
+@Setter
 @Component
 public class VButton extends VBox
 {
@@ -19,23 +21,33 @@ public class VButton extends VBox
     private ImageView image;
     private Font buttonFont;
     private Label buttonLabel;
-    private boolean isPreserv;
+    private final String labelStylesheet = "label.css";
+    private String text;
 
     public VButton()
     {
         // Should be empty
     }
 
-    public VButton(ImageView imageView)
+    /** To be used if only needing the image **/
+    public VButton(ImageView imageView, String text)
     {
-        initialize(imageView);
+        initialize(imageView,text);
+        addChildren();
     }
 
-    void initialize(ImageView imageView)
+    private void addChildren()
+    {
+        this.getChildren().addAll(getButton(), getLabel());
+    }
+
+    void initialize(ImageView imageView, String text)
     {
         this.image = imageView;
+        this.text = text;
         this.button = new Button("", image);
         this.buttonFont = Font.font("Arial", FontWeight.NORMAL, FontPosture.REGULAR, 16);
+        this.buttonLabel = getLabel();
     }
 
     public ImageView getGraphic()
@@ -79,8 +91,8 @@ public class VButton extends VBox
 
     public void setButtonPreferences(double height, double width, ImageView img)
     {
-        getButton().setPrefSize(height, width);
-        getButton().setGraphic(img);
+        button.setPrefSize(height, width);
+        button.setGraphic(img);
     }
 
     public void setLabel(Label label)
@@ -90,6 +102,16 @@ public class VButton extends VBox
 
     public Label getLabel()
     {
+        if(buttonLabel == null)
+        {
+            buttonLabel = new Label(text);
+            buttonLabel.getStylesheets().add(labelStylesheet);
+        }
         return buttonLabel;
+    }
+
+    public VBox getVBox()
+    {
+        return this;
     }
 }

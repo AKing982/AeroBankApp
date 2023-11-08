@@ -4,6 +4,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -24,12 +25,14 @@ class VButtonTest
 
     private VButton button;
     private ImageView image;
+    private String text;
 
     @BeforeEach
     void setUp()
     {
+        text = "Forecasting";
         image = new ImageView(new Image("/forecasting.png"));
-        button = new VButton(image);
+        button = new VButton(image, text);
     }
 
     @Test
@@ -88,6 +91,24 @@ class VButtonTest
 
         assertNotNull(actualLabel);
         assertEquals(expectedLabel, actualLabel);
+    }
+
+    @Test
+    public void testVButtonChildren()
+    {
+        String btnText = "Forecasting";
+        ImageView testImage = new ImageView(new Image("/forecasting.png"));
+        VButton vButton = new VButton(testImage, btnText);
+        VBox expectedVBox = new VBox();
+        Button button1 = new Button("Button");
+        Label forecastLabel = new Label("Label");
+        expectedVBox.getChildren().addAll(button1, forecastLabel);
+
+        VBox vButtonBoxActual = vButton.getVBox();
+        boolean isChild = vButtonBoxActual.getChildren().contains(button1);
+
+        assertFalse(isChild);
+        assertNotEquals(expectedVBox, vButtonBoxActual);
     }
 
     @AfterEach
