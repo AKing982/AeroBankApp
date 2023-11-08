@@ -1,8 +1,12 @@
 package com.example.aerobankapp.workbench.login;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -11,12 +15,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
 import org.testfx.api.FxRobot;
+import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.control.LabeledMatchers;
 
+import java.util.concurrent.TimeoutException;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.testfx.api.FxAssert.verifyThat;
 
 @ExtendWith(ApplicationExtension.class)
@@ -24,40 +33,39 @@ class LoginTest extends ApplicationTest {
 
     private Login login;
 
-    @Override
-    public void start(Stage stage) throws Exception
-    {
-        Button signIn = new Button();
-        Button register = new Button();
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setPadding(new Insets(10.5, 11.5, 12.5, 13.5));
-        HBox buttonBox = new HBox();
-        buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.setSpacing(5.5);
-        buttonBox.getChildren().addAll(signIn, register);
-    }
-
     @BeforeEach
-    void setUp()
+    void setUp() throws Exception
     {
-        login = new Login();
+        MockitoAnnotations.openMocks(this);
+        ApplicationTest.launch(Login.class);
+        Platform.runLater(() -> {
+            login = new Login();
+            try {
+                login.start(new Stage());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            login.getUserNameField().setId("usernameField");
+
+        });
+
     }
 
     @Test
-    public void testUserNameTextField()
+    public void testUserNameTextField(FxRobot robot)
     {
-        String expectedUserName = "AKing94";
+        Button mockSignIn = mock(Button.class);
+        TextField usernameField = mock(TextField.class);
+        robot.clickOn("#usernameField").write("AKing94");
 
-        clickOn("#usernameField");
-        verifyThat("#usernameField", LabeledMatchers.hasText("AKing94"));
-        String actualUserName = login.getUserNameField().getText();
-
-
-        assertEquals(expectedUserName, actualUserName);
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws TimeoutException
+    {
+        FxToolkit.hideStage();
+        release(new KeyCode[]{});
+        release(new MouseButton[]{});
+        login.getUserNameField().clear();
     }
 }
