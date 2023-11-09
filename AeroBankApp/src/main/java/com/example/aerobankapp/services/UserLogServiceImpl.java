@@ -18,10 +18,8 @@ public class UserLogServiceImpl implements UserLogService
     private AeroLogger aeroLogger = new AeroLogger(UserLogServiceImpl.class);
 
 
-
-
     @Override
-    public List<UserLogModel> findAll()
+    public List<UserLog> findAll()
     {
         aeroLogger.info("UserLog's Found: " + userLogRepo.findAll());
         return userLogRepo.findAll();
@@ -29,21 +27,26 @@ public class UserLogServiceImpl implements UserLogService
 
     @Override
     @Transactional
-    public void save(UserLogModel obj)
+    public void save(UserLog obj)
     {
         userLogRepo.save(obj);
     }
 
     @Override
     @Transactional
-    public void delete(UserLogModel obj)
+    public void delete(UserLog obj)
     {
         userLogRepo.delete(obj);
     }
 
     @Override
-    public UserLogModel findAllById(int id)
+    public UserLog findAllById(int id)
     {
         return userLogRepo.findById((long)id).orElse(null);
+    }
+
+    @Override
+    public List<UserLog> findByUserName(String user) {
+        return null;
     }
 }

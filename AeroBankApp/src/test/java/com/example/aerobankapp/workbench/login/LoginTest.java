@@ -21,6 +21,8 @@ import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.control.LabeledMatchers;
+import org.testfx.matcher.control.TextInputControlMatchers;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -38,26 +40,26 @@ class LoginTest extends ApplicationTest {
     {
         MockitoAnnotations.openMocks(this);
         ApplicationTest.launch(Login.class);
-        Platform.runLater(() -> {
-            login = new Login();
-            try {
-                login.start(new Stage());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            login.getUserNameField().setId("usernameField");
 
-        });
+    }
 
+    @Override
+    public void start(Stage stage) throws Exception {
+        login = new Login();
+        login.start(stage);
     }
 
     @Test
     public void testUserNameTextField(FxRobot robot)
     {
-        Button mockSignIn = mock(Button.class);
-        TextField usernameField = mock(TextField.class);
-        robot.clickOn("#usernameField").write("AKing94");
+        String user = "AKing";
+        TextField usernameField = lookup("#username").query();
+        clickOn(usernameField).type(KeyCode.ENTER);
 
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn(usernameField).write("AKing94");
+
+        verifyThat(usernameField, TextInputControlMatchers.hasText("AKing94"));
     }
 
     @AfterEach

@@ -44,4 +44,9 @@ public class CheckingRepositoryServiceImpl implements CheckingRepositoryService
     {
         return checkingRepo.findById((long)id).orElse(null);
     }
+
+    @Override
+    public List<CheckingAccount> findByUserName(String user) {
+        return null;
+    }
 }

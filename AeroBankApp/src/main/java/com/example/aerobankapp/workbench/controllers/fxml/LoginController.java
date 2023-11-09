@@ -3,6 +3,7 @@ package com.example.aerobankapp.workbench.controllers.fxml;
 import com.example.aerobankapp.services.AuthenticationServiceImpl;
 import com.example.aerobankapp.services.LoginThreadTaskService;
 import com.example.aerobankapp.workbench.LoginGUI;
+import com.example.aerobankapp.workbench.login.Login;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -12,20 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 
-@Controller
+
 @Getter
 @Setter
 @Slf4j
 public class LoginController
 {
     private LoginModel currentLogin;
-    private LoginGUI loginGUI;
+    private Login loginGUI;
 
-    @Autowired
     private AuthenticationServiceImpl authenticationService;
 
-    @Autowired
-    public LoginController(LoginGUI loginGUI, LoginModel login)
+    public LoginController(Login loginGUI, LoginModel login)
     {
         this.currentLogin = login;
         this.loginGUI = loginGUI;
@@ -51,7 +50,7 @@ public class LoginController
         }
         else
         {
-            getLoginGUI().getLoginAlert().setText("Invalid Username or password");
+
         }
     }
 

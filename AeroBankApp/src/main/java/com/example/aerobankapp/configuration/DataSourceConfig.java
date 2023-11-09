@@ -12,23 +12,6 @@ import javax.sql.DataSource;
 @Configuration
 public class DataSourceConfig
 {
-    private final BasicDataSource dbSource;
 
-    @Autowired
-    public DataSourceConfig(BasicDataSourceImpl dataSource)
-    {
-        this.dbSource = dataSource;
-    }
 
-    @Bean
-    public DataSource dataSource()
-    {
-        return DataSourceBuilder
-                .create()
-                .url(dbSource.getDBURL())
-                .username(dbSource.getDBUser())
-                .password(dbSource.getDBPass())
-                .driverClassName(dbSource.getDBDriver())
-                .build();
-    }
 }

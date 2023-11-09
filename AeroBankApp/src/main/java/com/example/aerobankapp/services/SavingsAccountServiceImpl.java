@@ -1,6 +1,6 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.model.SavingsAccount;
+import com.example.aerobankapp.entity.SavingsAccount;
 import com.example.aerobankapp.repositories.SavingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,8 +10,13 @@ import java.util.List;
 @Service
 public class SavingsAccountServiceImpl implements SavingsAccountService
 {
-    @Autowired
     private SavingsRepository savingsRepository;
+
+    @Autowired
+    public SavingsAccountServiceImpl(SavingsRepository savingsRepository)
+    {
+        this.savingsRepository = savingsRepository;
+    }
 
     @Override
     public List<SavingsAccount> findAll() {
@@ -32,6 +37,11 @@ public class SavingsAccountServiceImpl implements SavingsAccountService
 
     @Override
     public SavingsAccount findAllById(int id) {
+        return null;
+    }
+
+    @Override
+    public List<SavingsAccount> findByUserName(String user) {
         return null;
     }
 }

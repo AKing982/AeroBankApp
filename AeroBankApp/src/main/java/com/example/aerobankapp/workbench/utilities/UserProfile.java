@@ -26,14 +26,12 @@ import java.util.Map;
 @Setter
 public class UserProfile extends AbstractUserProfile
 {
-    private boolean isLoggedIn;
     private UserProfileService userProfileService;
 
-    public UserProfile(String name, UserProfileService userProfileService)
+    public UserProfile(String name)
     {
         super(name);
-        this.userProfileService = userProfileService;
+        this.userProfileService = new UserProfileService();
     }
-
 
 }

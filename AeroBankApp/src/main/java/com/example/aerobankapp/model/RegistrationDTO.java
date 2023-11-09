@@ -16,19 +16,13 @@ public class RegistrationDTO
 {
     private String firstName;
     private String lastName;
-
     private String userName;
-
     private String email;
     private String address;
     private int zipcode;
-
     private int pinNumber;
-
-    private char[] password;
-
+    private String password;
     private BigDecimal deposit;
-
     private boolean isAdmin;
 
 }

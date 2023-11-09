@@ -14,8 +14,6 @@ public class UserProfileService
 {
     private UserServiceImpl userService;
     private UserLogServiceImpl userLogService;
-    private UserRepository repository;
-    private UserRepositoryImpl userRepository;
     private UserLogRepository userLogRepository;
     private SavingsRepository savingsRepository;
     private FeesRepository feesRepository;
@@ -29,9 +27,9 @@ public class UserProfileService
 
     public void initializeServices()
     {
-        userRepository = new UserRepositoryImpl();
-        userService = new UserServiceImpl();
-        userLogService = new UserLogServiceImpl();
+       // userRepository = new UserRepositoryImpl();
+      ///  userService = new UserServiceImpl();
+       // userLogService = new UserLogServiceImpl();
     }
 
 

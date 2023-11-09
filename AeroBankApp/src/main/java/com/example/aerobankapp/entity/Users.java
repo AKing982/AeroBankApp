@@ -25,12 +25,9 @@ public class Users
     @NotNull
     private String email;
 
-    @Column(name="accountNumber")
-    @NotNull
-    private String accountNumber;
-
     @Column(name="password")
-    private char[] password;
+    @Size(min=24, max=225, message="You must choose atleast 25 characters")
+    private String password;
 
     @Column(name="pinNumber")
     @NotNull
@@ -39,9 +36,6 @@ public class Users
 
     @Column(name="isAdmin")
     private boolean isAdmin;
-
-    @Column(name="role")
-    private String role;
 
     @Column(name="isEnabled")
     private boolean isEnabled;
@@ -55,10 +49,9 @@ public class Users
     @Column(name="isAccountNonExpired")
     private boolean isAccountNonExpired;
 
-    public Users(String username, String email, String accountNumber, char[] password, String pinNumber, boolean isAdmin) {
+    public Users(String username, String email, String password, String pinNumber, boolean isAdmin) {
         this.username = username;
         this.email = email;
-        this.accountNumber = accountNumber;
         this.password = password;
         this.pinNumber = pinNumber;
         this.isAdmin = isAdmin;

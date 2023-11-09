@@ -23,12 +23,8 @@ import javax.sql.DataSource;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
-@EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig{
-
-    @Autowired
-    private DataSource dataSource;
 
     @Bean
     public DataSource dataSource()
@@ -46,15 +42,6 @@ public class SecurityConfig{
     public JdbcUserDetailsManager users(DataSource dataSource)
     {
         return new JdbcUserDetailsManager(dataSource);
-    }
-
-    @Bean
-    public void configure(AuthenticationManagerBuilder auth) throws Exception
-    {
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery("SELECT username, password FROM users WHERE username=?")
-                .authoritiesByUsernameQuery("SELECT username, password FROM users WHERE isAdmin=1 AND username=?");
     }
 
     @Bean

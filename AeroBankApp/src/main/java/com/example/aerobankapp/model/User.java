@@ -25,7 +25,7 @@ public class User implements Serializable, UserModel
     private String user;
     private String email;
     private String accountNumber;
-    private char[] password;
+    private String password;
     private int pinNumber;
     private UserAuthority userAuthority;
 }

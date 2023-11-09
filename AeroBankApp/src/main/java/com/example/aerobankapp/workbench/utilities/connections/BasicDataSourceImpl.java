@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 @Data
 @NoArgsConstructor
-@Component
 public class BasicDataSourceImpl implements BasicDataSource
 {
 

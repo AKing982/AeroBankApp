@@ -99,7 +99,7 @@ public class LoginGUI extends Application
                 String username = usernameField.getText();
                 String password = passwordField.getText();
                 LoginModel login = new LoginModel(username, password);
-                LoginController loginController = new LoginController(this, login);
+              //  LoginController loginController = new LoginController(this, login);
                 closeStage(stage);
 
                 // Make a POST request to the authentication endpoint

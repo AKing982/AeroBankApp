@@ -1,6 +1,7 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.model.SavingsAccount;
+
+import com.example.aerobankapp.entity.SavingsAccount;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;

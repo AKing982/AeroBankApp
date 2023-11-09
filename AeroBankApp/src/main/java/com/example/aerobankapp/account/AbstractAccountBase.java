@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
-@Component
 public abstract class AbstractAccountBase
 {
     protected String accountName;

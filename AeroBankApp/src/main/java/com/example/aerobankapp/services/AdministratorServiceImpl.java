@@ -32,6 +32,11 @@ public class AdministratorServiceImpl implements AdministratorService
     }
 
     @Override
+    public List<Administrator> findByUserName(String user) {
+        return null;
+    }
+
+    @Override
     @Transactional
     public void save(Administrator obj)
     {

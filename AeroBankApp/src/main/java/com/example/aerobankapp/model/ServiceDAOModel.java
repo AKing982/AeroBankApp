@@ -9,4 +9,5 @@ public interface ServiceDAOModel<T>
     void save(T obj);
     void delete(T obj);
     T findAllById(int id);
+    List<T> findByUserName(String user);
 }

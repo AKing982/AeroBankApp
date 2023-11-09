@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Data
 @NoArgsConstructor
-@Component
 public class QuartzDataSourceImpl implements QuartzDataSource
 {
     private String dbQuartzURL;

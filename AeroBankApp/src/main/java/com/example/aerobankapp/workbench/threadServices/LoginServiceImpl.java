@@ -64,13 +64,13 @@ public class LoginServiceImpl implements LoginService
                         .user(registrationRequest.getUserName())
                         .email(registrationRequest.getEmail())
                         .password(registrationRequest.getPassword())
-                      //  .accountNumber(AccountNumberGenerator::generate)
+                    //    .accountNumber(AccountNumberGenerator::generate)
                         .pinNumber(registrationRequest.getPinNumber())
                         .userAuthority(UserAuthority.createAdminAuthority())
                         .build();
                 isRegistered = true;
 
-                userRepo.save(admin);
+               // userRepo.save(admin);
             }
             else
             {
@@ -84,7 +84,7 @@ public class LoginServiceImpl implements LoginService
                         .build();
                 isRegistered = true;
 
-                userRepo.save(user);
+                //userRepo.save(user);
             }
 
             //TODO:  Show Dialog that User Creation has been successful

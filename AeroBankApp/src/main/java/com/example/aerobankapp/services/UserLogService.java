@@ -1,21 +1,22 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.entity.UserLog;
 import com.example.aerobankapp.model.ServiceDAOModel;
 import com.example.aerobankapp.model.UserLogModel;
 
 import java.util.List;
 
-public interface UserLogService extends ServiceDAOModel<UserLogModel>
+public interface UserLogService extends ServiceDAOModel<UserLog>
 {
     @Override
-    List<UserLogModel> findAll();
+    List<UserLog> findAll();
 
     @Override
-    void save(UserLogModel obj);
+    void save(UserLog obj);
 
     @Override
-    void delete(UserLogModel obj);
+    void delete(UserLog obj);
 
     @Override
-    UserLogModel findAllById(int id);
+    UserLog findAllById(int id);
 }

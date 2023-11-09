@@ -14,14 +14,14 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+
 public class YAMLConnectionWriter
 {
     private final String configName = "db-config.yaml";
     private final BasicDataSource dataSource;
     private AeroLogger aeroLogger = new AeroLogger(YAMLConnectionWriter.class);
 
-    @Autowired
+
     public YAMLConnectionWriter(BasicDataSourceImpl dataSource)
     {
         if(dataSource == null)
