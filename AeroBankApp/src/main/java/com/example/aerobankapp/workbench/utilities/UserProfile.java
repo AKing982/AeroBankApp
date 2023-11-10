@@ -34,9 +34,5 @@ public class UserProfile extends AbstractUserProfile
         this.userProfileService = new UserProfileService(name);
     }
 
-    private boolean validateUser(String user)
-    {
-        return true;
-    }
 
 }

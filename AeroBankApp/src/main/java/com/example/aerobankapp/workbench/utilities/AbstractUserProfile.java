@@ -51,13 +51,9 @@ public abstract class AbstractUserProfile
     public AbstractUserProfile(String user)
     {
         this.username = user;
-        this.isValidUser = validateUser(user);
+
     }
 
-    protected boolean validateUser(String user)
-    {
-        
-    }
 
 
 
