@@ -56,7 +56,7 @@ public abstract class AbstractUserProfile
 
     protected boolean validateUser(String user)
     {
-        
+        return false;
     }
 
 

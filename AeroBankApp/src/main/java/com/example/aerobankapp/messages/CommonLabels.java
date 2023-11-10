@@ -3,6 +3,8 @@ package com.example.aerobankapp.messages;
 public class CommonLabels
 {
     public static final String SUBMIT = "Submit";
+    public static final String SIGN_IN = "Sign In";
+    public static final String REGISTER = "Register";
     public static final String CANCEL = "Cancel";
     public static final String HOME = "Home";
     public static final String FORECASTING = "Forecasting";

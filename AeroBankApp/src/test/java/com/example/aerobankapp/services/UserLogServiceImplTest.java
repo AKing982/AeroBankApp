@@ -48,7 +48,7 @@ class UserLogServiceImplTest {
     @Test
     public void testFindAllWithConstructor()
     {
-        UserLogServiceImpl userLogService1 = new UserLogServiceImpl();
+     //   UserLogServiceImpl userLogService1 = new UserLogServiceImpl();
 
         List<UserLogModel> userLogModelList = Arrays.asList(new UserLogModel());
        // List<UserLogModel> actualList = userLogService1.findAll();

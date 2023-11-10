@@ -1,12 +1,14 @@
 package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.account.Account;
+import com.example.aerobankapp.account.AccountID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +16,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="checkingAccount")
@@ -21,9 +24,6 @@ public class CheckingAccount
 {
     @Id
     private String id;
-
-    @Column(name="uID")
-    private int uID;
 
     @Column(name="aSecID")
     private int aSecID;

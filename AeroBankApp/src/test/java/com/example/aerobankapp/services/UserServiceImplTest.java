@@ -47,7 +47,14 @@ class UserServiceImplTest {
                 .accountNumber("12-22-42")
                 .build();
 
-        test = new Users("AKing94", "alex@utahkings.com", "Halflifer94!", "5988", true);
+        test = Users.builder()
+                .isAdmin(true)
+                .username("AKing94")
+                .email("alex@utahkings.com")
+                .password("Halflifer94!")
+                .pinNumber("5988")
+                .build();
+
     }
 
     @Test
