@@ -31,7 +31,12 @@ public class UserProfile extends AbstractUserProfile
     public UserProfile(String name)
     {
         super(name);
-        this.userProfileService = new UserProfileService();
+        this.userProfileService = new UserProfileService(name);
+    }
+
+    private boolean validateUser(String user)
+    {
+        return true;
     }
 
 }

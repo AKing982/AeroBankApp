@@ -117,22 +117,31 @@ public class Login extends Application {
 
     private void switchShowPasswordGraphics(boolean isSelected)
     {
+        final double BUTTON_HEIGHT = 20;
         if(isSelected)
         {
-            ImageView imageView = new ImageView(new Image("/hide_eye.png"));
-            imageView.setPreserveRatio(true);
-            final double BUTTON_HEIGHT = 20;
-            imageView.setFitHeight(BUTTON_HEIGHT);
-            getShowPasswordBtn().setGraphic(imageView);
+            ImageView imageView = getNewImage("hide_eye.png", BUTTON_HEIGHT);
+            setShowPasswordGraphic(imageView);
         }
         else
         {
-            ImageView imageView = new ImageView(new Image("/eye.png"));
-            imageView.setPreserveRatio(true);
-            final double BUTTON_HEIGHT = 20;
-            imageView.setFitHeight(BUTTON_HEIGHT);
-            getShowPasswordBtn().setGraphic(imageView);
+            ImageView imageView = getNewImage("/eye.png", BUTTON_HEIGHT);
+            setShowPasswordGraphic(imageView);
         }
+    }
+
+    private void setShowPasswordGraphic(ImageView image)
+    {
+        getShowPasswordBtn().setGraphic(image);
+    }
+
+    private ImageView getNewImage(String path, double height)
+    {
+        Image image = new Image(path);
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(true);
+        imageView.setFitHeight(height);
+        return imageView;
     }
 
     private void hideOrShowPasswordBtn(ToggleButton btn)
@@ -156,10 +165,8 @@ public class Login extends Application {
 
     private ToggleButton getShowPasswordBtn()
     {
-        ImageView imageView = new ImageView(new Image("/eye.png"));
-        imageView.setPreserveRatio(true);
         final double BUTTON_HEIGHT = 20;
-        imageView.setFitHeight(BUTTON_HEIGHT);
+        ImageView imageView = getNewImage("/eye.png", BUTTON_HEIGHT);
         if(showPasswordBtn == null)
         {
             showPasswordBtn = new ToggleButton();
@@ -246,7 +253,7 @@ public class Login extends Application {
             {
                 String username = getUserNameField().getText();
                 String password = getPasswordField().getText();
-                getLoginAction(username, password);
+                loginAction(username, password);
                 closeStage(s);
             }
             else if(btn.getId().equals("register"))
@@ -260,7 +267,12 @@ public class Login extends Application {
         }
     }
 
-     private void getLoginAction(String user, String password)
+     private void loginAction(String user, String password)
+     {
+         this.userProfile = new UserProfile(user);
+     }
+
+     private void registerAction()
      {
 
      }

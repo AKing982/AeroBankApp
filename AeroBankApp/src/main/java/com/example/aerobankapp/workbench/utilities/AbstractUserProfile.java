@@ -29,6 +29,7 @@ public abstract class AbstractUserProfile
     protected LoggedUser loggedUser;
     protected User user;
     protected boolean isCurrentUser;
+    protected boolean isValidUser;
     protected boolean isAuthenticated;
 
     protected String username;
@@ -50,6 +51,14 @@ public abstract class AbstractUserProfile
     public AbstractUserProfile(String user)
     {
         this.username = user;
+        this.isValidUser = validateUser(user);
     }
+
+    protected boolean validateUser(String user)
+    {
+        
+    }
+
+
 
 }

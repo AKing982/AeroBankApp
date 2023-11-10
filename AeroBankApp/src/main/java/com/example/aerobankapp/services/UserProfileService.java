@@ -14,22 +14,21 @@ public class UserProfileService
 {
     private UserServiceImpl userService;
     private UserLogServiceImpl userLogService;
-    private UserLogRepository userLogRepository;
-    private SavingsRepository savingsRepository;
+    private SavingsAccountServiceImpl SavingsService;
     private FeesRepository feesRepository;
-    private CheckingRepository checkingRepository;
+    private CheckingRepositoryServiceImpl checkingService;
     private InvestmentRepository investmentRepository;
+    private String user;
 
-    public UserProfileService()
+    public UserProfileService(String user)
     {
+        this.user = user;
         initializeServices();
     }
 
     public void initializeServices()
     {
-       // userRepository = new UserRepositoryImpl();
-      ///  userService = new UserServiceImpl();
-       // userLogService = new UserLogServiceImpl();
+
     }
 
 
