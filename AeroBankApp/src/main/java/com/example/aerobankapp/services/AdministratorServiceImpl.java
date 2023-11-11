@@ -27,7 +27,7 @@ public class AdministratorServiceImpl implements AdministratorService
 
 
     @Override
-    public Administrator findAllById(int id) {
+    public Administrator findAllById(Long id) {
         return administratorRepo.findById((long) id).orElse(null);
     }
 

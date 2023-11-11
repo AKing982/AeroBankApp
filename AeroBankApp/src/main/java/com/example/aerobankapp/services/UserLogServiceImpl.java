@@ -13,10 +13,14 @@ import java.util.List;
 @Service
 public class UserLogServiceImpl implements UserLogService
 {
-    @Autowired
     private UserLogRepository userLogRepo;
     private AeroLogger aeroLogger = new AeroLogger(UserLogServiceImpl.class);
 
+    @Autowired
+    public UserLogServiceImpl(UserLogRepository userLogRepo)
+    {
+        this.userLogRepo = userLogRepo;
+    }
 
     @Override
     public List<UserLog> findAll()
@@ -40,7 +44,7 @@ public class UserLogServiceImpl implements UserLogService
     }
 
     @Override
-    public UserLog findAllById(int id)
+    public UserLog findAllById(Long id)
     {
         return userLogRepo.findById((long)id).orElse(null);
     }

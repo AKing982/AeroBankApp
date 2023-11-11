@@ -11,7 +11,7 @@ public interface AdministratorService extends ServiceDAOModel<Administrator>
     List<Administrator> findAll();
 
     @Override
-    Administrator findAllById(int id);
+    Administrator findAllById(Long id);
 
     @Override
     void save(Administrator obj);

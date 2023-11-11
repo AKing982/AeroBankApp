@@ -1,10 +1,14 @@
 package com.example.aerobankapp.workbench.login;
 
 import com.example.aerobankapp.messages.CommonLabels;
+import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
+import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -39,9 +43,10 @@ public class Login extends Application {
     private HBox textBoxPane;
     private static Text loginAlert;
     private Hyperlink forgotPasswordLink;
-    private ToggleButton showPasswordBtn;
-    private boolean showPasswordIsSelected;
+    private CheckBox showPassword;
+    private HBox checkPasswordBox;
     private UserProfile userProfile;
+
     private final double BUTTON_HEIGHT = 20;
     private static String textStyle = "-fx-font-size: 32px;\n" +
             "   -fx-font-family: \"Arial Black\";\n" +
@@ -60,12 +65,33 @@ public class Login extends Application {
         setMotherScene(mother);
         buttonAction(getSignIn(), stage);
         buttonAction(getRegisterBtn(), stage);
-        hideOrShowPasswordBtn(getShowPasswordBtn());
 
 
-        Scene scene = getScene(mother);
+        Scene scene = getScene(mother, 410, 260);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private HBox getCheckPasswordBox()
+    {
+        if(checkPasswordBox == null)
+        {
+            checkPasswordBox = new HBox();
+            checkPasswordBox.getChildren().addAll(getForgotPasswordLink(), getShowPassword());
+        }
+        return checkPasswordBox;
+    }
+
+    private CheckBox getShowPassword()
+    {
+        if(showPassword == null)
+        {
+            showPassword = new CheckBox("Show Password");
+            showPassword.setAlignment(Pos.CENTER_RIGHT);
+            showPassword.getStylesheets().add(getCSSAsString("/label.css"));
+            showPassword.setPadding(getInsets(0, 0, 0, 20));
+        }
+        return showPassword;
     }
 
     private void setPasswordFieldSize(PasswordField passwordField) {
@@ -76,22 +102,22 @@ public class Login extends Application {
         mother.getStylesheets().add(getCSSAsString("/background.css"));
     }
 
-    private Scene getScene(BorderPane mother) {
-        return new Scene(mother, 410, 260);
+    private Scene getScene(BorderPane mother, double param, double param2) {
+        return new Scene(mother, param, param2);
     }
 
     private GridPane getGrid() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        grid.setPadding(new Insets(10.5, 11.5, 12.5, 13.5));
+        grid.setPadding(getInsets(10.5, 11.5, 12.5, 13.5));
 
         grid.add(getUsernameLabel(), 0, 0);
         grid.add(getUserNameField(), 1, 0);
         grid.add(getPasswordLabel(), 0, 2);
         grid.add(getPasswordField(), 1, 2);
-        grid.add(getShowPasswordBtn(), 2, 2);
-        grid.add(getLoginAlert(), 1, 3);
-        grid.add(getButtonBox(), 1, 4);
+        grid.add(getCheckPasswordBox(), 1, 3);
+        grid.add(getLoginAlert(), 1, 4);
+        grid.add(getButtonBox(), 1, 5);
 
         return grid;
     }
@@ -121,19 +147,15 @@ public class Login extends Application {
         if(isSelected)
         {
             ImageView imageView = getNewImage("hide_eye.png", BUTTON_HEIGHT);
-            setShowPasswordGraphic(imageView);
+
         }
         else
         {
             ImageView imageView = getNewImage("/eye.png", BUTTON_HEIGHT);
-            setShowPasswordGraphic(imageView);
+
         }
     }
 
-    private void setShowPasswordGraphic(ImageView image)
-    {
-        getShowPasswordBtn().setGraphic(image);
-    }
 
     private ImageView getNewImage(String path, double height)
     {
@@ -163,25 +185,12 @@ public class Login extends Application {
     }
 
 
-    private ToggleButton getShowPasswordBtn()
-    {
-        ImageView imageView = getNewImage("/eye.png", BUTTON_HEIGHT);
-        if(showPasswordBtn == null)
-        {
-            showPasswordBtn = new ToggleButton();
-            showPasswordBtn.setGraphic(imageView);
-            showPasswordBtn.setPrefSize(Region.USE_COMPUTED_SIZE, BUTTON_HEIGHT);
-            showPasswordBtn.setContentDisplay(ContentDisplay.CENTER);
-        }
-        return showPasswordBtn;
-    }
-
     private Text getLoginAlert()
     {
         if(loginAlert == null)
         {
             loginAlert = new Text();
-            loginAlert.setFont(Font.font("Sans Serif", FontWeight.NORMAL, 16));
+            loginAlert.setFont(Font.font(CommonLabels.SANS_SERIF, FontWeight.NORMAL, 16));
         }
         return loginAlert;
     }
@@ -216,10 +225,15 @@ public class Login extends Application {
         {
             usernameField = new TextField();
             usernameField.getStylesheets().add(getCSSAsString("/textfield.css"));
-            usernameField.setFont(Font.font("Sans Serif", FontWeight.NORMAL, 16));
+            usernameField.setFont(Font.font(CommonLabels.SANS_SERIF, FontWeight.NORMAL, 16));
             usernameField.setId("username");
         }
         return usernameField;
+    }
+
+    private Insets getInsets(double param1, double param2, double param3, double param4)
+    {
+        return new Insets(param1, param2, param3, param4);
     }
 
     private String getCSSAsString(String path)
@@ -236,13 +250,14 @@ public class Login extends Application {
     {
         if(registerBtn == null)
         {
-            registerBtn = new Button("Register");
+            registerBtn = new Button(CommonLabels.REGISTER);
             registerBtn.getStylesheets().add(getCSSAsString("/button.css"));
             registerBtn.setFont(Font.font(CommonLabels.SANS_SERIF, FontWeight.NORMAL, 16));
             registerBtn.setId("register");
         }
         return registerBtn;
     }
+
 
     private void buttonAction(Button btn, Stage s)
     {
@@ -269,6 +284,12 @@ public class Login extends Application {
      private void loginAction(String user, String password)
      {
          this.userProfile = new UserProfile(user);
+
+         // TODO: Load the UserProfile data
+         LoginModel loginModel = new LoginModel(user, password);
+
+         // TODO: Execute Login ThreadPool Process
+         LoginController loginController = new LoginController(this, loginModel);
      }
 
      private void registerAction()
@@ -281,7 +302,7 @@ public class Login extends Application {
     {
         if(signIn == null)
         {
-            signIn = new Button("Sign In");
+            signIn = new Button(CommonLabels.SIGN_IN);
             signIn.setFont(Font.font(CommonLabels.SANS_SERIF, FontWeight.NORMAL, 16));
             signIn.getStylesheets().add(getCSSAsString("/button.css"));
             signIn.setId("login");

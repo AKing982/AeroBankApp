@@ -3,12 +3,16 @@ package com.example.aerobankapp.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name="users")
 public class Users
 {
@@ -49,11 +53,4 @@ public class Users
     @Column(name="isAccountNonExpired")
     private boolean isAccountNonExpired;
 
-    public Users(String username, String email, String password, String pinNumber, boolean isAdmin) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.pinNumber = pinNumber;
-        this.isAdmin = isAdmin;
-    }
 }
