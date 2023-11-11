@@ -42,11 +42,11 @@ public class Login extends Application {
     private ToggleButton showPasswordBtn;
     private boolean showPasswordIsSelected;
     private UserProfile userProfile;
+    private final double BUTTON_HEIGHT = 20;
     private static String textStyle = "-fx-font-size: 32px;\n" +
             "   -fx-font-family: \"Arial Black\";\n" +
             "   -fx-fill: #818181;\n" +
             "   -fx-effect: innershadow( three-pass-box, rgba(0, 0, 0, 0.7), 6, 0.0, 0, 2);";
-
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -117,7 +117,7 @@ public class Login extends Application {
 
     private void switchShowPasswordGraphics(boolean isSelected)
     {
-        final double BUTTON_HEIGHT = 20;
+
         if(isSelected)
         {
             ImageView imageView = getNewImage("hide_eye.png", BUTTON_HEIGHT);
@@ -165,7 +165,6 @@ public class Login extends Application {
 
     private ToggleButton getShowPasswordBtn()
     {
-        final double BUTTON_HEIGHT = 20;
         ImageView imageView = getNewImage("/eye.png", BUTTON_HEIGHT);
         if(showPasswordBtn == null)
         {
