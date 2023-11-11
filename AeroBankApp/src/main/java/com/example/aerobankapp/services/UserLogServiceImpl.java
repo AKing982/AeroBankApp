@@ -44,7 +44,7 @@ public class UserLogServiceImpl implements UserLogService
     }
 
     @Override
-    public UserLog findAllById(int id)
+    public UserLog findAllById(Long id)
     {
         return userLogRepo.findById((long)id).orElse(null);
     }

@@ -1,15 +1,15 @@
 package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 @Table(name="deposits")
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -1,5 +1,7 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.entity.CheckingAccount;
+import com.example.aerobankapp.entity.SavingsAccount;
 import com.example.aerobankapp.repositories.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,36 +11,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @Service
 public class UserProfileService
 {
-    private UserServiceBundle userServiceBundle;
     private AccountServiceBundle accountServiceBundle;
-    private FeesRepository feesRepository;
-    private InvestmentRepository investmentRepository;
-    private String user;
 
     @Autowired
-    public UserProfileService(UserServiceBundle userBundle, AccountServiceBundle accountBundle)
+    public UserProfileService(AccountServiceBundle accountServiceBundle)
     {
-        this.userServiceBundle = userBundle;
-        this.accountServiceBundle = accountBundle;
+        this.accountServiceBundle = accountServiceBundle;
     }
 
-    public UserProfileService(String user)
+    public List<CheckingAccount> getCheckingAccounts(String user)
     {
-        this.user = user;
-        initializeServices();
-    }
-
-    public void initializeServices()
-    {
-
+        return accountServiceBundle.getCheckingService().findByUserName(user);
     }
 
 
+    public List<SavingsAccount> getSavingsAccounts(String user)
+    {
+        return accountServiceBundle.getSavingsService().findByUserName(user);
+    }
 }

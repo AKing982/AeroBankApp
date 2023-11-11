@@ -17,5 +17,5 @@ public interface CheckingRepositoryService extends ServiceDAOModel<CheckingAccou
     void delete(CheckingAccount obj);
 
     @Override
-    CheckingAccount findAllById(int id);
+    CheckingAccount findAllById(Long id);
 }

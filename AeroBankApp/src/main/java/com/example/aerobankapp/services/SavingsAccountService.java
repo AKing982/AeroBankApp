@@ -18,5 +18,5 @@ public interface SavingsAccountService extends ServiceDAOModel<SavingsAccount>
     void delete(SavingsAccount obj);
 
     @Override
-    SavingsAccount findAllById(int id);
+    SavingsAccount findAllById(Long id);
 }

@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserDAOService
 
     @Override
     @Transactional
-    public Users findAllById(int id)
+    public Users findAllById(Long id)
     {
         return userRepository.findById((long)id).orElse(null);
     }

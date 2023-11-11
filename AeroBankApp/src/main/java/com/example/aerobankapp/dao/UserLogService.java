@@ -17,5 +17,5 @@ public interface UserLogService extends ServiceDAOModel<UserLog>
     List<UserLog> findAll();
 
     @Override
-    UserLog findAllById(int id);
+    UserLog findAllById(Long id);
 }

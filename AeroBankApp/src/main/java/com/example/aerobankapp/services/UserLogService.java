@@ -18,5 +18,5 @@ public interface UserLogService extends ServiceDAOModel<UserLog>
     void delete(UserLog obj);
 
     @Override
-    UserLog findAllById(int id);
+    UserLog findAllById(Long id);
 }

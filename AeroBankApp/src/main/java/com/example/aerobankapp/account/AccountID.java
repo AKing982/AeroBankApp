@@ -17,9 +17,9 @@ public class AccountID
             case CHECKING:
                 acctID = getCheckingAccountID();
                 break;
-            case SAVINGS:
-                acctID =
+
         }
+        return acctID;
     }
 
     public String getCheckingAccountID()

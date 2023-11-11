@@ -1,7 +1,10 @@
 package com.example.aerobankapp.workbench.login;
 
 import com.example.aerobankapp.messages.CommonLabels;
+import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
+import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -40,9 +43,11 @@ public class Login extends Application {
     private HBox textBoxPane;
     private static Text loginAlert;
     private Hyperlink forgotPasswordLink;
-    private ToggleButton showPasswordBtn;
-    private boolean showPasswordIsSelected;
+    private CheckBox showPassword;
+    private HBox checkPasswordBox;
     private UserProfile userProfile;
+    private FadeTransition fadeTransition;
+    private final double BUTTON_HEIGHT = 20;
     private static String textStyle = "-fx-font-size: 32px;\n" +
             "   -fx-font-family: \"Arial Black\";\n" +
             "   -fx-fill: #818181;\n" +
@@ -61,12 +66,33 @@ public class Login extends Application {
         setMotherScene(mother);
         buttonAction(getSignIn(), stage);
         buttonAction(getRegisterBtn(), stage);
-        hideOrShowPasswordBtn(getShowPasswordBtn());
 
 
-        Scene scene = getScene(mother);
+        Scene scene = getScene(mother, 410, 260);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private HBox getCheckPasswordBox()
+    {
+        if(checkPasswordBox == null)
+        {
+            checkPasswordBox = new HBox();
+            checkPasswordBox.getChildren().addAll(getForgotPasswordLink(), getShowPassword());
+        }
+        return checkPasswordBox;
+    }
+
+    private CheckBox getShowPassword()
+    {
+        if(showPassword == null)
+        {
+            showPassword = new CheckBox("Show Password");
+            showPassword.setAlignment(Pos.CENTER_RIGHT);
+            showPassword.getStylesheets().add(getCSSAsString("/label.css"));
+            showPassword.setPadding(getInsets(0, 0, 0, 20));
+        }
+        return showPassword;
     }
 
     private void setPasswordFieldSize(PasswordField passwordField) {
@@ -77,8 +103,8 @@ public class Login extends Application {
         mother.getStylesheets().add(getCSSAsString("/background.css"));
     }
 
-    private Scene getScene(BorderPane mother) {
-        return new Scene(mother, 410, 260);
+    private Scene getScene(BorderPane mother, double param, double param2) {
+        return new Scene(mother, param, param2);
     }
 
     private GridPane getGrid() {
@@ -90,9 +116,9 @@ public class Login extends Application {
         grid.add(getUserNameField(), 1, 0);
         grid.add(getPasswordLabel(), 0, 2);
         grid.add(getPasswordField(), 1, 2);
-        grid.add(getShowPasswordBtn(), 2, 2);
-        grid.add(getLoginAlert(), 1, 3);
-        grid.add(getButtonBox(), 1, 4);
+        grid.add(getCheckPasswordBox(), 1, 3);
+        grid.add(getLoginAlert(), 1, 4);
+        grid.add(getButtonBox(), 1, 5);
 
         return grid;
     }
@@ -118,23 +144,18 @@ public class Login extends Application {
 
     private void switchShowPasswordGraphics(boolean isSelected)
     {
-        final double BUTTON_HEIGHT = 20;
         if(isSelected)
         {
             ImageView imageView = getNewImage("hide_eye.png", BUTTON_HEIGHT);
-            setShowPasswordGraphic(imageView);
+
         }
         else
         {
             ImageView imageView = getNewImage("/eye.png", BUTTON_HEIGHT);
-            setShowPasswordGraphic(imageView);
+
         }
     }
 
-    private void setShowPasswordGraphic(ImageView image)
-    {
-        getShowPasswordBtn().setGraphic(image);
-    }
 
     private ImageView getNewImage(String path, double height)
     {
@@ -161,21 +182,6 @@ public class Login extends Application {
                 switchShowPasswordGraphics(false);
             }
         });
-    }
-
-
-    private ToggleButton getShowPasswordBtn()
-    {
-        final double BUTTON_HEIGHT = 20;
-        ImageView imageView = getNewImage("/eye.png", BUTTON_HEIGHT);
-        if(showPasswordBtn == null)
-        {
-            showPasswordBtn = new ToggleButton();
-            showPasswordBtn.setGraphic(imageView);
-            showPasswordBtn.setPrefSize(Region.USE_COMPUTED_SIZE, BUTTON_HEIGHT);
-            showPasswordBtn.setContentDisplay(ContentDisplay.CENTER);
-        }
-        return showPasswordBtn;
     }
 
     private Text getLoginAlert()
@@ -277,6 +283,12 @@ public class Login extends Application {
      private void loginAction(String user, String password)
      {
          this.userProfile = new UserProfile(user);
+
+         // TODO: Load the UserProfile data
+         LoginModel loginModel = new LoginModel(user, password);
+
+         // TODO: Execute Login ThreadPool Process
+         LoginController loginController = new LoginController(this, loginModel);
      }
 
      private void registerAction()

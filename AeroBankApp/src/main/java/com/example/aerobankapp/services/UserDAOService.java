@@ -18,7 +18,7 @@ public interface UserDAOService extends ServiceDAOModel<Users>
     void delete(Users obj);
 
     @Override
-    Users findAllById(int id);
+    Users findAllById(Long id);
 
     @Override
     List<Users> findByUserName(String user);

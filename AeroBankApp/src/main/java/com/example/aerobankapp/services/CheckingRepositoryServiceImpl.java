@@ -28,7 +28,8 @@ public class CheckingRepositoryServiceImpl implements CheckingRepositoryService
 
     @Override
     @Transactional
-    public List<CheckingAccount> findAll() {
+    public List<CheckingAccount> findAll()
+    {
         return checkingRepo.findAll();
     }
 
@@ -47,7 +48,7 @@ public class CheckingRepositoryServiceImpl implements CheckingRepositoryService
     }
 
     @Override
-    public CheckingAccount findAllById(int id)
+    public CheckingAccount findAllById(Long id)
     {
         return checkingRepo.findById((long)id).orElse(null);
     }

@@ -2,10 +2,10 @@ package com.example.aerobankapp.workbench.utilities;
 
 
 import com.example.aerobankapp.entity.AccountSecurity;
+import com.example.aerobankapp.entity.CheckingAccount;
 import com.example.aerobankapp.entity.MortgageAccount;
 import com.example.aerobankapp.entity.RentAccount;
 import com.example.aerobankapp.fees.FeesDTO;
-import com.example.aerobankapp.model.CheckingAccount;
 import com.example.aerobankapp.model.InvestmentAccount;
 import com.example.aerobankapp.model.SavingsAccount;
 import com.example.aerobankapp.model.User;
@@ -24,11 +24,11 @@ import java.util.Map;
 
 @Getter
 @Setter
-public abstract class AbstractUserProfile
-{
+public abstract class AbstractUserProfile {
     protected LoggedUser loggedUser;
     protected User user;
     protected boolean isCurrentUser;
+    protected boolean isCurrentSession;
     protected boolean isValidUser;
     protected boolean isAuthenticated;
 
@@ -48,10 +48,8 @@ public abstract class AbstractUserProfile
     protected List<Purchase> purchases;
     protected List<Deposit> deposits;
 
-    public AbstractUserProfile(String user)
-    {
+    public AbstractUserProfile(String user) {
         this.username = user;
-
     }
-    
+
 }

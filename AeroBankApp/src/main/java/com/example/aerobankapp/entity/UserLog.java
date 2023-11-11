@@ -2,20 +2,21 @@ package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name="userLog")
 public class UserLog
 {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
 
     @Column(name="username")
@@ -25,8 +26,9 @@ public class UserLog
     @Column(name="userID")
     private int userID;
 
-    @Column(name="lastLogin")
     @NotNull
+    @Column(name="lastLogin",nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date lastLogin;
 
     public UserLog(String username, int userID, Date lastLogin)

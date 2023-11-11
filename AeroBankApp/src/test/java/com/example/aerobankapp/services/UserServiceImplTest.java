@@ -101,7 +101,7 @@ class UserServiceImplTest {
         userService = new UserServiceImpl(userRepository, manager);
         userService.save(test);
 
-        Users allUsers = userService.findAllById(1);
+        Users allUsers = userService.findAllById(1L);
 
         assertNotNull(allUsers);
         assertEquals(test, allUsers);
