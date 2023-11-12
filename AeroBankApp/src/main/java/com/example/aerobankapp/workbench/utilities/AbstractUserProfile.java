@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public abstract class AbstractUserProfile {
+public abstract class AbstractUserProfile implements Cloneable {
     protected LoggedUser loggedUser;
     protected User user;
     protected boolean isCurrentUser;
@@ -52,4 +52,15 @@ public abstract class AbstractUserProfile {
         this.username = user;
     }
 
+    @Override
+    public Object clone() {
+        Object clone = null;
+        try {
+            clone = super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

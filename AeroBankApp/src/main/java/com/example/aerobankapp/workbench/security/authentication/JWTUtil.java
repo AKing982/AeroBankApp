@@ -1,21 +1,50 @@
 package com.example.aerobankapp.workbench.security.authentication;
 
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
-import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.List;
 
 public class JWTUtil
 {
-   // private static final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.ES256);
+    private static final String SECRET_KEY = "a2n4m52i8";
     private static final long EXPIRATION_TIME = 36000000;
 
-    public static String generateToken(String username, List<String> roles)
+    public static String generateToken(String username)
     {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + EXPIRATION_TIME);
-        return "Jwts.builder()";
-               // .setSubject()
+
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(expiration)
+                .signWith(SignatureAlgorithm.ES256, SECRET_KEY)
+                .compact();
     }
+
+    public static String getUsernameFromToken(String token)
+    {
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
+
+    public static boolean validateToken(String token) {
+        try
+        {
+            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            return true;
+
+        } catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+
 }

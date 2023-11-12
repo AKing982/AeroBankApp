@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
-public abstract class AbstractAccountBase
+public abstract class AbstractAccountBase implements Cloneable
 {
     protected String accountName;
     protected int userID;
@@ -41,4 +41,16 @@ public abstract class AbstractAccountBase
     protected abstract void withdraw(BigDecimal amount);
 
     protected abstract BigDecimal getBalance();
+
+    @Override
+    public Object clone() {
+        Object clone = null;
+        try {
+             clone = super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }
