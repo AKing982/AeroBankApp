@@ -12,7 +12,7 @@ public class JWTUtil
     private static final String SECRET_KEY = "a2n4m52i8";
     private static final long EXPIRATION_TIME = 36000000;
 
-    public static String generateToken(String username)
+    public String generateToken(String username)
     {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + EXPIRATION_TIME);
@@ -25,7 +25,7 @@ public class JWTUtil
                 .compact();
     }
 
-    public static String getUsernameFromToken(String token)
+    public String getUsernameFromToken(String token)
     {
         Claims claims = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
@@ -34,7 +34,7 @@ public class JWTUtil
         return claims.getSubject();
     }
 
-    public static boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try
         {
             Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
