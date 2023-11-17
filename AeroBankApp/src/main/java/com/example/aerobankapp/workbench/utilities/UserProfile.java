@@ -7,6 +7,7 @@ import jakarta.persistence.Access;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class UserProfile extends AbstractUserProfile
     private UserProfileService userProfileService;
 
     @Autowired
-    public UserProfile(String user, UserProfileService userService)
+    public UserProfile(@Qualifier("beanString")String user, UserProfileService userService)
     {
         super(user);
         this.userProfileService = userService;

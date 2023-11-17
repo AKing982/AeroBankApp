@@ -1,6 +1,8 @@
 package com.example.aerobankapp.configuration;
 
 import jakarta.persistence.EntityManagerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -10,19 +12,21 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
 
-
+@Configuration
 public class AppConfig
 {
+    private DataSource dataSource;
+
+    @Autowired
+    public AppConfig(@Qualifier("dataSource") DataSource source)
+    {
+        this.dataSource = source;
+    }
 
     @Bean
-    public DataSource dataSource()
+    public String beanString()
     {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/aerobankapp");
-        dataSource.setUsername("root");
-        dataSource.setPassword("Halflifer94!");
-        return dataSource;
+        return "";
     }
 
     @Bean
@@ -34,7 +38,7 @@ public class AppConfig
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("com.example.aerobankapp.entity");
-        factory.setDataSource(dataSource());
+        factory.setDataSource(dataSource);
         factory.afterPropertiesSet();
 
         return factory.getObject();

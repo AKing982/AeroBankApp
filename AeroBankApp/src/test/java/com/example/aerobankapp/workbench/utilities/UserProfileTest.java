@@ -22,7 +22,7 @@ class UserProfileTest {
     @BeforeEach
     void setUp()
     {
-        userProfile = new UserProfile("AKing94");
+       // userProfile = new UserProfile("AKing94");
     }
 
     @Test

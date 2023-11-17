@@ -22,12 +22,17 @@ public class LoginModel
     private Map<String, String> credentialsMap = new HashMap<>();
 
     @Autowired
-    private SecurityConfig securityConfig;
+    private SecurityConfig securityConfig = new SecurityConfig();
 
     public LoginModel(String user, String pass)
     {
         this.username = user;
         this.password = pass;
+    }
+
+    public String getEncodedPassword()
+    {
+        return encode(password);
     }
 
     public Map<String, String> getEncodedCredentialsMap()

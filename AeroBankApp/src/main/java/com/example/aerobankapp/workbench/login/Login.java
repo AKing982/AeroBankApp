@@ -7,6 +7,7 @@ import com.example.aerobankapp.services.UserProfileService;
 import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
+import com.example.aerobankapp.workbench.utilities.UserProfileCache;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -51,6 +52,8 @@ public class Login extends Application {
     private HBox checkPasswordBox;
     private UserProfile userProfile;
     private UserProfileModel userProfileModel;
+
+    private UserProfileCache userProfileCache = new UserProfileCache();
 
     private final double BUTTON_HEIGHT = 20;
     private static String textStyle = "-fx-font-size: 32px;\n" +
@@ -294,7 +297,7 @@ public class Login extends Application {
      private UserProfile loadUserProfile(String user)
      {
          this.userProfileModel = getUserProfileModel(user);
-         this.userProfile = (UserProfile) new UserProfile(user, userProfileService).clone();
+         this.userProfile = userProfileCache.getCachedProfileByUser(user);
          return userProfile;
      }
 
