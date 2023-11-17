@@ -35,12 +35,10 @@ public class LoginModel
 
     public Map<String, String> getEncodedCredentialsMap()
     {
-        this.encodedPassword = encode(password);
         if(isEncoded)
         {
-            setCredentialsMap(username, encodedPassword);
+            setCredentialsMap(username, getEncodedPassword());
         }
-        setCredentialsMap(username, encodedPassword);
         return credentialsMap;
     }
 

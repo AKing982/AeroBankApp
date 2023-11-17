@@ -59,10 +59,6 @@ class LoginModelTest
 
         Map<String, String> encodedCredentials = loginModel.getEncodedCredentialsMap();
 
-
-        assertNull(Credentials);
-        assertNull(encodedCredentials);
-
         String passwordValue = encodedCredentials.entrySet().stream()
                         .filter(entry -> userKey.equals(entry.getKey()))
                         .map(Map.Entry::getValue)
