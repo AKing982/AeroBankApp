@@ -4,6 +4,7 @@ import com.example.aerobankapp.services.AuthenticationServiceImpl;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +27,9 @@ class LoginControllerTest
     private AuthenticationServiceImpl authenticationService;
 
     @BeforeEach
-    void setUp() {
+    void setUp()
+    {
+        loginController = new LoginController(authenticationService, loginModel);
     }
 
     @AfterEach

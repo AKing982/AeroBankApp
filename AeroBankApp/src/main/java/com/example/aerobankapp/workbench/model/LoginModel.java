@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Setter
@@ -19,6 +20,7 @@ public class LoginModel
     private String username;
     private String password;
     private String encodedPassword;
+    private boolean isEncoded;
     private Map<String, String> credentialsMap = new HashMap<>();
 
     @Autowired
@@ -28,18 +30,30 @@ public class LoginModel
     {
         this.username = user;
         this.password = pass;
-    }
-
-    public String getEncodedPassword()
-    {
-        return encode(password);
+        setCredentialsMap(user, pass);
     }
 
     public Map<String, String> getEncodedCredentialsMap()
     {
         this.encodedPassword = encode(password);
+        if(isEncoded)
+        {
+            setCredentialsMap(username, encodedPassword);
+        }
         setCredentialsMap(username, encodedPassword);
         return credentialsMap;
+    }
+
+    public String getEncodedPassword()
+    {
+        this.encodedPassword = encode(password);
+        return encodedPassword;
+    }
+
+    public boolean isEncoded()
+    {
+        this.isEncoded = !Objects.equals(encodedPassword, password);
+        return isEncoded;
     }
 
     private void setCredentialsMap(final String user, final String pass)
@@ -50,6 +64,15 @@ public class LoginModel
     private String encode(final String param)
     {
         return securityConfig.passwordEncoder().encode(param);
+    }
+
+    public String getPasswordFromMap()
+    {
+        return getEncodedCredentialsMap().entrySet().stream()
+                .filter(entry -> username.equals(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
 

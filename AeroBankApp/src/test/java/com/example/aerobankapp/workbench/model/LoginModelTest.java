@@ -55,13 +55,47 @@ class LoginModelTest
         user = "AKing94";
         password = "Halflifer94!";
         loginModel = new LoginModel(user, password);
+        String userKey = user;
 
-        Map<String, String> Credentials = loginModel.getCredentialsMap();
         Map<String, String> encodedCredentials = loginModel.getEncodedCredentialsMap();
 
-        assertNull(Credentials);
-        assertNull(encodedCredentials);
-        
+        String passwordValue = encodedCredentials.entrySet().stream()
+                        .filter(entry -> userKey.equals(entry.getKey()))
+                        .map(Map.Entry::getValue)
+                        .findFirst()
+                        .orElse(null);
+
+        System.out.println(passwordValue);
+        assertNotNull(encodedCredentials);
+        assertEquals(passwordValue, encodedCredentials.get(user));
+        assertNotEquals(password, passwordValue);
+    }
+
+    @Test
+    public void testEncoding()
+    {
+        user = "AKing94";
+        password = "Halflifer94!";
+        loginModel = new LoginModel(user, password);
+        boolean isEncoded = loginModel.isEncoded();
+
+        String encodedPassword = loginModel.getEncodedPassword();
+
+        assertNotEquals(password, encodedPassword);
+        assertTrue(isEncoded);
+    }
+
+    @Test
+    public void testPasswordFromMap()
+    {
+        user = "AKing94";
+        password = "Halflifer94!";
+        loginModel = new LoginModel(user, password);
+
+        String passwordFromMap = loginModel.getPasswordFromMap();
+
+        assertNotNull(passwordFromMap);
+        assertNotEquals(password, passwordFromMap);
     }
 
     @AfterEach
