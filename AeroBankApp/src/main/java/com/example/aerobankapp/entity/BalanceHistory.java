@@ -21,6 +21,9 @@ public class BalanceHistory
     @Column(name="acctID")
     private String acctID;
 
+    @Column(name="user")
+    private String user;
+
     @Column(name="transactionID")
     private int transactionID;
 

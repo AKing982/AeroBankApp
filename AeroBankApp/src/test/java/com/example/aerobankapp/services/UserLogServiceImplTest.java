@@ -1,7 +1,9 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.entity.UserLog;
 import com.example.aerobankapp.model.UserLogModel;
 import com.example.aerobankapp.repositories.UserLogRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,26 +12,50 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 class UserLogServiceImplTest {
 
-    @InjectMocks
+    @MockBean
     private UserLogServiceImpl userLogService;
 
-    @Mock
+    @Autowired
     private UserLogRepository userLogRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @BeforeEach
     void setUp() {
-        userLogRepository = mock(UserLogRepository.class);
-        MockitoAnnotations.openMocks(this);
+        userLogService = new UserLogServiceImpl(userLogRepository, entityManager);
+    }
+
+    @Test
+    public void saveUserLog()
+    {
+        UserLog userLog = UserLog.builder()
+                .userID(1)
+                .username("AKing94")
+                .lastLogin(new Date())
+                .build();
+
+        userLogService.save(userLog);
+        List<UserLog> expected = Arrays.asList(userLog);
+        List<UserLog> actual = userLogService.findByUserName("AKing94");
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -37,12 +63,7 @@ class UserLogServiceImplTest {
     {
         List<UserLogModel> userLogModelList = Arrays.asList(new UserLogModel(), new UserLogModel());
         userLogService = mock(UserLogServiceImpl.class);
-       // when(userLogRepository.findAll()).thenReturn(userLogModelList);
 
-      //  List<UserLogModel> result = userLogService.findAll();
-
-     //   assertNotEquals(userLogModelList, result);
-//        verify(userLogService.findAll());
     }
 
     @Test

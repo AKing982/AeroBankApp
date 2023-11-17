@@ -9,6 +9,7 @@ import com.example.aerobankapp.fees.FeesDTO;
 import com.example.aerobankapp.model.InvestmentAccount;
 import com.example.aerobankapp.model.SavingsAccount;
 import com.example.aerobankapp.model.User;
+import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.workbench.history.BalanceHistory;
 import com.example.aerobankapp.workbench.model.AccountNumber;
 import com.example.aerobankapp.workbench.transactions.CardDesignator;
@@ -31,6 +32,7 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected boolean isCurrentSession;
     protected boolean isValidUser;
     protected boolean isAuthenticated;
+    private UserProfileModel userProfileModel;
 
     protected String username;
     protected List<CheckingAccount> checkingAccounts;

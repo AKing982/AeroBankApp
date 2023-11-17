@@ -1,6 +1,9 @@
 package com.example.aerobankapp.workbench.login;
 
 import com.example.aerobankapp.messages.CommonLabels;
+import com.example.aerobankapp.model.UserProfileModel;
+import com.example.aerobankapp.services.AuthenticationServiceImpl;
+import com.example.aerobankapp.services.UserProfileService;
 import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
@@ -23,6 +26,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -46,12 +50,19 @@ public class Login extends Application {
     private CheckBox showPassword;
     private HBox checkPasswordBox;
     private UserProfile userProfile;
+    private UserProfileModel userProfileModel;
 
     private final double BUTTON_HEIGHT = 20;
     private static String textStyle = "-fx-font-size: 32px;\n" +
             "   -fx-font-family: \"Arial Black\";\n" +
             "   -fx-fill: #818181;\n" +
             "   -fx-effect: innershadow( three-pass-box, rgba(0, 0, 0, 0.7), 6, 0.0, 0, 2);";
+
+    @Autowired
+    private UserProfileService userProfileService;
+
+    @Autowired
+    private AuthenticationServiceImpl authenticationService;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -141,21 +152,6 @@ public class Login extends Application {
         passwordField.setText("");
     }
 
-    private void switchShowPasswordGraphics(boolean isSelected)
-    {
-
-        if(isSelected)
-        {
-            ImageView imageView = getNewImage("hide_eye.png", BUTTON_HEIGHT);
-
-        }
-        else
-        {
-            ImageView imageView = getNewImage("/eye.png", BUTTON_HEIGHT);
-
-        }
-    }
-
 
     private ImageView getNewImage(String path, double height)
     {
@@ -173,13 +169,11 @@ public class Login extends Application {
             {
                 //TODO: Show password in password field and change button image
                 showPassword(getPasswordField());
-                switchShowPasswordGraphics(true);
             }
             else
             {
                 // TODO: Hide password in password field and change button image to eye.png
                 hidePassword(getPasswordField());
-                switchShowPasswordGraphics(false);
             }
         });
     }
@@ -283,13 +277,25 @@ public class Login extends Application {
 
      private void loginAction(String user, String password)
      {
-         this.userProfile = new UserProfile(user);
+         UserProfile userProfile = loadUserProfile(user);
 
          // TODO: Load the UserProfile data
          LoginModel loginModel = new LoginModel(user, password);
 
          // TODO: Execute Login ThreadPool Process
-         LoginController loginController = new LoginController(this, loginModel);
+         LoginController loginController = new LoginController(authenticationService, loginModel);
+     }
+
+     private UserProfileModel getUserProfileModel(String user)
+     {
+         return new UserProfileModel(user);
+     }
+
+     private UserProfile loadUserProfile(String user)
+     {
+         this.userProfileModel = getUserProfileModel(user);
+         this.userProfile = (UserProfile) new UserProfile(user, userProfileService).clone();
+         return userProfile;
      }
 
      private void registerAction()

@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.CheckingAccount;
 import com.example.aerobankapp.entity.SavingsAccount;
+import com.example.aerobankapp.entity.UserLog;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +30,12 @@ class UserProfileServiceTest
     @Autowired
     private AccountServiceBundle accountServiceBundle;
 
+    @Autowired
+    private UserServiceBundle userServiceBundle;
+
+    @Autowired
+    private BalanceHistoryServiceImpl balanceHistoryService;
+
     private CheckingAccount checkingAccount;
 
     private SavingsAccount savingsAccount;
@@ -34,7 +43,7 @@ class UserProfileServiceTest
     @BeforeEach
     void setUp()
     {
-        userProfileService = new UserProfileService(accountServiceBundle);
+        userProfileService = new UserProfileService(accountServiceBundle, userServiceBundle, balanceHistoryService);
         checkingAccount = CheckingAccount.builder()
                 .userName("AKing94")
                 .minimumBalance(new BigDecimal("100.00"))
@@ -84,7 +93,21 @@ class UserProfileServiceTest
     @Test
     public void testUserLogData()
     {
+        String user = "AKing94";
+        UserLog userLog = UserLog.builder()
+                .userID(1)
+                .username("AKing94")
+                .lastLogin(new Date())
+                .build();
 
+        userProfileService.insertUserLog(userLog);
+        List<UserLog> userLogs = userProfileService.getUserLogData(user);
+        List<UserLog> userLogList = new ArrayList<>();
+        userLogList.add(userLog);
+
+        assertNotNull(userLogs);
+        assertEquals(userLogList.get(0).getUserID(), userLogs.get(0).getUserID());
+        assertEquals(userLogList.get(0).getUsername(), userLogs.get(0).getUsername());
     }
 
     @AfterEach
