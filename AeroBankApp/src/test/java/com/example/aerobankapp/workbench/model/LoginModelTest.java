@@ -61,7 +61,7 @@ class LoginModelTest
 
         assertNull(Credentials);
         assertNull(encodedCredentials);
-        
+
     }
 
     @AfterEach
