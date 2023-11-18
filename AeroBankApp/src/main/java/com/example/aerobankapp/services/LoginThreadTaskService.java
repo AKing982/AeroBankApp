@@ -16,9 +16,8 @@ public class LoginThreadTaskService
 {
     private final TaskExecutor taskExecutor;
     private ThreadType threadType;
-    private List<Object> loginTasks;
-    private List<Object> depositTasks;
-    private List<Object> registerTasks;
+    private List<Task> loginTasks;
+    private List<Task> registerTasks;
 
     @Autowired
     public LoginThreadTaskService(@Qualifier("taskExecutor") TaskExecutor taskExecutor)
@@ -26,12 +25,22 @@ public class LoginThreadTaskService
         this.taskExecutor = taskExecutor;
     }
 
-    private void runTasks()
+    private void runTasks(List<Task> tasks)
     {
-
+        for(Task task : tasks)
+        {
+            taskExecutor.execute((Runnable) task);
+        }
     }
 
+    private void loginTasks()
+    {
+        runTasks(loginTasks);
+    }
 
-
+    private void registerTasks()
+    {
+       runTasks(registerTasks);
+    }
 
 }
