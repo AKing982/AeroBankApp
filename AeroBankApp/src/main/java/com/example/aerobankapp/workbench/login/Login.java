@@ -8,11 +8,9 @@ import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
 import com.example.aerobankapp.workbench.utilities.UserProfileCache;
-import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -20,7 +18,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -31,13 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
 @Setter
-public class Login extends Application {
-
+public class Login extends Application
+{
     private static TextField usernameField;
     private static PasswordField passwordField;
     private static Button signIn;
@@ -52,9 +48,7 @@ public class Login extends Application {
     private HBox checkPasswordBox;
     private UserProfile userProfile;
     private UserProfileModel userProfileModel;
-
     private UserProfileCache userProfileCache = new UserProfileCache();
-
     private final double BUTTON_HEIGHT = 20;
     private static String textStyle = "-fx-font-size: 32px;\n" +
             "   -fx-font-family: \"Arial Black\";\n" +

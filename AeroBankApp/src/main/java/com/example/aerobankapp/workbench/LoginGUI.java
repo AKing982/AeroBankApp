@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import java.net.URL;
 
 @Component
+@Deprecated
 public class LoginGUI extends Application
 {
     private static TextField usernameField = null;
