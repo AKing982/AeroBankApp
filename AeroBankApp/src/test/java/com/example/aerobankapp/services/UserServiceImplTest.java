@@ -23,11 +23,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class UserServiceImplTest {
 
-    @Autowired
-    private UserRepository userRepository;
-
     @MockBean
     private UserServiceImpl userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private EntityManager manager;
@@ -53,21 +53,29 @@ class UserServiceImplTest {
                 .email("alex@utahkings.com")
                 .password("Halflifer94!")
                 .pinNumber("5988")
+                .id(1)
+                .isEnabled(true)
+                .isAccountNonLocked(true)
+                .isCredentialsNonExpired(true)
+                .isAccountNonExpired(true)
                 .build();
+        userService = new UserServiceImpl(userRepository, manager);
+        userService.save(test);
 
     }
 
     @Test
     public void testFindAll()
     {
-        userService = new UserServiceImpl(userRepository, manager);
+
 
         List<Users> users = new ArrayList<>();
         users.add(test);
-        userService.save(test);
-
         List<Users> result = userService.findAll();
 
+        assertNotNull(userService);
+        assertNotNull(manager);
+        assertNotNull(userRepository);
         assertEquals(users, result);
     }
 
@@ -75,8 +83,6 @@ class UserServiceImplTest {
     public void testSave()
     {
 
-        userService = new UserServiceImpl(userRepository, manager);
-        userService.save(test);
         List<Users> foundUser = userService.findByUserName("AKing94");
 
         assertNotNull(userRepository);
@@ -87,7 +93,7 @@ class UserServiceImplTest {
     @Test
     public void testDeleteUser()
     {
-        userService = new UserServiceImpl(userRepository, manager);
+
         userService.delete(test);
 
         List<Users> allUsers = userService.findAll();
@@ -98,7 +104,7 @@ class UserServiceImplTest {
     @Test
     public void testFindAllById()
     {
-        userService = new UserServiceImpl(userRepository, manager);
+
         userService.save(test);
 
         Users allUsers = userService.findAllById(1L);
@@ -110,7 +116,6 @@ class UserServiceImplTest {
     @Test
     public void testFindByUserName()
     {
-        userService = new UserServiceImpl(userRepository, manager);
         List<Users> allUsers = userService.findByUserName("AKing94");
 
         assertNotNull(allUsers);

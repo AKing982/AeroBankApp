@@ -3,6 +3,7 @@ package com.example.aerobankapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access=AccessLevel.PUBLIC, force=true)
 @AllArgsConstructor(access=AccessLevel.PUBLIC)
 @Table(name="balanceHistory")
-public class BalanceHistory
+public class BalanceHistory implements Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
