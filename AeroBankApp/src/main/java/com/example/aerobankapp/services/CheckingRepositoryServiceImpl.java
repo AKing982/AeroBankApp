@@ -2,7 +2,9 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.CheckingAccount;
 import com.example.aerobankapp.repositories.CheckingRepository;
+
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +16,15 @@ import java.util.List;
 @Service
 public class CheckingRepositoryServiceImpl implements CheckingRepositoryService
 {
-    private final CheckingRepository checkingRepo;
+    private CheckingRepository checkingRepo;
 
-    @PersistenceContext
-    private EntityManager em;
+    private EntityManager entityManager;
 
     @Autowired
-    public CheckingRepositoryServiceImpl(CheckingRepository checkingRepository, EntityManager manager)
+    public CheckingRepositoryServiceImpl(CheckingRepository checkingRepository, EntityManager entityManager)
     {
         this.checkingRepo = checkingRepository;
-        this.em = manager;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -50,13 +51,13 @@ public class CheckingRepositoryServiceImpl implements CheckingRepositoryService
     @Override
     public CheckingAccount findAllById(Long id)
     {
-        return checkingRepo.findById((long)id).orElse(null);
+        return checkingRepo.findById(id).orElse(null);
     }
 
     @Override
     public List<CheckingAccount> findByUserName(String user)
     {
-        TypedQuery<CheckingAccount> checkingAccountTypedQuery = em.createQuery("FROM CheckingAccount WHERE userName=:user", CheckingAccount.class);
+        TypedQuery<CheckingAccount> checkingAccountTypedQuery = entityManager.createQuery("FROM CheckingAccount WHERE userName=:user", CheckingAccount.class);
         checkingAccountTypedQuery.setParameter("user", user);
         checkingAccountTypedQuery.setMaxResults(10);
         return checkingAccountTypedQuery.getResultList();

@@ -15,14 +15,14 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-public class CheckingAccount extends AbstractAccountBase
+public class CheckingAccountModel extends AbstractAccountBase
 {
     private String id;
     private final AccountType accountType = AccountType.CHECKING;
     private BigDecimal interestRate = new BigDecimal("2.56");
     private BigDecimal minBalance = new BigDecimal("150.00");
 
-    public CheckingAccount(BigDecimal interest, BigDecimal min_balance)
+    public CheckingAccountModel(BigDecimal interest, BigDecimal min_balance)
     {
         super(interest, min_balance);
     }

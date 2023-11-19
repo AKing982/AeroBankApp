@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
@@ -13,8 +12,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Component
-public class SavingsAccount extends AbstractAccountBase
+public class SavingsAccountModel extends AbstractAccountBase
 {
     private String id;
     private final BigDecimal interestRate = new BigDecimal("0.00");

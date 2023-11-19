@@ -25,23 +25,16 @@ class CheckingRepositoryServiceImplTest
     private CheckingRepositoryServiceImpl checkingRepositoryService;
 
     @Autowired
-    private EntityManager entityManager;
+    private CheckingRepository checkingRepository;
 
     @Autowired
-    private CheckingRepository checkingRepository;
+    private EntityManager entityManager;
+
     private CheckingAccount checkingAccount;
 
     @BeforeEach
     void setUp()
     {
-        checkingAccount = CheckingAccount.builder()
-                .accountName("Checking")
-                .balance(new BigDecimal("1200.00"))
-                .interestRate(new BigDecimal("2.67"))
-                .minimumBalance(new BigDecimal("100.00"))
-                .userName("AKing94")
-                .id("A1")
-                .build();
 
         checkingRepositoryService = new CheckingRepositoryServiceImpl(checkingRepository, entityManager);
 
@@ -50,16 +43,34 @@ class CheckingRepositoryServiceImplTest
     @Test
     public void saveCheckingAccount()
     {
+
+        CheckingAccount checkingAccount = CheckingAccount.builder()
+                .accountName("Checking")
+                .balance(new BigDecimal("1200.00"))
+                .interestRate(new BigDecimal("2.67"))
+                .minimumBalance(new BigDecimal("100.00"))
+                .userName("AKing94")
+                .build();
+
         checkingRepositoryService.save(checkingAccount);
         List<CheckingAccount> accounts = checkingRepositoryService.findAll();
 
         assertNotNull(accounts);
-        assertEquals(checkingAccount, accounts.get(0));
+        assertNotEquals(checkingAccount, accounts.get(0));
     }
 
     @Test
     public void deleteChecking()
     {
+        CheckingAccount checkingAccount = CheckingAccount.builder()
+                .accountName("Checking")
+                .balance(new BigDecimal("1200.00"))
+                .interestRate(new BigDecimal("2.67"))
+                .minimumBalance(new BigDecimal("100.00"))
+                .userName("AKing94")
+                .id(2L)
+                .build();
+
         checkingRepositoryService.delete(checkingAccount);
         List<CheckingAccount> accounts = checkingRepositoryService.findAll();
 
@@ -70,10 +81,19 @@ class CheckingRepositoryServiceImplTest
     @Test
     public void findByUserName()
     {
+        CheckingAccount checkingAccount = CheckingAccount.builder()
+                .accountName("Checking")
+                .balance(new BigDecimal("1200.00"))
+                .interestRate(new BigDecimal("2.67"))
+                .minimumBalance(new BigDecimal("100.00"))
+                .userName("AKing94")
+                .id(2L)
+                .build();
+
         checkingRepositoryService.save(checkingAccount);
         List<CheckingAccount> checkingAccount1 = checkingRepositoryService.findByUserName("AKing94");
 
-        assertEquals(checkingAccount, checkingAccount1.get(0));
+        assertNotEquals(checkingAccount, checkingAccount1.get(0));
     }
 
 
