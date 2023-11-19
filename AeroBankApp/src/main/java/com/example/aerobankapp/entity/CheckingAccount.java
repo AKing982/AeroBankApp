@@ -2,44 +2,42 @@ package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.account.Account;
 import com.example.aerobankapp.account.AccountID;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Entity
-@Data
+
+
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="checkingAccount")
+@Entity
+@Table(name="CheckingAccount")
 public class CheckingAccount
 {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name="aSecID")
+    @Column(name="a_secid")
     private int aSecID;
 
-    @Column(name="accountName")
     @NotNull
+    @Column(name="account_name")
     private String accountName;
 
-    @Column(name="userName")
     @NotNull
+    @Column(name="username")
     private String userName;
 
     @Column(name="balance")
     private BigDecimal balance;
 
-    @Column(name="interestRate")
+    @Column(name="interest_rate")
     private BigDecimal interestRate;
 
     @Column(name="minimum_balance")

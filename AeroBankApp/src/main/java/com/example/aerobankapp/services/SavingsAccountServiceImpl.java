@@ -2,26 +2,26 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.SavingsAccount;
 import com.example.aerobankapp.repositories.SavingsRepository;
+
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
 @Service
 public class SavingsAccountServiceImpl implements SavingsAccountService
 {
-
-    @PersistenceContext
     private EntityManager entityManager;
     private SavingsRepository savingsRepository;
 
     @Autowired
-    public SavingsAccountServiceImpl(SavingsRepository savingsRepository)
+    public SavingsAccountServiceImpl(SavingsRepository savingsRepository, EntityManager entityManager)
     {
         this.savingsRepository = savingsRepository;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -51,9 +51,10 @@ public class SavingsAccountServiceImpl implements SavingsAccountService
     @Override
     public List<SavingsAccount> findByUserName(String user)
     {
+
         TypedQuery<SavingsAccount> typedQuery = entityManager.createQuery("FROM SavingsAccount WHERE user=:user", SavingsAccount.class);
-               typedQuery.setParameter("user", user);
-               typedQuery.setMaxResults(10);
-               return typedQuery.getResultList();
+        typedQuery.setParameter("user", user);
+        typedQuery.setMaxResults(10);
+        return typedQuery.getResultList();
     }
 }

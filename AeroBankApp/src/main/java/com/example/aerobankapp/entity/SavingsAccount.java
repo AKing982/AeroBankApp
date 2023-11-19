@@ -1,10 +1,7 @@
 package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.account.Account;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -19,6 +16,7 @@ import java.math.BigDecimal;
 public class SavingsAccount
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     @Column(name="uID")

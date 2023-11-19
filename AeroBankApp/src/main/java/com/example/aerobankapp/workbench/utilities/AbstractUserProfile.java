@@ -7,7 +7,7 @@ import com.example.aerobankapp.entity.MortgageAccount;
 import com.example.aerobankapp.entity.RentAccount;
 import com.example.aerobankapp.fees.FeesDTO;
 import com.example.aerobankapp.model.InvestmentAccount;
-import com.example.aerobankapp.model.SavingsAccount;
+import com.example.aerobankapp.model.SavingsAccountModel;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.workbench.history.BalanceHistory;
@@ -36,7 +36,7 @@ public abstract class AbstractUserProfile implements Cloneable {
 
     protected String username;
     protected List<CheckingAccount> checkingAccounts;
-    protected List<SavingsAccount> savingsAccounts;
+    protected List<SavingsAccountModel> savingsAccounts;
     protected List<InvestmentAccount> investmentAccounts;
     protected List<RentAccount> rentAccounts;
     protected List<MortgageAccount> mortgageAccounts;

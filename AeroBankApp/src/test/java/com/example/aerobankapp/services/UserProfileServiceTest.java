@@ -48,7 +48,7 @@ class UserProfileServiceTest
                 .userName("AKing94")
                 .minimumBalance(new BigDecimal("100.00"))
                 .interestRate(new BigDecimal("1.67"))
-                .id("A1")
+                .id(1L)
                 .accountName("Checking")
                 .balance(new BigDecimal("1250.00"))
                 .build();

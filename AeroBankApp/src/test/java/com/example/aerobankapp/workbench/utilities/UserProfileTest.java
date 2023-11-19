@@ -1,6 +1,6 @@
 package com.example.aerobankapp.workbench.utilities;
 
-import com.example.aerobankapp.model.CheckingAccount;
+import com.example.aerobankapp.model.CheckingAccountModel;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +44,7 @@ class UserProfileTest {
     @Test
     public void testLoadingCheckingAccounts()
     {
-        List<CheckingAccount> checkingAccountList = Arrays.asList(new CheckingAccount(), new CheckingAccount());
+        List<CheckingAccountModel> checkingAccountList = Arrays.asList(new CheckingAccountModel(), new CheckingAccountModel());
        // List<CheckingAccount> actualCheckingAccounts = userProfile.getCheckingAccounts();
 
     ///    assertTrue(actualCheckingAccounts.size() > 1);
