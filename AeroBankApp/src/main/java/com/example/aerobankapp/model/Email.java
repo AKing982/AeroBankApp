@@ -11,8 +11,8 @@ import lombok.*;
 public class Email
 {
     private int userID;
-    private String user;
-    private String email;
+    private String sender;
+    private String recipient;
     private String description;
     private String outgoingServer;
     private String port;

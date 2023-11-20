@@ -1,5 +1,7 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.services.tasks.LoginTask;
+import com.example.aerobankapp.services.tasks.RegisterTask;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,8 +19,8 @@ public class LoginThreadTaskService
 {
     private final TaskExecutor taskExecutor;
     private ThreadType threadType;
-    private List<Task> loginTasks;
-    private List<Task> registerTasks;
+    private RegisterTask registerTask;
+    private LoginTask loginTask;
 
     @Autowired
     public LoginThreadTaskService(@Qualifier("taskExecutor") TaskExecutor taskExecutor)
@@ -35,11 +38,24 @@ public class LoginThreadTaskService
 
     private void loginTasks()
     {
+        List<Task> loginTasks = getLoginTaskList();
         runTasks(loginTasks);
     }
 
+    private List<Task> getLoginTaskList()
+    {
+        return loginTask.getTasks();
+    }
+
+    private List<Task> getRegisterTaskList()
+    {
+        return new ArrayList<>();
+    }
+
+
     private void registerTasks()
     {
+        List<Task> registerTasks = getRegisterTaskList();
        runTasks(registerTasks);
     }
 
