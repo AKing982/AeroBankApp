@@ -60,7 +60,7 @@ class UserServiceImplTest {
                 .isAccountNonExpired(true)
                 .build();
         userService = new UserServiceImpl(userRepository, manager);
-        userService.save(test);
+
 
     }
 

@@ -2,9 +2,12 @@ package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,6 +23,7 @@ public class UserLog
     private int id;
 
     @Column(name="username")
+    @Size(min=10, max=25, message="Username requires atleast 10 characters")
     @NotNull
     private String username;
 

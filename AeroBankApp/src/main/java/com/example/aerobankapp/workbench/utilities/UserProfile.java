@@ -1,9 +1,17 @@
 package com.example.aerobankapp.workbench.utilities;
 
-import com.example.aerobankapp.entity.CheckingAccount;
+import com.example.aerobankapp.entity.*;
+import com.example.aerobankapp.fees.FeesDTO;
 import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.services.UserProfileService;
+import com.example.aerobankapp.workbench.history.BalanceHistory;
+import com.example.aerobankapp.workbench.model.AccountNumber;
+import com.example.aerobankapp.workbench.transactions.CardDesignator;
+import com.example.aerobankapp.workbench.transactions.Deposit;
+import com.example.aerobankapp.workbench.transactions.Purchase;
+import com.example.aerobankapp.workbench.transactions.Withdraw;
 import jakarta.persistence.Access;
+import javafx.scene.image.ImageView;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Getter
@@ -27,12 +36,76 @@ public class UserProfile extends AbstractUserProfile
         this.userProfileService = userService;
     }
 
-    public List<CheckingAccount> getUserCheckingAccounts()
-    {
-        String user = super.username;
-        super.checkingAccounts = userProfileService.getAccountServiceBundle().getCheckingService().findByUserName(user);
-        return checkingAccounts;
+    @Override
+    protected List<AccountNumber> getAllAccountNumbers() {
+        return null;
     }
 
+    @Override
+    protected List<Withdraw> getAllWithdraws() {
+        return null;
+    }
 
+    @Override
+    protected List<Purchase> getAllPurchases() {
+        return null;
+    }
+
+    @Override
+    protected List<Deposit> getAllDeposits() {
+        return null;
+    }
+
+    @Override
+    protected List<CheckingAccount> getAllCheckingAccounts() {
+        return null;
+    }
+
+    @Override
+    protected List<SavingsAccount> getAllSavingsAccounts() {
+        return null;
+    }
+
+    @Override
+    protected List<InvestmentAccount> getAllInvestmentAccounts()
+    {
+        return null;
+    }
+
+    @Override
+    protected List<RentAccount> getAllRentAccounts()
+    {
+        return null;
+    }
+
+    @Override
+    protected List<MortgageAccount> getAllMortgageAccounts()
+    {
+        return null;
+    }
+
+    @Override
+    protected List<CardDesignator> getAllUserCards() {
+        return null;
+    }
+
+    @Override
+    protected Map<Integer, List<ImageView>> getUserCardImages() {
+        return null;
+    }
+
+    @Override
+    protected Map<Integer, AccountSecurity> getAccountSecurityDetails() {
+        return null;
+    }
+
+    @Override
+    protected Map<Integer, List<BalanceHistory>> getBalanceHistories() {
+        return null;
+    }
+
+    @Override
+    protected Map<Integer, List<FeesDTO>> getAccountFees() {
+        return null;
+    }
 }

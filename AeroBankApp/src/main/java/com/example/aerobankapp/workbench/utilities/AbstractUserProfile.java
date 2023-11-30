@@ -1,13 +1,8 @@
 package com.example.aerobankapp.workbench.utilities;
 
 
-import com.example.aerobankapp.entity.AccountSecurity;
-import com.example.aerobankapp.entity.CheckingAccount;
-import com.example.aerobankapp.entity.MortgageAccount;
-import com.example.aerobankapp.entity.RentAccount;
+import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.fees.FeesDTO;
-import com.example.aerobankapp.model.InvestmentAccount;
-import com.example.aerobankapp.model.SavingsAccountModel;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.workbench.history.BalanceHistory;
@@ -36,7 +31,7 @@ public abstract class AbstractUserProfile implements Cloneable {
 
     protected String username;
     protected List<CheckingAccount> checkingAccounts;
-    protected List<SavingsAccountModel> savingsAccounts;
+    protected List<SavingsAccount> savingsAccounts;
     protected List<InvestmentAccount> investmentAccounts;
     protected List<RentAccount> rentAccounts;
     protected List<MortgageAccount> mortgageAccounts;
@@ -53,6 +48,21 @@ public abstract class AbstractUserProfile implements Cloneable {
     public AbstractUserProfile(String user) {
         this.username = user;
     }
+
+    protected abstract List<AccountNumber> getAllAccountNumbers();
+    protected abstract List<Withdraw> getAllWithdraws();
+    protected abstract List<Purchase> getAllPurchases();
+    protected abstract List<Deposit> getAllDeposits();
+    protected abstract List<CheckingAccount> getAllCheckingAccounts();
+    protected abstract List<SavingsAccount> getAllSavingsAccounts();
+    protected abstract List<InvestmentAccount> getAllInvestmentAccounts();
+    protected abstract List<RentAccount> getAllRentAccounts();
+    protected abstract List<MortgageAccount> getAllMortgageAccounts();
+    protected abstract List<CardDesignator> getAllUserCards();
+    protected abstract Map<Integer, List<ImageView>> getUserCardImages();
+    protected abstract Map<Integer, AccountSecurity> getAccountSecurityDetails();
+    protected abstract Map<Integer, List<BalanceHistory>> getBalanceHistories();
+    protected abstract Map<Integer, List<FeesDTO>> getAccountFees();
 
     @Override
     public Object clone() {

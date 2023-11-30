@@ -5,9 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Component
@@ -17,7 +15,11 @@ public class UserProfileCache
 
     public void addUserProfileToCache(UserProfile userProfile)
     {
-        cachedProfiles.put(userProfile.getUsername(), userProfile);
+        if(userProfile != null)
+        {
+            String user = userProfile.getUsername();
+            cachedProfiles.put(user, userProfile);
+        }
     }
 
     public UserProfile getCachedProfileByUser(String user)
@@ -44,8 +46,7 @@ public class UserProfileCache
     {
         for(UserProfile userProfile : userProfiles)
         {
-            String user = userProfile.getUsername();
-            cachedProfiles.put(user, userProfile);
+            addUserProfileToCache(userProfile);
         }
     }
 

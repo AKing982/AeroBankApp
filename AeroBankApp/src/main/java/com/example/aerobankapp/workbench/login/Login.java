@@ -35,7 +35,7 @@ import java.net.URL;
 public class Login extends Application
 {
     private static TextField usernameField;
-    private static PasswordField passwordField;
+    private static TextField passwordField;
     private static Button signIn;
     private Button registerBtn;
     private Label usernameLabel;
@@ -102,7 +102,7 @@ public class Login extends Application
         return showPassword;
     }
 
-    private void setPasswordFieldSize(PasswordField passwordField) {
+    private void setPasswordFieldSize(TextField passwordField) {
         passwordField.setPrefSize(2, 2);
     }
 
@@ -137,16 +137,36 @@ public class Login extends Application
         return forgotPasswordLink;
     }
 
-    private void showPassword(PasswordField passwordField)
+    private void showPassword(TextField passwordField)
     {
-        passwordField.setText(passwordField.getText());
-        passwordField.setPromptText("Password");
+        String text = passwordField.getText();
+        passwordField.setText(text);
+        passwordField.clear();
+        passwordField.setDisable(true);
+
     }
 
-    private void hidePassword(PasswordField passwordField)
+    private void hidePassword(TextField passwordField)
     {
-        passwordField.setPromptText("");
-        passwordField.setText("");
+        passwordField.setText(passwordField.getText());
+        passwordField.clear();
+        passwordField.setDisable(false);
+    }
+
+    private void checkBoxPasswordChange(final CheckBox checkBox, final TextField passwordField)
+    {
+        if(checkBox != null)
+        {
+            if(checkBox.isSelected())
+            {
+                showPassword(passwordField);
+            }
+            else
+            {
+                hidePassword(passwordField);
+            }
+        }
+
     }
 
 
@@ -157,22 +177,6 @@ public class Login extends Application
         imageView.setPreserveRatio(true);
         imageView.setFitHeight(height);
         return imageView;
-    }
-
-    private void hideOrShowPasswordBtn(ToggleButton btn)
-    {
-        btn.setOnAction(e -> {
-            if(btn.isSelected())
-            {
-                //TODO: Show password in password field and change button image
-                showPassword(getPasswordField());
-            }
-            else
-            {
-                // TODO: Hide password in password field and change button image to eye.png
-                hidePassword(getPasswordField());
-            }
-        });
     }
 
 
@@ -362,11 +366,11 @@ public class Login extends Application
         s.close();
     }
 
-    public PasswordField getPasswordField()
+    public TextField getPasswordField()
     {
         if(passwordField == null)
         {
-            passwordField = new PasswordField();
+            passwordField = new TextField();
             passwordField.getStylesheets().add(getCSSAsString("/textfield.css"));
             passwordField.setFont(Font.font(CommonLabels.SANS_SERIF, FontWeight.NORMAL, 16));
             passwordField.setId("password");

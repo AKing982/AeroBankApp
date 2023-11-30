@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 @Builder
 @Getter
 @Setter
+@EqualsAndHashCode
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

@@ -17,7 +17,7 @@ import java.util.List;
 public class UserServiceImpl implements UserDAOService
 {
     private final UserRepository userRepository;
-    @PersistenceContext
+
     private EntityManager entityManager;
     private AeroLogger aeroLogger = new AeroLogger(UserServiceImpl.class);
 
@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserDAOService
     @Transactional
     public void delete(Users obj)
     {
+        aeroLogger.info("Deleting User: " + obj);
         userRepository.delete(obj);
     }
 

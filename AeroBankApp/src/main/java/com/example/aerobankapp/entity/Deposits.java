@@ -10,6 +10,8 @@ import java.time.LocalDate;
 @Table(name="deposits")
 @Getter
 @Setter
+@EqualsAndHashCode
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
