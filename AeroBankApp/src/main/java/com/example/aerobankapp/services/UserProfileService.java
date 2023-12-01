@@ -23,12 +23,12 @@ public class UserProfileService
 {
     private AccountServiceBundle accountServiceBundle;
     private UserServiceBundle userServiceBundle;
-    private BalanceHistoryServiceImpl balanceHistoryService;
+    private BalanceHistoryDAOImpl balanceHistoryService;
 
     @Autowired
     public UserProfileService(AccountServiceBundle accountServiceBundle,
                               UserServiceBundle userBundle,
-                              BalanceHistoryServiceImpl balanceService)
+                              BalanceHistoryDAOImpl balanceService)
     {
         this.balanceHistoryService = balanceService;
         this.accountServiceBundle = accountServiceBundle;

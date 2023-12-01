@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 @Setter
 public class AccountServiceBundle
 {
-    private CheckingRepositoryServiceImpl checkingService;
-    private SavingsAccountServiceImpl savingsService;
+    private CheckingAccountDAO checkingService;
+    private SavingsAccountDAO savingsService;
 
     @Autowired
-    public AccountServiceBundle(CheckingRepositoryServiceImpl checking, SavingsAccountServiceImpl savings)
+    public AccountServiceBundle(CheckingAccountDAO checking, SavingsAccountDAO savings)
     {
         this.checkingService = checking;
         this.savingsService = savings;

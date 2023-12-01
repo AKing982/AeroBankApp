@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @Setter
 public class UserServiceBundle
 {
-    private UserLogServiceImpl userLogService;
-    private UserServiceImpl userService;
+    private UserLogDAOImpl userLogService;
+    private UserDAOImpl userService;
 
     @Autowired
-    public UserServiceBundle(UserLogServiceImpl userLogService, UserServiceImpl service)
+    public UserServiceBundle(UserLogDAOImpl userLogService, UserDAOImpl service)
     {
         this.userLogService = userLogService;
         this.userService = service;
