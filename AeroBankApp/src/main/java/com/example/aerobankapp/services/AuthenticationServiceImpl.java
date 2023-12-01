@@ -6,49 +6,33 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-public class AuthenticationServiceImpl implements AuthenticationService
+public class AuthenticationServiceImpl implements AuthenticationProvider
 {
-
     private JdbcTemplate jdbcTemplate;
     private JWTUtil jwtUtil = new JWTUtil();
+    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthenticationServiceImpl(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder)
+    {
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Autowired
     public AuthenticationServiceImpl(JdbcTemplate jdbcTemplate)
     {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Override
-    public boolean authenticateByUserCount(String user, String pass)
-    {
-
-       String query = "SELECT COUNT(*) FROM users WHERE username=? AND password=?";
-       int count = jdbcTemplate.queryForObject(query, Integer.class, user, pass);
-        return count == 1;
-    }
-
-    @Override
-    public boolean authenticate(final String user, final String pass)
-    {
-        String token = jwtUtil.generateToken(user);
-
-        boolean isValidToken = jwtUtil.validateToken(token);
-        boolean isCountValid = authenticateByUserCount(user, pass);
-
-        if(isValidToken && isCountValid)
-        {
-            // Valid user is in database
-            boolean userInDB = userInDatabase(user);
-            if(userInDB)
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean userInDatabase(String user)
@@ -57,4 +41,16 @@ public class AuthenticationServiceImpl implements AuthenticationService
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(findUser, Boolean.class, user));
     }
 
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        String username = authentication.getName();
+        String password = authentication.getCredentials().toString();
+
+        UserDetails user = user
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return false;
+    }
 }
