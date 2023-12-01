@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SavingsAccountServiceImpl implements SavingsAccountService
+public class SavingsAccountDAOImpl implements SavingsAccountDAO
 {
     private EntityManager entityManager;
     private SavingsRepository savingsRepository;
 
     @Autowired
-    public SavingsAccountServiceImpl(SavingsRepository savingsRepository, EntityManager entityManager)
+    public SavingsAccountDAOImpl(SavingsRepository savingsRepository, EntityManager entityManager)
     {
         this.savingsRepository = savingsRepository;
         this.entityManager = entityManager;

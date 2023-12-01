@@ -6,7 +6,7 @@ import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
 
-public interface SavingsAccountService extends ServiceDAOModel<SavingsAccount>
+public interface SavingsAccountDAO extends ServiceDAOModel<SavingsAccount>
 {
     @Override
     List<SavingsAccount> findAll();

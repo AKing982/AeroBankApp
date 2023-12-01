@@ -14,14 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class CheckingRepositoryServiceImpl implements CheckingRepositoryService
+public class CheckingRepositoryServiceDAOImpl implements CheckingRepositoryServiceDAO
 {
     private CheckingRepository checkingRepo;
 
     private EntityManager entityManager;
 
     @Autowired
-    public CheckingRepositoryServiceImpl(CheckingRepository checkingRepository, EntityManager entityManager)
+    public CheckingRepositoryServiceDAOImpl(CheckingRepository checkingRepository, EntityManager entityManager)
     {
         this.checkingRepo = checkingRepository;
         this.entityManager = entityManager;

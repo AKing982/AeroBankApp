@@ -5,7 +5,7 @@ import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
 
-public interface CheckingRepositoryService extends ServiceDAOModel<CheckingAccount>
+public interface CheckingAccountDAO extends ServiceDAOModel<CheckingAccount>
 {
     @Override
     List<CheckingAccount> findAll();

@@ -14,15 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserDAOService
+public class UserDAOImpl implements UserDAO
 {
     private final UserRepository userRepository;
 
     private EntityManager entityManager;
-    private AeroLogger aeroLogger = new AeroLogger(UserServiceImpl.class);
+    private AeroLogger aeroLogger = new AeroLogger(UserDAOImpl.class);
 
     @Autowired
-    public UserServiceImpl(UserRepository repository, EntityManager manager)
+    public UserDAOImpl(UserRepository repository, EntityManager manager)
     {
         this.userRepository = repository;
         this.entityManager = manager;

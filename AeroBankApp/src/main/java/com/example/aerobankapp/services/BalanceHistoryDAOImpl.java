@@ -13,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class BalanceHistoryServiceImpl implements ServiceDAOModel<BalanceHistory>
+public class BalanceHistoryDAOImpl implements BalanceHistoryDAO
 {
     private BalanceHistoryRepository balanceHistRepo;
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    public BalanceHistoryServiceImpl(BalanceHistoryRepository balanceHistRepo, EntityManager entityManager)
+    public BalanceHistoryDAOImpl(BalanceHistoryRepository balanceHistRepo, EntityManager entityManager)
     {
         this.balanceHistRepo = balanceHistRepo;
         this.entityManager = entityManager;
