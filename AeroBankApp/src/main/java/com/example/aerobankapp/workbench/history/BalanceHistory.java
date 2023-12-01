@@ -18,6 +18,7 @@ public class BalanceHistory implements HistoryModel
 {
     private int id;
     private String acctID;
+    private String user;
     private int transactionID;
     private BigDecimal balance;
     private BigDecimal adjusted;
@@ -27,6 +28,6 @@ public class BalanceHistory implements HistoryModel
     @Override
     public BalanceHistory getBalanceHistory()
     {
-        return new BalanceHistory(id, acctID, transactionID, balance, adjusted, lastBalance, posted);
+        return new BalanceHistory(id, acctID, user, transactionID, balance, adjusted, lastBalance, posted);
     }
 }

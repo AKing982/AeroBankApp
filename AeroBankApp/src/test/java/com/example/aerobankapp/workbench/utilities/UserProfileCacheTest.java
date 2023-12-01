@@ -40,7 +40,7 @@ class UserProfileCacheTest
     public void testAddingUserProfileToHash()
     {
         Hashtable<String, UserProfile> userProfileMap = new Hashtable<>();
-        UserProfile userProfile = new UserProfile("AKing94", userProfileService);
+        UserProfile userProfile = new UserProfile("AKing94");
         userProfileMap.put(userProfile.getUsername(), userProfile);
 
         userProfileCache.addUserProfileToCache(userProfile);
@@ -54,9 +54,9 @@ class UserProfileCacheTest
     @Test
     public void testAddingUserProfilesToHashTable()
     {
-        UserProfile akingProfile = new UserProfile("AKing94", userProfileService);
-        UserProfile bobProfile = new UserProfile("BSmith23", userProfileService);
-        UserProfile samProfile = new UserProfile("SWilliam34", userProfileService);
+        UserProfile akingProfile = new UserProfile("AKing94");
+        UserProfile bobProfile = new UserProfile("BSmith23");
+        UserProfile samProfile = new UserProfile("SWilliam34");
         List<UserProfile> userProfiles = new ArrayList<>();
         userProfiles.add(akingProfile);
         userProfiles.add(bobProfile);

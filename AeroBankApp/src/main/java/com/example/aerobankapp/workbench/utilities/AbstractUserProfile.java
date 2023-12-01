@@ -23,10 +23,6 @@ import java.util.Map;
 public abstract class AbstractUserProfile implements Cloneable {
     protected LoggedUser loggedUser;
     protected User user;
-    protected boolean isCurrentUser;
-    protected boolean isCurrentSession;
-    protected boolean isValidUser;
-    protected boolean isAuthenticated;
     private UserProfileModel userProfileModel;
 
     protected String username;
@@ -45,7 +41,8 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected List<Purchase> purchases;
     protected List<Deposit> deposits;
 
-    public AbstractUserProfile(String user) {
+    public AbstractUserProfile(String user)
+    {
         this.username = user;
     }
 

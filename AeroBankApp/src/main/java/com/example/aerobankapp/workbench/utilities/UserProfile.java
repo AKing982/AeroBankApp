@@ -27,13 +27,16 @@ import java.util.Map;
 @Component
 public class UserProfile extends AbstractUserProfile
 {
+    @Autowired
     private UserProfileService userProfileService;
+    private boolean isCurrentUser;
+    private boolean isCurrentSession;
+    private boolean isAuthenticated;
 
     @Autowired
-    public UserProfile(@Qualifier("beanString")String user, UserProfileService userService)
+    public UserProfile(@Qualifier("beanString")String user)
     {
         super(user);
-        this.userProfileService = userService;
     }
 
     @Override
@@ -107,5 +110,11 @@ public class UserProfile extends AbstractUserProfile
     @Override
     protected Map<Integer, List<FeesDTO>> getAccountFees() {
         return null;
+    }
+
+
+    public boolean isCurrentUser(String user)
+    {
+        return false;
     }
 }
