@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-12-02T13:54:07.489Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="KBYWYhsU6XmxYH0eXcP0" version="22.1.5" type="github">
+<mxfile host="app.diagrams.net" modified="2023-12-02T14:06:22.208Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="hKRsUdUwbeqxLZ6lD7BG" version="22.1.5" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="3101" dy="2280" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2860" dy="2095" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -389,6 +389,17 @@
             <mxPoint x="-450" y="580" as="sourcePoint" />
             <mxPoint x="-400" y="530" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="GNt25XHQ4Sj9QbZXzrpS-8" value="QueueConfig" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="-1420" y="-410" width="310" height="200" as="geometry">
+            <mxRectangle x="130" y="380" width="160" height="26" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GNt25XHQ4Sj9QbZXzrpS-10" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="GNt25XHQ4Sj9QbZXzrpS-8">
+          <mxGeometry y="26" width="310" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="GNt25XHQ4Sj9QbZXzrpS-11" value="+ depositQueue( ) : QueueConncurrency&lt;Deposit&gt;&#xa;+ withdrawQueue( ) : QueueConcurrency&lt;Withdraw&gt;&#xa;+ purchaseQueue( ) : QueueConcurrency&lt;Purchase&gt;&#xa;+ transferQueue( ) : QueueConcurrency&lt;Transfer&gt;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="GNt25XHQ4Sj9QbZXzrpS-8">
+          <mxGeometry y="34" width="310" height="120" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
