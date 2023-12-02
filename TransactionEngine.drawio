@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-12-02T00:56:31.706Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="YF8z7MSeA_ByInaH1mjT" version="22.1.5" type="github">
+<mxfile host="app.diagrams.net" modified="2023-12-02T00:57:33.171Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="iIMxyq1FYX9FUi8oaqWL" version="22.1.5" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="3177" dy="2338" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2531" dy="1842" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -306,13 +306,13 @@
             <mxRectangle x="130" y="380" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="VciaAS23OMHJIsgM-eST-36" value="+ Queue&lt;Purchase&gt; purchaseQueue" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0" vertex="1" parent="VciaAS23OMHJIsgM-eST-35">
+        <mxCell id="VciaAS23OMHJIsgM-eST-36" value="+ Queue&lt;Transfer&gt; transferQueue" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0" vertex="1" parent="VciaAS23OMHJIsgM-eST-35">
           <mxGeometry y="26" width="210" height="26" as="geometry" />
         </mxCell>
         <mxCell id="VciaAS23OMHJIsgM-eST-37" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="VciaAS23OMHJIsgM-eST-35">
           <mxGeometry y="52" width="210" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="VciaAS23OMHJIsgM-eST-38" value="+ enqueue(Purchase ele) : void&#xa;+ dequeue( ) : Purchase&#xa;+ remove( ) : Purchase&#xa;+ peek( ) : Purchase&#xa;+ search(Purchase ele) : int&#xa;+ isEmpty( ) : boolean&#xa;+ size( ) : int&#xa;+ clear( ) : void" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="VciaAS23OMHJIsgM-eST-35">
+        <mxCell id="VciaAS23OMHJIsgM-eST-38" value="+ enqueue(Transfer ele) : void&#xa;+ dequeue( ) : Transfer&#xa;+ remove( ) : Transfer&#xa;+ peek( ) : Transfer&#xa;+ search(Transfer ele) : int&#xa;+ isEmpty( ) : boolean&#xa;+ size( ) : int&#xa;+ clear( ) : void" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="VciaAS23OMHJIsgM-eST-35">
           <mxGeometry y="60" width="210" height="120" as="geometry" />
         </mxCell>
       </root>
