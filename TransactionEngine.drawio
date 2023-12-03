@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-12-03T16:10:59.101Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="WhAW4GBAeXqEalprIQyd" version="22.1.5" type="github">
+<mxfile host="app.diagrams.net" modified="2023-12-03T16:22:59.035Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="GbQsGR-FtJLty_ZX1xJj" version="22.1.5" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="6104" dy="1921" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="5776" dy="1796" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -974,6 +974,9 @@
         </mxCell>
         <mxCell id="Mc4znWSmpVV3lf4fDMt0-44" value="+ enqueue(Deposit ele) : void&#xa;+ dequeue( ) : Deposit&#xa;+ remove( ) : Deposit&#xa;+ peek( ) : Deposit&#xa;+ search(Deposit ele) : int&#xa;+ isEmpty( ) : boolean&#xa;+ size( ) : int&#xa;+ clear( ) : void" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="Mc4znWSmpVV3lf4fDMt0-41">
           <mxGeometry y="60" width="210" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="Mc4znWSmpVV3lf4fDMt0-45" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Interface&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&lt;b&gt;SchedulerEngine&lt;/b&gt;&lt;/i&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ field1: Type&lt;br&gt;+ field2: Type&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getDailySimpleScheduler( ) throws SchedulerException : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getWeeklySimpleScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getDailyCronScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getWeeklyCronScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getMonthlyCronScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getCustomCronScheduler( ) throws SchedulerException : Scheduler&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="-4050" y="326.5" width="430" height="187" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
