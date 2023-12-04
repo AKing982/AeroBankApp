@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-12-04T13:34:58.911Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="RXgPFo1wWfou7BBxbTHY" version="22.1.5" type="github">
+<mxfile host="app.diagrams.net" modified="2023-12-04T13:41:03.341Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="iwdtie_OrfiHxZSS4LyI" version="22.1.5" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="5852" dy="2280" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -1087,6 +1087,9 @@
         </mxCell>
         <mxCell id="DOZhWt2zyqqavTiDShPT-5" value="+ isScheduleLocked( ) : boolean" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="DOZhWt2zyqqavTiDShPT-2">
           <mxGeometry y="90" width="210" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="DOZhWt2zyqqavTiDShPT-7" value="+ isSchedulerAdmin( ) : boolean" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="DOZhWt2zyqqavTiDShPT-2">
+          <mxGeometry y="130" width="210" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
