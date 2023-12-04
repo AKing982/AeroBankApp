@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-12-04T13:19:10.372Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="e1MYskGV7LGwS9iUUss7" version="22.1.5" type="github">
+<mxfile host="app.diagrams.net" modified="2023-12-04T13:20:30.622Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="Oq509OX-hqGfAv2SzGUq" version="22.1.5" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="5852" dy="2280" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -1029,7 +1029,7 @@
         <mxCell id="Mc4znWSmpVV3lf4fDMt0-44" value="+ enqueue(Deposit ele) : void&#xa;+ dequeue( ) : Deposit&#xa;+ remove( ) : Deposit&#xa;+ peek( ) : Deposit&#xa;+ search(Deposit ele) : int&#xa;+ isEmpty( ) : boolean&#xa;+ size( ) : int&#xa;+ clear( ) : void" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="Mc4znWSmpVV3lf4fDMt0-41" vertex="1">
           <mxGeometry y="60" width="210" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="Mc4znWSmpVV3lf4fDMt0-45" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Interface&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&lt;b&gt;SchedulerEngine&lt;/b&gt;&lt;/i&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ scheduler : Scheduler&lt;br&gt;+&amp;nbsp;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getDailySimpleScheduler( ) throws SchedulerException : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getWeeklySimpleScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getDailyCronScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getWeeklyCronScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getMonthlyCronScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getCustomCronScheduler( ) throws SchedulerException : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ scheduleJob() : void&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+        <mxCell id="Mc4znWSmpVV3lf4fDMt0-45" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&amp;lt;&amp;lt;Interface&amp;gt;&amp;gt;&lt;/i&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&lt;b&gt;SchedulerEngine&lt;/b&gt;&lt;/i&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ scheduler : Scheduler&lt;br&gt;+ schedulerSecurity : SchedulerSecurity&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getDailySimpleScheduler( ) throws SchedulerException : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getWeeklySimpleScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getDailyCronScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getWeeklyCronScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getMonthlyCronScheduler( ) : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ getCustomCronScheduler( ) throws SchedulerException : Scheduler&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ scheduleJob() : void&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="-1710" y="420" width="430" height="187" as="geometry" />
         </mxCell>
         <mxCell id="Mc4znWSmpVV3lf4fDMt0-61" value="ScheduleCronBase" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
@@ -1072,7 +1072,7 @@
           <mxGeometry y="52" width="210" height="8" as="geometry" />
         </mxCell>
         <mxCell id="DOZhWt2zyqqavTiDShPT-2" value="SchedulerSecurity" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="-1940" y="198" width="210" height="180" as="geometry">
+          <mxGeometry x="-1940" y="198" width="210" height="300" as="geometry">
             <mxRectangle x="130" y="380" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -1082,8 +1082,11 @@
         <mxCell id="DOZhWt2zyqqavTiDShPT-4" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="DOZhWt2zyqqavTiDShPT-2">
           <mxGeometry y="52" width="210" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="DOZhWt2zyqqavTiDShPT-5" value="+ enqueue(Deposit ele) : void&#xa;+ dequeue( ) : Deposit&#xa;+ remove( ) : Deposit&#xa;+ peek( ) : Deposit&#xa;+ search(Deposit ele) : int&#xa;+ isEmpty( ) : boolean&#xa;+ size( ) : int&#xa;+ clear( ) : void" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="DOZhWt2zyqqavTiDShPT-2">
-          <mxGeometry y="60" width="210" height="120" as="geometry" />
+        <mxCell id="DOZhWt2zyqqavTiDShPT-6" value="+ isScheduleAllowed( ) : boolean" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="DOZhWt2zyqqavTiDShPT-2">
+          <mxGeometry y="60" width="210" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DOZhWt2zyqqavTiDShPT-5" value="+ is" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="DOZhWt2zyqqavTiDShPT-2">
+          <mxGeometry y="90" width="210" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
