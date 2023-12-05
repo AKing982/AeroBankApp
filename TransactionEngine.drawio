@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-12-05T17:11:32.310Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="ae-jFPVU493Kki7u-7xS" version="22.1.5" type="github">
+<mxfile host="app.diagrams.net" modified="2023-12-05T17:18:38.934Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="2dU-OqN6hUE5wMPd2RiW" version="22.1.5" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="4471" dy="1637" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="4994" dy="1848" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -1079,7 +1079,7 @@
         <mxCell id="JjCZjBJpy0W_WIydMzem-0" value="+ getUserProfileSecurity(UserProfile ) : UserSecuritySummary" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="DOZhWt2zyqqavTiDShPT-2">
           <mxGeometry y="366" width="340" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="JjCZjBJpy0W_WIydMzem-29" value="+ getUserRole() : Role " style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="DOZhWt2zyqqavTiDShPT-2">
+        <mxCell id="JjCZjBJpy0W_WIydMzem-29" value="+ getUserRole(String user) : Role " style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="DOZhWt2zyqqavTiDShPT-2">
           <mxGeometry y="400" width="340" height="30" as="geometry" />
         </mxCell>
         <mxCell id="JjCZjBJpy0W_WIydMzem-30" value="+ setQuartzProperties( )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="DOZhWt2zyqqavTiDShPT-2">
