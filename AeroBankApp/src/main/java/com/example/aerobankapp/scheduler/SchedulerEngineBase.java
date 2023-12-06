@@ -1,25 +1,36 @@
 package com.example.aerobankapp.scheduler;
 
+import com.example.aerobankapp.configuration.QuartzConfig;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 import com.example.aerobankapp.scheduler.jobdetail.JobDetailBase;
 import com.example.aerobankapp.scheduler.security.SchedulerSecurity;
+import lombok.Getter;
+import lombok.Setter;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+@Getter
+@Setter
 public abstract class SchedulerEngineBase
 {
     protected Scheduler scheduler;
     protected SchedulerCriteria schedulerCriteria;
     private SchedulerSecurity schedulerSecurity;
-    private ApplicationContext applicationContext;
+    private AnnotationConfigApplicationContext applicationContext;
 
     public SchedulerEngineBase(Scheduler scheduler, SchedulerCriteria schedulerCriteria)
     {
         this.scheduler = scheduler;
         this.schedulerCriteria = schedulerCriteria;
+        initializeContext();
     }
 
+    public void initializeContext()
+    {
+        applicationContext = new AnnotationConfigApplicationContext(QuartzConfig.class);
+    }
 
     private void nullCheck(Scheduler scheduler)
     {
@@ -28,7 +39,7 @@ public abstract class SchedulerEngineBase
 
     private Scheduler getSchedulerBean()
     {
-        return applicationContext.getBean(Scheduler.class);
+        return getApplicationContext().getBean(Scheduler.class);
     }
 
     protected abstract Scheduler getDailySimpleScheduler();

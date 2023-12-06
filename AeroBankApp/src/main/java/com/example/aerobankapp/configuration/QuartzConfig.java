@@ -20,6 +20,9 @@ import org.springframework.scheduling.quartz.*;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Random;
+
+import static org.quartz.JobBuilder.newJob;
 
 @Configuration
 @ComponentScan(basePackages = "com.example.aerobankapp.scheduler")
@@ -68,12 +71,6 @@ public class QuartzConfig
         return jobDetailFactoryBean;
     }
 
-    @Bean
-    @Scope(value=ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public JobDetail depositJobDetail(@Qualifier("jobDetailFactoryBean") JobDetailFactoryBean jobDetailFactoryBean)
-    {
-
-    }
 
 
     @Bean
