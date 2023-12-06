@@ -14,7 +14,6 @@ public class TokenManager {
     private JWTUtil jwtUtil;
     private Map<String, User> sessionTokens;
 
-
     private TokenManager() {
         sessionTokens = new HashMap<>();
         jwtUtil = new JWTUtil();

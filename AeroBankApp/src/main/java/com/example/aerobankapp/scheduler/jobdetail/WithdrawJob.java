@@ -4,11 +4,11 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-public class DepositJob implements Job
+public class WithdrawJob implements Job
 {
+
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException
-    {
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
     }
 }

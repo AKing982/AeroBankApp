@@ -1,35 +1,42 @@
-package com.example.aerobankapp.workbench.controllers.fxml;
+package com.example.aerobankapp.scheduler.jobdetail;
 
-import com.example.aerobankapp.services.AuthenticationServiceImpl;
-import com.example.aerobankapp.workbench.model.LoginModel;
+import com.example.aerobankapp.workbench.transactions.Purchase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-class LoginControllerTest
+class PurchaseJobDetailTest
 {
     @MockBean
-    private LoginController loginController;
+    private PurchaseJobDetail purchaseJobDetail;
 
     @Autowired
-    private LoginModel loginModel;
-
-    @Autowired
-    private AuthenticationServiceImpl authenticationService;
+    @Mock
+    private Purchase purchase;
 
     @BeforeEach
     void setUp()
     {
-       // loginController = new LoginController(authenticationService, loginModel);
+        purchase = mock(Purchase.class);
+        purchaseJobDetail = new PurchaseJobDetail(purchase);
+    }
+
+    @Test
+    public void initialize()
+    {
+        assertNotNull(purchaseJobDetail);
+        assertNotNull(purchase);
     }
 
     @AfterEach

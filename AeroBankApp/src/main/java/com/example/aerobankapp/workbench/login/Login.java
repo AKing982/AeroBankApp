@@ -284,7 +284,7 @@ public class Login extends Application
          LoginModel loginModel = new LoginModel(user, password);
 
          // TODO: Execute Login ThreadPool Process
-         LoginController loginController = new LoginController(authenticationService, loginModel);
+         //LoginController loginController = new LoginController(authenticationService, loginModel);
      }
 
      private UserProfileModel getUserProfileModel(String user)

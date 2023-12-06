@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 @NoArgsConstructor(access=AccessLevel.PUBLIC, force=true)
+@Component
 public class Purchase extends TransactionBase implements Serializable
 {
     private Long id;

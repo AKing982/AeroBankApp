@@ -6,6 +6,10 @@ import org.quartz.SchedulerException;
 public class TransferScheduler extends SchedulerEngineBase
 {
 
+    public TransferScheduler(Scheduler scheduler) {
+        super(scheduler);
+    }
+
     @Override
     protected Scheduler getDailySimpleScheduler() {
         return null;
