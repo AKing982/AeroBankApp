@@ -72,7 +72,7 @@ public class QuartzConfig
     @Scope(value=ConfigurableBeanFactory.SCOPE_SINGLETON)
     public JobDetail depositJobDetail(@Qualifier("jobDetailFactoryBean") JobDetailFactoryBean jobDetailFactoryBean)
     {
-        
+
     }
 
 
