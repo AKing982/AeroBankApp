@@ -1,13 +1,20 @@
 package com.example.aerobankapp.scheduler;
 
+
+import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
+import com.example.aerobankapp.workbench.transactions.TransferDTO;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class TransferScheduler extends SchedulerEngineBase
 {
+    private TransferDTO transfer;
+    private TransferJobDetail transferJobDetail;
 
-    public TransferScheduler(Scheduler scheduler) {
-        super(scheduler);
+    public TransferScheduler(Scheduler scheduler, @Qualifier("transfer") TransferDTO transfer, SchedulerCriteria schedulerCriteria, TransferJobDetail transferJobDetail)
+    {
+        super(scheduler, schedulerCriteria);
     }
 
     @Override

@@ -18,6 +18,9 @@ public abstract class SchedulerEngineBase
     protected Scheduler scheduler;
     protected SchedulerCriteria schedulerCriteria;
     private SchedulerSecurity schedulerSecurity;
+    protected boolean schedulerStop;
+    protected boolean schedulerPause;
+    protected boolean schedulerStart;
     private AnnotationConfigApplicationContext applicationContext;
 
     public SchedulerEngineBase(Scheduler scheduler, SchedulerCriteria schedulerCriteria)

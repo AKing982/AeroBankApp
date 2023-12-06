@@ -1,16 +1,15 @@
 package com.example.aerobankapp.workbench.transactions;
 
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@EqualsAndHashCode(callSuper = true)
+@ToString
 @Data
 @Builder
 @NoArgsConstructor(access=AccessLevel.PUBLIC, force=true)

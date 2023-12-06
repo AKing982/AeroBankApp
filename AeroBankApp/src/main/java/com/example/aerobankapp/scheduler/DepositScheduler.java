@@ -9,9 +9,10 @@ import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Service
+@Component
 public class DepositScheduler extends SchedulerEngineBase
 {
     private DepositJobDetail depositJobDetail;
@@ -33,7 +34,7 @@ public class DepositScheduler extends SchedulerEngineBase
     @Override
     protected Scheduler getDailySimpleScheduler()
     {
-        Scheduler dailySimpleScheduler = super.getScheduler();
+       return null;
     }
 
     @Override

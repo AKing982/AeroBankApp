@@ -1,8 +1,6 @@
 package com.example.aerobankapp.scheduler.security;
 
-import com.example.aerobankapp.workbench.utilities.BankAuthorization;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
-import com.example.aerobankapp.workbench.utilities.quartz.Quartz;
 import lombok.Getter;
 import lombok.Setter;
 

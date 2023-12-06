@@ -1,7 +1,8 @@
 package com.example.aerobankapp.scheduler.data;
 
-import com.example.aerobankapp.workbench.transactions.Deposit;
-import lombok.AllArgsConstructor;
+import com.example.aerobankapp.workbench.transactions.Purchase;
+import lombok.Getter;
+import lombok.Setter;
 import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,37 +12,40 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope(value= ConfigurableBeanFactory.SCOPE_SINGLETON)
-@AllArgsConstructor
-public class DepositJobData implements JobDataModel
+@Getter
+@Setter
+public class PurchaseJobData implements JobDataModel
 {
     private JobDataMap jobDataMap;
-
-    private Deposit deposit;
-    private final String dataMapStr = "DepositData";
+    private Purchase purchase;
+    private final String purchaseStr = "PurchaseData";
 
     @Autowired
-    public DepositJobData(Deposit deposit)
+    public PurchaseJobData(@Qualifier("purchase")Purchase purchase)
     {
-        initialize(deposit);
+        initialize(purchase);
     }
 
-    public void initialize(Deposit deposit)
+    public void initialize(Purchase purchase)
     {
-        this.jobDataMap = getJobDataMap(deposit);
+        if(purchase != null)
+        {
+            this.purchase = purchase;
+            this.jobDataMap = getJobDataMap(purchase);
+        }
     }
 
-    private JobDataMap getJobDataMap(@Qualifier("deposit") Deposit deposit)
+    private JobDataMap getJobDataMap(@Qualifier("purchase") Purchase purchase)
     {
         JobDataMap jobDataMap1 = new JobDataMap();
-        jobDataMap1.put(dataMapStr, deposit);
+        jobDataMap1.put(purchaseStr, purchase);
         return jobDataMap1;
     }
+
 
     @Override
     public JobDataMap getJobDataMap()
     {
         return jobDataMap;
     }
-
-
 }

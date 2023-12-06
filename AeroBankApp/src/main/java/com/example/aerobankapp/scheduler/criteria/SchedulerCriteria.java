@@ -1,8 +1,6 @@
 package com.example.aerobankapp.scheduler.criteria;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -11,6 +9,8 @@ import java.time.LocalDate;
 @Component
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
+@Getter
+@Setter
 public final class SchedulerCriteria
 {
     private Long scheduleCriteriaID;

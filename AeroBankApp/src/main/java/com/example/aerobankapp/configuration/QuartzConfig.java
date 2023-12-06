@@ -29,7 +29,6 @@ import static org.quartz.JobBuilder.newJob;
 public class QuartzConfig
 {
 
-
     @Bean
     @Scope(value= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public SchedulerFactoryBean scheduler() throws SchedulerException
@@ -45,19 +44,7 @@ public class QuartzConfig
         return new SpringBeanJobFactory();
     }
 
-    @Bean
-    @Scope(value=ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public JobDetailFactoryBean depositJobDetailFactoryBean(@Qualifier("deposit")Deposit deposit, @Qualifier("beanString") String data)
-    {
-        // Create the JobDataMap
-        JobDataMap depositJobDataMap = new JobDataMap();
-        depositJobDataMap.put(data, deposit);
 
-        // Create and set the JobDetailFactoryBean
-        JobDetailFactoryBean depositJobDetailFactoryBean = new JobDetailFactoryBean();
-        depositJobDetailFactoryBean.setJobDataMap(depositJobDataMap);
-        return depositJobDetailFactoryBean;
-    }
 
     @Bean
     @Scope(value=ConfigurableBeanFactory.SCOPE_SINGLETON)

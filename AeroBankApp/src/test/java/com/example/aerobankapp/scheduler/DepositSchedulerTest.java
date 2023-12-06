@@ -1,6 +1,7 @@
 package com.example.aerobankapp.scheduler;
 
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
+import com.example.aerobankapp.scheduler.jobdetail.DepositJobDetail;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,10 @@ class DepositSchedulerTest
 
     @Autowired
     @Mock
+    private DepositJobDetail depositJobDetail;
+
+    @Autowired
+    @Mock
     private Deposit deposit;
 
     @BeforeEach
@@ -41,14 +46,14 @@ class DepositSchedulerTest
         scheduler = mock(Scheduler.class);
         deposit = mock(Deposit.class);
         schedulerCriteria = mock(SchedulerCriteria.class);
+        depositJobDetail = mock(DepositJobDetail.class);
 
-        depositScheduler = new DepositScheduler(scheduler, deposit, schedulerCriteria);
+        depositScheduler = new DepositScheduler(scheduler, deposit, schedulerCriteria, depositJobDetail);
     }
 
     @Test
     public void testConstructor()
     {
-        depositScheduler = new DepositScheduler(scheduler, deposit, schedulerCriteria);
         assertNotNull(depositScheduler);
         assertNotNull(deposit);
         assertNotNull(scheduler);

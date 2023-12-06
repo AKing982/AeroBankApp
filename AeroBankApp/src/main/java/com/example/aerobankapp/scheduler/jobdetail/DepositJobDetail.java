@@ -9,6 +9,8 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
@@ -19,11 +21,12 @@ import static org.quartz.JobBuilder.newJob;
 @Component
 @Getter
 @Setter
+@Scope(value= ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DepositJobDetail extends JobDetailBase<Deposit>
 {
     private Deposit deposit;
     private JobDataMap depositJobDataMap;
-    private JobDetail jobDetail;
+    private DepositJobData depositJobData;
     private final String depositDataString = "DepositData";
 
     @Autowired
@@ -33,12 +36,22 @@ public class DepositJobDetail extends JobDetailBase<Deposit>
         initialize(deposit);
     }
 
+    public void initializeJobData(Deposit deposit)
+    {
+        this.depositJobData = new DepositJobData(deposit);
+    }
+
     @Override
     public void initialize(Deposit deposit)
     {
-        nullCheck(deposit);
-        this.deposit = deposit;
+        if(deposit != null)
+        {
 
+        }
+        nullCheck(deposit);
+        initializeJobData(deposit);
+        this.deposit = deposit;
+        this.depositJobDataMap = depositJobData.getJobDataMap();
     }
 
     @Override
@@ -57,18 +70,16 @@ public class DepositJobDetail extends JobDetailBase<Deposit>
         Random random = new Random();
         int randomNumber = random.nextInt(Integer.MAX_VALUE) + 1;
 
-        JobDetail depositJobDetail = super.getJobDetailFactoryBean(DepositJob.class, depositJobDataMap, jobName);
-
         return newJob(DepositJob.class)
                 .withIdentity("job" + randomNumber, "group" + randomNumber)
-                .withDescription(jobName)
-                .usingJobData(depositJobDataMap)
+                .withDescription(getJobName())
+                .usingJobData(getDepositJobDataMap())
                 .build();
     }
 
     public JobDataMap getJobDataMap()
     {
-        return depositJobDataMap;
+        return getDepositJobDataMap();
     }
 
 }

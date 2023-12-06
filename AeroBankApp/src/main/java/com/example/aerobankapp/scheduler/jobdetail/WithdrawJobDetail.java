@@ -7,6 +7,8 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
@@ -16,6 +18,7 @@ import static org.quartz.JobBuilder.newJob;
 @Component
 @Getter
 @Setter
+@Scope(value= ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class WithdrawJobDetail extends JobDetailBase<Withdraw>
 {
     private Withdraw withdraw;

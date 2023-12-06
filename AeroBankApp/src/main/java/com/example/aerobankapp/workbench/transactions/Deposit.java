@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Data
+
 @Builder
+@Component
 @NoArgsConstructor
 @AllArgsConstructor
-@Component
 public class Deposit extends TransactionBase implements Serializable
 {
     private Long id;

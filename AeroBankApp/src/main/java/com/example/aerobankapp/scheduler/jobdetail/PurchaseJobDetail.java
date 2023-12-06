@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,14 +16,14 @@ public class PurchaseJobDetail extends JobDetailBase<Purchase>
     private JobDataMap purchaseData;
 
     @Autowired
-    public PurchaseJobDetail(Purchase purchase)
+    public PurchaseJobDetail(@Qualifier("purchase") Purchase purchase)
     {
         super("Purchase Job");
         initialize(purchase);
     }
 
     @Override
-    public void initialize(Purchase purchase)
+    public void initialize(final Purchase purchase)
     {
         nullCheck(purchase);
         this.purchase = purchase;
