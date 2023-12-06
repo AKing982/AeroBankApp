@@ -68,6 +68,13 @@ public class QuartzConfig
         return jobDetailFactoryBean;
     }
 
+    @Bean
+    @Scope(value=ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public JobDetail depositJobDetail(@Qualifier("jobDetailFactoryBean") JobDetailFactoryBean jobDetailFactoryBean)
+    {
+        
+    }
+
 
     @Bean
     @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
