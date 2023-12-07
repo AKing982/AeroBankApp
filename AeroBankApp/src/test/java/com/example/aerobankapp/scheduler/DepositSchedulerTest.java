@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,14 +38,12 @@ class DepositSchedulerTest
     private DepositJobDetail depositJobDetail;
 
     @Autowired
-    @Mock
     private Deposit deposit;
 
     @BeforeEach
     void setUp()
     {
         scheduler = mock(Scheduler.class);
-        deposit = mock(Deposit.class);
         schedulerCriteria = mock(SchedulerCriteria.class);
         depositJobDetail = mock(DepositJobDetail.class);
 
@@ -52,17 +51,32 @@ class DepositSchedulerTest
     }
 
     @Test
-    public void testConstructor()
-    {
+    public void testConstructor() throws SchedulerException {
+        Scheduler expectedScheduler = depositScheduler.getScheduler();
+        SchedulerCriteria schedulerCriteria1 = depositScheduler.getSchedulerCriteria();
+        Deposit deposit1 = depositScheduler.getDeposit();
         assertNotNull(depositScheduler);
-        assertNotNull(deposit);
-        assertNotNull(scheduler);
+        assertNotNull(expectedScheduler);
+        assertNotNull(schedulerCriteria1);
+        assertNotNull(deposit1);
+    }
+
+    @Test
+    public void testSchedulerBean() throws SchedulerException
+    {
+        Scheduler expected = mock(Scheduler.class);
+        Scheduler actual = depositScheduler.getSchedulerBean();
+
+        assertNotNull(actual);
+        assertNotEquals(expected, actual);
     }
 
     @Test
     public void testDailySimpleScheduler()
     {
+        Scheduler dailyScheduler = depositScheduler.getDailySimpleScheduler();
 
+        assertNotNull(dailyScheduler);
     }
 
     @AfterEach

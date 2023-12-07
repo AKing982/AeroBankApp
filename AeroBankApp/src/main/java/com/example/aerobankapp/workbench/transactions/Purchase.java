@@ -12,8 +12,8 @@ import java.time.LocalDate;
 @ToString
 @Data
 @Builder
-@NoArgsConstructor(access=AccessLevel.PUBLIC, force=true)
 @Component
+@NoArgsConstructor(access=AccessLevel.PUBLIC, force=true)
 public class Purchase extends TransactionBase implements Serializable
 {
     private Long id;

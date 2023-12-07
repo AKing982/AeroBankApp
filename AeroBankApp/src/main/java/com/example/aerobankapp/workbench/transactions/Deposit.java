@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 
 
 @Builder
-@Component
 @NoArgsConstructor
 @AllArgsConstructor
+@Component
 public class Deposit extends TransactionBase implements Serializable
 {
     private Long id;

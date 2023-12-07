@@ -4,9 +4,12 @@ import com.example.aerobankapp.configuration.QuartzConfig;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 import com.example.aerobankapp.scheduler.jobdetail.JobDetailBase;
 import com.example.aerobankapp.scheduler.security.SchedulerSecurity;
+import com.example.aerobankapp.workbench.transactions.Deposit;
+import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
 import lombok.Getter;
 import lombok.Setter;
 import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -21,18 +24,13 @@ public abstract class SchedulerEngineBase
     protected boolean schedulerStop;
     protected boolean schedulerPause;
     protected boolean schedulerStart;
+    private TransactionBase transactionBase;
     private AnnotationConfigApplicationContext applicationContext;
 
     public SchedulerEngineBase(Scheduler scheduler, SchedulerCriteria schedulerCriteria)
     {
         this.scheduler = scheduler;
         this.schedulerCriteria = schedulerCriteria;
-        initializeContext();
-    }
-
-    public void initializeContext()
-    {
-        applicationContext = new AnnotationConfigApplicationContext(QuartzConfig.class);
     }
 
     private void nullCheck(Scheduler scheduler)
@@ -40,9 +38,10 @@ public abstract class SchedulerEngineBase
 
     }
 
-    private Scheduler getSchedulerBean()
-    {
-        return getApplicationContext().getBean(Scheduler.class);
+
+
+    public Scheduler getSchedulerBean() throws SchedulerException {
+        return new StdSchedulerFactory().getScheduler();
     }
 
     protected abstract Scheduler getDailySimpleScheduler();
@@ -52,8 +51,7 @@ public abstract class SchedulerEngineBase
     protected abstract Scheduler getMonthlyCronScheduler();
     protected abstract Scheduler getCustomCronScheduler() throws SchedulerException;
 
-    protected Scheduler getScheduler()
-    {
+    protected Scheduler getScheduler() throws SchedulerException {
         return getSchedulerBean();
     }
 

@@ -12,9 +12,10 @@ public class TransferScheduler extends SchedulerEngineBase
     private TransferDTO transfer;
     private TransferJobDetail transferJobDetail;
 
-    public TransferScheduler(Scheduler scheduler, @Qualifier("transfer") TransferDTO transfer, SchedulerCriteria schedulerCriteria, TransferJobDetail transferJobDetail)
+    public TransferScheduler(Scheduler scheduler, TransferDTO transfer, SchedulerCriteria schedulerCriteria)
     {
         super(scheduler, schedulerCriteria);
+        this.transfer = transfer;
     }
 
     @Override

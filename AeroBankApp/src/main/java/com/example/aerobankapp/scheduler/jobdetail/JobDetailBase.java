@@ -26,7 +26,7 @@ public abstract class JobDetailBase<T extends TransactionBase>
     public JobDetailBase(String description)
     {
         this.jobName = description;
-        initializeContext();
+
     }
 
     private void initializeContext()

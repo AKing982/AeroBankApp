@@ -16,10 +16,10 @@ public class PurchaseJobDetail extends JobDetailBase<Purchase>
     private JobDataMap purchaseData;
 
     @Autowired
-    public PurchaseJobDetail(@Qualifier("purchase") Purchase purchase)
+    public PurchaseJobDetail(Purchase purchase)
     {
         super("Purchase Job");
-        initialize(purchase);
+        this.purchase = purchase;
     }
 
     @Override
@@ -32,10 +32,7 @@ public class PurchaseJobDetail extends JobDetailBase<Purchase>
     @Override
     public void nullCheck(Purchase purchase)
     {
-        if(purchase == null)
-        {
-            throw new NullPointerException();
-        }
+
     }
 
     @Override
