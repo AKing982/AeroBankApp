@@ -1,6 +1,6 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.CheckingAccount;
+import com.example.aerobankapp.entity.CheckingAccountEntity;
 import com.example.aerobankapp.repositories.CheckingRepository;
 
 import jakarta.persistence.EntityManager;
@@ -29,35 +29,35 @@ public class CheckingRepositoryServiceImpl implements CheckingRepositoryService
 
     @Override
     @Transactional
-    public List<CheckingAccount> findAll()
+    public List<CheckingAccountEntity> findAll()
     {
         return checkingRepo.findAll();
     }
 
     @Override
     @Transactional
-    public void save(CheckingAccount obj)
+    public void save(CheckingAccountEntity obj)
     {
         checkingRepo.save(obj);
     }
 
     @Override
     @Transactional
-    public void delete(CheckingAccount obj)
+    public void delete(CheckingAccountEntity obj)
     {
         checkingRepo.delete(obj);
     }
 
     @Override
-    public CheckingAccount findAllById(Long id)
+    public CheckingAccountEntity findAllById(Long id)
     {
         return checkingRepo.findById(id).orElse(null);
     }
 
     @Override
-    public List<CheckingAccount> findByUserName(String user)
+    public List<CheckingAccountEntity> findByUserName(String user)
     {
-        TypedQuery<CheckingAccount> checkingAccountTypedQuery = entityManager.createQuery("FROM CheckingAccount WHERE userName=:user", CheckingAccount.class);
+        TypedQuery<CheckingAccountEntity> checkingAccountTypedQuery = entityManager.createQuery("FROM CheckingAccountEntity WHERE userName=:user", CheckingAccountEntity.class);
         checkingAccountTypedQuery.setParameter("user", user);
         checkingAccountTypedQuery.setMaxResults(10);
         return checkingAccountTypedQuery.getResultList();

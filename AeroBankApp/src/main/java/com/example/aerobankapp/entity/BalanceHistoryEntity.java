@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access=AccessLevel.PUBLIC, force=true)
 @AllArgsConstructor(access=AccessLevel.PUBLIC)
 @Table(name="balanceHistory")
-public class BalanceHistory implements Serializable
+public class BalanceHistoryEntity implements Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

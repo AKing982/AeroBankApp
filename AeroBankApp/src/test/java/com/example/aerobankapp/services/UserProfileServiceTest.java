@@ -1,8 +1,9 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.CheckingAccount;
-import com.example.aerobankapp.entity.SavingsAccount;
-import com.example.aerobankapp.entity.UserLog;
+
+import com.example.aerobankapp.entity.CheckingAccountEntity;
+import com.example.aerobankapp.entity.SavingsAccountEntity;
+import com.example.aerobankapp.entity.UserLogEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,15 +37,15 @@ class UserProfileServiceTest
     @Autowired
     private BalanceHistoryServiceImpl balanceHistoryService;
 
-    private CheckingAccount checkingAccount;
+    private CheckingAccountEntity checkingAccount;
 
-    private SavingsAccount savingsAccount;
+    private SavingsAccountEntity savingsAccount;
 
     @BeforeEach
     void setUp()
     {
         userProfileService = new UserProfileService(accountServiceBundle, userServiceBundle, balanceHistoryService);
-        checkingAccount = CheckingAccount.builder()
+        checkingAccount = CheckingAccountEntity.builder()
                 .userName("AKing94")
                 .minimumBalance(new BigDecimal("100.00"))
                 .interestRate(new BigDecimal("1.67"))
@@ -53,7 +54,7 @@ class UserProfileServiceTest
                 .balance(new BigDecimal("1250.00"))
                 .build();
 
-        savingsAccount = SavingsAccount.builder()
+        savingsAccount = SavingsAccountEntity.builder()
                 .accountName("MySavings")
                 .balance(new BigDecimal("2500.00"))
                 .user("AKing94")
@@ -72,7 +73,7 @@ class UserProfileServiceTest
         String acctID = "A1";
         String acctName = "Checking";
 
-        List<CheckingAccount> userChecking = userProfileService.getCheckingAccounts(user);
+        List<CheckingAccountEntity> userChecking = userProfileService.getCheckingAccounts(user);
         assertNotNull(userChecking);
         assertTrue(userChecking.size() >= 1);
         assertEquals(checkingAccount, userChecking.get(0));
@@ -84,7 +85,7 @@ class UserProfileServiceTest
     public void testSavingsAccounts()
     {
         String user = "AKing94";
-        List<SavingsAccount> savingsAccounts = userProfileService.getSavingsAccounts(user);
+        List<SavingsAccountEntity> savingsAccounts = userProfileService.getSavingsAccounts(user);
         assertNotNull(savingsAccounts);
         assertEquals(savingsAccount.getUser(), savingsAccounts.get(0).getUser());
         assertEquals(savingsAccount.getAccountName(), savingsAccounts.get(0).getAccountName());
@@ -94,15 +95,15 @@ class UserProfileServiceTest
     public void testUserLogData()
     {
         String user = "AKing94";
-        UserLog userLog = UserLog.builder()
+        UserLogEntity userLog = UserLogEntity.builder()
                 .userID(1)
                 .username("AKing94")
                 .lastLogin(new Date())
                 .build();
 
         userProfileService.insertUserLog(userLog);
-        List<UserLog> userLogs = userProfileService.getUserLogData(user);
-        List<UserLog> userLogList = new ArrayList<>();
+        List<UserLogEntity> userLogs = userProfileService.getUserLogData(user);
+        List<UserLogEntity> userLogList = new ArrayList<>();
         userLogList.add(userLog);
 
         assertNotNull(userLogs);

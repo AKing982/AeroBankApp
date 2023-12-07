@@ -1,6 +1,6 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.UserLog;
+import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.model.UserLogModel;
 import com.example.aerobankapp.repositories.UserLogRepository;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
@@ -31,7 +31,7 @@ public class UserLogServiceImpl implements UserLogService
     }
 
     @Override
-    public List<UserLog> findAll()
+    public List<UserLogEntity> findAll()
     {
         aeroLogger.info("UserLog's Found: " + userLogRepo.findAll());
         return userLogRepo.findAll();
@@ -39,28 +39,28 @@ public class UserLogServiceImpl implements UserLogService
 
     @Override
     @Transactional
-    public void save(UserLog obj)
+    public void save(UserLogEntity obj)
     {
         userLogRepo.save(obj);
     }
 
     @Override
     @Transactional
-    public void delete(UserLog obj)
+    public void delete(UserLogEntity obj)
     {
         userLogRepo.delete(obj);
     }
 
     @Override
-    public UserLog findAllById(Long id)
+    public UserLogEntity findAllById(Long id)
     {
         return userLogRepo.findById((long)id).orElse(null);
     }
 
     @Override
-    public List<UserLog> findByUserName(String user)
+    public List<UserLogEntity> findByUserName(String user)
     {
-        TypedQuery<UserLog> typedQuery = em.createQuery("FROM UserLog WHERE username=:user", UserLog.class);
+        TypedQuery<UserLogEntity> typedQuery = em.createQuery("FROM UserLogEntity WHERE username=:user", UserLogEntity.class);
         typedQuery.setParameter("user", user);
         typedQuery.setMaxResults(1);
         return typedQuery.getResultList();

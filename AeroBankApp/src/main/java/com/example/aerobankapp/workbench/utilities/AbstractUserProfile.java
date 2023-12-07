@@ -27,14 +27,14 @@ public abstract class AbstractUserProfile implements Cloneable {
     private BankAuthorization userAuthorization;
 
     protected String username;
-    protected List<CheckingAccount> checkingAccounts;
-    protected List<SavingsAccount> savingsAccounts;
-    protected List<InvestmentAccount> investmentAccounts;
-    protected List<RentAccount> rentAccounts;
-    protected List<MortgageAccount> mortgageAccounts;
+    protected List<CheckingAccountEntity> checkingAccounts;
+    protected List<SavingsAccountEntity> savingsAccounts;
+    protected List<InvestmentAccountEntity> investmentAccounts;
+    protected List<RentAccountEntity> rentAccounts;
+    protected List<MortgageAccountEntity> mortgageAccounts;
     protected List<CardDesignator> cards;
     protected Map<Integer, List<ImageView>> cardImagesMap;
-    protected Map<Integer, AccountSecurity> accountSecurityMap;
+    protected Map<Integer, AccountSecurityEntity> accountSecurityMap;
     protected Map<Integer, List<BalanceHistory>> balanceHistoryMap;
     protected Map<Integer, List<FeesDTO>> accountFees;
     protected List<AccountNumber> accountNumbers;
@@ -51,14 +51,14 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected abstract List<Withdraw> getAllWithdraws();
     protected abstract List<Purchase> getAllPurchases();
     protected abstract List<Deposit> getAllDeposits();
-    protected abstract List<CheckingAccount> getAllCheckingAccounts();
-    protected abstract List<SavingsAccount> getAllSavingsAccounts();
-    protected abstract List<InvestmentAccount> getAllInvestmentAccounts();
-    protected abstract List<RentAccount> getAllRentAccounts();
-    protected abstract List<MortgageAccount> getAllMortgageAccounts();
+    protected abstract List<CheckingAccountEntity> getAllCheckingAccounts();
+    protected abstract List<SavingsAccountEntity> getAllSavingsAccounts();
+    protected abstract List<InvestmentAccountEntity> getAllInvestmentAccounts();
+    protected abstract List<RentAccountEntity> getAllRentAccounts();
+    protected abstract List<MortgageAccountEntity> getAllMortgageAccounts();
     protected abstract List<CardDesignator> getAllUserCards();
     protected abstract Map<Integer, List<ImageView>> getUserCardImages();
-    protected abstract Map<Integer, AccountSecurity> getAccountSecurityDetails();
+    protected abstract Map<Integer, AccountSecurityEntity> getAccountSecurityDetails();
     protected abstract Map<Integer, List<BalanceHistory>> getBalanceHistories();
     protected abstract Map<Integer, List<FeesDTO>> getAccountFees();
 

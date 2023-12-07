@@ -1,6 +1,6 @@
 package com.example.aerobankapp.converter;
 
-import com.example.aerobankapp.entity.BalanceHistory;
+import com.example.aerobankapp.entity.BalanceHistoryEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ public class BalanceHistoryConverter implements Convert
 {
 
     @Override
-    public BalanceHistory getConversion(com.example.aerobankapp.workbench.history.BalanceHistory balanceHistory)
+    public BalanceHistoryEntity getConversion(com.example.aerobankapp.workbench.history.BalanceHistory balanceHistory)
     {
         Long id = (long) balanceHistory.getId();
         final String acctID = balanceHistory.getAcctID();
@@ -24,6 +24,6 @@ public class BalanceHistoryConverter implements Convert
         final BigDecimal last_balance = balanceHistory.getLastBalance();
         final LocalDate posted = balanceHistory.getPosted();
 
-        return new BalanceHistory(id, acctID, user, transactionID, balance, adjusted, last_balance, posted);
+        return new BalanceHistoryEntity(id, acctID, user, transactionID, balance, adjusted, last_balance, posted);
     }
 }

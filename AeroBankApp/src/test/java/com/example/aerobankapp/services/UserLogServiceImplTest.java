@@ -1,6 +1,7 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.UserLog;
+
+import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.model.UserLogModel;
 import com.example.aerobankapp.repositories.UserLogRepository;
 import jakarta.persistence.EntityManager;
@@ -45,15 +46,15 @@ class UserLogServiceImplTest {
     @Test
     public void saveUserLog()
     {
-        UserLog userLog = UserLog.builder()
+        UserLogEntity userLog = UserLogEntity.builder()
                 .userID(1)
                 .username("AKing94")
                 .lastLogin(new Date())
                 .build();
 
         userLogService.save(userLog);
-        List<UserLog> expected = Arrays.asList(userLog);
-        List<UserLog> actual = userLogService.findByUserName("AKing94");
+        List<UserLogEntity> expected = Arrays.asList(userLog);
+        List<UserLogEntity> actual = userLogService.findByUserName("AKing94");
 
         assertEquals(expected, actual);
     }

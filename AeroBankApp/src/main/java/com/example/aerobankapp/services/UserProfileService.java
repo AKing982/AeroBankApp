@@ -1,9 +1,8 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.CheckingAccount;
-import com.example.aerobankapp.entity.SavingsAccount;
-import com.example.aerobankapp.entity.UserLog;
-import com.example.aerobankapp.entity.Users;
+import com.example.aerobankapp.entity.CheckingAccountEntity;
+import com.example.aerobankapp.entity.SavingsAccountEntity;
+import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.repositories.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,22 +34,22 @@ public class UserProfileService
         this.userServiceBundle = userBundle;
     }
 
-    public List<CheckingAccount> getCheckingAccounts(String user)
+    public List<CheckingAccountEntity> getCheckingAccounts(String user)
     {
         return accountServiceBundle.getCheckingService().findByUserName(user);
     }
 
-    public List<SavingsAccount> getSavingsAccounts(String user)
+    public List<SavingsAccountEntity> getSavingsAccounts(String user)
     {
         return accountServiceBundle.getSavingsService().findByUserName(user);
     }
 
-    public List<UserLog> getUserLogData(String user)
+    public List<UserLogEntity> getUserLogData(String user)
     {
         return userServiceBundle.getUserLogService().findByUserName(user);
     }
 
-    public void insertUserLog(UserLog userLog)
+    public void insertUserLog(UserLogEntity userLog)
     {
         userServiceBundle.getUserLogService().save(userLog);
     }

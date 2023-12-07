@@ -1,11 +1,10 @@
 package com.example.aerobankapp.services;
 
 
-import com.example.aerobankapp.entity.Users;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,14 +29,14 @@ public class UserServiceImpl implements UserDAOService
 
     @Override
     @Transactional
-    public List<Users> findAll()
+    public List<UserEntity> findAll()
     {
         return userRepository.findAll();
     }
 
     @Override
     @Transactional
-    public void save(Users obj)
+    public void save(UserEntity obj)
     {
         aeroLogger.info("Saving User: " + obj);
         userRepository.save(obj);
@@ -45,7 +44,7 @@ public class UserServiceImpl implements UserDAOService
 
     @Override
     @Transactional
-    public void delete(Users obj)
+    public void delete(UserEntity obj)
     {
         aeroLogger.info("Deleting User: " + obj);
         userRepository.delete(obj);
@@ -53,14 +52,14 @@ public class UserServiceImpl implements UserDAOService
 
     @Override
     @Transactional
-    public Users findAllById(Long id)
+    public UserEntity findAllById(Long id)
     {
         return userRepository.findById((long)id).orElse(null);
     }
 
     @Override
-    public List<Users> findByUserName(String user) {
-        TypedQuery<Users> query = entityManager.createQuery("FROM Users where username=:user", Users.class)
+    public List<UserEntity> findByUserName(String user) {
+        TypedQuery<UserEntity> query = entityManager.createQuery("FROM UserEntity where username=:user", UserEntity.class)
                 .setParameter("user", user)
                 .setMaxResults(10);
 

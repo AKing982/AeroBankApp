@@ -1,7 +1,7 @@
 package com.example.aerobankapp.workbench.runner;
 
-import com.example.aerobankapp.entity.UserLog;
-import com.example.aerobankapp.entity.Users;
+import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.repositories.UserLogRepository;
 import com.example.aerobankapp.repositories.UserRepository;
@@ -56,7 +56,7 @@ class UserLogRunnerTest {
 
     @Test
     public void testUserIDRetrieval() {
-        Users user = Users.builder()
+        UserEntity user = UserEntity.builder()
                 .email("alex@utahkings.com")
                 .password("Halflifer45!")
                 .username("AKing94")
@@ -77,7 +77,7 @@ class UserLogRunnerTest {
 
     @Test
     public void testAddingUserLog() {
-        UserLog userLog = UserLog.builder()
+        UserLogEntity userLog = UserLogEntity.builder()
                 .userID(1)
                 .lastLogin(new Date())
                 .username("AKing94")
@@ -85,17 +85,17 @@ class UserLogRunnerTest {
 
         runner.storeUserLog(userLog);
 
-        List<UserLog> userLog1 = userLogService.findByUserName("AKing94");
+        List<UserLogEntity> userLog1 = userLogService.findByUserName("AKing94");
 
         assertEquals(userLog, userLog1);
     }
 
     @Test
     public void testAddingNullUserLog() {
-        UserLog userLog = null;
+        UserLogEntity userLog = null;
         runner.storeUserLog(userLog);
 
-        List<UserLog> userLogList = userLogService.findByUserName("AKing94");
+        List<UserLogEntity> userLogList = userLogService.findByUserName("AKing94");
 
         assertNull(userLogList);
     }
@@ -106,13 +106,13 @@ class UserLogRunnerTest {
         int userID = 1;
         Date date = new Date();
 
-        UserLog userLog = UserLog.builder()
+        UserLogEntity userLog = UserLogEntity.builder()
                 .username(username)
                 .userID(userID)
                 .lastLogin(date)
                 .build();
 
-        UserLog actual = runner.createUserLog(username, userID, date);
+        UserLogEntity actual = runner.createUserLog(username, userID, date);
 
         assertNotNull(actual);
         assertEquals(userLog, actual);
@@ -125,7 +125,7 @@ class UserLogRunnerTest {
         int userID = 1;
         Date date = new Date();
 
-        UserLog userLog = UserLog.builder()
+        UserLogEntity userLog = UserLogEntity.builder()
                 .username(username)
                 .userID(userID)
                 .lastLogin(date)
@@ -133,7 +133,7 @@ class UserLogRunnerTest {
 
         runner.addUserLogToDatabase();
 
-        List<UserLog> actual = userLogService.findByUserName(username);
+        List<UserLogEntity> actual = userLogService.findByUserName(username);
         assertNotEquals(userLog, actual.get(0));
     }
 

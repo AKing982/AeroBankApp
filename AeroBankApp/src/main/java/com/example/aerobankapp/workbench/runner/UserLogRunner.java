@@ -1,7 +1,7 @@
 package com.example.aerobankapp.workbench.runner;
 
-import com.example.aerobankapp.entity.UserLog;
-import com.example.aerobankapp.entity.Users;
+import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.services.UserLogServiceImpl;
 import com.example.aerobankapp.services.UserServiceImpl;
 import com.example.aerobankapp.workbench.model.LoginModel;
@@ -42,12 +42,12 @@ public class UserLogRunner implements Runnable {
     public int getCurrentUserID()
     {
         int userID = 0;
-        List<Users> users = getUserService().findByUserName(getUserName());
+        List<UserEntity> users = getUserService().findByUserName(getUserName());
         aeroLogger.info("Users size: " + users.size());
 
         if (!users.isEmpty())
         {
-            for (Users user : users)
+            for (UserEntity user : users)
             {
                 aeroLogger.info("User: " + user.toString());
                 if (user.getUsername().equals(getUserName()))
@@ -82,13 +82,13 @@ public class UserLogRunner implements Runnable {
 
     public void addUserLogToDatabase()
     {
-        UserLog userLog1 = createUserLog(getUserName(), getCurrentUserID(), getDate());
+        UserLogEntity userLog1 = createUserLog(getUserName(), getCurrentUserID(), getDate());
         storeUserLog(userLog1);
     }
 
-    public UserLog createUserLog(final String username, final int userID, final Date date)
+    public UserLogEntity createUserLog(final String username, final int userID, final Date date)
     {
-        return UserLog.builder()
+        return UserLogEntity.builder()
                 .userID(userID)
                 .username(username)
                 .lastLogin(date)
@@ -96,7 +96,7 @@ public class UserLogRunner implements Runnable {
                 .build();
     }
 
-    public void storeUserLog(UserLog userLog)
+    public void storeUserLog(UserLogEntity userLog)
     {
         if(userLog != null)
         {

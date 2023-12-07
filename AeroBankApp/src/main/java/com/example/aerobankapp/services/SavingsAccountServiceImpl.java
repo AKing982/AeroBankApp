@@ -1,6 +1,6 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.SavingsAccount;
+import com.example.aerobankapp.entity.SavingsAccountEntity;
 import com.example.aerobankapp.repositories.SavingsRepository;
 
 import jakarta.persistence.EntityManager;
@@ -25,34 +25,34 @@ public class SavingsAccountServiceImpl implements SavingsAccountService
     }
 
     @Override
-    public List<SavingsAccount> findAll()
+    public List<SavingsAccountEntity> findAll()
     {
         return savingsRepository.findAll();
     }
 
     @Override
-    public void save(SavingsAccount obj)
+    public void save(SavingsAccountEntity obj)
     {
         savingsRepository.save(obj);
     }
 
     @Override
-    public void delete(SavingsAccount obj)
+    public void delete(SavingsAccountEntity obj)
     {
         savingsRepository.delete(obj);
     }
 
     @Override
-    public SavingsAccount findAllById(Long id)
+    public SavingsAccountEntity findAllById(Long id)
     {
         return savingsRepository.findById(id).orElse(null);
     }
 
     @Override
-    public List<SavingsAccount> findByUserName(String user)
+    public List<SavingsAccountEntity> findByUserName(String user)
     {
 
-        TypedQuery<SavingsAccount> typedQuery = entityManager.createQuery("FROM SavingsAccount WHERE user=:user", SavingsAccount.class);
+        TypedQuery<SavingsAccountEntity> typedQuery = entityManager.createQuery("FROM SavingsAccountEntity WHERE user=:user", SavingsAccountEntity.class);
         typedQuery.setParameter("user", user);
         typedQuery.setMaxResults(10);
         return typedQuery.getResultList();

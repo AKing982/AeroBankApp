@@ -1,6 +1,6 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.Users;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.security.authentication.UserAuthority;
@@ -34,7 +34,7 @@ class UserServiceImplTest {
     @Autowired
     private EntityManager manager;
     private User user1;
-    private Users test;
+    private UserEntity test;
 
     @BeforeEach
     void setUp()
@@ -48,7 +48,7 @@ class UserServiceImplTest {
                 .accountNumber("12-22-42")
                 .build();
 
-        test = Users.builder()
+        test = UserEntity.builder()
                 .isAdmin(true)
                 .username("AKing94")
                 .email("alex@utahkings.com")
@@ -69,9 +69,9 @@ class UserServiceImplTest {
     {
 
 
-        List<Users> users = new ArrayList<>();
+        List<UserEntity> users = new ArrayList<>();
         users.add(test);
-        List<Users> result = userService.findAll();
+        List<UserEntity> result = userService.findAll();
 
         assertNotNull(userService);
         assertNotNull(manager);
@@ -83,7 +83,7 @@ class UserServiceImplTest {
     public void testSave()
     {
 
-        List<Users> foundUser = userService.findByUserName("AKing94");
+        List<UserEntity> foundUser = userService.findByUserName("AKing94");
 
         assertNotNull(userRepository);
         assertNotNull(userService);
@@ -96,7 +96,7 @@ class UserServiceImplTest {
 
         userService.delete(test);
 
-        List<Users> allUsers = userService.findAll();
+        List<UserEntity> allUsers = userService.findAll();
 
         assertTrue(allUsers.isEmpty());
     }
@@ -107,7 +107,7 @@ class UserServiceImplTest {
 
         userService.save(test);
 
-        Users allUsers = userService.findAllById(1L);
+        UserEntity allUsers = userService.findAllById(1L);
 
         assertNotNull(allUsers);
         assertEquals(test, allUsers);
@@ -116,7 +116,7 @@ class UserServiceImplTest {
     @Test
     public void testFindByUserName()
     {
-        List<Users> allUsers = userService.findByUserName("AKing94");
+        List<UserEntity> allUsers = userService.findByUserName("AKing94");
 
         assertNotNull(allUsers);
         assertEquals(test, allUsers.get(0));
