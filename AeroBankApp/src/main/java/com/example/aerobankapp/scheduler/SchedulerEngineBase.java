@@ -27,9 +27,8 @@ public abstract class SchedulerEngineBase
     private TransactionBase transactionBase;
     private AnnotationConfigApplicationContext applicationContext;
 
-    public SchedulerEngineBase(Scheduler scheduler, SchedulerCriteria schedulerCriteria)
+    public SchedulerEngineBase(SchedulerCriteria schedulerCriteria)
     {
-        this.scheduler = scheduler;
         this.schedulerCriteria = schedulerCriteria;
     }
 
@@ -38,10 +37,17 @@ public abstract class SchedulerEngineBase
 
     }
 
+    public AnnotationConfigApplicationContext getContext()
+    {
+        applicationContext = new AnnotationConfigApplicationContext(QuartzConfig.class);
+        return applicationContext;
+    }
+
 
 
     public Scheduler getSchedulerBean() throws SchedulerException {
-        return new StdSchedulerFactory().getScheduler();
+        this.scheduler = getContext().getBean(Scheduler.class);
+        return scheduler;
     }
 
     protected abstract Scheduler getDailySimpleScheduler();

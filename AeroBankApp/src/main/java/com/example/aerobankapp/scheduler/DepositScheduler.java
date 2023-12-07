@@ -26,10 +26,9 @@ public class DepositScheduler extends SchedulerEngineBase
     private final AeroLogger aeroLogger = new AeroLogger(DepositScheduler.class);
 
     @Autowired
-    public DepositScheduler(Scheduler scheduler, Queue<Deposit> deposits, SchedulerCriteria schedulerCriteria, DepositJobDetail depositJobDetail)
+    public DepositScheduler(SchedulerCriteria schedulerCriteria, DepositJobDetail depositJobDetail)
     {
-        super(scheduler, schedulerCriteria);
-        this.depositQueue = deposits;
+        super(schedulerCriteria);
         this.depositJobDetail = depositJobDetail;
     }
 

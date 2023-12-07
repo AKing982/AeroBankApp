@@ -15,6 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+import java.util.Queue;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -37,9 +40,6 @@ class DepositSchedulerTest
     @Mock
     private DepositJobDetail depositJobDetail;
 
-    @Autowired
-    private Deposit deposit;
-
     @BeforeEach
     void setUp()
     {
@@ -47,18 +47,16 @@ class DepositSchedulerTest
         schedulerCriteria = mock(SchedulerCriteria.class);
         depositJobDetail = mock(DepositJobDetail.class);
 
-        depositScheduler = new DepositScheduler(scheduler, deposit, schedulerCriteria, depositJobDetail);
+        depositScheduler = new DepositScheduler(schedulerCriteria, depositJobDetail);
     }
 
     @Test
     public void testConstructor() throws SchedulerException {
         Scheduler expectedScheduler = depositScheduler.getScheduler();
         SchedulerCriteria schedulerCriteria1 = depositScheduler.getSchedulerCriteria();
-        Deposit deposit1 = depositScheduler.getDeposit();
         assertNotNull(depositScheduler);
         assertNotNull(expectedScheduler);
         assertNotNull(schedulerCriteria1);
-        assertNotNull(deposit1);
     }
 
     @Test

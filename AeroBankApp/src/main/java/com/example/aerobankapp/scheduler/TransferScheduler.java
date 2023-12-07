@@ -12,9 +12,9 @@ public class TransferScheduler extends SchedulerEngineBase
     private TransferDTO transfer;
     private TransferJobDetail transferJobDetail;
 
-    public TransferScheduler(Scheduler scheduler, TransferDTO transfer, SchedulerCriteria schedulerCriteria)
+    public TransferScheduler(TransferDTO transfer, SchedulerCriteria schedulerCriteria)
     {
-        super(scheduler, schedulerCriteria);
+        super(schedulerCriteria);
         this.transfer = transfer;
     }
 

@@ -33,7 +33,7 @@ public class QuartzConfig
     @Scope(value=ConfigurableBeanFactory.SCOPE_SINGLETON)
     public JobFactory jobFactory()
     {
-        return
+        return new SpringBeanJobFactory();
     }
 
     @Bean
