@@ -20,7 +20,7 @@ public class DepositJobData implements JobDataModel
     private final String dataMapStr = "DepositData";
 
     @Autowired
-    public DepositJobData(Deposit deposit)
+    public DepositJobData(@Qualifier("deposit2") Deposit deposit)
     {
         initialize(deposit);
     }

@@ -12,18 +12,18 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
-public class WithdrawScheduler
+public class WithdrawScheduler extends SchedulerEngineBase
 {
     private Withdraw withdraw;
     private WithdrawJobDetail withdrawJobDetail;
     private AeroLogger aeroLogger = new AeroLogger(WithdrawScheduler.class);
 
     @Autowired
-    public WithdrawScheduler(Withdraw withdraw)
+    public WithdrawScheduler(@Qualifier("withdraw2") Withdraw withdraw, SchedulerCriteria schedulerCriteria)
     {
-
+        super(schedulerCriteria);
         this.withdraw = withdraw;
-        this.withdrawJobDetail = withdrawJobDetail;
+        this.withdrawJobDetail = new WithdrawJobDetail(withdraw);
     }
 
 

@@ -5,6 +5,7 @@ import org.springframework.security.core.parameters.P;
 public enum ScheduleRole
 {
     SADMIN("Schedule Admin"),
+    SAUDITOR("Schedule Auditor"),
 
     NONE("No Role Fits this criteria"),
     SUSER("Schedule User"),

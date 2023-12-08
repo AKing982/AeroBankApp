@@ -32,6 +32,8 @@ public class UserProfile extends AbstractUserProfile
     private boolean isCurrentUser;
     private boolean isCurrentSession;
     private boolean isAuthenticated;
+    private boolean isScheduleUser;
+    private boolean isScheduleAdmin;
 
     @Autowired
     public UserProfile(@Qualifier("beanString")String user)

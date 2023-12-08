@@ -30,7 +30,7 @@ public class DepositJobDetail extends JobDetailBase<Deposit>
     private final String depositDataString = "DepositData";
 
     @Autowired
-    public DepositJobDetail(@Qualifier("deposit") Deposit deposit)
+    public DepositJobDetail(@Qualifier("deposit2") Deposit deposit)
     {
         super("DepositJob");
         initialize(deposit);

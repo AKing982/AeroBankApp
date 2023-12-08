@@ -22,14 +22,15 @@ import java.util.Queue;
 public class DepositScheduler extends SchedulerEngineBase
 {
     private DepositJobDetail depositJobDetail;
-    private Queue<Deposit> depositQueue;
+    private Deposit deposit;
     private final AeroLogger aeroLogger = new AeroLogger(DepositScheduler.class);
 
     @Autowired
-    public DepositScheduler(SchedulerCriteria schedulerCriteria, DepositJobDetail depositJobDetail)
+    public DepositScheduler(@Qualifier("deposit2") Deposit deposit, SchedulerCriteria schedulerCriteria)
     {
         super(schedulerCriteria);
-        this.depositJobDetail = depositJobDetail;
+        this.deposit = deposit;
+        this.depositJobDetail = new DepositJobDetail(deposit);
     }
 
     public void nullCheck()

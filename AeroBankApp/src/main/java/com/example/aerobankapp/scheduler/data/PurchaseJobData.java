@@ -21,7 +21,7 @@ public class PurchaseJobData implements JobDataModel
     private final String purchaseStr = "PurchaseData";
 
     @Autowired
-    public PurchaseJobData(@Qualifier("purchase")Purchase purchase)
+    public PurchaseJobData(@Qualifier("purchase2") Purchase purchase)
     {
         initialize(purchase);
     }
