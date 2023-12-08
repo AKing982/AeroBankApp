@@ -3,11 +3,14 @@ package com.example.aerobankapp.scheduler;
 import com.example.aerobankapp.configuration.QuartzConfig;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 import com.example.aerobankapp.entity.SchedulerSecurityEntity;
+import com.example.aerobankapp.scheduler.security.SchedulerSecurityImpl;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+import com.example.aerobankapp.workbench.utilities.UserProfile;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.Getter;
 import lombok.Setter;
 import org.quartz.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 @Getter
@@ -16,7 +19,7 @@ public abstract class SchedulerEngineBase
 {
     protected Scheduler scheduler;
     protected SchedulerCriteria schedulerCriteria;
-    private SchedulerSecurityEntity schedulerSecurity;
+    private SchedulerSecurityImpl schedulerSecurity;
     protected boolean isStarted;
     protected boolean isInStandby;
     protected boolean isShutdown;
@@ -30,6 +33,9 @@ public abstract class SchedulerEngineBase
     private AnnotationConfigApplicationContext applicationContext;
     private AeroLogger aeroLogger = new AeroLogger(SchedulerEngineBase.class);
 
+    @Autowired
+    private UserProfile userProfile;
+
     public SchedulerEngineBase(SchedulerCriteria schedulerCriteria)
     {
         this.schedulerCriteria = schedulerCriteria;
@@ -37,7 +43,7 @@ public abstract class SchedulerEngineBase
 
     void initializeSecurity()
     {
-        schedulerSecurity = new SchedulerSecurityEntity();
+        schedulerSecurity = new SchedulerSecurityImpl();
     }
 
     private void nullCheck(Scheduler scheduler)
@@ -95,17 +101,17 @@ public abstract class SchedulerEngineBase
 
     private boolean hasScheduleUserRights()
     {
-        return schedulerSecurity.isSchedulerUser();
+        return false;
     }
 
     private boolean hasScheduleAdminRights()
     {
-        return schedulerSecurity.isSchedulerAdmin();
+        return false;
     }
 
     private String getSchedulerUserName()
     {
-        return schedulerSecurity.getUserProfile().getUsername();
+        return " ";
     }
 
 
