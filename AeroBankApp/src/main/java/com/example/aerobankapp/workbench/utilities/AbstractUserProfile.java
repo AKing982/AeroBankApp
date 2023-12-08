@@ -5,6 +5,7 @@ import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.fees.FeesDTO;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.model.UserProfileModel;
+import com.example.aerobankapp.entity.SchedulerSecurityEntity;
 import com.example.aerobankapp.workbench.history.BalanceHistory;
 import com.example.aerobankapp.workbench.model.AccountNumber;
 import com.example.aerobankapp.workbench.transactions.CardDesignator;
@@ -15,6 +16,7 @@ import javafx.scene.image.ImageView;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +35,7 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected List<RentAccount> rentAccounts;
     protected List<MortgageAccount> mortgageAccounts;
     protected List<CardDesignator> cards;
+    protected Collection<SchedulerSecurityEntity> schedulerSecurity;
     protected Map<Integer, List<ImageView>> cardImagesMap;
     protected Map<Integer, AccountSecurity> accountSecurityMap;
     protected Map<Integer, List<BalanceHistory>> balanceHistoryMap;
@@ -60,6 +63,7 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected abstract Map<Integer, List<ImageView>> getUserCardImages();
     protected abstract Map<Integer, AccountSecurity> getAccountSecurityDetails();
     protected abstract Map<Integer, List<BalanceHistory>> getBalanceHistories();
+    protected abstract Collection<SchedulerSecurityEntity> getSchedulerSecurities();
     protected abstract Map<Integer, List<FeesDTO>> getAccountFees();
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.aerobankapp.scheduler.security;
+package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.workbench.utilities.UserProfile;
 import jakarta.persistence.*;
@@ -18,11 +18,9 @@ public class SchedulerSecurityEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private UserProfile userProfile;
-    private boolean isSchedulerUser;
-    private boolean isSchedulerAdmin;
+    private String user;
+    private String schedulerRole;
     private boolean isScheduleAllowed;
     private boolean isCronScheduled;
-    private Properties securityProperties;
 
 }

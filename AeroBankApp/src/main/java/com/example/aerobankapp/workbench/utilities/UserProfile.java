@@ -2,7 +2,7 @@ package com.example.aerobankapp.workbench.utilities;
 
 import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.fees.FeesDTO;
-import com.example.aerobankapp.model.UserProfileModel;
+import com.example.aerobankapp.entity.SchedulerSecurityEntity;
 import com.example.aerobankapp.services.UserProfileService;
 import com.example.aerobankapp.workbench.history.BalanceHistory;
 import com.example.aerobankapp.workbench.model.AccountNumber;
@@ -10,7 +10,6 @@ import com.example.aerobankapp.workbench.transactions.CardDesignator;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.Purchase;
 import com.example.aerobankapp.workbench.transactions.Withdraw;
-import jakarta.persistence.Access;
 import javafx.scene.image.ImageView;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -106,6 +106,11 @@ public class UserProfile extends AbstractUserProfile
 
     @Override
     protected Map<Integer, List<BalanceHistory>> getBalanceHistories() {
+        return null;
+    }
+
+    @Override
+    protected Collection<SchedulerSecurityEntity> getSchedulerSecurities() {
         return null;
     }
 
