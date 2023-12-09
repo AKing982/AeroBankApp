@@ -3,7 +3,10 @@ package com.example.aerobankapp.workbench.utilities;
 public enum UserType
 {
     ADMIN("Admin"),
-    USER("User");
+    USER("User"),
+    AUDITOR("Auditor"),
+    MANAGER("Manager"),
+    TELLER("Teller");
 
 
     private String code;
