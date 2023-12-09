@@ -25,6 +25,8 @@ public class SchedulerSecurityDTO
     private boolean isCronTriggerEnabled;
     private boolean isAutoShutdown;
     private boolean isAutoStartup;
+    private boolean isJobModifiable;
+    private boolean hasJobCreateRights;
     private boolean isPausedEnabled;
     private boolean isShutdownEnabled;
     private boolean isStartEnabled;

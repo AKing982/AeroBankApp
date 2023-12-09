@@ -1,0 +1,189 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > DepositJobDetail</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.aerobankapp.scheduler.jobdetail</a>
+</div>
+
+<h1>Coverage Summary for Class: DepositJobDetail (com.example.aerobankapp.scheduler.jobdetail)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DepositJobDetail</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (4/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    43.5%
+  </span>
+  <span class="absValue">
+    (10/23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.aerobankapp.scheduler.jobdetail;
+&nbsp;
+&nbsp;import com.example.aerobankapp.scheduler.data.DepositJobData;
+&nbsp;import com.example.aerobankapp.workbench.transactions.Deposit;
+&nbsp;import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.Setter;
+&nbsp;import org.quartz.JobDataMap;
+&nbsp;import org.quartz.JobDetail;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Qualifier;
+&nbsp;import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+&nbsp;import org.springframework.context.annotation.Scope;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.util.Random;
+&nbsp;
+&nbsp;import static org.quartz.JobBuilder.newJob;
+&nbsp;
+&nbsp;
+&nbsp;@Component
+&nbsp;@Getter
+<b class="nc">&nbsp;@Setter</b>
+&nbsp;@Scope(value= ConfigurableBeanFactory.SCOPE_SINGLETON)
+&nbsp;public class DepositJobDetail extends JobDetailBase&lt;Deposit&gt;
+&nbsp;{
+<b class="nc">&nbsp;    private Deposit deposit;</b>
+<b class="nc">&nbsp;    private JobDataMap depositJobDataMap;</b>
+<b class="nc">&nbsp;    private DepositJobData depositJobData;</b>
+<b class="fc">&nbsp;    private final String depositDataString = &quot;DepositData&quot;;</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public DepositJobDetail(@Qualifier(&quot;deposit2&quot;) Deposit deposit)
+&nbsp;    {
+<b class="fc">&nbsp;        super(&quot;DepositJob&quot;);</b>
+<b class="fc">&nbsp;        initialize(deposit);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void initializeJobData(Deposit deposit)
+&nbsp;    {
+<b class="fc">&nbsp;        this.depositJobData = new DepositJobData(deposit);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void initialize(Deposit deposit)
+&nbsp;    {
+<b class="fc">&nbsp;        if(deposit != null)</b>
+&nbsp;        {
+&nbsp;
+&nbsp;        }
+<b class="fc">&nbsp;        nullCheck(deposit);</b>
+<b class="fc">&nbsp;        initializeJobData(deposit);</b>
+<b class="fc">&nbsp;        this.deposit = deposit;</b>
+<b class="fc">&nbsp;        this.depositJobDataMap = depositJobData.getJobDataMap();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void nullCheck(Deposit deposit)
+&nbsp;    {
+<b class="fc">&nbsp;        if(deposit == null)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            throw new NullPointerException(&quot;Deposit is Null&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public JobDetail getJobDetail()
+&nbsp;    {
+<b class="nc">&nbsp;        Random random = new Random();</b>
+<b class="nc">&nbsp;        int randomNumber = random.nextInt(Integer.MAX_VALUE) + 1;</b>
+&nbsp;
+<b class="nc">&nbsp;        return newJob(DepositJob.class)</b>
+<b class="nc">&nbsp;                .withIdentity(&quot;job&quot; + randomNumber, &quot;group&quot; + randomNumber)</b>
+<b class="nc">&nbsp;                .withDescription(getJobName())</b>
+<b class="nc">&nbsp;                .usingJobData(getDepositJobDataMap())</b>
+<b class="nc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public JobDataMap getJobDataMap()
+&nbsp;    {
+<b class="nc">&nbsp;        return getDepositJobDataMap();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-09 08:52</div>
+</div>
+</body>
+</html>

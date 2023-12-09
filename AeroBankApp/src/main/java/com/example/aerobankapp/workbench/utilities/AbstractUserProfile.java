@@ -1,11 +1,13 @@
 package com.example.aerobankapp.workbench.utilities;
 
 
+import com.example.aerobankapp.LoggedUserImpl;
 import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.fees.FeesDTO;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.entity.SchedulerSecurityEntity;
+import com.example.aerobankapp.services.UserLogServiceImpl;
 import com.example.aerobankapp.workbench.history.BalanceHistory;
 import com.example.aerobankapp.workbench.model.AccountNumber;
 import com.example.aerobankapp.workbench.transactions.CardDesignator;
@@ -15,6 +17,7 @@ import com.example.aerobankapp.workbench.transactions.Withdraw;
 import javafx.scene.image.ImageView;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +26,7 @@ import java.util.Map;
 @Getter
 @Setter
 public abstract class AbstractUserProfile implements Cloneable {
-    protected LoggedUser loggedUser;
+    protected LoggedUserImpl loggedUser;
     protected User user;
     private UserProfileModel userProfileModel;
     private BankAuthorization userAuthorization;
@@ -45,9 +48,18 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected List<Purchase> purchases;
     protected List<Deposit> deposits;
 
+    @Autowired
+    private UserLogServiceImpl userLogService;
+
     public AbstractUserProfile(String user)
     {
         this.username = user;
+        loggedUser = new LoggedUserImpl(userLogService);
+    }
+
+    public String getCurrentUser()
+    {
+        return loggedUser.getCurrentUser();
     }
 
     protected abstract List<AccountNumber> getAllAccountNumbers();

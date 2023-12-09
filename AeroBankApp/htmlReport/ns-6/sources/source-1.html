@@ -1,0 +1,139 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ScheduleRole</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.aerobankapp.scheduler.security</a>
+</div>
+
+<h1>Coverage Summary for Class: ScheduleRole (com.example.aerobankapp.scheduler.security)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ScheduleRole</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.aerobankapp.scheduler.security;
+&nbsp;
+&nbsp;import org.springframework.security.core.parameters.P;
+&nbsp;
+<b class="nc">&nbsp;public enum ScheduleRole</b>
+&nbsp;{
+<b class="nc">&nbsp;    SADMIN(&quot;Schedule Admin&quot;),</b>
+<b class="nc">&nbsp;    SAUDITOR(&quot;Schedule Auditor&quot;),</b>
+&nbsp;
+<b class="nc">&nbsp;    NONE(&quot;No Role Fits this criteria&quot;),</b>
+<b class="nc">&nbsp;    SUSER(&quot;Schedule User&quot;),</b>
+&nbsp;
+<b class="nc">&nbsp;    STELLER(&quot;Schedule Teller&quot;),</b>
+&nbsp;
+<b class="nc">&nbsp;    SMANAGER(&quot;Schedule Manager&quot;);</b>
+&nbsp;
+&nbsp;    private String code;
+&nbsp;
+&nbsp;    ScheduleRole(String code)
+<b class="nc">&nbsp;    {</b>
+<b class="nc">&nbsp;        this.code = code;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ScheduleRole getScheduleRole(String code)
+&nbsp;    {
+<b class="nc">&nbsp;        return switch (code) {</b>
+<b class="nc">&nbsp;            case &quot;Schedule Admin&quot; -&gt; SADMIN;</b>
+<b class="nc">&nbsp;            case &quot;Schedule User&quot; -&gt; SUSER;</b>
+<b class="nc">&nbsp;            case &quot;Schedule Teller&quot; -&gt; STELLER;</b>
+<b class="nc">&nbsp;            case &quot;Schedule Manager&quot; -&gt; SMANAGER;</b>
+<b class="nc">&nbsp;            default -&gt; NONE;</b>
+&nbsp;        };
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-09 08:52</div>
+</div>
+</body>
+</html>

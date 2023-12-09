@@ -3,6 +3,8 @@ package com.example.aerobankapp.workbench.utilities;
 import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.fees.FeesDTO;
 import com.example.aerobankapp.entity.SchedulerSecurityEntity;
+import com.example.aerobankapp.model.SchedulerSecurityDTO;
+import com.example.aerobankapp.scheduler.security.ScheduleRole;
 import com.example.aerobankapp.services.UserProfileService;
 import com.example.aerobankapp.workbench.history.BalanceHistory;
 import com.example.aerobankapp.workbench.model.AccountNumber;
@@ -29,11 +31,10 @@ public class UserProfile extends AbstractUserProfile
 {
     @Autowired
     private UserProfileService userProfileService;
+    private SchedulerSecurityDTO schedulerSecurityDTO;
     private boolean isCurrentUser;
     private boolean isCurrentSession;
     private boolean isAuthenticated;
-    private boolean isScheduleUser;
-    private boolean isScheduleAdmin;
 
     @Autowired
     public UserProfile(@Qualifier("beanString")String user)
@@ -119,9 +120,12 @@ public class UserProfile extends AbstractUserProfile
         return null;
     }
 
-
+    public ScheduleRole getScheduleRole()
+    {
+        return null;
+    }
     public boolean isCurrentUser(String user)
     {
-        return false;
+        return getCurrentUser().equals(user);
     }
 }

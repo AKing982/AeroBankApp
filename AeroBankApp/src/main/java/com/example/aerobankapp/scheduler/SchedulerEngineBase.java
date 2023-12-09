@@ -1,9 +1,11 @@
 package com.example.aerobankapp.scheduler;
 
+import com.example.aerobankapp.LoggedUserImpl;
 import com.example.aerobankapp.configuration.QuartzConfig;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 import com.example.aerobankapp.entity.SchedulerSecurityEntity;
 import com.example.aerobankapp.scheduler.security.SchedulerSecurityImpl;
+import com.example.aerobankapp.services.UserLogServiceImpl;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
@@ -30,20 +32,35 @@ public abstract class SchedulerEngineBase
     private long endTime;
     private long elapsedTime;
     private TransactionBase transactionBase;
+    private LoggedUserImpl loggedUser;
+    private String currentUser;
     private AnnotationConfigApplicationContext applicationContext;
     private AeroLogger aeroLogger = new AeroLogger(SchedulerEngineBase.class);
 
     @Autowired
     private UserProfile userProfile;
 
+    @Autowired
+    private UserLogServiceImpl userLogService;
+
     public SchedulerEngineBase(SchedulerCriteria schedulerCriteria)
     {
         this.schedulerCriteria = schedulerCriteria;
     }
 
+    private void initializeLoggedUser()
+    {
+        loggedUser = new LoggedUserImpl(userLogService);
+    }
+
+    private String getCurrentUser()
+    {
+        return loggedUser.getCurrentUser();
+    }
+
     void initializeSecurity()
     {
-        schedulerSecurity = new SchedulerSecurityImpl();
+       schedulerSecurity = new SchedulerSecurityImpl();
     }
 
     private void nullCheck(Scheduler scheduler)

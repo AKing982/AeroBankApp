@@ -1,0 +1,401 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SchedulerEngineBase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.aerobankapp.scheduler</a>
+</div>
+
+<h1>Coverage Summary for Class: SchedulerEngineBase (com.example.aerobankapp.scheduler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SchedulerEngineBase</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (9/36)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    15.1%
+  </span>
+  <span class="absValue">
+    (14/93)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.aerobankapp.scheduler;
+&nbsp;
+&nbsp;import com.example.aerobankapp.LoggedUserImpl;
+&nbsp;import com.example.aerobankapp.configuration.QuartzConfig;
+&nbsp;import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
+&nbsp;import com.example.aerobankapp.entity.SchedulerSecurityEntity;
+&nbsp;import com.example.aerobankapp.scheduler.security.SchedulerSecurityImpl;
+&nbsp;import com.example.aerobankapp.services.UserLogServiceImpl;
+&nbsp;import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+&nbsp;import com.example.aerobankapp.workbench.utilities.UserProfile;
+&nbsp;import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.Setter;
+&nbsp;import org.quartz.*;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+&nbsp;
+&nbsp;@Getter
+<b class="nc">&nbsp;@Setter</b>
+&nbsp;public abstract class SchedulerEngineBase
+&nbsp;{
+&nbsp;    protected Scheduler scheduler;
+<b class="fc">&nbsp;    protected SchedulerCriteria schedulerCriteria;</b>
+<b class="nc">&nbsp;    private SchedulerSecurityImpl schedulerSecurity;</b>
+&nbsp;    protected boolean isStarted;
+&nbsp;    protected boolean isInStandby;
+&nbsp;    protected boolean isShutdown;
+&nbsp;    protected boolean isScheduling;
+<b class="nc">&nbsp;    protected boolean isTriggerJob;</b>
+<b class="nc">&nbsp;    protected boolean isStartedWithDelay;</b>
+<b class="nc">&nbsp;    private long startTime;</b>
+<b class="nc">&nbsp;    private long endTime;</b>
+<b class="nc">&nbsp;    private long elapsedTime;</b>
+<b class="nc">&nbsp;    private TransactionBase transactionBase;</b>
+<b class="nc">&nbsp;    private LoggedUserImpl loggedUser;</b>
+&nbsp;    private String currentUser;
+<b class="nc">&nbsp;    private AnnotationConfigApplicationContext applicationContext;</b>
+<b class="fc">&nbsp;    private AeroLogger aeroLogger = new AeroLogger(SchedulerEngineBase.class);</b>
+&nbsp;
+&nbsp;    @Autowired
+<b class="nc">&nbsp;    private UserProfile userProfile;</b>
+&nbsp;
+&nbsp;    @Autowired
+<b class="nc">&nbsp;    private UserLogServiceImpl userLogService;</b>
+&nbsp;
+&nbsp;    public SchedulerEngineBase(SchedulerCriteria schedulerCriteria)
+<b class="fc">&nbsp;    {</b>
+<b class="fc">&nbsp;        this.schedulerCriteria = schedulerCriteria;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void initializeLoggedUser()
+&nbsp;    {
+<b class="nc">&nbsp;        loggedUser = new LoggedUserImpl(userLogService);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private String getCurrentUser()
+&nbsp;    {
+<b class="nc">&nbsp;        return loggedUser.getCurrentUser();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    void initializeSecurity()
+&nbsp;    {
+<b class="nc">&nbsp;       schedulerSecurity = new SchedulerSecurityImpl();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void nullCheck(Scheduler scheduler)
+&nbsp;    {
+&nbsp;
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    private AnnotationConfigApplicationContext getContext()
+&nbsp;    {
+<b class="fc">&nbsp;        applicationContext = new AnnotationConfigApplicationContext(QuartzConfig.class);</b>
+<b class="nc">&nbsp;        return applicationContext;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Scheduler getSchedulerBean() throws SchedulerException {
+<b class="fc">&nbsp;        if(scheduler == null)</b>
+&nbsp;        {
+<b class="fc">&nbsp;            this.scheduler = (Scheduler) getContext().getBean(&quot;scheduler&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return scheduler;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    protected abstract Scheduler getDailySimpleScheduler();
+&nbsp;    protected abstract Scheduler getWeeklySimpleScheduler();
+&nbsp;    protected abstract Scheduler getBiWeeklySimpleScheduler();
+&nbsp;    protected abstract Scheduler getWeeklyCronScheduler();
+&nbsp;    protected abstract Scheduler getMonthlyCronScheduler();
+&nbsp;    protected abstract Scheduler getCustomCronScheduler() throws SchedulerException;
+&nbsp;
+&nbsp;    protected Scheduler getScheduler() throws SchedulerException {
+<b class="fc">&nbsp;        return getSchedulerBean();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isStarted() throws SchedulerException
+&nbsp;    {
+<b class="nc">&nbsp;        isStarted = getScheduler().isStarted();</b>
+<b class="nc">&nbsp;        return isStarted;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isShutdown() throws SchedulerException
+&nbsp;    {
+<b class="fc">&nbsp;        isShutdown = getScheduler().isShutdown();</b>
+<b class="nc">&nbsp;        return isShutdown;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isInStandby() throws SchedulerException
+&nbsp;    {
+<b class="nc">&nbsp;        isInStandby = getScheduler().isInStandbyMode();</b>
+<b class="nc">&nbsp;        return isInStandby;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isScheduling()
+&nbsp;    {
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private boolean hasScheduleUserRights()
+&nbsp;    {
+<b class="fc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private boolean hasScheduleAdminRights()
+&nbsp;    {
+<b class="fc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private String getSchedulerUserName()
+&nbsp;    {
+<b class="nc">&nbsp;        return &quot; &quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public void pause()
+&nbsp;    {
+&nbsp;        try
+&nbsp;        {
+<b class="nc">&nbsp;            if(hasScheduleAdminRights() || hasScheduleUserRights())</b>
+&nbsp;            {
+<b class="nc">&nbsp;                if(!scheduler.isInStandbyMode())</b>
+&nbsp;                {
+<b class="nc">&nbsp;                    if(!isInStandby())</b>
+&nbsp;                    {
+<b class="nc">&nbsp;                        scheduler.isInStandbyMode();</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;            else
+&nbsp;            {
+<b class="nc">&nbsp;                throw new SecurityException(&quot;User: &quot; + getSchedulerUserName() + &quot; is not authorized.&quot;);</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;        }catch(SchedulerException ex)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            aeroLogger.error(&quot;Unable to pause scheduler: &quot;, ex);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public void resumeWithDelay(int delay)
+&nbsp;    {
+&nbsp;        try
+&nbsp;        {
+<b class="nc">&nbsp;            if(hasScheduleUserRights() || hasScheduleAdminRights())</b>
+&nbsp;            {
+<b class="nc">&nbsp;                if(scheduler.isInStandbyMode())</b>
+&nbsp;                {
+<b class="nc">&nbsp;                    if(!isStarted())</b>
+&nbsp;                    {
+<b class="nc">&nbsp;                        startTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;                        scheduler.startDelayed(delay);</b>
+&nbsp;                    }
+&nbsp;
+&nbsp;                }
+&nbsp;            }
+&nbsp;            else
+&nbsp;            {
+<b class="nc">&nbsp;                throw new SecurityException(&quot;User: &quot; + getSchedulerUserName() + &quot; is not authorized.&quot;);</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;        }catch(SchedulerException ex)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            aeroLogger.error(&quot;Unable to resume scheduler: &quot;, ex);</b>
+&nbsp;        }
+&nbsp;        finally
+&nbsp;        {
+<b class="nc">&nbsp;            endTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;            elapsedTime = endTime - startTime;</b>
+<b class="nc">&nbsp;            aeroLogger.info(&quot;Scheduler process completed in &quot; + elapsedTime);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void resume()
+&nbsp;    {
+&nbsp;        try
+&nbsp;        {
+<b class="nc">&nbsp;            if(hasScheduleAdminRights() || hasScheduleUserRights())</b>
+&nbsp;            {
+<b class="nc">&nbsp;                if(scheduler.isInStandbyMode())</b>
+&nbsp;                {
+<b class="nc">&nbsp;                    if(!isStarted())</b>
+&nbsp;                    {
+<b class="nc">&nbsp;                        scheduler.start();</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;        }catch(SchedulerException ex)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            aeroLogger.error(&quot;Unable to Resume the scheduler: &quot;, ex);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void shutdown(boolean isShutdown)
+&nbsp;    {
+<b class="fc">&nbsp;        boolean isShutdownParam = isShutdown;</b>
+&nbsp;        try
+&nbsp;        {
+<b class="fc">&nbsp;            if(hasScheduleUserRights() || hasScheduleAdminRights())</b>
+&nbsp;            {
+<b class="nc">&nbsp;                if(!scheduler.isShutdown())</b>
+&nbsp;                {
+<b class="nc">&nbsp;                    if(!isShutdown() &amp;&amp; !isShutdownParam)</b>
+&nbsp;                    {
+<b class="nc">&nbsp;                        scheduler.shutdown(isShutdown);</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;        }catch(SchedulerException ex)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            aeroLogger.error(&quot;Unable to shutdown the scheduler: &quot;, ex);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void stop()
+&nbsp;    {
+&nbsp;        try {
+<b class="nc">&nbsp;            Scheduler scheduler = getScheduler();</b>
+<b class="nc">&nbsp;            if (!scheduler.isShutdown())</b>
+&nbsp;            {
+<b class="nc">&nbsp;                if(!isShutdown())</b>
+&nbsp;                {
+<b class="nc">&nbsp;                    scheduler.shutdown();</b>
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (SchedulerException ex)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            aeroLogger.error(&quot;Scheduler Shutdown ran into an error: &quot;, ex);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    public void scheduleJob(final JobDetail jobDetail, final Trigger trigger)
+&nbsp;    {
+&nbsp;        try
+&nbsp;        {
+<b class="nc">&nbsp;            if(!isScheduling &amp;&amp; isTriggerJob(trigger))</b>
+&nbsp;            {
+<b class="nc">&nbsp;                if(isStarted())</b>
+&nbsp;                {
+<b class="nc">&nbsp;                    scheduler.scheduleJob(jobDetail, trigger);</b>
+<b class="nc">&nbsp;                    isScheduling = true;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;        }catch(SchedulerException ex)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            ex.printStackTrace();</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isTriggerJob(final Trigger trigger)
+&nbsp;    {
+<b class="nc">&nbsp;        return !(trigger instanceof CronTrigger);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void scheduleCronJob(final JobDetail jobDetail, final CronTrigger cronTrigger)
+&nbsp;    {
+&nbsp;        try
+&nbsp;        {
+<b class="nc">&nbsp;            if(!isScheduling &amp;&amp; !isTriggerJob(cronTrigger))</b>
+&nbsp;            {
+<b class="nc">&nbsp;                if(isStarted())</b>
+&nbsp;                {
+<b class="nc">&nbsp;                    scheduler.scheduleJob(jobDetail, cronTrigger);</b>
+<b class="nc">&nbsp;                    isScheduling = true;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;        }catch(SchedulerException ex)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            ex.printStackTrace();</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-09 08:52</div>
+</div>
+</body>
+</html>
