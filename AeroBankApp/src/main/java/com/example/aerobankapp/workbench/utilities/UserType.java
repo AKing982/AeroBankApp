@@ -8,7 +8,6 @@ public enum UserType
     MANAGER("Manager"),
     TELLER("Teller");
 
-
     private String code;
 
     UserType(String code)
