@@ -10,13 +10,15 @@ import lombok.Setter;
 import org.quartz.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.util.Date;
+import java.util.List;
+
 @Getter
 @Setter
 public abstract class SchedulerEngineBase
 {
     protected Scheduler scheduler;
     protected SchedulerCriteria schedulerCriteria;
-    private SchedulerSecurityEntity schedulerSecurity;
     protected boolean isStarted;
     protected boolean isInStandby;
     protected boolean isShutdown;
@@ -26,6 +28,7 @@ public abstract class SchedulerEngineBase
     private long startTime;
     private long endTime;
     private long elapsedTime;
+    private List<JobExecutionContext> currentlyExecutingJobs;
     private TransactionBase transactionBase;
     private AnnotationConfigApplicationContext applicationContext;
     private AeroLogger aeroLogger = new AeroLogger(SchedulerEngineBase.class);
@@ -37,7 +40,7 @@ public abstract class SchedulerEngineBase
 
     void initializeSecurity()
     {
-        schedulerSecurity = new SchedulerSecurityEntity();
+
     }
 
     private void nullCheck(Scheduler scheduler)
@@ -93,40 +96,30 @@ public abstract class SchedulerEngineBase
         return false;
     }
 
-    private boolean hasScheduleUserRights()
+
+    public void pauseAll()
     {
-        return schedulerSecurity.isSchedulerUser();
+
     }
 
-    private boolean hasScheduleAdminRights()
+    public void pauseJob(JobKey jobKey)
     {
-        return schedulerSecurity.isSchedulerAdmin();
-    }
 
-    private String getSchedulerUserName()
-    {
-        return schedulerSecurity.getUserProfile().getUsername();
     }
 
 
-    public void pause()
+    public void standBy()
     {
         try
         {
-            if(hasScheduleAdminRights() || hasScheduleUserRights())
+            if(!scheduler.isInStandbyMode())
             {
-                if(!scheduler.isInStandbyMode())
+                if(!isInStandby())
                 {
-                    if(!isInStandby())
-                    {
-                        scheduler.isInStandbyMode();
-                    }
+                    scheduler.isInStandbyMode();
                 }
             }
-            else
-            {
-                throw new SecurityException("User: " + getSchedulerUserName() + " is not authorized.");
-            }
+
 
         }catch(SchedulerException ex)
         {
@@ -139,22 +132,17 @@ public abstract class SchedulerEngineBase
     {
         try
         {
-            if(hasScheduleUserRights() || hasScheduleAdminRights())
+
+            if(scheduler.isInStandbyMode())
             {
-                if(scheduler.isInStandbyMode())
+                if(!isStarted())
                 {
-                    if(!isStarted())
-                    {
                         startTime = System.currentTimeMillis();
                         scheduler.startDelayed(delay);
-                    }
-
                 }
+
             }
-            else
-            {
-                throw new SecurityException("User: " + getSchedulerUserName() + " is not authorized.");
-            }
+
 
         }catch(SchedulerException ex)
         {
@@ -168,20 +156,25 @@ public abstract class SchedulerEngineBase
         }
     }
 
+    public void resumeAll()
+    {
+
+    }
+
     public void resume()
     {
         try
         {
-            if(hasScheduleAdminRights() || hasScheduleUserRights())
+
+            if(scheduler.isInStandbyMode())
             {
-                if(scheduler.isInStandbyMode())
+                if(!isStarted())
                 {
-                    if(!isStarted())
-                    {
-                        scheduler.start();
-                    }
+                    scheduler.start();
+
                 }
             }
+
         }catch(SchedulerException ex)
         {
             aeroLogger.error("Unable to Resume the scheduler: ", ex);
@@ -193,16 +186,14 @@ public abstract class SchedulerEngineBase
         boolean isShutdownParam = isShutdown;
         try
         {
-            if(hasScheduleUserRights() || hasScheduleAdminRights())
+            if(!scheduler.isShutdown())
             {
-                if(!scheduler.isShutdown())
+                if(!isShutdown() && !isShutdownParam)
                 {
-                    if(!isShutdown() && !isShutdownParam)
-                    {
-                        scheduler.shutdown(isShutdown);
-                    }
+                    scheduler.shutdown(isShutdown);
                 }
             }
+
 
         }catch(SchedulerException ex)
         {
@@ -219,11 +210,66 @@ public abstract class SchedulerEngineBase
                 if(!isShutdown())
                 {
                     scheduler.shutdown();
+
                 }
             }
         } catch (SchedulerException ex)
         {
             aeroLogger.error("Scheduler Shutdown ran into an error: ", ex);
+        }
+    }
+
+    public boolean checkExists(JobKey jobKey)
+    {
+        return false;
+    }
+
+    public List<JobExecutionContext> getCurrentlyExecutingJobs()
+    {
+        return null;
+    }
+
+    public Date rescheduleJob(TriggerKey triggerKey, Trigger trigger)
+    {
+        return new Date();
+    }
+
+    public void addJob(JobDetail jobDetail, boolean param)
+    {
+
+    }
+
+    public boolean deleteJob(JobKey jobkey)
+    {
+        return false;
+    }
+
+    public boolean deleteJobs(List<JobKey> jobKeys)
+    {
+        return false;
+    }
+
+
+    public boolean unscheduleJob(TriggerKey triggerKey)
+    {
+        return false;
+    }
+
+    public void start()
+    {
+        try
+        {
+            if(!scheduler.isStarted() && scheduler.isShutdown())
+            {
+                if(!isStarted())
+                {
+                    scheduler.start();
+                }
+            }
+
+        }catch(SchedulerException ex)
+        {
+            aeroLogger.error("Unable to start the scheduler: ", ex);
         }
     }
 
@@ -245,6 +291,24 @@ public abstract class SchedulerEngineBase
         }catch(SchedulerException ex)
         {
             ex.printStackTrace();
+        }
+    }
+
+    public void scheduleJob(final Trigger trigger)
+    {
+        try
+        {
+            if(!isScheduling && isTriggerJob(trigger))
+            {
+                if(isStarted())
+                {
+                    scheduler.scheduleJob(trigger);
+                }
+            }
+
+        }catch(SchedulerException ex)
+        {
+
         }
     }
 

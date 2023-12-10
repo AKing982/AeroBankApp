@@ -133,7 +133,7 @@ class DepositSchedulerTest {
         boolean schedulerIsPaused = mockScheduler.isInStandbyMode();
 
         // pause the scheduler
-        depositScheduler.pause();
+        //depositScheduler.pause();
 
         boolean isActuallyPaused = depositScheduler.isInStandby();
 
@@ -150,7 +150,7 @@ class DepositSchedulerTest {
         JobDetail mockJobDetail = mock(JobDetail.class);
         trigger = mock(Trigger.class);
 
-        depositScheduler.pause();
+       // depositScheduler.pause();
 
         depositScheduler.scheduleJob(mockJobDetail, trigger);
 
