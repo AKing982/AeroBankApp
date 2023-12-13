@@ -14,16 +14,16 @@ public enum ScheduleRole
 
     SMANAGER("Schedule Manager");
 
-    private String code;
+    private String scheduleRole;
 
-    ScheduleRole(String code)
+    ScheduleRole(String role)
     {
-        this.code = code;
+        this.scheduleRole = role;
     }
 
-    public ScheduleRole getScheduleRole(String code)
+    public ScheduleRole getScheduleRole(String role)
     {
-        return switch (code) {
+        return switch (role) {
             case "Schedule Admin" -> SADMIN;
             case "Schedule User" -> SUSER;
             case "Schedule Teller" -> STELLER;

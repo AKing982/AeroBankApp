@@ -35,6 +35,8 @@ public class PlaidService
     @GetMapping("/api/accounts")
     public AccountsGetResponse getAccounts(String accessToken)
     {
+        final String token = accessToken;
+
         AccountsGetResponse accountsGetResponse = null;
         return accountsGetResponse;
     }

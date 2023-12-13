@@ -5,11 +5,10 @@ public enum UserType
     ADMIN("Admin"),
     USER("User");
 
+    private String userRole;
 
-    private String code;
-
-    UserType(String code)
+    UserType(String role)
     {
-        this.code = code;
+        this.userRole = role;
     }
 }
