@@ -9,21 +9,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
 class DepositSchedulerTest {
+
     @MockBean
     private DepositScheduler depositScheduler;
 
@@ -45,10 +45,15 @@ class DepositSchedulerTest {
     @Mock
     private CronTrigger cronTrigger;
 
+    @Mock
+    private JobKey jobKey;
+
     @BeforeEach
     void setUp() {
         scheduler = mock(Scheduler.class);
         schedulerCriteria = mock(SchedulerCriteria.class);
+        trigger = mock(Trigger.class);
+        jobKey = mock(JobKey.class);
 
         depositScheduler = new DepositScheduler(deposit, schedulerCriteria);
     }
@@ -92,6 +97,7 @@ class DepositSchedulerTest {
     }
 
     @Test
+    @Deprecated
     public void testHasAdminAccessRights()
     {
 
@@ -142,7 +148,82 @@ class DepositSchedulerTest {
         assertFalse(isActuallyPaused);
     }
 
+    @Test
+    public void testAddJob()
+    {
+        JobDetail mockJobDetail = JobBuilder.newJob(Job.class)
+                .withIdentity("mockJob", "mockGroup")
+                .storeDurably().build();
 
+        JobKey mockKey = mockJobDetail.getKey();
+        Trigger mockTrigger = mock(Trigger.class);
+        boolean param = true;
+        depositScheduler.addJob(mockJobDetail, true);
+        depositScheduler.scheduleJob(mockJobDetail, mockTrigger);
+
+        boolean containsJob = depositScheduler.checkExists(mockKey);
+
+        assertTrue(containsJob);
+    }
+
+    @Test
+    public void testRescheduleJob() throws SchedulerException {
+        Date now = new Date();
+        Trigger mockTrigger = TriggerBuilder.newTrigger()
+                .withIdentity("mockTrigger")
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(10).repeatForever())
+                .startAt(now)
+                .build();
+
+        Trigger rescheduledTrigger = TriggerBuilder.newTrigger()
+                .withIdentity("rTrigger")
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule())
+                .startAt(now)
+                .build();
+
+        Scheduler mockScheduler = mock(Scheduler.class);
+        DepositScheduler mockDepositScheduler = mock(DepositScheduler.class);
+
+        TriggerKey triggerKey = mockTrigger.getKey();
+        TriggerKey mockTriggerKey = mock(TriggerKey.class);
+
+        mockDepositScheduler.start();
+        Date expectedReschedule = new Date();
+        when(mockScheduler.rescheduleJob(eq(triggerKey), eq(rescheduledTrigger))).thenReturn(expectedReschedule);
+        Date actualReschedule = mockDepositScheduler.rescheduleJob(triggerKey, rescheduledTrigger);
+        //Date nullDateFromTrigger = depositScheduler.rescheduleJob(triggerKey, nullTrigger);
+
+        verify(mockDepositScheduler).rescheduleJob(eq(triggerKey), eq(rescheduledTrigger));
+
+        assertNotNull(mockDepositScheduler.getSchedulerBean());
+        assertNotNull(mockDepositScheduler.getScheduler());
+        assertNotNull(triggerKey);
+        assertNotNull(mockTrigger);
+        //assertNull(nullDateFromTrigger);
+        assertEquals(expectedReschedule, actualReschedule);
+    }
+
+
+    @Test
+    public void testCheckExists()
+    {
+        JobKey expectedJobKey = jobKey;
+        boolean exists = depositScheduler.checkExists(expectedJobKey);
+
+        assertTrue(exists);
+    }
+
+    @Test
+    public void getJobKeys()
+    {
+        Set<JobKey> jobKeySet = new HashSet<>();
+        JobKey testKey = mock(JobKey.class);
+        jobKeySet.add(jobKey);
+        jobKeySet.add(testKey);
+        Set<JobKey> actualJobKeys = depositScheduler.getJobKeys();
+
+        assertEquals(jobKeySet.size(), actualJobKeys.size());
+    }
 
     @Test
     public void testScheduleJobWithTrigger() throws SchedulerException {

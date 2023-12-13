@@ -8,10 +8,13 @@ import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.Getter;
 import lombok.Setter;
 import org.quartz.*;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -191,6 +194,7 @@ public abstract class SchedulerEngineBase
                 if(!isShutdown() && !isShutdownParam)
                 {
                     scheduler.shutdown(isShutdown);
+
                 }
             }
 
@@ -199,6 +203,22 @@ public abstract class SchedulerEngineBase
         {
             aeroLogger.error("Unable to shutdown the scheduler: ", ex);
         }
+    }
+
+    public Set<JobKey> getJobKeys()
+    {
+        Set<JobKey> jobKeys = new HashSet<>();
+        try
+        {
+            Scheduler scheduler = getScheduler();
+            jobKeys = scheduler.getJobKeys(GroupMatcher.anyJobGroup());
+
+        }catch(SchedulerException ex)
+        {
+
+        }
+
+        return jobKeys;
     }
 
     public void stop()
@@ -221,7 +241,8 @@ public abstract class SchedulerEngineBase
 
     public boolean checkExists(JobKey jobKey)
     {
-        return false;
+        Set<JobKey> jobKeys = getJobKeys();
+        return jobKeys.contains(jobKey);
     }
 
     public List<JobExecutionContext> getCurrentlyExecutingJobs()
@@ -229,14 +250,22 @@ public abstract class SchedulerEngineBase
         return null;
     }
 
-    public Date rescheduleJob(TriggerKey triggerKey, Trigger trigger)
+    public Date rescheduleJob(TriggerKey triggerKey, Trigger trigger) throws SchedulerException
     {
-        return new Date();
+        return getScheduler().rescheduleJob(triggerKey, trigger);
     }
 
     public void addJob(JobDetail jobDetail, boolean param)
     {
+        try
+        {
+            Scheduler scheduler1 = getScheduler();
+            scheduler1.addJob(jobDetail, param);
 
+        }catch(SchedulerException ex)
+        {
+            aeroLogger.error("Unable to add Job with JobDetail: " + jobDetail.toString(), ex);
+        }
     }
 
     public boolean deleteJob(JobKey jobkey)
@@ -259,6 +288,7 @@ public abstract class SchedulerEngineBase
     {
         try
         {
+            Scheduler scheduler = getScheduler();
             if(!scheduler.isStarted() && scheduler.isShutdown())
             {
                 if(!isStarted())

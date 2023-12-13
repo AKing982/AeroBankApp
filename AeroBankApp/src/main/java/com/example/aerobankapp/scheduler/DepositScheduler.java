@@ -5,6 +5,7 @@ import com.example.aerobankapp.scheduler.jobdetail.DepositJobDetail;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.Getter;
+import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ public class DepositScheduler extends SchedulerEngineBase
 {
     private DepositJobDetail depositJobDetail;
     private Deposit deposit;
+    private JobDetail jobDetail;
     private final AeroLogger aeroLogger = new AeroLogger(DepositScheduler.class);
 
     @Autowired
@@ -31,6 +33,12 @@ public class DepositScheduler extends SchedulerEngineBase
         super(schedulerCriteria);
         this.deposit = deposit;
         this.depositJobDetail = new DepositJobDetail(deposit);
+    }
+
+    public JobDetail getJobDetail()
+    {
+        this.jobDetail = depositJobDetail.getJobDetail();
+        return jobDetail;
     }
 
     public void nullCheck()

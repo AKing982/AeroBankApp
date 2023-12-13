@@ -26,7 +26,7 @@ import java.util.Random;
 import static org.quartz.JobBuilder.newJob;
 
 @Configuration
-@ComponentScan(basePackages = "com.example.aerobankapp.scheduler")
+@ComponentScan(basePackages = {"com.example.aerobankapp.scheduler", "com.example.aerobankapp.workbench.transactions"})
 public class QuartzConfig
 {
 
@@ -56,22 +56,30 @@ public class QuartzConfig
         return schedulerFactoryBean.getScheduler();
     }
 
+    /**
+     * The following beans are to be used for the scheduler package classes
+     * @return
+     */
+
     @Bean
-    public Deposit deposit2()
+    @Scope(value=ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public Deposit deposit2(@Qualifier("deposit") Deposit deposit)
     {
-        return new Deposit();
+        return deposit;
     }
 
     @Bean
-    public Purchase purchase2()
+    @Scope(value=ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public Purchase purchase2(@Qualifier("purchase") Purchase purchase)
     {
-        return new Purchase();
+        return purchase;
     }
 
     @Bean
-    public Withdraw withdraw2()
+    @Scope(value=ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public Withdraw withdraw2(@Qualifier("withdraw") Withdraw withdraw)
     {
-        return new Withdraw();
+        return withdraw;
     }
 
 

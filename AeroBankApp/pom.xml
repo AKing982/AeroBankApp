@@ -152,6 +152,11 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.plaid</groupId>
+            <artifactId>plaid-java</artifactId>
+            <version>13.3.0</version>
+        </dependency>
     </dependencies>
 
     <build>
