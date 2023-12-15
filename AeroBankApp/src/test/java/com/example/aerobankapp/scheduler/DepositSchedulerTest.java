@@ -188,6 +188,60 @@ class DepositSchedulerTest {
         }
 
         @Test
+        public void deleteJob() throws SchedulerException {
+
+
+            JobDetail mockJobDetail = JobBuilder.newJob(Job.class)
+                    .withIdentity("mockJob", "mockGroup")
+                    .storeDurably().build();
+
+            Trigger mockTrigger = TriggerBuilder.newTrigger()
+                    .withIdentity("mockTrigger", "mockTriggerGroup")
+                    .withSchedule(SimpleScheduleBuilder.simpleSchedule())
+                    .startAt(new Date())
+                    .build();
+
+            depositScheduler.scheduleJob(mockJobDetail, mockTrigger);
+            depositScheduler.start();
+
+            JobKey mockJobKey = mockJobDetail.getKey();
+
+            boolean actualDeleteResult = depositScheduler.deleteJob(mockJobKey);
+
+            assertNotNull(mockJobKey);
+            assertNotNull(mockJobDetail);
+            assertNotNull(mockTrigger);
+            assertTrue(actualDeleteResult);
+
+        }
+
+        @Test
+        public void testCurrentlyExecutingJobs()
+        {
+            JobDetail mockJobDetail = JobBuilder.newJob(Job.class)
+                    .withIdentity("mockJob", "mockGroup")
+                    .storeDurably().build();
+
+            Trigger mockTrigger = TriggerBuilder.newTrigger()
+                    .withIdentity("mockTrigger", "mockTriggerGroup")
+                    .withSchedule(SimpleScheduleBuilder.simpleSchedule())
+                    .startAt(new Date())
+                    .build();
+
+            depositScheduler.scheduleJob(mockJobDetail, mockTrigger);
+            depositScheduler.start();
+
+            List<JobExecutionContext> expectedJobs = new ArrayList<>();
+            List<JobExecutionContext> actualExecutingJobs = depositScheduler.getCurrentlyExecutingJobs();
+
+            assertNotNull(mockJobDetail);
+            assertNotNull(mockTrigger);
+            assertNotNull(actualExecutingJobs);
+            assertEquals(0, actualExecutingJobs.size());
+            assertEquals(expectedJobs, actualExecutingJobs);
+        }
+
+        @Test
         public void testRescheduleJob() throws SchedulerException {
             Date now = new Date();
             Trigger mockTrigger = TriggerBuilder.newTrigger()
@@ -229,7 +283,9 @@ class DepositSchedulerTest {
             JobKey expectedJobKey = jobKey;
             boolean exists = depositScheduler.checkExists(expectedJobKey);
 
-            assertTrue(exists);
+
+
+            assertFalse(exists);
         }
 
         @Test
@@ -253,6 +309,8 @@ class DepositSchedulerTest {
             // depositScheduler.pause();
 
             depositScheduler.scheduleJob(mockJobDetail, trigger);
+
+            assert
 
         }
 

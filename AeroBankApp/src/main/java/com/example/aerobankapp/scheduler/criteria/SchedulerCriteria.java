@@ -1,5 +1,6 @@
 package com.example.aerobankapp.scheduler.criteria;
 
+import com.example.aerobankapp.scheduler.security.ScheduleRole;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
@@ -18,4 +19,7 @@ public final class SchedulerCriteria
     private String scheduledInterval;
     private LocalDate scheduledDate;
     private String scheduleType;
+    private boolean isCronScheduled;
+    private ScheduleRole scheduleRole;
+
 }

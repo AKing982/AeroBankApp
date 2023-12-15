@@ -2,6 +2,8 @@ package com.example.aerobankapp.scheduler;
 
 import com.example.aerobankapp.configuration.QuartzConfig;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
+import com.example.aerobankapp.scheduler.factory.AbstractSchedulerTypeFactory;
+import com.example.aerobankapp.scheduler.factory.SchedulerFactoryProducer;
 import com.example.aerobankapp.scheduler.security.SchedulerSecurityEntity;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
@@ -31,14 +33,17 @@ public abstract class SchedulerEngineBase
     private long startTime;
     private long endTime;
     private long elapsedTime;
-    private List<JobExecutionContext> currentlyExecutingJobs;
+    protected List<JobExecutionContext> currentlyExecutingJobs;
     private TransactionBase transactionBase;
     private AnnotationConfigApplicationContext applicationContext;
+    protected ScheduleType scheduleType;
+    protected SchedulerFactoryProducer schedulerFactoryProducer;
     private AeroLogger aeroLogger = new AeroLogger(SchedulerEngineBase.class);
 
-    public SchedulerEngineBase(SchedulerCriteria schedulerCriteria)
+    public SchedulerEngineBase(SchedulerCriteria schedulerCriteria, ScheduleType scheduleType)
     {
         this.schedulerCriteria = schedulerCriteria;
+        this.scheduleType = scheduleType;
     }
 
     void initializeSecurity()
@@ -65,12 +70,7 @@ public abstract class SchedulerEngineBase
         return scheduler;
     }
 
-    protected abstract Scheduler getDailySimpleScheduler();
-    protected abstract Scheduler getWeeklySimpleScheduler();
-    protected abstract Scheduler getBiWeeklySimpleScheduler();
-    protected abstract Scheduler getWeeklyCronScheduler();
-    protected abstract Scheduler getMonthlyCronScheduler();
-    protected abstract Scheduler getCustomCronScheduler() throws SchedulerException;
+    protected abstract Scheduler getSchedulerFactoryInstance();
 
     protected Scheduler getScheduler() throws SchedulerException {
         return getSchedulerBean();
@@ -96,18 +96,7 @@ public abstract class SchedulerEngineBase
 
     public boolean isScheduling()
     {
-        return false;
-    }
-
-
-    public void pauseAll()
-    {
-
-    }
-
-    public void pauseJob(JobKey jobKey)
-    {
-
+        return isScheduling;
     }
 
 
@@ -247,7 +236,16 @@ public abstract class SchedulerEngineBase
 
     public List<JobExecutionContext> getCurrentlyExecutingJobs()
     {
-        return null;
+        try
+        {
+            Scheduler scheduler1 = getScheduler();
+            currentlyExecutingJobs = scheduler1.getCurrentlyExecutingJobs();
+
+        }catch(SchedulerException ex)
+        {
+
+        }
+        return currentlyExecutingJobs;
     }
 
     public Date rescheduleJob(TriggerKey triggerKey, Trigger trigger) throws SchedulerException
@@ -268,21 +266,12 @@ public abstract class SchedulerEngineBase
         }
     }
 
-    public boolean deleteJob(JobKey jobkey)
+    public boolean deleteJob(JobKey jobkey) throws SchedulerException
     {
-        return false;
+        aeroLogger.info("Deleting Job with key: " + jobkey);
+        return getScheduler().deleteJob(jobkey);
     }
 
-    public boolean deleteJobs(List<JobKey> jobKeys)
-    {
-        return false;
-    }
-
-
-    public boolean unscheduleJob(TriggerKey triggerKey)
-    {
-        return false;
-    }
 
     public void start()
     {
@@ -313,6 +302,8 @@ public abstract class SchedulerEngineBase
             {
                 if(isStarted())
                 {
+                    clearTimer();
+                    startTime = System.currentTimeMillis();
                     scheduler.scheduleJob(jobDetail, trigger);
                     isScheduling = true;
                 }
@@ -321,6 +312,10 @@ public abstract class SchedulerEngineBase
         }catch(SchedulerException ex)
         {
             ex.printStackTrace();
+        }finally {
+            endTime = System.currentTimeMillis();
+            elapsedTime = startTime - elapsedTime;
+            aeroLogger.info("Total time for scheduling Job: " + elapsedTime);
         }
     }
 
@@ -355,6 +350,8 @@ public abstract class SchedulerEngineBase
             {
                 if(isStarted())
                 {
+                    clearTimer();
+                    startTime = System.currentTimeMillis();
                     scheduler.scheduleJob(jobDetail, cronTrigger);
                     isScheduling = true;
                 }
@@ -364,5 +361,17 @@ public abstract class SchedulerEngineBase
         {
             ex.printStackTrace();
         }
+        finally {
+            endTime = System.currentTimeMillis();
+            elapsedTime = startTime - endTime;
+            aeroLogger.info("Cron Job scheduled in: " + elapsedTime);
+        }
+    }
+
+    private void clearTimer()
+    {
+        startTime = 0;
+        endTime = 0;
+        elapsedTime = 0;
     }
 }

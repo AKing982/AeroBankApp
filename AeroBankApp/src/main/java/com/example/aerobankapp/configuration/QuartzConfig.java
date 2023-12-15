@@ -1,32 +1,21 @@
 package com.example.aerobankapp.configuration;
 
-import com.example.aerobankapp.scheduler.WithdrawScheduler;
-import com.example.aerobankapp.scheduler.jobdetail.DepositJob;
+import com.example.aerobankapp.scheduler.data.DepositJobData;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.Purchase;
 import com.example.aerobankapp.workbench.transactions.Withdraw;
-import lombok.With;
 import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.spi.JobFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.beans.factory.config.PropertiesFactoryBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.quartz.*;
-
-import java.io.IOException;
-import java.util.Properties;
-import java.util.Random;
 
 import static org.quartz.JobBuilder.newJob;
 
 @Configuration
-@ComponentScan(basePackages = "com.example.aerobankapp.scheduler")
+@ComponentScan(basePackages = {"com.example.aerobankapp.scheduler", "com.example.aerobankapp.workbench.transactions"})
 public class QuartzConfig
 {
 
@@ -57,21 +46,64 @@ public class QuartzConfig
     }
 
     @Bean
-    public Deposit deposit2()
+    @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public JobDetailFactoryBean depositJobDetailFactoryBean()
     {
-        return new Deposit();
+
     }
 
     @Bean
-    public Purchase purchase2()
+    @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public JobDetailFactoryBean withdrawJobDetailFactoryBean()
     {
-        return new Purchase();
+
     }
 
     @Bean
-    public Withdraw withdraw2()
+    @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public SimpleTriggerFactoryBean simpleTriggerFactoryBean()
     {
-        return new Withdraw();
+        SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
+        simpleTriggerFactoryBean.setJobDetail();
+        simpleTriggerFactoryBean.setRepeatCount();
+        simpleTriggerFactoryBean.setRepeatInterval();
+        simpleTriggerFactoryBean.setDescription();
+        simpleTriggerFactoryBean.setJobDataMap();
+        simpleTriggerFactoryBean.setPriority();
+        simpleTriggerFactoryBean.setStartDelay();
+        return simpleTriggerFactoryBean;
+    }
+
+
+    @Bean
+    @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public SimpleTriggerFactoryBean dailyDepositSimpleTriggerBean(@Qualifier("depositJobData")DepositJobData depositJobData)
+    {
+        SimpleTriggerFactoryBean dailySimpleTriggerBean = new SimpleTriggerFactoryBean();
+        JobDataMap jobDataMap = depositJobData.getJobDataMap();
+        dailySimpleTriggerBean.setJobDataMap(jobDataMap);
+        dailySimpleTriggerBean.setStartDelay(0L);
+        dailySimpleTriggerBean.setPriority(1);
+        dailySimpleTriggerBean.setRepeatInterval(0);
+        dailySimpleTriggerBean.setStartTime();
+    }
+
+    @Bean
+    public Deposit deposit2(@Qualifier("deposit") Deposit deposit)
+    {
+        return deposit;
+    }
+
+    @Bean
+    public Purchase purchase2(@Qualifier("purchase") Purchase purchase)
+    {
+        return purchase;
+    }
+
+    @Bean
+    public Withdraw withdraw2(@Qualifier("withdraw") Withdraw withdraw)
+    {
+        return withdraw;
     }
 
 
