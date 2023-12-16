@@ -33,6 +33,7 @@ public abstract class SchedulerEngineBase
     private long startTime;
     private long endTime;
     private long elapsedTime;
+    private ScheduleCriteriaParser scheduleCriteriaParser;
     protected List<JobExecutionContext> currentlyExecutingJobs;
     private TransactionBase transactionBase;
     private AnnotationConfigApplicationContext applicationContext;
@@ -47,11 +48,6 @@ public abstract class SchedulerEngineBase
     }
 
     void initializeSecurity()
-    {
-
-    }
-
-    private void nullCheck(Scheduler scheduler)
     {
 
     }
@@ -99,6 +95,11 @@ public abstract class SchedulerEngineBase
         return isScheduling;
     }
 
+    public void setIsScheduling(boolean isScheduling)
+    {
+        this.isScheduling = isScheduling;
+    }
+
 
     public void standBy()
     {
@@ -131,11 +132,10 @@ public abstract class SchedulerEngineBase
                 {
                     startTime = System.currentTimeMillis();
                     scheduler.startDelayed(delay);
+                    setIsScheduling(true);
                 }
 
             }
-
-
         }catch(SchedulerException ex)
         {
             aeroLogger.error("Unable to resume scheduler: ", ex);
@@ -204,7 +204,7 @@ public abstract class SchedulerEngineBase
 
         }catch(SchedulerException ex)
         {
-
+            aeroLogger.error("Unable to retrieve Job Keys: " + ex);
         }
 
         return jobKeys;
@@ -219,7 +219,6 @@ public abstract class SchedulerEngineBase
                 if(!isShutdown())
                 {
                     scheduler.shutdown();
-
                 }
             }
         } catch (SchedulerException ex)
@@ -292,8 +291,6 @@ public abstract class SchedulerEngineBase
         }
     }
 
-
-
     public void scheduleJob(final JobDetail jobDetail, final Trigger trigger)
     {
         try
@@ -353,7 +350,7 @@ public abstract class SchedulerEngineBase
                     clearTimer();
                     startTime = System.currentTimeMillis();
                     scheduler.scheduleJob(jobDetail, cronTrigger);
-                    isScheduling = true;
+                    setIsScheduling(true);
                 }
             }
 

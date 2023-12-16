@@ -20,18 +20,17 @@ public class SchedulerEngineImpl<T extends TransactionBase, S extends JobDetailB
     private Trigger trigger;
     private CronTrigger cronTrigger;
 
-    public SchedulerEngineImpl(T transaction, SchedulerCriteria schedulerCriteria, ScheduleType scheduleType, S jobDetail) {
+    public SchedulerEngineImpl(T transaction, SchedulerCriteria schedulerCriteria, ScheduleType scheduleType) {
         super(schedulerCriteria, scheduleType);
         this.transactionType = transaction;
-        initializeTransaction(transaction, jobDetail);
+        initializeTransaction(transaction);
     }
 
-    private void initializeTransaction(T transactionType, S jobdetail)
+    private void initializeTransaction(T transactionType)
     {
         if(transactionType instanceof Deposit)
         {
             this.transactionType = (T) transactionType;
-
         }
         else if(transactionType instanceof Withdraw)
         {
@@ -39,13 +38,14 @@ public class SchedulerEngineImpl<T extends TransactionBase, S extends JobDetailB
         }
         else if(transactionType instanceof Purchase)
         {
-            this.transactionType = (T)transactionType;
+            this.transactionType = (T) transactionType;
         }
         else if(transactionType instanceof TransferDTO)
         {
             this.transactionType = (T) transactionType;
         }
     }
+
 
     @Override
     protected Scheduler getSchedulerFactoryInstance()

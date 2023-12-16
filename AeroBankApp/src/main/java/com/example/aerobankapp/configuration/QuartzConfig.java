@@ -49,29 +49,14 @@ public class QuartzConfig
     @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public JobDetailFactoryBean depositJobDetailFactoryBean()
     {
-
+        return new JobDetailFactoryBean();
     }
 
     @Bean
     @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public JobDetailFactoryBean withdrawJobDetailFactoryBean()
     {
-
-    }
-
-    @Bean
-    @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public SimpleTriggerFactoryBean simpleTriggerFactoryBean()
-    {
-        SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
-        simpleTriggerFactoryBean.setJobDetail();
-        simpleTriggerFactoryBean.setRepeatCount();
-        simpleTriggerFactoryBean.setRepeatInterval();
-        simpleTriggerFactoryBean.setDescription();
-        simpleTriggerFactoryBean.setJobDataMap();
-        simpleTriggerFactoryBean.setPriority();
-        simpleTriggerFactoryBean.setStartDelay();
-        return simpleTriggerFactoryBean;
+        return new JobDetailFactoryBean();
     }
 
 
@@ -85,7 +70,7 @@ public class QuartzConfig
         dailySimpleTriggerBean.setStartDelay(0L);
         dailySimpleTriggerBean.setPriority(1);
         dailySimpleTriggerBean.setRepeatInterval(0);
-        dailySimpleTriggerBean.setStartTime();
+        return dailySimpleTriggerBean;
     }
 
     @Bean

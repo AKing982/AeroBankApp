@@ -2,7 +2,7 @@ package com.example.aerobankapp.scheduler;
 
 import org.springframework.stereotype.Component;
 
-@Component
+
 public enum ScheduleType
 {
     BIWEEKLY("Bi Weekly"),

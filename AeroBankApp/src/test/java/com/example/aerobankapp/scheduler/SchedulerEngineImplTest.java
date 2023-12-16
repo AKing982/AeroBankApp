@@ -1,7 +1,6 @@
 package com.example.aerobankapp.scheduler;
 
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
-import com.example.aerobankapp.scheduler.jobdetail.DepositJobDetail;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,33 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-
-import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
-import com.example.aerobankapp.scheduler.jobdetail.DepositJobDetail;
-import com.example.aerobankapp.workbench.transactions.Deposit;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
-class DepositSchedulerTest {
+class SchedulerEngineImplTest {
 
     @MockBean
-    private DepositScheduler depositScheduler;
+    private SchedulerEngineImpl schedulerEngine;
 
     @Autowired
     @Mock
@@ -76,20 +54,20 @@ class DepositSchedulerTest {
             trigger = mock(Trigger.class);
             jobKey = mock(JobKey.class);
 
-            depositScheduler = new DepositScheduler(deposit, schedulerCriteria);
+            schedulerEngine = new SchedulerEngineImpl(deposit, schedulerCriteria, ScheduleType.MONTHLY);
         }
 
         @Test
         public void testConstructor() throws SchedulerException {
-            SchedulerCriteria schedulerCriteria1 = depositScheduler.getSchedulerCriteria();
-            assertNotNull(depositScheduler);
+            SchedulerCriteria schedulerCriteria1 = schedulerEngine.getSchedulerCriteria();
+            assertNotNull(schedulerCriteria1);
             assertNotNull(schedulerCriteria1);
         }
 
         @Test
         public void testSchedulerBean() throws SchedulerException {
             Scheduler expected = mock(Scheduler.class);
-            Scheduler actual = depositScheduler.getSchedulerBean();
+            Scheduler actual = schedulerEngine.getSchedulerBean();
 
             assertNotNull(actual);
             assertNotEquals(expected, actual);
@@ -99,9 +77,9 @@ class DepositSchedulerTest {
         public void testIsTriggerJobAsTrue() throws SchedulerException {
             trigger = mock(Trigger.class);
             cronTrigger = mock(CronTrigger.class);
-            Scheduler scheduler = depositScheduler.getScheduler();
-            boolean isTrigger = depositScheduler.isTriggerJob(trigger);
-            boolean isNotTrigger = depositScheduler.isTriggerJob(cronTrigger);
+            Scheduler scheduler = schedulerEngine.getScheduler();
+            boolean isTrigger = schedulerEngine.isTriggerJob(trigger);
+            boolean isNotTrigger = schedulerEngine.isTriggerJob(cronTrigger);
 
             assertNotNull(scheduler);
             assertTrue(isTrigger);
@@ -110,9 +88,9 @@ class DepositSchedulerTest {
 
         @Test
         public void testShutdownMethodWithBoolean() throws SchedulerException {
-            depositScheduler.shutdown(true);
+            schedulerEngine.shutdown(true);
 
-            boolean schedulerIsShutdown = depositScheduler.isShutdown();
+            boolean schedulerIsShutdown = schedulerEngine.isShutdown();
 
             assertFalse(schedulerIsShutdown);
         }
@@ -128,7 +106,7 @@ class DepositSchedulerTest {
         @Test
         public void testIsShutdownMethod() throws SchedulerException {
             boolean isShutdown = true;
-            DepositScheduler mockDepositScheduler = mock(DepositScheduler.class);
+            SchedulerEngineImpl mockDepositScheduler = mock(SchedulerEngineImpl.class);
             boolean actuallyShutdown = mockDepositScheduler.isShutdown();
             mockDepositScheduler.stop();
 
@@ -140,12 +118,12 @@ class DepositSchedulerTest {
         @Test
         public void testIsShutDownWithShutdownAsFalse() throws SchedulerException {
             boolean isShutdown = false;
-            Scheduler mockScheduler = depositScheduler.getScheduler();
-            boolean isActuallyShutdown = depositScheduler.isShutdown = false;
-            boolean schedulerIsRunning = depositScheduler.getScheduler().isShutdown();
-            boolean isValueShutdown = depositScheduler.isShutdown();
+            Scheduler mockScheduler = schedulerEngine.getScheduler();
+            boolean isActuallyShutdown = schedulerEngine.isShutdown = false;
+            boolean schedulerIsRunning = schedulerEngine.getScheduler().isShutdown();
+            boolean isValueShutdown = schedulerEngine.isShutdown();
 
-            depositScheduler.stop();
+            schedulerEngine.stop();
 
             // verify(mockDepositScheduler).stop();
             assertNotNull(mockScheduler);
@@ -156,13 +134,13 @@ class DepositSchedulerTest {
         @Test
         public void testIsPauseMethodWhenPauseIsTrue() throws SchedulerException {
             boolean isPausedExpected = true;
-            Scheduler mockScheduler = depositScheduler.getScheduler();
+            Scheduler mockScheduler = schedulerEngine.getScheduler();
             boolean schedulerIsPaused = mockScheduler.isInStandbyMode();
 
             // pause the scheduler
             //depositScheduler.pause();
 
-            boolean isActuallyPaused = depositScheduler.isInStandby();
+            boolean isActuallyPaused = schedulerEngine.isInStandby();
 
             assertNotNull(mockScheduler);
             assertTrue(schedulerIsPaused);
@@ -179,10 +157,10 @@ class DepositSchedulerTest {
             JobKey mockKey = mockJobDetail.getKey();
             Trigger mockTrigger = mock(Trigger.class);
             boolean param = true;
-            depositScheduler.addJob(mockJobDetail, true);
-            depositScheduler.scheduleJob(mockJobDetail, mockTrigger);
+            schedulerEngine.addJob(mockJobDetail, true);
+            schedulerEngine.scheduleJob(mockJobDetail, mockTrigger);
 
-            boolean containsJob = depositScheduler.checkExists(mockKey);
+            boolean containsJob = schedulerEngine.checkExists(mockKey);
 
             assertTrue(containsJob);
         }
@@ -201,12 +179,12 @@ class DepositSchedulerTest {
                     .startAt(new Date())
                     .build();
 
-            depositScheduler.scheduleJob(mockJobDetail, mockTrigger);
-            depositScheduler.start();
+            schedulerEngine.scheduleJob(mockJobDetail, mockTrigger);
+            schedulerEngine.start();
 
             JobKey mockJobKey = mockJobDetail.getKey();
 
-            boolean actualDeleteResult = depositScheduler.deleteJob(mockJobKey);
+            boolean actualDeleteResult = schedulerEngine.deleteJob(mockJobKey);
 
             assertNotNull(mockJobKey);
             assertNotNull(mockJobDetail);
@@ -228,11 +206,11 @@ class DepositSchedulerTest {
                     .startAt(new Date())
                     .build();
 
-            depositScheduler.scheduleJob(mockJobDetail, mockTrigger);
-            depositScheduler.start();
+            schedulerEngine.scheduleJob(mockJobDetail, mockTrigger);
+            schedulerEngine.start();
 
             List<JobExecutionContext> expectedJobs = new ArrayList<>();
-            List<JobExecutionContext> actualExecutingJobs = depositScheduler.getCurrentlyExecutingJobs();
+            List<JobExecutionContext> actualExecutingJobs = schedulerEngine.getCurrentlyExecutingJobs();
 
             assertNotNull(mockJobDetail);
             assertNotNull(mockTrigger);
@@ -257,7 +235,7 @@ class DepositSchedulerTest {
                     .build();
 
             Scheduler mockScheduler = mock(Scheduler.class);
-            DepositScheduler mockDepositScheduler = mock(DepositScheduler.class);
+            SchedulerEngineImpl mockDepositScheduler = mock(SchedulerEngineImpl.class);
 
             TriggerKey triggerKey = mockTrigger.getKey();
             TriggerKey mockTriggerKey = mock(TriggerKey.class);
@@ -265,11 +243,11 @@ class DepositSchedulerTest {
             mockDepositScheduler.start();
             Date expectedReschedule = new Date();
             when(mockScheduler.rescheduleJob(eq(triggerKey), eq(rescheduledTrigger))).thenReturn(expectedReschedule);
-            Date actualReschedule = depositScheduler.rescheduleJob(triggerKey, rescheduledTrigger);
+            Date actualReschedule = schedulerEngine.rescheduleJob(triggerKey, rescheduledTrigger);
 
 
-            assertNotNull(depositScheduler.getSchedulerBean());
-            assertNotNull(depositScheduler.getScheduler());
+            assertNotNull(schedulerEngine.getSchedulerBean());
+            assertNotNull(schedulerEngine.getScheduler());
             assertNotNull(triggerKey);
             assertNotNull(mockTrigger);
             assertNotEquals(expectedReschedule.getTime(), actualReschedule.getTime());
@@ -281,7 +259,7 @@ class DepositSchedulerTest {
         public void testCheckExists()
         {
             JobKey expectedJobKey = jobKey;
-            boolean exists = depositScheduler.checkExists(expectedJobKey);
+            boolean exists = schedulerEngine.checkExists(expectedJobKey);
 
 
 
@@ -302,25 +280,23 @@ class DepositSchedulerTest {
 
         @Test
         public void testScheduleJobWithTrigger() throws SchedulerException {
-            Scheduler mockScheduler = depositScheduler.getScheduler();
+            Scheduler mockScheduler = schedulerEngine.getScheduler();
             JobDetail mockJobDetail = mock(JobDetail.class);
             trigger = mock(Trigger.class);
 
             // depositScheduler.pause();
 
-            depositScheduler.scheduleJob(mockJobDetail, trigger);
-
-            assert
+            schedulerEngine.scheduleJob(mockJobDetail, trigger);
 
         }
 
         @Test
         public void testResumeMethod() throws SchedulerException {
-            Scheduler mockScheduler = depositScheduler.getScheduler();
+            Scheduler mockScheduler = schedulerEngine.getScheduler();
             boolean schedulerIsStarted = mockScheduler.isStarted();
-            boolean isStarted = depositScheduler.isStarted();
+            boolean isStarted = schedulerEngine.isStarted();
 
-            depositScheduler.resume();
+            schedulerEngine.resume();
 
             assertNotNull(mockScheduler);
             assertFalse(schedulerIsStarted);
@@ -333,12 +309,12 @@ class DepositSchedulerTest {
         @Test
         public void testPauseMethodWhenPauseIsFalse() throws SchedulerException {
             boolean isPauseExpected = false;
-            Scheduler mockScheduler = depositScheduler.getScheduler();
+            Scheduler mockScheduler = schedulerEngine.getScheduler();
 
             // set the scheduler pause to false
             mockScheduler.start();
 
-            boolean isActuallyPaused = depositScheduler.isInStandby();
+            boolean isActuallyPaused = schedulerEngine.isInStandby();
 
             assertNotNull(mockScheduler);
             assertFalse(isActuallyPaused);
@@ -349,7 +325,7 @@ class DepositSchedulerTest {
         @Test
         public void testDailySimpleScheduler()
         {
-            Scheduler dailyScheduler = depositScheduler.getDailySimpleScheduler();
+            Scheduler dailyScheduler = schedulerEngine.getSchedulerFactoryInstance();
 
             assertNotNull(dailyScheduler);
         }
