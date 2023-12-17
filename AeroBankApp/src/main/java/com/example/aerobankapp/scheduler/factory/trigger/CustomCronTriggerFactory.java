@@ -1,8 +1,10 @@
 package com.example.aerobankapp.scheduler.factory.trigger;
 
+import com.example.aerobankapp.exceptions.InvalidCronExpressionException;
+import com.example.aerobankapp.exceptions.NullTriggerCriteriaException;
 import com.example.aerobankapp.scheduler.CronBuilderFactory;
 import com.example.aerobankapp.scheduler.CustomCronBuilderFactory;
-import com.example.aerobankapp.scheduler.TriggerDetail;
+import com.example.aerobankapp.scheduler.TriggerCriteria;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.Getter;
 import org.quartz.CronScheduleBuilder;
@@ -13,23 +15,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Random;
 
 import static org.quartz.DateBuilder.dateOf;
 
 @Component
 @Getter
-public class CustomCronTriggerFactory implements CronTriggerFactory
+public class CustomCronTriggerFactory extends AbstractTriggerBase implements CronTriggerFactory
 {
     private AeroLogger aeroLogger = new AeroLogger(CustomCronTriggerFactory.class);
     private final int SEED_RANDOM = 42;
     private final CronBuilderFactory cronBuilderFactory = new CustomCronBuilderFactory();
-    private final TriggerDetail triggerDetail;
 
     @Autowired
-    public CustomCronTriggerFactory(@Qualifier("triggerDetail") TriggerDetail triggerDetail)
+    public CustomCronTriggerFactory(@Qualifier("triggerCriteria") TriggerCriteria triggerCriteria)
     {
-        this.triggerDetail = triggerDetail;
+        super(triggerCriteria);
     }
 
     @Override
@@ -38,17 +40,12 @@ public class CustomCronTriggerFactory implements CronTriggerFactory
         aeroLogger.info("Building Custom Trigger");
         try
         {
-            Random random = new Random(SEED_RANDOM);
-            int randomID = random.nextInt(Integer.MAX_VALUE) + 1;
             aeroLogger.info("Building Cron Expression ");
-            String cronExpression = cronBuilderFactory.createCron(triggerDetail.getInterval(), triggerDetail.getMinute(), triggerDetail.getHour(), triggerDetail.getDay(), triggerDetail.getMonth(), triggerDetail.getYear());
+            String cronExpression = getCronExpression(triggerCriteria);
             aeroLogger.info("Cron Expression: " + cronExpression);
 
             aeroLogger.info("Trigger");
-            customTrigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(String.valueOf(randomID), String.valueOf(randomID)))
-                   .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
-                   .startAt(dateOf(triggerDetail.getHour(), triggerDetail.getMinute(), 0, triggerDetail.getDay(), triggerDetail.getMonth(), triggerDetail.getYear()))
-                  .build();
+            customTrigger = getCustomCronTrigger(cronExpression, triggerCriteria);
 
         }
         catch (Exception e)
@@ -56,5 +53,61 @@ public class CustomCronTriggerFactory implements CronTriggerFactory
             aeroLogger.error("Error Building Custom Cron Trigger: ", e);
         }
         return customTrigger;
+    }
+
+    public String getCronExpression(TriggerCriteria triggerCriteria)
+    {
+        triggerCriteriaNullCheck(triggerCriteria);
+        int interval = triggerCriteria.getInterval();
+        int minute = triggerCriteria.getMinute();
+        int hour = triggerCriteria.getHour();
+        int day = triggerCriteria.getDay();
+        int month = triggerCriteria.getMonth();
+        int year = triggerCriteria.getYear();
+
+        return cronBuilderFactory.createCron(interval, minute, hour, day, month, year);
+    }
+
+    private int getRandomID()
+    {
+        Random random = new Random(SEED_RANDOM);
+        return random.nextInt(Integer.MAX_VALUE) + 1;
+    }
+
+
+    private void nullCheck(String cronExpression, TriggerCriteria triggerDetail)
+    {
+        if(cronExpression.equals(" ") || cronExpression.equals(""))
+        {
+            throw new InvalidCronExpressionException("Invalid Cron Expression has been entered!");
+        }
+        triggerCriteriaNullCheck(triggerDetail);
+    }
+
+
+    private CronScheduleBuilder getCronSchedule(String cronExpression)
+    {
+        return CronScheduleBuilder.cronSchedule(cronExpression);
+    }
+
+    private Date startDate(TriggerCriteria triggerCriteria)
+    {
+        return dateOf(triggerCriteria.getHour(), triggerCriteria.getMinute(), 0, triggerCriteria.getDay(), triggerCriteria.getMonth(), triggerCriteria.getYear());
+    }
+
+    private TriggerKey getTriggerKey(int id)
+    {
+        return TriggerKey.triggerKey(String.valueOf(id), String.valueOf(id));
+    }
+
+    public CronTrigger getCustomCronTrigger(final String cronExpression, final TriggerCriteria triggerCriteria)
+    {
+        nullCheck(cronExpression, triggerCriteria);
+
+        return TriggerBuilder.newTrigger()
+                .withIdentity(getTriggerKey(getRandomID()))
+                .withSchedule(getCronSchedule(cronExpression))
+                .startAt(startDate(triggerCriteria))
+                .build();
     }
 }

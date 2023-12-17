@@ -9,24 +9,26 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-public class TriggerDetail
+public class TriggerCriteria
 {
     private int day;
     private int minute;
     private int hour;
+    private int second;
     private int month;
     private int year;
     private int interval;
+    private int repeat;
     private boolean isCron;
 
-    public TriggerDetail(int interval, int minute, int hour)
+    public TriggerCriteria(int interval, int minute, int hour)
     {
         this.interval = interval;
         this.minute = minute;
         this.hour = hour;
     }
 
-    public TriggerDetail(int interval, int hour, int min, int day, int month, int year)
+    public TriggerCriteria(int interval, int hour, int min, int day, int month, int year)
     {
         this.interval = interval;
         this.hour = hour;
@@ -36,7 +38,7 @@ public class TriggerDetail
         this.year = year;
     }
 
-    public TriggerDetail(int interval, int min, int hour, int day)
+    public TriggerCriteria(int interval, int min, int hour, int day)
     {
         this.interval = interval;
         this.minute = min;

@@ -17,6 +17,11 @@ public class CustomCronBuilderFactory implements CronBuilderFactory
     @Override
     public String createCron(int interval, int min, int hour, int day, int month, int year) {
 
+        if(interval == 0 || min == 0 || hour == 0 || day == 0 || month == 0 || year == 0)
+        {
+            throw new IllegalArgumentException();
+        }
+
         switch(interval)
         {
             case 1:

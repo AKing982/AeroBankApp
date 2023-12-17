@@ -17,42 +17,42 @@ public class SchedulerTriggerImpl implements SchedulerTriggerModel
     private static String triggerID = UUID.randomUUID().toString();
     private static String groupID = UUID.randomUUID().toString();
     private AeroLogger aeroLogger = new AeroLogger(SchedulerTriggerImpl.class);
-    private TriggerDetail triggerDetail;
+    private TriggerCriteria triggerCriteria;
 
     @Autowired
-    public SchedulerTriggerImpl(TriggerDetail triggerDetail)
+    public SchedulerTriggerImpl(TriggerCriteria triggerCriteria)
     {
-        this.triggerDetail = triggerDetail;
+        this.triggerCriteria = triggerCriteria;
     }
 
     public int getDay()
     {
-        return getTriggerDetail().getDay();
+        return getTriggerCriteria().getDay();
     }
 
     public int getMonth()
     {
-        return getTriggerDetail().getMonth();
+        return getTriggerCriteria().getMonth();
     }
 
     public int getYear()
     {
-        return getTriggerDetail().getYear();
+        return getTriggerCriteria().getYear();
     }
 
     public int getMinute()
     {
-        return getTriggerDetail().getMinute();
+        return getTriggerCriteria().getMinute();
     }
 
     public int getHour()
     {
-        return getTriggerDetail().getHour();
+        return getTriggerCriteria().getHour();
     }
 
     public int getInterval()
     {
-        return getTriggerDetail().getInterval();
+        return getTriggerCriteria().getInterval();
     }
 
 

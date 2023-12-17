@@ -22,22 +22,22 @@ class SchedulerTriggerImplTest
 {
     @MockBean
     private SchedulerTriggerImpl schedulerTrigger;
-    private TriggerDetail triggerDetail;
+    private TriggerCriteria triggerCriteria;
 
     @BeforeEach
     void setUp()
     {
-        triggerDetail = new TriggerDetail(1, 5, 11, 12, 6, 2023);
-        schedulerTrigger = new SchedulerTriggerImpl(triggerDetail);
+        triggerCriteria = new TriggerCriteria(1, 5, 11, 12, 6, 2023);
+        schedulerTrigger = new SchedulerTriggerImpl(triggerCriteria);
     }
 
     @Test
     @DisplayName("Test Constructor")
     public void constructorTest()
     {
-        TriggerDetail triggerDetail1 = schedulerTrigger.getTriggerDetail();
+        TriggerCriteria triggerCriteria1 = schedulerTrigger.getTriggerCriteria();
 
-        assertNotNull(triggerDetail1);
+        assertNotNull(triggerCriteria1);
         assertNotNull(schedulerTrigger);
     }
 
