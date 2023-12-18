@@ -4,7 +4,6 @@ import com.example.aerobankapp.scheduler.TriggerCriteria;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.Getter;
 import org.quartz.CronTrigger;
-import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
