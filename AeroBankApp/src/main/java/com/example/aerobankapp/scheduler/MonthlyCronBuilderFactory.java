@@ -72,22 +72,12 @@ public class MonthlyCronBuilderFactory implements CronBuilderFactory {
         List<String> schedules = new ArrayList<>();
         for (int i = 0; i < 12; i += interval) {
             int currentMonth = (month + i - 1) % 12 + 1;
-            if (currentMonth > 12) {
-
-                // Reset the current month back to one
-                currentMonth = 1;
 
                 // Get the cron schedule for the next year
                 String cronExpression = getMonthlyCronScheduleAdjustmentByYearRoleOver(year, month, interval);
                 aeroLogger.info("Current Month: " + currentMonth);
                 aeroLogger.info("Cron expression: " + cronExpression);
                 schedules.add(cronExpression);
-            } else {
-                aeroLogger.info("Current Month: " + currentMonth);
-                String cronExpression = String.format("0 %d %d %d %d ? %d", min, hour, day, currentMonth, year);
-                aeroLogger.info("Cron Expression: " + cronExpression);
-                schedules.add(cronExpression);
-            }
         }
         return schedules;
     }
