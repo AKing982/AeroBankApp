@@ -1,7 +1,5 @@
 package com.example.aerobankapp.scheduler.factory;
 
-import com.example.aerobankapp.scheduler.factory.trigger.EvenDayCronTriggerFactory;
-import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
 import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
