@@ -2,6 +2,7 @@ package com.example.aerobankapp.scheduler.factory.trigger;
 
 import com.example.aerobankapp.exceptions.InvalidCronExpressionException;
 import com.example.aerobankapp.exceptions.NullTriggerCriteriaException;
+import com.example.aerobankapp.scheduler.CCronBuilderFactory;
 import com.example.aerobankapp.scheduler.CronBuilderFactory;
 import com.example.aerobankapp.scheduler.CustomCronBuilderFactory;
 import com.example.aerobankapp.scheduler.TriggerCriteria;
@@ -26,7 +27,7 @@ public class CustomCronTriggerFactory extends AbstractTriggerBase implements Cro
 {
     private AeroLogger aeroLogger = new AeroLogger(CustomCronTriggerFactory.class);
     private final int SEED_RANDOM = 42;
-    private final CronBuilderFactory cronBuilderFactory = new CustomCronBuilderFactory();
+    private final CCronBuilderFactory cronBuilderFactory = new CustomCronBuilderFactory();
 
     @Autowired
     public CustomCronTriggerFactory(@Qualifier("triggerCriteria") TriggerCriteria triggerCriteria)

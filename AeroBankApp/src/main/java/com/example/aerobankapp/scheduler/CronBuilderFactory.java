@@ -1,6 +1,8 @@
 package com.example.aerobankapp.scheduler;
 
+import java.util.List;
+
 public interface CronBuilderFactory
 {
-    String createCron(int interval, int min, int hour, int day, int month, int year);
+    List<String> createCron(TriggerCriteria triggerCriteria);
 }

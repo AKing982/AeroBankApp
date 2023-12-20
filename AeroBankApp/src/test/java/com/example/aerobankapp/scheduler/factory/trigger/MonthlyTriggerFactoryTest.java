@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -68,7 +69,13 @@ class MonthlyTriggerFactoryTest
     @DisplayName("Test Monthly Trigger")
     public void testMonthlyTrigger()
     {
+        String cronExpression = "0 0 10 1 * ?";
         CronTrigger monthlyTrigger = monthlyTriggerFactory.createCronTrigger();
+        CronScheduleBuilder expectedSchedule = CronScheduleBuilder.cronSchedule(cronExpression);
+        CronScheduleBuilder actualSchedule = monthlyTriggerFactory.getCronSchedule();
+
+        assertEquals(expectedSchedule, actualSchedule);
+        assertNotNull(monthlyTrigger);
     }
 
     @AfterEach

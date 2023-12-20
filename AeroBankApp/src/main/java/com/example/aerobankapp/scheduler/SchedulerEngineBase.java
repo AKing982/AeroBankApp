@@ -2,9 +2,7 @@ package com.example.aerobankapp.scheduler;
 
 import com.example.aerobankapp.configuration.QuartzConfig;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
-import com.example.aerobankapp.scheduler.factory.AbstractSchedulerTypeFactory;
 import com.example.aerobankapp.scheduler.factory.SchedulerFactoryProducer;
-import com.example.aerobankapp.scheduler.security.SchedulerSecurityEntity;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.Getter;
@@ -113,13 +111,11 @@ public abstract class SchedulerEngineBase
                 }
             }
 
-
         }catch(SchedulerException ex)
         {
             aeroLogger.error("Unable to pause scheduler: ", ex);
         }
     }
-
 
     public void resumeWithDelay(int delay)
     {

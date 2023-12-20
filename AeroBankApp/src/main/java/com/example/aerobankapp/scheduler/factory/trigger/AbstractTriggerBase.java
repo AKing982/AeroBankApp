@@ -9,7 +9,7 @@ import org.quartz.TriggerKey;
 import java.util.UUID;
 
 @Getter
-public class AbstractTriggerBase
+public abstract class AbstractTriggerBase
 {
     protected static final String triggerID = UUID.randomUUID().toString();
     protected static final String groupID = UUID.randomUUID().toString();

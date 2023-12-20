@@ -1,6 +1,8 @@
 package com.example.aerobankapp.scheduler.factory;
 
 import com.example.aerobankapp.scheduler.ScheduleType;
+import com.example.aerobankapp.scheduler.factory.trigger.MonthlyTriggerFactory;
+import com.example.aerobankapp.scheduler.factory.trigger.WeeklyTriggerFactory;
 import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,12 @@ public class SchedulerFactoryProducer
     @Autowired
     private Scheduler scheduler;
 
+    @Autowired
+    private MonthlyTriggerFactory monthlyTriggerFactory;
+
+    @Autowired
+    private WeeklyTriggerFactory weeklyTriggerFactory;
+
     public Scheduler getSchedulerFactory(ScheduleType scheduleType)
     {
         return switch (scheduleType) {
@@ -21,11 +29,11 @@ public class SchedulerFactoryProducer
                 yield abstractSchedulerTypeFactory.createScheduler();
             }
             case WEEKLY -> {
-                abstractSchedulerTypeFactory = new WeeklySchedulerFactory();
+                abstractSchedulerTypeFactory = new WeeklySchedulerFactory(scheduler, weeklyTriggerFactory);
                 yield abstractSchedulerTypeFactory.createScheduler();
             }
             case MONTHLY -> {
-                abstractSchedulerTypeFactory = new MonthlySchedulerFactory(scheduler);
+                abstractSchedulerTypeFactory = new MonthlySchedulerFactory(scheduler, monthlyTriggerFactory);
                 yield abstractSchedulerTypeFactory.createScheduler();
             }
             case BIWEEKLY -> {

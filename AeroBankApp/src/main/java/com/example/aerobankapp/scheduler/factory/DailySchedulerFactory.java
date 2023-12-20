@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class DailySchedulerFactory implements AbstractSchedulerTypeFactory
 {
     private final Scheduler scheduler;
-
+    private Trigger trigger;
 
     @Autowired
     public DailySchedulerFactory(@Qualifier("scheduler") Scheduler scheduler)

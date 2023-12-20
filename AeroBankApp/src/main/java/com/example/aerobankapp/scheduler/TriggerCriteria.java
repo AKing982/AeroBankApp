@@ -20,6 +20,9 @@ public class TriggerCriteria
     private int interval;
     private int repeat;
     private boolean isCron;
+    private boolean isWeekly;
+    private boolean isMonthly;
+    private boolean isDaily;
 
     public TriggerCriteria(int interval, int minute, int hour)
     {
