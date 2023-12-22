@@ -1,6 +1,5 @@
 package com.example.aerobankapp.entity;
 
-import com.example.aerobankapp.account.Account;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +12,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="savingsAccount")
-public class SavingsAccount
+public class SavingsAccountEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

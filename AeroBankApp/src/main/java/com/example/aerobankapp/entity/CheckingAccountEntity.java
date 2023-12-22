@@ -1,7 +1,5 @@
 package com.example.aerobankapp.entity;
 
-import com.example.aerobankapp.account.Account;
-import com.example.aerobankapp.account.AccountID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -19,7 +17,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity
 @Table(name="CheckingAccount")
-public class CheckingAccount
+public class CheckingAccountEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

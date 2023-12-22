@@ -1,22 +1,24 @@
 package com.example.aerobankapp.services;
 
 
-import com.example.aerobankapp.entity.SavingsAccount;
+
+import com.example.aerobankapp.entity.SavingsAccountEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
 
-public interface SavingsAccountDAO extends ServiceDAOModel<SavingsAccount>
+
+public interface SavingsAccountDAO extends ServiceDAOModel<SavingsAccountEntity>
 {
     @Override
-    List<SavingsAccount> findAll();
+    List<SavingsAccountEntity> findAll();
 
     @Override
-    void save(SavingsAccount obj);
+    void save(SavingsAccountEntity obj);
 
     @Override
-    void delete(SavingsAccount obj);
+    void delete(SavingsAccountEntity obj);
 
     @Override
-    SavingsAccount findAllById(Long id);
+    SavingsAccountEntity findAllById(Long id);
 }

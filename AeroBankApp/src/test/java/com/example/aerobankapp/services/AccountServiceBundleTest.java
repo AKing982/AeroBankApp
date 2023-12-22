@@ -1,6 +1,7 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.CheckingAccount;
+
+import com.example.aerobankapp.entity.CheckingAccountEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,13 +27,13 @@ class AccountServiceBundleTest
     private CheckingRepositoryServiceImpl checkingRepositoryService;
     @Autowired
     private SavingsAccountServiceImpl savingsAccountService;
-    private CheckingAccount checkingAccount;
+    private CheckingAccountEntity checkingAccount;
 
     @BeforeEach
     void setUp()
     {
         serviceBundle = new AccountServiceBundle(checkingRepositoryService, savingsAccountService);
-        checkingAccount = CheckingAccount.builder()
+        checkingAccount = CheckingAccountEntity.builder()
                 .userName("AKing94")
                 .minimumBalance(new BigDecimal("100.00"))
                 .interestRate(new BigDecimal("1.67"))
@@ -45,10 +46,10 @@ class AccountServiceBundleTest
     @Test
     public void testFindAll()
     {
-        List<CheckingAccount> allChecking = new ArrayList<>();
+        List<CheckingAccountEntity> allChecking = new ArrayList<>();
         allChecking.add(checkingAccount);
         serviceBundle.getCheckingService().save(checkingAccount);
-        List<CheckingAccount> actualAccounts = serviceBundle.getCheckingService().findAll();
+        List<CheckingAccountEntity> actualAccounts = serviceBundle.getCheckingService().findAll();
 
         assertNotNull(actualAccounts);
         assertEquals(allChecking, actualAccounts);

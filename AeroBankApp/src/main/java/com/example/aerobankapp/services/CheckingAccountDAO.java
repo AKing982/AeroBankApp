@@ -1,21 +1,22 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.CheckingAccount;
+
+import com.example.aerobankapp.entity.CheckingAccountEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
 
-public interface CheckingAccountDAO extends ServiceDAOModel<CheckingAccount>
+public interface CheckingAccountDAO extends ServiceDAOModel<CheckingAccountEntity>
 {
     @Override
-    List<CheckingAccount> findAll();
+    List<CheckingAccountEntity> findAll();
 
     @Override
-    void save(CheckingAccount obj);
+    void save(CheckingAccountEntity obj);
 
     @Override
-    void delete(CheckingAccount obj);
+    void delete(CheckingAccountEntity obj);
 
     @Override
-    CheckingAccount findAllById(Long id);
+    CheckingAccountEntity findAllById(Long id);
 }

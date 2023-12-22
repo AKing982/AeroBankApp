@@ -1,6 +1,5 @@
 package com.example.aerobankapp.entity;
 
-import com.example.aerobankapp.account.Account;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -15,10 +14,9 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="investmentAccount")
-public class InvestmentAccount
+@Table(name="rentAccount")
+public class RentAccountEntity
 {
-
     @Id
     private String id;
 
@@ -37,13 +35,12 @@ public class InvestmentAccount
     @Column(name="balance")
     private BigDecimal balance;
 
-    @Column(name="interestRate")
-    private BigDecimal interestRate;
-
     @Column(name="min_balance")
     private BigDecimal min_balance;
 
-    @Column(name="dividend_amt")
-    private BigDecimal dividend_amt;
+    @Column(name="interestRate")
+    private BigDecimal interestRate;
+
+
 
 }

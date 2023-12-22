@@ -62,29 +62,29 @@ public class UserProfile extends AbstractUserProfile
     }
 
     @Override
-    protected List<CheckingAccount> getAllCheckingAccounts() {
+    protected List<CheckingAccountEntity> getAllCheckingAccounts() {
         return null;
     }
 
     @Override
-    protected List<SavingsAccount> getAllSavingsAccounts() {
+    protected List<SavingsAccountEntity> getAllSavingsAccounts() {
         return null;
     }
 
     @Override
-    protected List<InvestmentAccount> getAllInvestmentAccounts()
+    protected List<InvestmentAccountEntity> getAllInvestmentAccounts()
     {
         return null;
     }
 
     @Override
-    protected List<RentAccount> getAllRentAccounts()
+    protected List<RentAccountEntity> getAllRentAccounts()
     {
         return null;
     }
 
     @Override
-    protected List<MortgageAccount> getAllMortgageAccounts()
+    protected List<MortgageAccountEntity> getAllMortgageAccounts()
     {
         return null;
     }
@@ -100,7 +100,7 @@ public class UserProfile extends AbstractUserProfile
     }
 
     @Override
-    protected Map<Integer, AccountSecurity> getAccountSecurityDetails() {
+    protected Map<Integer, AccountSecurityEntity> getAccountSecurityDetails() {
         return null;
     }
 

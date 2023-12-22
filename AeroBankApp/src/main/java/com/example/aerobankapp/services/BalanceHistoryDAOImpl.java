@@ -1,6 +1,7 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.BalanceHistory;
+
+import com.example.aerobankapp.entity.BalanceHistoryEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 import com.example.aerobankapp.repositories.BalanceHistoryRepository;
 import jakarta.persistence.EntityManager;
@@ -28,35 +29,35 @@ public class BalanceHistoryDAOImpl implements BalanceHistoryDAO
 
     @Override
     @Transactional
-    public List<BalanceHistory> findAll()
+    public List<BalanceHistoryEntity> findAll()
     {
         return balanceHistRepo.findAll();
     }
 
     @Override
-    public void save(BalanceHistory obj)
+    public void save(BalanceHistoryEntity obj)
     {
         balanceHistRepo.save(obj);
     }
 
     @Override
     @Transactional
-    public void delete(BalanceHistory obj)
+    public void delete(BalanceHistoryEntity obj)
     {
         balanceHistRepo.delete(obj);
     }
 
     @Override
     @Transactional
-    public BalanceHistory findAllById(Long id)
+    public BalanceHistoryEntity findAllById(Long id)
     {
         return balanceHistRepo.findById(id).orElse(null);
     }
 
     @Override
-    public List<BalanceHistory> findByUserName(String user)
+    public List<BalanceHistoryEntity> findByUserName(String user)
     {
-        TypedQuery<BalanceHistory> query = entityManager.createQuery("FROM BalanceHistory WHERE user=:user", BalanceHistory.class);
+        TypedQuery<BalanceHistoryEntity> query = entityManager.createQuery("FROM BalanceHistoryEntity WHERE user=:user", BalanceHistoryEntity.class);
         query.setParameter("user", user);
         query.setMaxResults(20);
         return query.getResultList();

@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="accountSecurity")
-public class AccountSecurity
+public class AccountSecurityEntity
 {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)

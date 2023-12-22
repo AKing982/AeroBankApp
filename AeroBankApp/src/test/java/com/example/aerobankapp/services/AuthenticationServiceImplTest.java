@@ -1,6 +1,6 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.Users;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +34,7 @@ class AuthenticationServiceImplTest {
     @Autowired
     private EntityManager entityManager;
 
-    private Users users;
+    private UserEntity users;
 
 
 
@@ -44,7 +44,7 @@ class AuthenticationServiceImplTest {
         authenticationService = new AuthenticationServiceImpl();
         userService = new UserServiceImpl(userRepository, entityManager);
 
-        users = Users.builder()
+        users = UserEntity.builder()
                 .id(1)
                 .isAdmin(true)
                 .email("alex@utahkings.com")

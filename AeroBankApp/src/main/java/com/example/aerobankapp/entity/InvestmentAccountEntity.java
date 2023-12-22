@@ -5,16 +5,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Entity
-@Table(name="mortgageAccount")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MortgageAccount
+@Table(name="investmentAccount")
+public class InvestmentAccountEntity
 {
+
     @Id
     private String id;
 
@@ -38,5 +41,8 @@ public class MortgageAccount
 
     @Column(name="min_balance")
     private BigDecimal min_balance;
+
+    @Column(name="dividend_amt")
+    private BigDecimal dividend_amt;
 
 }

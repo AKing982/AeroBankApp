@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
@@ -16,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="userLog")
-public class UserLog
+public class UserLogEntity
 {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -35,7 +33,7 @@ public class UserLog
     @Temporal(TemporalType.DATE)
     private Date lastLogin;
 
-    public UserLog(String username, int userID, Date lastLogin)
+    public UserLogEntity(String username, int userID, Date lastLogin)
     {
         this.username = username;
         this.userID = userID;
