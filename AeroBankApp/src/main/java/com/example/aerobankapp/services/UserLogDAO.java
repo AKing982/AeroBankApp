@@ -6,7 +6,7 @@ import com.example.aerobankapp.model.UserLogModel;
 
 import java.util.List;
 
-public interface UserLogService extends ServiceDAOModel<UserLog>
+public interface UserLogDAO extends ServiceDAOModel<UserLog>
 {
     @Override
     List<UserLog> findAll();

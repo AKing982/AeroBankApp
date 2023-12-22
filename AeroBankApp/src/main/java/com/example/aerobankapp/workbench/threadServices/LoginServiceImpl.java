@@ -1,6 +1,5 @@
 package com.example.aerobankapp.workbench.threadServices;
 
-import com.example.aerobankapp.services.LoginService;
 import com.example.aerobankapp.services.LoginThreadTaskService;
 import com.example.aerobankapp.services.UserDAOService;
 import com.example.aerobankapp.services.UserServiceImpl;
