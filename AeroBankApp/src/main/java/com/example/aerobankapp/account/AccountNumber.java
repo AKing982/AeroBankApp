@@ -2,7 +2,6 @@ package com.example.aerobankapp.account;
 
 import lombok.*;
 
-import javax.annotation.Nonnull;
 
 @Getter
 @Setter

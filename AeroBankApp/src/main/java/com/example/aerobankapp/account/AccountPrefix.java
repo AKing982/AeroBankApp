@@ -22,7 +22,7 @@ public class AccountPrefix
         }
         else
         {
-            throw new IllegalArgumentException("Incorrect Prefix");
+            throw new IllegalArgumentException("Incorrect Prefix was entered!");
         }
     }
 
