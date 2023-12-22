@@ -1,6 +1,7 @@
 package com.example.aerobankapp.scheduler.factory;
 
 import com.example.aerobankapp.scheduler.ScheduleType;
+import com.example.aerobankapp.scheduler.factory.trigger.EvenDayCronTriggerFactory;
 import com.example.aerobankapp.scheduler.factory.trigger.MonthlyTriggerFactory;
 import com.example.aerobankapp.scheduler.factory.trigger.WeeklyTriggerFactory;
 import org.quartz.Scheduler;
@@ -20,6 +21,9 @@ public class SchedulerFactoryProducer
 
     @Autowired
     private WeeklyTriggerFactory weeklyTriggerFactory;
+
+    @Autowired
+    private EvenDayCronTriggerFactory evenDayCronTriggerFactory;
 
     public Scheduler getSchedulerFactory(ScheduleType scheduleType)
     {
@@ -41,7 +45,7 @@ public class SchedulerFactoryProducer
                 yield abstractSchedulerTypeFactory.createScheduler();
             }
             case EVERY_TWO_DAYS -> {
-                abstractSchedulerTypeFactory = new EvenDaySchedulerFactory(scheduler);
+                abstractSchedulerTypeFactory = new EvenDaySchedulerFactory(scheduler, evenDayCronTriggerFactory);
                 yield abstractSchedulerTypeFactory.createScheduler();
             }
             case CUSTOM -> {

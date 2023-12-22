@@ -22,20 +22,21 @@ public class TriggerFactoryProducer
                 triggerFactory = new BiWeeklyTriggerFactory();
                 return triggerFactory.createTrigger();
             case WEEKLY:
-                triggerFactory = new WeeklyTriggerFactory();
+                triggerFactory = (TriggerFactory) new WeeklyTriggerFactory(triggerCriteria);
                 return triggerFactory.createTrigger();
             case MONTHLY:
-                triggerFactory = new MonthlyTriggerFactory(triggerCriteria);
+                triggerFactory = (TriggerFactory) new MonthlyTriggerFactory(triggerCriteria);
                 return triggerFactory.createTrigger();
             case CUSTOM:
-                triggerFactory = new CustomCronTriggerFactory(triggerCriteria);
+                triggerFactory = (TriggerFactory) new CustomCronTriggerFactory(triggerCriteria);
                 return triggerFactory.createTrigger();
             case EVERY_TWO_DAYS:
-                triggerFactory = new EvenDayCronTriggerFactory(triggerCriteria);
+                triggerFactory = (TriggerFactory) new EvenDayCronTriggerFactory(triggerCriteria);
                 return triggerFactory.createTrigger();
             case DAILY:
                 triggerFactory = new DailyTriggerFactory(triggerCriteria);
                 return triggerFactory.createTrigger();
         }
+        return null;
     }
 }

@@ -29,14 +29,6 @@ public class WeeklySchedulerFactory implements AbstractSchedulerTypeFactory
     public Scheduler createScheduler() {
         CronTrigger weeklyTrigger = getWeeklyTriggerFactory().createCronTrigger();
 
-        try
-        {
-
-
-        }catch(SchedulerException e)
-        {
-
-        }
-
+        return null;
     }
 }
