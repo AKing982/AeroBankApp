@@ -5,8 +5,8 @@ import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.repositories.UserLogRepository;
 import com.example.aerobankapp.repositories.UserRepository;
-import com.example.aerobankapp.services.UserLogServiceImpl;
-import com.example.aerobankapp.services.UserServiceImpl;
+import com.example.aerobankapp.services.UserDAOImpl;
+import com.example.aerobankapp.services.UserLogDAOImpl;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
@@ -30,10 +30,10 @@ class UserLogRunnerTest {
     private UserLogRunner runner;
 
     @Autowired
-    private UserLogServiceImpl userLogService;
+    private UserLogDAOImpl userLogService;
 
     @Autowired
-    private UserServiceImpl userService;
+    private UserDAOImpl userService;
 
     @Autowired
     private UserLogRepository userLogRepository;
@@ -51,7 +51,7 @@ class UserLogRunnerTest {
         loginModel = new LoginModel(user, pass);
 
         runner = new UserLogRunner(userLogService, userService, loginModel);
-        userLogService = new UserLogServiceImpl(userLogRepository, entityManager);
+        userLogService = new UserLogDAOImpl(userLogRepository, entityManager);
     }
 
     @Test

@@ -202,10 +202,7 @@ public class MonthlyCronBuilderFactory implements CronBuilderFactory {
     public boolean isResetToNewYear(int prevMonth, int month) {
         if(prevMonth <= 12)
         {
-            if(month <= prevMonth)
-            {
-                return true;
-            }
+            return month <= prevMonth;
         }
         return false;
     }

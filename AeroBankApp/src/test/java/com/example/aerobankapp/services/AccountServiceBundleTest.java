@@ -24,9 +24,9 @@ class AccountServiceBundleTest
     @MockBean
     private AccountServiceBundle serviceBundle;
     @Autowired
-    private CheckingRepositoryServiceImpl checkingRepositoryService;
+    private CheckingRepositoryServiceDAOImpl checkingRepositoryService;
     @Autowired
-    private SavingsAccountServiceImpl savingsAccountService;
+    private SavingsAccountDAOImpl savingsAccountService;
     private CheckingAccountEntity checkingAccount;
 
     @BeforeEach

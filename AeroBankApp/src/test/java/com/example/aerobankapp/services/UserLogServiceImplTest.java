@@ -2,7 +2,7 @@ package com.example.aerobankapp.services;
 
 
 import com.example.aerobankapp.entity.UserLogEntity;
-import com.example.aerobankapp.model.UserLogModel;
+import com.example.aerobankapp.model.UserLogDTO;
 import com.example.aerobankapp.repositories.UserLogRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 class UserLogServiceImplTest {
 
     @MockBean
-    private UserLogServiceImpl userLogService;
+    private UserLogDAOImpl userLogService;
 
     @Autowired
     private UserLogRepository userLogRepository;
@@ -40,7 +40,7 @@ class UserLogServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        userLogService = new UserLogServiceImpl(userLogRepository, entityManager);
+        userLogService = new UserLogDAOImpl(userLogRepository, entityManager);
     }
 
     @Test
@@ -62,8 +62,8 @@ class UserLogServiceImplTest {
     @Test
     public void testFindAll()
     {
-        List<UserLogModel> userLogModelList = Arrays.asList(new UserLogModel(), new UserLogModel());
-        userLogService = mock(UserLogServiceImpl.class);
+        List<UserLogDTO> userLogModelList = Arrays.asList(new UserLogDTO(), new UserLogDTO());
+        userLogService = mock(UserLogDAOImpl.class);
 
     }
 
@@ -72,7 +72,7 @@ class UserLogServiceImplTest {
     {
      //   UserLogServiceImpl userLogService1 = new UserLogServiceImpl();
 
-        List<UserLogModel> userLogModelList = Arrays.asList(new UserLogModel());
+        List<UserLogDTO> userLogModelList = Arrays.asList(new UserLogDTO());
        // List<UserLogModel> actualList = userLogService1.findAll();
 
        // assertNotEquals(userLogModelList,actualList);

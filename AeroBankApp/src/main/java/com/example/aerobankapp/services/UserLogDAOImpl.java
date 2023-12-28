@@ -1,7 +1,7 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserLogEntity;
-import com.example.aerobankapp.model.UserLogModel;
+
 import com.example.aerobankapp.repositories.UserLogRepository;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import jakarta.persistence.EntityManager;

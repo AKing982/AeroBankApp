@@ -6,7 +6,7 @@ import com.example.aerobankapp.model.User;
 
 import java.util.List;
 
-public interface UserDAO extends ServiceDAOModel<UserEntity>
+public interface UserDAO extends ServiceDAOModel<UserEntity >
 {
     @Override
     List<UserEntity> findAll();

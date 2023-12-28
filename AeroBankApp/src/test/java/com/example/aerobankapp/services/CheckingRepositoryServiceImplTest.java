@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CheckingRepositoryServiceImplTest
 {
     @MockBean
-    private CheckingRepositoryServiceImpl checkingRepositoryService;
+    private CheckingRepositoryServiceDAOImpl checkingRepositoryService;
 
     @Autowired
     private CheckingRepository checkingRepository;
@@ -37,7 +37,7 @@ class CheckingRepositoryServiceImplTest
     void setUp()
     {
 
-        checkingRepositoryService = new CheckingRepositoryServiceImpl(checkingRepository, entityManager);
+        checkingRepositoryService = new CheckingRepositoryServiceDAOImpl(checkingRepository, entityManager);
 
     }
 

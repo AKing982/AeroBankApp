@@ -2,8 +2,8 @@ package com.example.aerobankapp.services.tasks;
 
 import com.example.aerobankapp.services.Task;
 import com.example.aerobankapp.services.ThreadType;
-import com.example.aerobankapp.services.UserLogServiceImpl;
-import com.example.aerobankapp.services.UserServiceImpl;
+import com.example.aerobankapp.services.UserDAOImpl;
+import com.example.aerobankapp.services.UserLogDAOImpl;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.runner.*;
 import lombok.*;
@@ -38,10 +38,10 @@ public class LoginTask implements Task
     private List<Task> tasks = new ArrayList<>();
 
     @Autowired
-    private UserLogServiceImpl userLogService;
+    private UserLogDAOImpl userLogService;
 
     @Autowired
-    private UserServiceImpl userService;
+    private UserDAOImpl userService;
 
     @Autowired
     private LoginModel loginModel;

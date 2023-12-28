@@ -2,8 +2,8 @@ package com.example.aerobankapp.workbench.runner;
 
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.UserLogEntity;
-import com.example.aerobankapp.services.UserLogServiceImpl;
-import com.example.aerobankapp.services.UserServiceImpl;
+import com.example.aerobankapp.services.UserDAOImpl;
+import com.example.aerobankapp.services.UserLogDAOImpl;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.Getter;
@@ -19,13 +19,13 @@ import java.util.List;
 @Slf4j
 @Getter
 public class UserLogRunner implements Runnable {
-    private final UserLogServiceImpl userLogService;
-    private final UserServiceImpl userService;
+    private final UserLogDAOImpl userLogService;
+    private final UserDAOImpl userService;
     private final LoginModel loginModel;
     private AeroLogger aeroLogger = new AeroLogger(UserLogRunner.class);
 
     @Autowired
-    public UserLogRunner(UserLogServiceImpl userLogService, UserServiceImpl userSvc, LoginModel loginModel) {
+    public UserLogRunner(UserLogDAOImpl userLogService, UserDAOImpl userSvc, LoginModel loginModel) {
         this.userLogService = userLogService;
         this.userService = userSvc;
         this.loginModel = loginModel;

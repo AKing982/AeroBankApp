@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceImplTest {
 
     @MockBean
-    private UserServiceImpl userService;
+    private UserDAOImpl userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -59,7 +59,7 @@ class UserServiceImplTest {
                 .isCredentialsNonExpired(true)
                 .isAccountNonExpired(true)
                 .build();
-        userService = new UserServiceImpl(userRepository, manager);
+        userService = new UserDAOImpl(userRepository, manager);
 
 
     }

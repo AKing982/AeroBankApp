@@ -35,7 +35,7 @@ class UserProfileServiceTest
     private UserServiceBundle userServiceBundle;
 
     @Autowired
-    private BalanceHistoryServiceImpl balanceHistoryService;
+    private BalanceHistoryDAOImpl balanceHistoryService;
 
     private CheckingAccountEntity checkingAccount;
 

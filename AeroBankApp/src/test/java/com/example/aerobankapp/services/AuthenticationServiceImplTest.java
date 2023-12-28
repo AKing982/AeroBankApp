@@ -22,51 +22,10 @@ class AuthenticationServiceImplTest {
     @MockBean
     private AuthenticationServiceImpl authenticationService;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-
-    public UserServiceImpl userService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private EntityManager entityManager;
-
-    private UserEntity users;
-
-
-
     @BeforeEach
     void setUp()
     {
         authenticationService = new AuthenticationServiceImpl();
-        userService = new UserServiceImpl(userRepository, entityManager);
-
-        users = UserEntity.builder()
-                .id(1)
-                .isAdmin(true)
-                .email("alex@utahkings.com")
-                .pinNumber("5988")
-                .username("AKing94")
-                .isAccountNonExpired(true)
-                .isAccountNonLocked(true)
-                .isEnabled(true)
-                .isCredentialsNonExpired(true)
-                .build();
-
-
-    }
-
-    @Test
-    public void testAuthenticateByUserCount()
-    {
-        String user = "AKing94";
-        String pass = "Halflifer94!";
-        userService.save(users);
-
-
     }
 
     @AfterEach
