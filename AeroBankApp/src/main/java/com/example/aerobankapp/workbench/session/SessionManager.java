@@ -1,6 +1,6 @@
 package com.example.aerobankapp.workbench.session;
 
-import com.example.aerobankapp.model.User;
+import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.workbench.tokens.TokenManager;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
 import lombok.Getter;
@@ -16,7 +16,7 @@ public class SessionManager
 {
     private static SessionManager instance;
     private TokenManager tokenManager;
-    private User currentUser;
+    private UserDTO currentUser;
     private UserProfile currentProfile;
 
     private SessionManager()

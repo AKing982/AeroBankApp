@@ -1,7 +1,8 @@
 package com.example.aerobankapp.workbench.transactions;
 
 import com.example.aerobankapp.card.CardNumber;
-import com.example.aerobankapp.model.User;;
+
+import com.example.aerobankapp.model.UserDTO;
 import javafx.scene.image.ImageView;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class CardDesignator
 {
     private int id;
-    private User user;
+    private UserDTO user;
     private String cardHolder;
     private CardNumber cardNo;
     private String expiration_date;

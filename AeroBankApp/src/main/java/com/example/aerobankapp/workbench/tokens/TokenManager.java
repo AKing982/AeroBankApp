@@ -1,6 +1,6 @@
 package com.example.aerobankapp.workbench.tokens;
 
-import com.example.aerobankapp.model.User;
+import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.workbench.security.authentication.JWTUtil;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
 public class TokenManager {
     private static TokenManager instance;
     private JWTUtil jwtUtil;
-    private Map<String, User> sessionTokens;
+    private Map<String, UserDTO> sessionTokens;
 
     private TokenManager() {
         sessionTokens = new HashMap<>();
@@ -26,14 +26,14 @@ public class TokenManager {
         return instance;
     }
 
-    public String generateUserToken(User user) {
-        String username = user.getUser();
-        String token = jwtUtil.generateToken(username);
-        sessionTokens.put(token, user);
-        return token;
+    public String generateUserToken(UserDTO user) {
+       // String username = user.getUser();
+     //   String token = jwtUtil.generateToken(username);
+       // sessionTokens.put(token, user);
+        return "token";
     }
 
-    private User getUserFromToken(String token)
+    private UserDTO getUserFromToken(String token)
     {
         return sessionTokens.get(token);
     }

@@ -1,7 +1,7 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserEntity;
-import com.example.aerobankapp.model.User;
+import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.security.authentication.UserAuthority;
 import jakarta.persistence.EntityManager;
@@ -33,19 +33,17 @@ class UserServiceImplTest {
 
     @Autowired
     private EntityManager manager;
-    private User user1;
+    private UserDTO user1;
     private UserEntity test;
 
     @BeforeEach
     void setUp()
     {
-        user1 = User.builder()
-                .user("AKing94")
-                .userAuthority(UserAuthority.createUserAuthority())
+        user1 = UserDTO.builder()
+                .userName("AKing94")
                 .email("alex@utahkings.com")
                 .password("pass")
-                .pinNumber(5988)
-                .accountNumber("12-22-42")
+                .pinNumber("5988")
                 .build();
 
         test = UserEntity.builder()

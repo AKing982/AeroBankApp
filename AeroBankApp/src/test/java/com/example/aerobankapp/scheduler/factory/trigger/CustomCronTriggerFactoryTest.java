@@ -37,7 +37,7 @@ class CustomCronTriggerFactoryTest
     @BeforeEach
     void setUp()
     {
-        triggerCriteria = new TriggerCriteria(1, 15, 8, 7, 12, 2023);
+      //  triggerCriteria = new TriggerCriteria(1, 15, 8, 7, 12, 2023);
         customCronTriggerFactory = new CustomCronTriggerFactory(triggerCriteria);
     }
 

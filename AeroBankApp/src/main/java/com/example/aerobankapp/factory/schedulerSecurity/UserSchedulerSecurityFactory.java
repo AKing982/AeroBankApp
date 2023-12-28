@@ -17,7 +17,7 @@ public class UserSchedulerSecurityFactory implements SchedulerSecurityFactory
                 .isShutdownEnabled(false)
                 .isAutoShutdown(true)
                 .isAutoStartup(true)
-                .isPausedEnabled(false)
+                .isPauseEnabled(false)
                 .isTriggerEnabled(true)
                 .build();
 

@@ -2,7 +2,6 @@ package com.example.aerobankapp.workbench.runner;
 
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.UserLogEntity;
-import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.repositories.UserLogRepository;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.services.UserDAOImpl;

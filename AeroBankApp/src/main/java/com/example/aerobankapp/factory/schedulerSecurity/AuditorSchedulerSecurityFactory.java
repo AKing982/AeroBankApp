@@ -13,7 +13,7 @@ public class AuditorSchedulerSecurityFactory implements SchedulerSecurityFactory
                 .isScheduleAllowed(false)
                 .canUpdateTriggers(false)
                 .isCronTriggerEnabled(false)
-                .isPausedEnabled(false)
+                .isPauseEnabled(false)
                 .isShutdownEnabled(false)
                 .isStartEnabled(false)
                 .isTriggerEnabled(false)

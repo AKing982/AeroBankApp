@@ -13,10 +13,7 @@ public class AccountNumber
     private AccountPrefix accountPrefix;
     private String branchIdentifier;
     private String accountNum;
-    private boolean isSavings;
-    private boolean isChecking;
-    private boolean isInvestment;
-    private boolean isRent;
+    private AccountType accountType;
 
     public AccountNumber(AccountPrefix prefix, String branch, String accountNum)
     {
@@ -39,6 +36,7 @@ public class AccountNumber
     {
         return accountNumber.length() == 5;
     }
+
 
     public String build()
     {

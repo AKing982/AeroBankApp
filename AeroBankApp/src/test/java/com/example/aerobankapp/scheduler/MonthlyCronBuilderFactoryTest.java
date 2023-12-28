@@ -184,7 +184,7 @@ class MonthlyCronBuilderFactoryTest
         int month = 0;
         int testMonth = -1;
         TriggerCriteria triggerCriteria1 = TriggerCriteria.builder()
-                .isMonthly(true)
+                //.isMonthly(true)
                 .month(1)
                 .second(0)
                 .hour(8)
@@ -209,7 +209,7 @@ class MonthlyCronBuilderFactoryTest
     public void testMonthlyCronSchedulesByMonthUsingCorrectMonth()
     {
         TriggerCriteria triggerCriteria1 = TriggerCriteria.builder()
-                .isMonthly(true)
+              //  .isMonthly(true)
                 .month(1)
                 .second(0)
                 .hour(8)
@@ -268,7 +268,7 @@ class MonthlyCronBuilderFactoryTest
     public void testMonthlyCronScheduleAdjustmentByYearRoleOver()
     {
         TriggerCriteria triggerCriteria1 = TriggerCriteria.builder()
-                .isMonthly(true)
+             ///   .isMonthly(true)
                 .month(1)
                 .second(0)
                 .hour(8)

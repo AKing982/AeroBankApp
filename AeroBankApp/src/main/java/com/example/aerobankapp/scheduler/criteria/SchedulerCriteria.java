@@ -9,14 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Builder
-public record SchedulerCriteria(Long scheduleCriteriaID,
-                                String scheduledTime,
-                                String scheduledInterval,
-                                LocalDate scheduleDate,
-                                String scheduleType,
-                                boolean isCronScheduled,
-                                int priority,
-                                ScheduleRole scheduleRole,
-                                List<Object> criteria) {
+@Component
+@Getter
+@Setter
+public final class SchedulerCriteria {
 
+    private Long scheduleCriteriaID;
+    private String scheduledTime;
+    private String scheduledInterval;
+    private LocalDate scheduledDate;
+    private String scheduleType;
+    private boolean isCronScheduled;
+    private int priority;
+    private ScheduleRole scheduleRole;
+    private List<Object> criteria;
 }

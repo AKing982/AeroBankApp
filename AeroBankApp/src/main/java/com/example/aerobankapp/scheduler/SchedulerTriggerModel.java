@@ -3,6 +3,7 @@ package com.example.aerobankapp.scheduler;
 import org.quartz.CronTrigger;
 import org.quartz.Trigger;
 
+@Deprecated
 public interface SchedulerTriggerModel
 {
     Trigger getDailyTrigger();

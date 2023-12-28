@@ -7,20 +7,25 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 
 
+@Component
+@Getter
+@Setter
 @Builder
-public record SchedulerSecurityDTO(Long schedulerSecurityID,
-                                   int userID,
-                                   String userName,
-                                   boolean isScheduleAllowed,
-                                   boolean isTriggerEnabled,
-                                   boolean isCronTriggerEnabled,
-                                   boolean isAutoshutdown,
-                                   boolean isAutoStartup,
-                                   boolean isPauseEnabled,
-                                   boolean isShutdownEnabled,
-                                   boolean isStartEnabled,
-                                   ScheduleRole scheduleRole,
-                                   LocalDate dateModified) {
+public final class SchedulerSecurityDTO {
 
+    private Long schedulerSecurityID;
+    private int userID;
+    private String userName;
+    private boolean isScheduleAllowed;
+    private boolean isTriggerEnabled;
+    private boolean isCronTriggerEnabled;
+    private boolean isAutoShutdown;
+    private boolean isAutoStartup;
+    private boolean isPauseEnabled;
+    private boolean isShutdownEnabled;
+    private boolean canUpdateTriggers;
+    private boolean isStartEnabled;
+    private ScheduleRole scheduleRole;
+    private LocalDate dateModified;
 
 }

@@ -1,6 +1,6 @@
 package com.example.aerobankapp.workbench.security.authentication;
 
-import com.example.aerobankapp.model.User;
+import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.workbench.utilities.BankAuthorization;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,10 +29,10 @@ public class UserAuthority implements UserDetails {
     private boolean isDepositApprovalRequired;
     private boolean isWithdrawApprovalRequired;
     private BankAuthorization bankAuthorization;
-    private final User secureUser;
+    private final UserDTO secureUser;
     private Collection<? extends GrantedAuthority> authorities;
 
-    private UserAuthority(User user) {
+    private UserAuthority(UserDTO user) {
         this.secureUser = user;
     }
 
@@ -44,12 +44,14 @@ public class UserAuthority implements UserDetails {
 
     @Override
     public String getPassword() {
-        return secureUser.getPassword().toString();
+      //  return secureUser.getPassword().toString();
+        return "";
     }
 
     @Override
     public String getUsername() {
-        return secureUser.getUser();
+       // return secureUser.getUser();
+        return "";
     }
 
     @Override

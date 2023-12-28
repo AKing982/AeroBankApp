@@ -3,7 +3,8 @@ package com.example.aerobankapp.workbench.utilities;
 
 import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.fees.FeesDTO;
-import com.example.aerobankapp.model.User;
+
+import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.workbench.history.BalanceHistory;
 import com.example.aerobankapp.workbench.model.AccountNumber;
@@ -22,7 +23,7 @@ import java.util.Map;
 @Setter
 public abstract class AbstractUserProfile implements Cloneable {
     protected LoggedUser loggedUser;
-    protected User user;
+    protected UserDTO user;
     private UserProfileModel userProfileModel;
     private BankAuthorization userAuthorization;
 

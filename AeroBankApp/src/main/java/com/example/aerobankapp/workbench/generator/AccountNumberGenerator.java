@@ -1,13 +1,13 @@
 package com.example.aerobankapp.workbench.generator;
 
 import com.example.aerobankapp.account.AccountType;
-import com.example.aerobankapp.model.User;
+import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.workbench.model.AccountNumber;
 import com.example.aerobankapp.workbench.utilities.UserType;
 
 public class AccountNumberGenerator implements Generator<AccountNumber>
 {
-    private User user;
+    private UserDTO user;
     private UserType userType;
     private AccountType accountType;
 

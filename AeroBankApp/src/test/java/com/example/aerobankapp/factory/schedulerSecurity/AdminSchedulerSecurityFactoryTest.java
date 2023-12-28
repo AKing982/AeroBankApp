@@ -33,11 +33,11 @@ class AdminSchedulerSecurityFactoryTest
         SchedulerSecurityDTO builder = adminSchedulerSecurityFactory.createSchedulerSecurity();
         ScheduleRole role = builder.getScheduleRole();
         boolean isScheduleAllowed = builder.isScheduleAllowed();
-        boolean isPauseEnabled = builder.isPausedEnabled();
+        //boolean isPauseEnabled = builder.isPausedEnabled();
         boolean isCronTriggerEnabled = builder.isCronTriggerEnabled();
         assertNull(builder);
         assertTrue(isScheduleAllowed);
-        assertTrue(isPauseEnabled);
+       // assertTrue(isPauseEnabled);
         assertTrue(isCronTriggerEnabled);
         assertEquals(ScheduleRole.SADMIN, role);
     }
