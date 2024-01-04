@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Builder
-@Component
 @Getter
 @Setter
+@Component
+@AllArgsConstructor
+@NoArgsConstructor
 public final class SchedulerCriteria {
 
     private Long scheduleCriteriaID;

@@ -147,7 +147,7 @@ public class MonthlyCronBuilderFactory implements CronBuilderFactory {
 
         // Validate the month
         if (month > 0 && month <= 12) {
-            cronScheduleByMonth = getMonthlyCronSchedules().stream()
+            cronScheduleByMonth = monthlyCronSchedules.stream()
                     .filter(cronSchedule -> {
                         String[] parts = cronSchedule.split(" ");
                         return parts.length > 4 && Integer.parseInt(parts[4]) == month;

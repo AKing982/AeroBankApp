@@ -5,10 +5,14 @@ import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.services.AuthenticationServiceImpl;
 import com.example.aerobankapp.services.UserProfileService;
 import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
+import com.example.aerobankapp.workbench.home.Home;
+import com.example.aerobankapp.workbench.home.HomePane;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
 import com.example.aerobankapp.workbench.utilities.UserProfileCache;
+import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,6 +29,9 @@ import javafx.stage.Stage;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -35,7 +42,7 @@ import java.net.URL;
 public class Login extends Application
 {
     private static TextField usernameField;
-    private static TextField passwordField;
+    private static PasswordField passwordField;
     private static Button signIn;
     private Button registerBtn;
     private Label usernameLabel;
@@ -50,6 +57,7 @@ public class Login extends Application
     private UserProfileModel userProfileModel;
     private UserProfileCache userProfileCache = new UserProfileCache();
     private final double BUTTON_HEIGHT = 20;
+    private AeroLogger logger = new AeroLogger(Login.class);
     private static String textStyle = "-fx-font-size: 32px;\n" +
             "   -fx-font-family: \"Arial Black\";\n" +
             "   -fx-fill: #818181;\n" +
@@ -59,7 +67,7 @@ public class Login extends Application
     private UserProfileService userProfileService;
 
     @Autowired
-    private AuthenticationServiceImpl authenticationService;
+    private AuthenticationServiceImpl authenticationService = new AuthenticationServiceImpl();
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -73,6 +81,33 @@ public class Login extends Application
         setMotherScene(mother);
         buttonAction(getSignIn(), stage);
         buttonAction(getRegisterBtn(), stage);
+
+        getSignIn().setOnAction(e -> {
+            Platform.runLater(() -> {
+                try{
+
+                    // TODO: Is the User Authenticated and Authorized?
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(getUserNameField().getText(), getPasswordField().getText());
+                    Authentication authenticatedToken = authenticationService.authenticate(authentication);
+                    if(authenticationService.isAuthenticated(authenticatedToken))
+                    {
+                        Stage s = new Stage();
+                        new Home().start(s);
+                        getLoginAlert().setText("");
+
+                        closeStage(stage);
+                    }
+                    else
+                    {
+                        getLoginAlert().setText("Incorrect UserName or Password!");
+                    }
+                    // TODO: If the User's login fails, show an alert message
+                }catch(Exception ex)
+                {
+                    logger.error("There was an issue with authenticating: ", ex);
+                }
+            });
+        });
 
 
         Scene scene = getScene(mother, 410, 260);
@@ -168,17 +203,6 @@ public class Login extends Application
         }
 
     }
-
-
-    private ImageView getNewImage(String path, double height)
-    {
-        Image image = new Image(path);
-        ImageView imageView = new ImageView(image);
-        imageView.setPreserveRatio(true);
-        imageView.setFitHeight(height);
-        return imageView;
-    }
-
 
     private Text getLoginAlert()
     {
@@ -366,11 +390,11 @@ public class Login extends Application
         s.close();
     }
 
-    public TextField getPasswordField()
+    public PasswordField getPasswordField()
     {
         if(passwordField == null)
         {
-            passwordField = new TextField();
+            passwordField = new PasswordField();
             passwordField.getStylesheets().add(getCSSAsString("/textfield.css"));
             passwordField.setFont(Font.font(CommonLabels.SANS_SERIF, FontWeight.NORMAL, 16));
             passwordField.setId("password");

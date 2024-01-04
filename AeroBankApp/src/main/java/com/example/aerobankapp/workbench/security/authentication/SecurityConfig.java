@@ -31,7 +31,7 @@ public class SecurityConfig{
     {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/aerobankapp");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/aerobank");
         dataSource.setUsername("root");
         dataSource.setPassword("Halflifer94!");
         return dataSource;

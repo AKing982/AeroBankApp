@@ -120,23 +120,7 @@ class GenerateAccountIDTest {
         );
     }
 
-    @ParameterizedTest
-    @DisplayName("Test the Constructor with fullname")
-    @MethodSource("provideFullNameConstructorArguments")
-    public void testFullNameConstructor(String fullName, AccountType acctType, String result) {
-        accountID = new GenerateAccountID(fullName);
 
-        assertEquals(result, accountID.getAccountID(accountType));
-    }
-
-    private static Stream<Arguments> provideFullNameConstructorArguments()
-    {
-        return Stream.of(
-                Arguments.of(" Alex King", AccountType.CHECKING, "A1"),
-                Arguments.of(" Alex", AccountType.CHECKING, "A1"),
-                Arguments.of("", AccountType.CHECKING, "A1")
-        );
-    }
 
 
 

@@ -1,5 +1,6 @@
 package com.example.aerobankapp.entity;
 
+import com.example.aerobankapp.workbench.utilities.UserType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -7,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -44,13 +47,7 @@ public class UserEntity
     @Column(name="isEnabled")
     private boolean isEnabled;
 
-    @Column(name="isCredentialsNonExpired")
-    private boolean isCredentialsNonExpired;
-
-    @Column(name="isAccountNonLocked")
-    private boolean isAccountNonLocked;
-
-    @Column(name="isAccountNonExpired")
-    private boolean isAccountNonExpired;
+    @Column(name="role")
+    private String role;
 
 }

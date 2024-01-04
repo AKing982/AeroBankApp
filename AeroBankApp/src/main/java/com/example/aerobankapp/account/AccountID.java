@@ -21,9 +21,5 @@ public class AccountID
         this.accountID = generateAccountID.buildID();
     }
 
-    public String getAccountID()
-    {
-        return accountID;
-    }
 
 }

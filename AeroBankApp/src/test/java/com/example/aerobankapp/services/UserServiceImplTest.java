@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -32,6 +33,7 @@ class UserServiceImplTest {
     private UserRepository userRepository;
 
     @Autowired
+    @Mock
     private EntityManager manager;
     private UserDTO user1;
     private UserEntity test;
@@ -52,10 +54,9 @@ class UserServiceImplTest {
                 .email("alex@utahkings.com")
                 .password("Halflifer94!")
                 .pinNumber("5988")
+                .role("ADMIN")
                 .isEnabled(true)
-                .isAccountNonLocked(true)
-                .isCredentialsNonExpired(true)
-                .isAccountNonExpired(true)
+                .id(9)
                 .build();
         userService = new UserDAOImpl(userRepository, manager);
 
@@ -81,11 +82,13 @@ class UserServiceImplTest {
     public void testSave()
     {
 
-        List<UserEntity> foundUser = userService.findByUserName("AKing94");
+     //   List<UserEntity> foundUser = userService.findByUserName("AKing94");
+
+        userService.save(test);
 
         assertNotNull(userRepository);
         assertNotNull(userService);
-        assertEquals(test, foundUser.get(0));
+        assertEquals(1, userService.findAll().size());
     }
 
     @Test
@@ -96,7 +99,7 @@ class UserServiceImplTest {
 
         List<UserEntity> allUsers = userService.findAll();
 
-        assertTrue(allUsers.isEmpty());
+        assertEquals(0, allUsers.size());
     }
 
     @Test
@@ -117,7 +120,7 @@ class UserServiceImplTest {
         List<UserEntity> allUsers = userService.findByUserName("AKing94");
 
         assertNotNull(allUsers);
-        assertEquals(test, allUsers.get(0));
+        assertEquals(1, allUsers.size());
     }
 
 

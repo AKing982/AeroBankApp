@@ -60,10 +60,7 @@ class UserLogRunnerTest {
                 .password("Halflifer45!")
                 .username("AKing94")
                 .pinNumber("5988")
-                .isAccountNonExpired(true)
                 .isAdmin(true)
-                .isAccountNonLocked(true)
-                .isCredentialsNonExpired(true)
                 .isEnabled(true)
                 .build();
 

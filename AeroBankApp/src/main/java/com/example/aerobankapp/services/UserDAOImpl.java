@@ -5,7 +5,9 @@ import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Getter
 public class UserDAOImpl implements UserDAO
 {
     private final UserRepository userRepository;
 
+    @PersistenceContext
     private EntityManager entityManager;
     private AeroLogger aeroLogger = new AeroLogger(UserDAOImpl.class);
 
