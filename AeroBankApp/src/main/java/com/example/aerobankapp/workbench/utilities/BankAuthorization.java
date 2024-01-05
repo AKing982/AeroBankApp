@@ -5,6 +5,7 @@ public enum BankAuthorization
     CUSTOMER("Customer"),
     TELLER("Teller"),
     MANAGER("Manager"),
+    AUDITOR("Auditor"),
     ADMIN("Administrator");
 
    private String description;

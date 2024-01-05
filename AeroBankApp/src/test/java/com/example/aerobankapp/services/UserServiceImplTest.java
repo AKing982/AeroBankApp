@@ -3,7 +3,7 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.UserRepository;
-import com.example.aerobankapp.workbench.security.authentication.UserAuthority;
+
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

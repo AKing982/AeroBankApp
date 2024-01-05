@@ -3,6 +3,7 @@ package com.example.aerobankapp.workbench.login;
 import com.example.aerobankapp.messages.CommonLabels;
 import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.services.AuthenticationServiceImpl;
+import com.example.aerobankapp.services.UserDetailsServiceImpl;
 import com.example.aerobankapp.services.UserProfileService;
 import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
 import com.example.aerobankapp.workbench.home.Home;
@@ -67,7 +68,10 @@ public class Login extends Application
     private UserProfileService userProfileService;
 
     @Autowired
-    private AuthenticationServiceImpl authenticationService = new AuthenticationServiceImpl();
+    private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private AuthenticationServiceImpl authenticationService = new AuthenticationServiceImpl(userDetailsService);
 
     @Override
     public void start(Stage stage) throws Exception {

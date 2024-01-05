@@ -1,11 +1,7 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserEntity;
-import com.example.aerobankapp.repositories.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,6 +38,7 @@ public class UserDetailsServiceImpl implements UserDetailsService
         return User.builder()
                 .username(matchingUser.getUsername())
                 .password(matchingUser.getPassword())
+                .roles(matchingUser.getRole())
                 .build();
     }
 }
