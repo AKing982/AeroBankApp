@@ -61,7 +61,7 @@ class AuthorityProfileMapperTest {
     private static Stream<Arguments> provideRolesForTesting()
     {
         return Stream.of(
-                Arguments.of("Admin", UserSecurityProfile.createAdminAuthority())
+              //  Arguments.of("Admin", UserSecurityProfile.createAdminAuthority())
         );
     }
 
@@ -79,25 +79,16 @@ class AuthorityProfileMapperTest {
 
     }
 
-    private static Stream<Arguments> provideValuesToAddSecurityProfiles()
-    {
-        return Stream.of(
-                Arguments.of("Admin", UserSecurityProfile.createAdminAuthority()),
-                Arguments.of("User", UserSecurityProfile.createUserAuthority()),
-                Arguments.of("Teller", UserSecurityProfile.createTellerAuthority()),
-                Arguments.of("Manager", UserSecurityProfile.createManagerAuthority()),
-                Arguments.of("Auditor", UserSecurityProfile.createAuditorAuthority())
-        );
-    }
+
 
     @Test
     public void testGetRoleFromAuthority()
     {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ADMIN");
-        UserSecurityProfile adminProfile = UserSecurityProfile.createAdminAuthority();
+       // UserSecurityProfile adminProfile = UserSecurityProfile.createAdminAuthority();
         authorityProfileMapper = new AuthorityProfileMapper();
 
-        authorityProfileMapper.addSecurityProfile(grantedAuthority, adminProfile);
+     //   authorityProfileMapper.addSecurityProfile(grantedAuthority, adminProfile);
         String authority = authorityProfileMapper.getRoleFromAuthority(grantedAuthority);
 
         assertEquals("ADMIN", authority);

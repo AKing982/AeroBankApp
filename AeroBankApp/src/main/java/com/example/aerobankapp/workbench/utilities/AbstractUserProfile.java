@@ -25,7 +25,7 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected LoggedUser loggedUser;
     protected UserDTO user;
     private UserProfileModel userProfileModel;
-    private BankAuthorization userAuthorization;
+    private Role userAuthorization;
 
     protected String username;
     protected List<CheckingAccountEntity> checkingAccounts;

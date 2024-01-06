@@ -19,4 +19,9 @@ public class UserDTO
     private AccountNumber accountNumber;
     private String password;
     private String pinNumber;
+
+    public UserDTO(String user)
+    {
+        this.userName = user;
+    }
 }

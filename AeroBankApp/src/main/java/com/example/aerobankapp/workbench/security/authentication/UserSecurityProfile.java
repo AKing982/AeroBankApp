@@ -1,21 +1,19 @@
 package com.example.aerobankapp.workbench.security.authentication;
 
+import com.example.aerobankapp.factory.schedulerSecurity.SchedulerSecurity;
 import com.example.aerobankapp.workbench.utilities.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
-@Builder
 @Getter
 @Component
-public class UserSecurityProfile implements Cloneable
-{
+@Builder
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
+public class UserSecurityProfile implements Cloneable {
     private AccountStatus accountStatus;
     private UserStatus userStatus;
     private TransactionSecurity transactionStatus;
@@ -23,40 +21,81 @@ public class UserSecurityProfile implements Cloneable
     private ApprovalStatus approvalStatus;
     private SecurityUser securityUser;
     private Set<AccountStatus> accountStatusSet;
+    private Set<UserStatus> userStatusSet;
     private Set<TransactionSecurity> transactionSecuritySet;
     private Set<SchedulingSecurity> schedulingSecuritySet;
-
-    private BankAuthorization bankAuthorization;
+    private Set<ApprovalStatus> approvalStatusSet;
+    private UserSecurityProfileProducer userSecurityProfileProducer;
+    private Role role;
 
     @Autowired
+    public UserSecurityProfile(Role bankRole) {
+        Objects.requireNonNull(bankRole, "Role cannot but null");
+        this.role = bankRole;
+    }
+
     public UserSecurityProfile()
     {
 
     }
 
-
-    /**
-     * This method will collect the authority of the user based on the user's role and Granted Authority
-     * @param role
-     * @return
-     */
-    public SecurityDataModel collectAuthorities(UserType role)
-    {
-        // Collect the Authorization
-        Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        GrantedAuthority authority = setGrantedAuthority(role.toString());
-        grantedAuthorities.add(authority);
-
-        // Collect the Security profile based on the Authorization
-       // UserSecurityProfile securityProfile = getCurrentSecurityProfile(role);
-
-        // Save the Authorization Rules to the SecurityDataModel
-        SecurityDataModel securityDataModel = new SecurityDataModel();
-     //   securityDataModel.setUserSecurityProfile(securityProfile);
-        securityDataModel.setGrantedAuthorities(grantedAuthorities);
-
-        return securityDataModel;
+    public UserSecurityProfile getUserSecurityProfileFromFactory() {
+        return new UserSecurityProfileProducer().getSecurityProfileFactory(role);
     }
+
+    public UserSecurityProfile getUserSecurityProfile(Role role)
+    {
+        if(role == null)
+        {
+            throw new NullPointerException("Null Role Found");
+        }
+        return new UserSecurityProfileProducer().getSecurityProfileFactory(role);
+    }
+
+    public void setSchedulingSecurityPermissions(SchedulingSecurity schedulingSecurity) {
+        schedulingSecuritySet.add(schedulingSecurity);
+    }
+
+    public void setTransactionSecurityPermissions(TransactionSecurity transactionStatus) {
+        transactionSecuritySet.add(transactionStatus);
+    }
+
+    public void setAccountSecurityPermissions(AccountStatus accountStatus)
+    {
+        accountStatusSet.add(accountStatus);
+    }
+
+    public void setUserPermissions(UserStatus userStatus)
+    {
+        userStatusSet.add(userStatus);
+    }
+
+    public void setApprovalPermissions(ApprovalStatus approvalStatus)
+    {
+        approvalStatusSet.add(approvalStatus);
+    }
+
+    public UserStatus getUserPermissionFromSet(UserStatus permission)
+    {
+        return userStatusSet.stream().filter(e -> e.equals(permission)).findFirst().orElseThrow();
+    }
+
+    public AccountStatus getAccountPermissionFromSet(AccountStatus accountStatus)
+    {
+        return accountStatusSet.stream().filter(e -> e.equals(accountStatus)).findFirst().orElseThrow();
+    }
+
+    public TransactionSecurity getTransactionPermissionFromSet(TransactionSecurity transactionStatus)
+    {
+        return transactionSecuritySet.stream().filter(e -> e.equals(transactionStatus)).findFirst().orElseThrow();
+    }
+
+    public SchedulingSecurity getSchedulerPermissionFromSet(SchedulingSecurity schedulingSecurity)
+    {
+        return schedulingSecuritySet.stream().filter(e -> e.equals(schedulingSecurity)).findFirst().orElseThrow();
+    }
+
+
 
     @Override
     public UserSecurityProfile clone() {

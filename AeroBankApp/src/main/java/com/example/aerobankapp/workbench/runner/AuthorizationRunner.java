@@ -1,15 +1,15 @@
 package com.example.aerobankapp.workbench.runner;
 
-import com.example.aerobankapp.workbench.utilities.BankAuthorization;
+import com.example.aerobankapp.workbench.utilities.Role;
 
 import java.util.concurrent.Callable;
 
-public class AuthorizationRunner implements Callable<BankAuthorization>
+public class AuthorizationRunner implements Callable<Role>
 {
-    private BankAuthorization authorization;
+    private Role authorization;
 
     @Override
-    public BankAuthorization call() throws Exception
+    public Role call() throws Exception
     {
         return null;
     }

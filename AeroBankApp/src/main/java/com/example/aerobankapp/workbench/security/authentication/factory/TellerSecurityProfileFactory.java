@@ -2,17 +2,19 @@ package com.example.aerobankapp.workbench.security.authentication.factory;
 
 import com.example.aerobankapp.workbench.security.authentication.UserSecurityProfile;
 import com.example.aerobankapp.workbench.utilities.AccountStatus;
-import com.example.aerobankapp.workbench.utilities.BankAuthorization;
+import com.example.aerobankapp.workbench.utilities.Role;
 import com.example.aerobankapp.workbench.utilities.SchedulingSecurity;
 import com.example.aerobankapp.workbench.utilities.TransactionSecurity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TellerSecurityProfileFactory implements AbstractUserSecurityProfileFactory
 {
 
     @Override
     public UserSecurityProfile createAuthority()
     {
-        return new UserSecurityProfile.UserSecurityProfileBuilder()
+        return UserSecurityProfile.builder()
                 .schedulingStatus(SchedulingSecurity.SCHEDULING_ALLOWED)
                 .accountStatus(AccountStatus.EXPIRED)
                 .accountStatus(AccountStatus.DISABLED)
@@ -21,7 +23,7 @@ public class TellerSecurityProfileFactory implements AbstractUserSecurityProfile
                 .transactionStatus(TransactionSecurity.WITHDRAW_DISABLED)
                 .transactionStatus(TransactionSecurity.DEPOSIT_DISABLED)
                 .transactionStatus(TransactionSecurity.TRANSFER_DISABLED)
-                .bankAuthorization(BankAuthorization.TELLER)
+                .role(Role.TELLER)
                 .build();
     }
 }
