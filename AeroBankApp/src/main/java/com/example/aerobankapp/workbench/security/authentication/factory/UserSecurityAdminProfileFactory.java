@@ -4,6 +4,8 @@ import com.example.aerobankapp.workbench.security.authentication.UserSecurityPro
 import com.example.aerobankapp.workbench.utilities.*;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
+
 @Component
 public class UserSecurityAdminProfileFactory implements AbstractUserSecurityProfileFactory
 {
@@ -14,13 +16,13 @@ public class UserSecurityAdminProfileFactory implements AbstractUserSecurityProf
 
         return UserSecurityProfile.builder()
                 .role(Role.ADMIN)
-                .userStatus(UserStatus.IS_ADMIN)
-                .accountStatus(AccountStatus.ENABLED)
-                .schedulingStatus(SchedulingSecurity.SCHEDULING_ALLOWED)
-                .transactionStatus(TransactionSecurity.PURCHASE_ENABLED)
-                .transactionStatus(TransactionSecurity.DEPOSIT_ENABLED)
-                .transactionStatus(TransactionSecurity.TRANSFER_ENABLED)
-                .transactionStatus(TransactionSecurity.WITHDRAW_ENABLED)
+                .userStatusEnumSet(EnumSet.of(UserStatus.IS_ADMIN))
+                .accountStatusEnumSet(EnumSet.of(AccountStatus.ENABLED))
+                .schedulingSecurityEnumSet(EnumSet.of(SchedulingSecurity.SCHEDULING_ALLOWED))
+                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.PURCHASE_ENABLED))
+                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.DEPOSIT_ENABLED))
+                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.TRANSFER_ENABLED))
+                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.WITHDRAW_ENABLED))
                 .build();
     }
 }

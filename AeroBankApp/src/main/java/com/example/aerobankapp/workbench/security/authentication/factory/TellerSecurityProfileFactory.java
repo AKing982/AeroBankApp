@@ -7,6 +7,8 @@ import com.example.aerobankapp.workbench.utilities.SchedulingSecurity;
 import com.example.aerobankapp.workbench.utilities.TransactionSecurity;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
+
 @Component
 public class TellerSecurityProfileFactory implements AbstractUserSecurityProfileFactory
 {
@@ -15,14 +17,14 @@ public class TellerSecurityProfileFactory implements AbstractUserSecurityProfile
     public UserSecurityProfile createAuthority()
     {
         return UserSecurityProfile.builder()
-                .schedulingStatus(SchedulingSecurity.SCHEDULING_ALLOWED)
-                .accountStatus(AccountStatus.EXPIRED)
-                .accountStatus(AccountStatus.DISABLED)
-                .accountStatus(AccountStatus.LOCKED)
-                .transactionStatus(TransactionSecurity.PURCHASE_DISABLED)
-                .transactionStatus(TransactionSecurity.WITHDRAW_DISABLED)
-                .transactionStatus(TransactionSecurity.DEPOSIT_DISABLED)
-                .transactionStatus(TransactionSecurity.TRANSFER_DISABLED)
+                .schedulingSecurityEnumSet(EnumSet.of(SchedulingSecurity.SCHEDULING_ALLOWED))
+                .accountStatusEnumSet(EnumSet.of(AccountStatus.EXPIRED))
+                .accountStatusEnumSet(EnumSet.of(AccountStatus.DISABLED))
+                .accountStatusEnumSet(EnumSet.of(AccountStatus.LOCKED))
+                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.PURCHASE_DISABLED))
+                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.WITHDRAW_DISABLED))
+                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.DEPOSIT_DISABLED))
+                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.TRANSFER_DISABLED))
                 .role(Role.TELLER)
                 .build();
     }

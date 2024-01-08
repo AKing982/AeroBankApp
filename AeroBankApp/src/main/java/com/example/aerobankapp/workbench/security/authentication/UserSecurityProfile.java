@@ -1,30 +1,24 @@
 package com.example.aerobankapp.workbench.security.authentication;
 
-import com.example.aerobankapp.factory.schedulerSecurity.SchedulerSecurity;
 import com.example.aerobankapp.workbench.utilities.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Component
 @Builder
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class UserSecurityProfile implements Cloneable {
-    private AccountStatus accountStatus;
-    private UserStatus userStatus;
-    private TransactionSecurity transactionStatus;
-    private SchedulingSecurity schedulingStatus;
-    private ApprovalStatus approvalStatus;
     private SecurityUser securityUser;
-    private Set<AccountStatus> accountStatusSet;
-    private Set<UserStatus> userStatusSet;
-    private Set<TransactionSecurity> transactionSecuritySet;
-    private Set<SchedulingSecurity> schedulingSecuritySet;
-    private Set<ApprovalStatus> approvalStatusSet;
+    private EnumSet<AccountStatus> accountStatusEnumSet;
+    private EnumSet<UserStatus> userStatusEnumSet;
+    private EnumSet<TransactionSecurity> transactionSecurityEnumSet;
+    private EnumSet<SchedulingSecurity> schedulingSecurityEnumSet;
+    private EnumSet<ApprovalStatus> approvalStatusEnumSet;
     private UserSecurityProfileProducer userSecurityProfileProducer;
     private Role role;
 
@@ -34,10 +28,6 @@ public class UserSecurityProfile implements Cloneable {
         this.role = bankRole;
     }
 
-    public UserSecurityProfile()
-    {
-
-    }
 
     public UserSecurityProfile getUserSecurityProfileFromFactory() {
         return new UserSecurityProfileProducer().getSecurityProfileFactory(role);
@@ -53,46 +43,46 @@ public class UserSecurityProfile implements Cloneable {
     }
 
     public void setSchedulingSecurityPermissions(SchedulingSecurity schedulingSecurity) {
-        schedulingSecuritySet.add(schedulingSecurity);
+        schedulingSecurityEnumSet.add(schedulingSecurity);
     }
 
     public void setTransactionSecurityPermissions(TransactionSecurity transactionStatus) {
-        transactionSecuritySet.add(transactionStatus);
+        transactionSecurityEnumSet.add(transactionStatus);
     }
 
     public void setAccountSecurityPermissions(AccountStatus accountStatus)
     {
-        accountStatusSet.add(accountStatus);
+        accountStatusEnumSet.add(accountStatus);
     }
 
     public void setUserPermissions(UserStatus userStatus)
     {
-        userStatusSet.add(userStatus);
+        userStatusEnumSet.add(userStatus);
     }
 
     public void setApprovalPermissions(ApprovalStatus approvalStatus)
     {
-        approvalStatusSet.add(approvalStatus);
+        approvalStatusEnumSet.add(approvalStatus);
     }
 
     public UserStatus getUserPermissionFromSet(UserStatus permission)
     {
-        return userStatusSet.stream().filter(e -> e.equals(permission)).findFirst().orElseThrow();
+        return userStatusEnumSet.stream().filter(e -> e.equals(permission)).findFirst().orElseThrow();
     }
 
     public AccountStatus getAccountPermissionFromSet(AccountStatus accountStatus)
     {
-        return accountStatusSet.stream().filter(e -> e.equals(accountStatus)).findFirst().orElseThrow();
+        return accountStatusEnumSet.stream().filter(e -> e.equals(accountStatus)).findFirst().orElseThrow();
     }
 
     public TransactionSecurity getTransactionPermissionFromSet(TransactionSecurity transactionStatus)
     {
-        return transactionSecuritySet.stream().filter(e -> e.equals(transactionStatus)).findFirst().orElseThrow();
+        return transactionSecurityEnumSet.stream().filter(e -> e.equals(transactionStatus)).findFirst().orElseThrow();
     }
 
     public SchedulingSecurity getSchedulerPermissionFromSet(SchedulingSecurity schedulingSecurity)
     {
-        return schedulingSecuritySet.stream().filter(e -> e.equals(schedulingSecurity)).findFirst().orElseThrow();
+        return schedulingSecurityEnumSet.stream().filter(e -> e.equals(schedulingSecurity)).findFirst().orElseThrow();
     }
 
 

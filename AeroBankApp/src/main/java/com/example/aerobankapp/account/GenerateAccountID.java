@@ -2,7 +2,6 @@ package com.example.aerobankapp.account;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.parameters.P;
 
 @Getter
 @Setter

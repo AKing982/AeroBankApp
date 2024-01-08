@@ -2,17 +2,25 @@ package com.example.aerobankapp.workbench.utilities;
 
 public enum TransactionSecurity
 {
-    WITHDRAW_ENABLED("Withdraw-Enabled"),
-    DEPOSIT_ENABLED("Deposit-Enabled"),
-    PURCHASE_ENABLED("Purchase-Enabled"),
-    TRANSFER_ENABLED("Transfer-Enabled"),
-    WITHDRAW_DISABLED("Withdraw-Disabled"),
-    DEPOSIT_DISABLED("Deposit-Disabled"),
-    PURCHASE_DISABLED("Purchase-Disabled"),
-    TRANSFER_DISABLED("Transfer-Disabled");
-    private String status;
+    WITHDRAW_ENABLED(true),
+    DEPOSIT_ENABLED(true),
+    PURCHASE_ENABLED(true),
+    TRANSFER_ENABLED(true),
+    WITHDRAW_DISABLED(false),
+    DEPOSIT_DISABLED(false),
+    PURCHASE_DISABLED(false),
+    TRANSFER_DISABLED(false),
 
-    TransactionSecurity(String code)
+    MAX_WITHDRAWAL_LIMIT(1),
+    MAX_DEPOSIT_LIMIT(1),
+
+    DAILY_WITHDRAWAL_LIMIT(1),
+
+    TRANSACTION_NOTIFICATION_ENABLED(true);
+
+    private Object status;
+
+    TransactionSecurity(Object code)
     {
         this.status = code;
     }
