@@ -5,22 +5,25 @@ import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Component
 @Builder
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class UserSecurityProfile implements Cloneable {
+
     private SecurityUser securityUser;
-    private EnumSet<AccountStatus> accountStatusEnumSet;
-    private EnumSet<UserStatus> userStatusEnumSet;
-    private EnumSet<TransactionSecurity> transactionSecurityEnumSet;
-    private EnumSet<SchedulingSecurity> schedulingSecurityEnumSet;
-    private EnumSet<ApprovalStatus> approvalStatusEnumSet;
-    private UserSecurityProfileProducer userSecurityProfileProducer;
     private Role role;
+
+    private Set<AccountStatus> accountStatusSet;
+    private Set<TransactionSecurity> transactionSecuritySet;
+    private Set<SchedulingSecurity> schedulingSecuritySet;
+    private Set<UserStatus> userStatusSet;
+    private UserSecurityModelImpl userSecurity;
+    private UserProfile userProfile;
+
 
     @Autowired
     public UserSecurityProfile(Role bankRole) {
@@ -41,51 +44,6 @@ public class UserSecurityProfile implements Cloneable {
         }
         return new UserSecurityProfileProducer().getSecurityProfileFactory(role);
     }
-
-    public void setSchedulingSecurityPermissions(SchedulingSecurity schedulingSecurity) {
-        schedulingSecurityEnumSet.add(schedulingSecurity);
-    }
-
-    public void setTransactionSecurityPermissions(TransactionSecurity transactionStatus) {
-        transactionSecurityEnumSet.add(transactionStatus);
-    }
-
-    public void setAccountSecurityPermissions(AccountStatus accountStatus)
-    {
-        accountStatusEnumSet.add(accountStatus);
-    }
-
-    public void setUserPermissions(UserStatus userStatus)
-    {
-        userStatusEnumSet.add(userStatus);
-    }
-
-    public void setApprovalPermissions(ApprovalStatus approvalStatus)
-    {
-        approvalStatusEnumSet.add(approvalStatus);
-    }
-
-    public UserStatus getUserPermissionFromSet(UserStatus permission)
-    {
-        return userStatusEnumSet.stream().filter(e -> e.equals(permission)).findFirst().orElseThrow();
-    }
-
-    public AccountStatus getAccountPermissionFromSet(AccountStatus accountStatus)
-    {
-        return accountStatusEnumSet.stream().filter(e -> e.equals(accountStatus)).findFirst().orElseThrow();
-    }
-
-    public TransactionSecurity getTransactionPermissionFromSet(TransactionSecurity transactionStatus)
-    {
-        return transactionSecurityEnumSet.stream().filter(e -> e.equals(transactionStatus)).findFirst().orElseThrow();
-    }
-
-    public SchedulingSecurity getSchedulerPermissionFromSet(SchedulingSecurity schedulingSecurity)
-    {
-        return schedulingSecurityEnumSet.stream().filter(e -> e.equals(schedulingSecurity)).findFirst().orElseThrow();
-    }
-
-
 
     @Override
     public UserSecurityProfile clone() {

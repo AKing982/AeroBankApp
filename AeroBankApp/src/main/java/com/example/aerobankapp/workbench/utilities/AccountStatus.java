@@ -1,20 +1,20 @@
 package com.example.aerobankapp.workbench.utilities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.parameters.P;
+import org.springframework.stereotype.Component;
 
-public enum AccountStatus
+@Component
+@Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class AccountStatus
 {
-    EXPIRED("Expired"),
-    NON_EXPIRED("Non-Expired"),
-    ENABLED("Enabled"),
-    DISABLED("Disabled"),
-    LOCKED("Locked"),
-    NON_LOCKED("Non-Locked");
-    private String status;
-
-    AccountStatus(String code)
-    {
-        this.status = code;
-    }
-
+    private boolean isExpired;
+    private boolean isEnabled;
+    private boolean isLocked;
 }

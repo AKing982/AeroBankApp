@@ -1,28 +1,25 @@
 package com.example.aerobankapp.workbench.utilities;
 
-public enum TransactionSecurity
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@AllArgsConstructor
+@Builder
+@Data
+@NoArgsConstructor
+public final class TransactionSecurity
 {
-    WITHDRAW_ENABLED(true),
-    DEPOSIT_ENABLED(true),
-    PURCHASE_ENABLED(true),
-    TRANSFER_ENABLED(true),
-    WITHDRAW_DISABLED(false),
-    DEPOSIT_DISABLED(false),
-    PURCHASE_DISABLED(false),
-    TRANSFER_DISABLED(false),
-
-    MAX_WITHDRAWAL_LIMIT(1),
-    MAX_DEPOSIT_LIMIT(1),
-
-    DAILY_WITHDRAWAL_LIMIT(1),
-
-    TRANSACTION_NOTIFICATION_ENABLED(true);
-
-    private Object status;
-
-    TransactionSecurity(Object code)
-    {
-        this.status = code;
-    }
-
+    private boolean withdraw_enabled;
+    private boolean purchase_enabled;
+    private boolean deposit_enabled;
+    private boolean transfer_enabled;
+    private int withdrawal_limit;
+    private int deposit_limit;
+    private int transfer_limit;
+    private int purchase_limit;
 }
