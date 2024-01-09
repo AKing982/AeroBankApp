@@ -2,6 +2,7 @@ package com.example.aerobankapp.workbench.security.authentication;
 
 import com.example.aerobankapp.model.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -18,9 +19,9 @@ public class SecurityUser implements UserDetails
     private boolean isEnabled;
 
     @Autowired
-    public SecurityUser(UserDTO userDTO)
+    public SecurityUser(@Qualifier("beanString") String user)
     {
-        this.userDTO = userDTO;
+        this.userDTO = new UserDTO(user);
     }
 
     @Override

@@ -13,16 +13,6 @@ public class UserSecurityAdminProfileFactory implements AbstractUserSecurityProf
     @Override
     public UserSecurityProfile createAuthority()
     {
-
-        return UserSecurityProfile.builder()
-                .role(Role.ADMIN)
-                .userStatusEnumSet(EnumSet.of(UserStatus.IS_ADMIN))
-                .accountStatusEnumSet(EnumSet.of(AccountStatus.ENABLED))
-                .schedulingSecurityEnumSet(EnumSet.of(SchedulingSecurity.SCHEDULING_ALLOWED))
-                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.PURCHASE_ENABLED))
-                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.DEPOSIT_ENABLED))
-                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.TRANSFER_ENABLED))
-                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.WITHDRAW_ENABLED))
-                .build();
+        return null;
     }
 }

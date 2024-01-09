@@ -16,16 +16,6 @@ public class TellerSecurityProfileFactory implements AbstractUserSecurityProfile
     @Override
     public UserSecurityProfile createAuthority()
     {
-        return UserSecurityProfile.builder()
-                .schedulingSecurityEnumSet(EnumSet.of(SchedulingSecurity.SCHEDULING_ALLOWED))
-                .accountStatusEnumSet(EnumSet.of(AccountStatus.EXPIRED))
-                .accountStatusEnumSet(EnumSet.of(AccountStatus.DISABLED))
-                .accountStatusEnumSet(EnumSet.of(AccountStatus.LOCKED))
-                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.PURCHASE_DISABLED))
-                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.WITHDRAW_DISABLED))
-                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.DEPOSIT_DISABLED))
-                .transactionSecurityEnumSet(EnumSet.of(TransactionSecurity.TRANSFER_DISABLED))
-                .role(Role.TELLER)
-                .build();
+        return null;
     }
 }

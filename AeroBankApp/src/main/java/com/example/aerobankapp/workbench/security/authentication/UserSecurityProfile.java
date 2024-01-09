@@ -20,7 +20,7 @@ public class UserSecurityProfile implements Cloneable {
     private Set<AccountStatus> accountStatusSet;
     private Set<TransactionSecurity> transactionSecuritySet;
     private Set<SchedulingSecurity> schedulingSecuritySet;
-    private Set<UserStatus> userStatusSet;
+    private Set<UserSecurityModelImpl> userStatusSet;
     private UserSecurityModelImpl userSecurity;
     private UserProfile userProfile;
 

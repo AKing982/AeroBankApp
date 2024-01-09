@@ -19,39 +19,34 @@ class UserProfileTest {
 
     private UserProfile userProfile;
 
+    private String mockUser;
+
     @BeforeEach
     void setUp()
     {
-       // userProfile = new UserProfile("AKing94");
+
     }
 
     @Test
-    public void testUserProfileConstructor()
+    public void testConstructorForNull()
     {
-        assertNotNull(userProfile);
+       assertThrows(IllegalArgumentException.class,
+               () -> userProfile = new UserProfile(null));
     }
 
     @Test
-    public void testUserProfileUserName()
+    public void testConstructorWithValidUserName()
     {
-        String user = "AKing94";
-        String actualUser = userProfile.getUsername();
+        mockUser = "AKing94";
+        userProfile = new UserProfile(mockUser);
 
-        assertNotNull(actualUser);
-        assertEquals(user, actualUser);
-    }
-
-    @Test
-    public void testLoadingCheckingAccounts()
-    {
-        List<CheckingAccountModel> checkingAccountList = Arrays.asList(new CheckingAccountModel(), new CheckingAccountModel());
-       // List<CheckingAccount> actualCheckingAccounts = userProfile.getCheckingAccounts();
-
-    ///    assertTrue(actualCheckingAccounts.size() > 1);
-       // assertNotEquals(checkingAccountList, actualCheckingAccounts);
+        assertEquals(mockUser, userProfile.getUsername());
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown()
+    {
+        mockUser = "";
+        userProfile = null;
     }
 }

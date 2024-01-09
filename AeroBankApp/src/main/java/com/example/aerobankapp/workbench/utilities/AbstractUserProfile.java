@@ -28,6 +28,7 @@ public abstract class AbstractUserProfile implements Cloneable {
     private Role userAuthorization;
 
     protected String username;
+    private boolean isEnabledForUser;
     protected List<CheckingAccountEntity> checkingAccounts;
     protected List<SavingsAccountEntity> savingsAccounts;
     protected List<InvestmentAccountEntity> investmentAccounts;
@@ -45,6 +46,10 @@ public abstract class AbstractUserProfile implements Cloneable {
 
     public AbstractUserProfile(String user)
     {
+        if(user == null || user.trim().isEmpty())
+        {
+            throw new IllegalArgumentException("UserName cannot be null or empty");
+        }
         this.username = user;
     }
 

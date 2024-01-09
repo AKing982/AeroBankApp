@@ -6,20 +6,21 @@ import com.example.aerobankapp.entity.RentAccountEntity;
 import com.example.aerobankapp.entity.SavingsAccountEntity;
 import com.example.aerobankapp.workbench.transactions.CardDesignator;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(force = true)
-@Data
+@Getter
+@Setter
 public class UserSecurityModelImpl implements UserSecurityModel
 {
    private boolean isEnabled;
@@ -29,17 +30,27 @@ public class UserSecurityModelImpl implements UserSecurityModel
    private Set<RentAccountEntity> allowedRentAccounts;
    private Set<CardDesignator> userPaymentCards;
    private UserProfile currentUserProfile;
-   private final SecurityUser securityUser;
 
    @Autowired
-   public UserSecurityModelImpl(SecurityUser securityUser)
+   public UserSecurityModelImpl(@Qualifier("beanString") String username)
    {
-      this.securityUser = securityUser;
+      usernameCheck(username);
+      this.currentUserProfile = new UserProfile(username);
+   }
+
+   private void usernameCheck(String username)
+   {
+      if(username == null || username.trim().isEmpty())
+      {
+         throw new IllegalArgumentException("Username cannot be null or Empty");
+      }
    }
 
    @Override
    public Set<CheckingAccountEntity> getCheckingAccountDetails() {
-      return null;
+
+      List<CheckingAccountEntity> checkingAccountEntityList = getCurrentUserProfile().getCheckingAccounts();
+      return new HashSet<>(checkingAccountEntityList);
    }
 
    @Override
@@ -63,7 +74,8 @@ public class UserSecurityModelImpl implements UserSecurityModel
    }
 
    @Override
-   public boolean isUserEnabled() {
+   public boolean isUserEnabled()
+   {
       return false;
    }
 }

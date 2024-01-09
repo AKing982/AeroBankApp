@@ -30,6 +30,7 @@ public class UserProfile extends AbstractUserProfile
     @Autowired
     private UserProfileService userProfileService;
     private boolean isCurrentUser;
+    private boolean isActive;
     private boolean isCurrentSession;
     private boolean isAuthenticated;
     private boolean isScheduleUser;

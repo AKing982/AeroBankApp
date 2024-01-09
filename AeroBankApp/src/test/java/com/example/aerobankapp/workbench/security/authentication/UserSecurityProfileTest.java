@@ -16,7 +16,6 @@ class UserSecurityProfileTest {
 
     @MockBean
     private UserSecurityProfile userSecurityProfile;
-
     private Role role;
 
     @BeforeEach
