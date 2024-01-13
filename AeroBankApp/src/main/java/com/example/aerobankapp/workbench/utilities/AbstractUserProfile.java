@@ -1,13 +1,13 @@
 package com.example.aerobankapp.workbench.utilities;
 
 
+import com.example.aerobankapp.account.AccountNumber;
 import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.fees.FeesDTO;
 
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.workbench.history.BalanceHistory;
-import com.example.aerobankapp.workbench.model.AccountNumber;
 import com.example.aerobankapp.workbench.transactions.CardDesignator;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.Purchase;
@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected LoggedUser loggedUser;
     protected UserDTO user;
     private UserProfileModel userProfileModel;
-    private Role userAuthorization;
+    private Role userRole;
 
     protected String username;
     private boolean isEnabledForUser;
@@ -39,17 +40,13 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected Map<Integer, AccountSecurityEntity> accountSecurityMap;
     protected Map<Integer, List<BalanceHistory>> balanceHistoryMap;
     protected Map<Integer, List<FeesDTO>> accountFees;
-    protected List<AccountNumber> accountNumbers;
+    protected List<AccountNumber> accountNumbers = new ArrayList<>();
     protected List<Withdraw> withdraws;
     protected List<Purchase> purchases;
     protected List<Deposit> deposits;
 
     public AbstractUserProfile(String user)
     {
-        if(user == null || user.trim().isEmpty())
-        {
-            throw new IllegalArgumentException("UserName cannot be null or empty");
-        }
         this.username = user;
     }
 
@@ -67,6 +64,11 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected abstract Map<Integer, AccountSecurityEntity> getAccountSecurityDetails();
     protected abstract Map<Integer, List<BalanceHistory>> getBalanceHistories();
     protected abstract Map<Integer, List<FeesDTO>> getAccountFees();
+
+    protected void addAccountNumbers(AccountNumber accountNumber)
+    {
+        this.accountNumbers.add(accountNumber);
+    }
 
     @Override
     public Object clone() {

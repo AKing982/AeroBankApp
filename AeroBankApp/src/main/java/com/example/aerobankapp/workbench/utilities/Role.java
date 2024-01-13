@@ -1,8 +1,9 @@
 package com.example.aerobankapp.workbench.utilities;
 
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
-@Component
+@Getter
 public enum Role
 {
     CUSTOMER("ROLE_USER"),

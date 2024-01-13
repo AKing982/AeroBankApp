@@ -44,7 +44,7 @@ class UserProfileServiceTest
     @BeforeEach
     void setUp()
     {
-        userProfileService = new UserProfileService(accountServiceBundle, userServiceBundle, balanceHistoryService);
+        userProfileService = new UserProfileService(userServiceBundle, accountServiceBundle, balanceHistoryService);
         checkingAccount = CheckingAccountEntity.builder()
                 .userName("AKing94")
                 .minimumBalance(new BigDecimal("100.00"))
@@ -65,51 +65,7 @@ class UserProfileServiceTest
         userProfileService.getAccountServiceBundle().getSavingsService().save(savingsAccount);
     }
 
-    @Test
-    public void getCheckingAccountsFromUserAKing94()
-    {
-        String user = "AKing94";
-        long uID = 1;
-        String acctID = "A1";
-        String acctName = "Checking";
 
-        List<CheckingAccountEntity> userChecking = userProfileService.getCheckingAccounts(user);
-        assertNotNull(userChecking);
-        assertTrue(userChecking.size() >= 1);
-        assertEquals(checkingAccount, userChecking.get(0));
-        assertEquals(user, userChecking.get(0).getUserName());
-        assertEquals(acctID, userChecking.get(0).getId());
-    }
-
-    @Test
-    public void testSavingsAccounts()
-    {
-        String user = "AKing94";
-        List<SavingsAccountEntity> savingsAccounts = userProfileService.getSavingsAccounts(user);
-        assertNotNull(savingsAccounts);
-        assertEquals(savingsAccount.getUser(), savingsAccounts.get(0).getUser());
-        assertEquals(savingsAccount.getAccountName(), savingsAccounts.get(0).getAccountName());
-    }
-
-    @Test
-    public void testUserLogData()
-    {
-        String user = "AKing94";
-        UserLogEntity userLog = UserLogEntity.builder()
-                .userID(1)
-                .username("AKing94")
-                .lastLogin(new Date())
-                .build();
-
-        userProfileService.insertUserLog(userLog);
-        List<UserLogEntity> userLogs = userProfileService.getUserLogData(user);
-        List<UserLogEntity> userLogList = new ArrayList<>();
-        userLogList.add(userLog);
-
-        assertNotNull(userLogs);
-        assertEquals(userLogList.get(0).getUserID(), userLogs.get(0).getUserID());
-        assertEquals(userLogList.get(0).getUsername(), userLogs.get(0).getUsername());
-    }
 
     @AfterEach
     void tearDown()

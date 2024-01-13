@@ -3,8 +3,10 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
+import com.example.aerobankapp.workbench.utilities.Role;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.Getter;
@@ -70,5 +72,15 @@ public class UserDAOImpl implements UserDAO
         return query.getResultList();
     }
 
+    @Override
+    public Role getUserRole(String user) throws NoResultException
+    {
+        TypedQuery<UserEntity> userRoleQuery = entityManager.createQuery("FROM UserEntity where username=:user", UserEntity.class)
+                .setParameter("user", user)
+                .setMaxResults(10);
+
+        UserEntity userEntity = userRoleQuery.getSingleResult();
+        return userEntity.getRole();
+    }
 
 }

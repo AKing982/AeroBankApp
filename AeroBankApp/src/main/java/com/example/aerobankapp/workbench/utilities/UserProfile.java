@@ -1,23 +1,21 @@
 package com.example.aerobankapp.workbench.utilities;
 
+import com.example.aerobankapp.account.AccountNumber;
 import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.fees.FeesDTO;
-import com.example.aerobankapp.model.UserProfileModel;
-import com.example.aerobankapp.services.UserProfileService;
+import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.history.BalanceHistory;
-import com.example.aerobankapp.workbench.model.AccountNumber;
 import com.example.aerobankapp.workbench.transactions.CardDesignator;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.Purchase;
 import com.example.aerobankapp.workbench.transactions.Withdraw;
-import jakarta.persistence.Access;
 import javafx.scene.image.ImageView;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,19 +25,13 @@ import java.util.Map;
 @Component
 public class UserProfile extends AbstractUserProfile
 {
-    @Autowired
-    private UserProfileService userProfileService;
-    private boolean isCurrentUser;
-    private boolean isActive;
-    private boolean isCurrentSession;
-    private boolean isAuthenticated;
-    private boolean isScheduleUser;
-    private boolean isScheduleAdmin;
+    private UserProfileFacade userProfileFacade;
 
     @Autowired
-    public UserProfile(@Qualifier("beanString")String user)
+    public UserProfile(String user, UserProfileFacade userProfileFacade)
     {
         super(user);
+        this.userProfileFacade = userProfileFacade;
     }
 
     @Override
@@ -64,7 +56,9 @@ public class UserProfile extends AbstractUserProfile
 
     @Override
     protected List<CheckingAccountEntity> getAllCheckingAccounts() {
+        String user = super.username;
         return null;
+
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.UserRepository;
 
+import com.example.aerobankapp.workbench.utilities.Role;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +55,7 @@ class UserServiceImplTest {
                 .email("alex@utahkings.com")
                 .password("Halflifer94!")
                 .pinNumber("5988")
-                .role("ADMIN")
+                .role(Role.valueOf("ADMIN"))
                 .isEnabled(true)
                 .id(9)
                 .build();

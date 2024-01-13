@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GenerateAccountID
+public class GenerateAccountCode
 {
     private AccountType accountType;
     private String name;
@@ -16,7 +16,7 @@ public class GenerateAccountID
      * @param fullName
      */
 
-    public GenerateAccountID(AccountType accountType, String fullName)
+    public GenerateAccountCode(AccountType accountType, String fullName)
     {
         nullCheck(accountType);
         this.name = fullName;

@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
+import com.example.aerobankapp.workbench.utilities.Role;
 import com.example.aerobankapp.workbench.utilities.UserType;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
@@ -50,7 +51,7 @@ class UserDAOImplTest
                 .username("AKing94")
                 .isEnabled(true)
                 .id(1)
-                .role("Admin")
+                .role(Role.valueOf("Admin"))
                 .build();
 
         // Act

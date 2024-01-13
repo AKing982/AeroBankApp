@@ -1,18 +1,11 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.CheckingAccountEntity;
-import com.example.aerobankapp.entity.SavingsAccountEntity;
-import com.example.aerobankapp.entity.UserLogEntity;
-import com.example.aerobankapp.repositories.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,37 +13,22 @@ import java.util.List;
 @Service
 public class UserProfileService
 {
-    private AccountServiceBundle accountServiceBundle;
     private UserServiceBundle userServiceBundle;
-    private BalanceHistoryDAOImpl balanceHistoryService;
+    private AccountServiceBundle accountServiceBundle;
+    private BalanceHistoryDAOImpl balanceHistoryDAO;
 
     @Autowired
-    public UserProfileService(AccountServiceBundle accountServiceBundle,
-                              UserServiceBundle userBundle,
-                              BalanceHistoryDAOImpl balanceService)
+    public UserProfileService(UserServiceBundle userServiceBundle, AccountServiceBundle accountServiceBundle, BalanceHistoryDAOImpl balanceHistoryDAO)
     {
-        this.balanceHistoryService = balanceService;
+        this.userServiceBundle = userServiceBundle;
         this.accountServiceBundle = accountServiceBundle;
-        this.userServiceBundle = userBundle;
+        this.balanceHistoryDAO = balanceHistoryDAO;
     }
 
     public List<CheckingAccountEntity> getCheckingAccounts(String user)
     {
-        return accountServiceBundle.getCheckingService().findByUserName(user);
+        return getAccountServiceBundle().getCheckingService().findByUserName(user);
     }
 
-    public List<SavingsAccountEntity> getSavingsAccounts(String user)
-    {
-        return accountServiceBundle.getSavingsService().findByUserName(user);
-    }
 
-    public List<UserLogEntity> getUserLogData(String user)
-    {
-        return userServiceBundle.getUserLogService().findByUserName(user);
-    }
-
-    public void insertUserLog(UserLogEntity userLog)
-    {
-        userServiceBundle.getUserLogService().save(userLog);
-    }
 }

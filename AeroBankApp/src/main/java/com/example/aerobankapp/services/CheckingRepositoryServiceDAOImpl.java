@@ -18,7 +18,6 @@ import java.util.List;
 public class CheckingRepositoryServiceDAOImpl implements CheckingAccountDAO
 {
     private CheckingRepository checkingRepo;
-
     private EntityManager entityManager;
 
     @Autowired

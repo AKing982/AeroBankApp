@@ -15,7 +15,7 @@ import java.util.Set;
 public class UserSecurityProfile implements Cloneable {
 
     private SecurityUser securityUser;
-    private Role role;
+    private RoleService role;
 
     private Set<AccountStatus> accountStatusSet;
     private Set<TransactionSecurity> transactionSecuritySet;
@@ -24,16 +24,21 @@ public class UserSecurityProfile implements Cloneable {
     private UserSecurityModelImpl userSecurity;
     private UserProfile userProfile;
 
+    @Autowired
+    private UserProfileFacade userProfileFacade;
 
     @Autowired
-    public UserSecurityProfile(Role bankRole) {
-        Objects.requireNonNull(bankRole, "Role cannot but null");
-        this.role = bankRole;
+    public UserSecurityProfile(RoleService role, String user) {
+        Objects.requireNonNull(role, "Role cannot but null");
+        this.role = role;
+        this.userProfile = new UserProfile(user, userProfileFacade);
     }
 
 
     public UserSecurityProfile getUserSecurityProfileFromFactory() {
-        return new UserSecurityProfileProducer().getSecurityProfileFactory(role);
+        String user = getSecurityUser().getUsername();
+        Role bankRole = getRole().getRoleByUserName(user);
+        return new UserSecurityProfileProducer().getSecurityProfileFactory(bankRole);
     }
 
     public UserSecurityProfile getUserSecurityProfile(Role role)

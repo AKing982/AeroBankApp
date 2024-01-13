@@ -16,11 +16,13 @@ public class AccountServiceBundle
 {
     private CheckingAccountDAO checkingService;
     private SavingsAccountDAO savingsService;
+    private InvestmentAccountDAO investmentAccountDAO;
 
     @Autowired
-    public AccountServiceBundle(CheckingAccountDAO checking, SavingsAccountDAO savings)
+    public AccountServiceBundle(CheckingAccountDAO checking, SavingsAccountDAO savings, InvestmentAccountDAO investmentAccountDAO)
     {
         this.checkingService = checking;
         this.savingsService = savings;
+        this.investmentAccountDAO = investmentAccountDAO;
     }
 }

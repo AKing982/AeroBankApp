@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(ApplicationExtension.class)
 class GenerateAccountIDTest {
 
-    private GenerateAccountID accountID;
+    private GenerateAccountCode accountID;
     private AccountType accountType = AccountType.CHECKING;
 
     @BeforeEach
@@ -29,7 +29,7 @@ class GenerateAccountIDTest {
     public void testCreatingAccountIDConstructor() {
         final AccountType checking = AccountType.CHECKING;
         final String name = "Alex";
-        accountID = new GenerateAccountID(checking, name);
+        accountID = new GenerateAccountCode(checking, name);
 
         String actualName = accountID.getName();
         AccountType actualAccountType = accountID.getAccountType();
@@ -44,7 +44,7 @@ class GenerateAccountIDTest {
         final AccountType nullType = null;
         final String nullName = null;
 
-        accountID = new GenerateAccountID(nullType, nullName);
+        accountID = new GenerateAccountCode(nullType, nullName);
 
         assertThrows(NullPointerException.class,
                 () -> {
@@ -57,7 +57,7 @@ class GenerateAccountIDTest {
         final AccountType checking = AccountType.CHECKING;
         final String firstName = "Alex";
 
-        accountID = new GenerateAccountID(checking, firstName);
+        accountID = new GenerateAccountCode(checking, firstName);
         String expectedID = "A1";
         String actualID = accountID.buildID();
 
@@ -69,7 +69,7 @@ class GenerateAccountIDTest {
         final AccountType savings = AccountType.SAVINGS;
         final String firstName = "Alex";
 
-        accountID = new GenerateAccountID(savings, firstName);
+        accountID = new GenerateAccountCode(savings, firstName);
 
         String expectedID = "A2";
         String actualID = accountID.buildID();
@@ -82,7 +82,7 @@ class GenerateAccountIDTest {
         final AccountType rent = AccountType.RENT;
         final String firstName = "Alex";
 
-        accountID = new GenerateAccountID(rent, firstName);
+        accountID = new GenerateAccountCode(rent, firstName);
 
         String expected = "A3";
         String actual = accountID.buildID();
@@ -94,7 +94,7 @@ class GenerateAccountIDTest {
     @DisplayName("Test First Name constructor values")
     @MethodSource("provideMethodValuesForTesting")
     public void testAccountIDValues(AccountType accountType, String firstName, String result) {
-        accountID = new GenerateAccountID(accountType, firstName);
+        accountID = new GenerateAccountCode(accountType, firstName);
 
         assertEquals(result, accountID.buildID());
     }

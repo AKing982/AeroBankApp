@@ -1,5 +1,6 @@
 package com.example.aerobankapp.entity;
 
+import com.example.aerobankapp.workbench.utilities.Role;
 import com.example.aerobankapp.workbench.utilities.UserType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -47,7 +49,10 @@ public class UserEntity
     @Column(name="isEnabled")
     private boolean isEnabled;
 
+    @ManyToMany
+    private Set<CheckingAccountEntity> checkingAccount;
+
     @Column(name="role")
-    private String role;
+    private Role role;
 
 }

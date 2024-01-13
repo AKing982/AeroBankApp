@@ -27,12 +27,15 @@ class AccountServiceBundleTest
     private CheckingRepositoryServiceDAOImpl checkingRepositoryService;
     @Autowired
     private SavingsAccountDAOImpl savingsAccountService;
+
+    @Autowired
+    private InvestmentAccountDAOImpl investmentAccountDAO;
     private CheckingAccountEntity checkingAccount;
 
     @BeforeEach
     void setUp()
     {
-        serviceBundle = new AccountServiceBundle(checkingRepositoryService, savingsAccountService);
+        serviceBundle = new AccountServiceBundle(checkingRepositoryService, savingsAccountService, investmentAccountDAO);
         checkingAccount = CheckingAccountEntity.builder()
                 .userName("AKing94")
                 .minimumBalance(new BigDecimal("100.00"))

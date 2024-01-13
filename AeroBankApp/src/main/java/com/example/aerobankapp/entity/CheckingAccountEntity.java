@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
-
+import java.util.Set;
 
 
 @Builder
@@ -16,12 +16,18 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="CheckingAccount")
+@Table(name="checkingAccount")
 public class CheckingAccountEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name="accountCode")
+    private String accountCode;
+
+    @Column(name="user_id")
+    private int userID;
 
     @Column(name="a_secid")
     private int aSecID;
@@ -42,5 +48,8 @@ public class CheckingAccountEntity
 
     @Column(name="minimum_balance")
     private BigDecimal minimumBalance;
+
+    @ManyToMany(mappedBy = "checkingAccount")
+    private Set<UserEntity> users;
 
 }

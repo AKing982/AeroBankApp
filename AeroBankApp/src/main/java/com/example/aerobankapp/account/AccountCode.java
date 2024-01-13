@@ -2,7 +2,6 @@ package com.example.aerobankapp.account;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
 
 /**
  * This class will manage the AccountID
@@ -10,14 +9,14 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Setter
-public class AccountID
+public class AccountCode
 {
     private String accountID;
-    private GenerateAccountID generateAccountID;
+    private GenerateAccountCode generateAccountID;
 
-    public AccountID(AccountType accountType, String fullName)
+    public AccountCode(AccountType accountType, String fullName)
     {
-        this.generateAccountID = new GenerateAccountID(accountType, fullName);
+        this.generateAccountID = new GenerateAccountCode(accountType, fullName);
         this.accountID = generateAccountID.buildID();
     }
 

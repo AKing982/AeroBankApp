@@ -4,8 +4,10 @@ import com.example.aerobankapp.entity.CheckingAccountEntity;
 import com.example.aerobankapp.entity.InvestmentAccountEntity;
 import com.example.aerobankapp.entity.RentAccountEntity;
 import com.example.aerobankapp.entity.SavingsAccountEntity;
+import com.example.aerobankapp.services.UserProfileService;
 import com.example.aerobankapp.workbench.transactions.CardDesignator;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
+import com.example.aerobankapp.workbench.utilities.UserProfileFacade;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,11 +33,16 @@ public class UserSecurityModelImpl implements UserSecurityModel
    private Set<CardDesignator> userPaymentCards;
    private UserProfile currentUserProfile;
 
+   private UserProfileService userProfileService;
+
+   @Autowired
+   private UserProfileFacade userProfileFacade;
+
    @Autowired
    public UserSecurityModelImpl(@Qualifier("beanString") String username)
    {
-      usernameCheck(username);
-      this.currentUserProfile = new UserProfile(username);
+     // usernameCheck(username);
+      this.currentUserProfile = new UserProfile(username, userProfileFacade);
    }
 
    private void usernameCheck(String username)
