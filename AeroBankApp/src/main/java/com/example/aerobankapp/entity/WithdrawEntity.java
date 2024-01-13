@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name="withdraws")
@@ -24,13 +25,25 @@ public class WithdrawEntity
     @Column(name="userID")
     private int userID;
 
+    @Column(name="currency")
+    @NotNull
+    private String currency;
+
     @Column(name="fromAccountID")
     @NotNull
-    private String fromAccountID;
+    private int fromAccountID;
 
     @Column(name="toAccountID")
     @NotNull
-    private String toAccountID;
+    private int toAccountID;
+
+    @Column(name="fromAccountCode")
+    @NotNull
+    private String fromAccountCode;
+
+    @Column(name="toAccountCode")
+    @NotNull
+    private String toAccountCode;
 
     @Column(name="description")
     @NotNull
@@ -46,6 +59,7 @@ public class WithdrawEntity
     @Column(name="isProcessed")
     private boolean isProcessed;
 
-
+    @OneToOne
+    private TransactionDetailEntity transactionDetailEntity;
 
 }
