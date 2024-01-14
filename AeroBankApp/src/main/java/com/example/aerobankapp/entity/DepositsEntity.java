@@ -25,10 +25,10 @@ public class DepositsEntity
     private int userID;
 
     @Column(name="accountID")
-    private String acctID;
+    private int acctID;
 
-    @Column(name="accountName")
-    private String accountName;
+    @Column(name="accountCode")
+    private String accountCode;
 
     @Column(name="amount")
     private BigDecimal amount;
@@ -41,6 +41,5 @@ public class DepositsEntity
 
     @Column(name="date_posted")
     private LocalDate date_posted;
-
 
 }

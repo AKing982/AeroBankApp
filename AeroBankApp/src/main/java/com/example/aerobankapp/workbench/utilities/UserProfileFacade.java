@@ -1,5 +1,6 @@
 package com.example.aerobankapp.workbench.utilities;
 
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.CheckingAccountEntity;
 import com.example.aerobankapp.services.AccountServiceBundle;
 import com.example.aerobankapp.services.BalanceHistoryDAOImpl;
@@ -22,8 +23,8 @@ public class UserProfileFacade
         this.userProfileService = userProfileService;
     }
 
-    public List<CheckingAccountEntity> getCheckingAccounts(String user)
+    public List<AccountEntity> getCheckingAccounts(String user)
     {
-        return userProfileService.getAccountServiceBundle().getCheckingService().findByUserName(user);
+        return null;
     }
 }

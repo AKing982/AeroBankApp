@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="savingsAccount")
+@Deprecated
 public class SavingsAccountEntity
 {
     @Id

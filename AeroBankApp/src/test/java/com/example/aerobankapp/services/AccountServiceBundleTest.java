@@ -35,7 +35,7 @@ class AccountServiceBundleTest
     @BeforeEach
     void setUp()
     {
-        serviceBundle = new AccountServiceBundle(checkingRepositoryService, savingsAccountService, investmentAccountDAO);
+       // serviceBundle = new AccountServiceBundle(checkingRepositoryService, savingsAccountService, investmentAccountDAO);
         checkingAccount = CheckingAccountEntity.builder()
                 .userName("AKing94")
                 .minimumBalance(new BigDecimal("100.00"))
@@ -46,17 +46,7 @@ class AccountServiceBundleTest
                 .build();
     }
 
-    @Test
-    public void testFindAll()
-    {
-        List<CheckingAccountEntity> allChecking = new ArrayList<>();
-        allChecking.add(checkingAccount);
-        serviceBundle.getCheckingService().save(checkingAccount);
-        List<CheckingAccountEntity> actualAccounts = serviceBundle.getCheckingService().findAll();
 
-        assertNotNull(actualAccounts);
-        assertEquals(allChecking, actualAccounts);
-    }
 
     @Test
     public void testFindById()

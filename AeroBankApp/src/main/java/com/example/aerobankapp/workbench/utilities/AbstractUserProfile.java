@@ -19,6 +19,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -30,11 +31,7 @@ public abstract class AbstractUserProfile implements Cloneable {
 
     protected String username;
     private boolean isEnabledForUser;
-    protected List<CheckingAccountEntity> checkingAccounts;
-    protected List<SavingsAccountEntity> savingsAccounts;
-    protected List<InvestmentAccountEntity> investmentAccounts;
-    protected List<RentAccountEntity> rentAccounts;
-    protected List<MortgageAccountEntity> mortgageAccounts;
+    protected List<AccountEntity> accountEntities;
     protected List<CardDesignator> cards;
     protected Map<Integer, List<ImageView>> cardImagesMap;
     protected Map<Integer, AccountSecurityEntity> accountSecurityMap;
@@ -47,6 +44,7 @@ public abstract class AbstractUserProfile implements Cloneable {
 
     public AbstractUserProfile(String user)
     {
+        Objects.requireNonNull(user, "User cannot be null");
         this.username = user;
     }
 
@@ -54,11 +52,7 @@ public abstract class AbstractUserProfile implements Cloneable {
     protected abstract List<Withdraw> getAllWithdraws();
     protected abstract List<Purchase> getAllPurchases();
     protected abstract List<Deposit> getAllDeposits();
-    protected abstract List<CheckingAccountEntity> getAllCheckingAccounts();
-    protected abstract List<SavingsAccountEntity> getAllSavingsAccounts();
-    protected abstract List<InvestmentAccountEntity> getAllInvestmentAccounts();
-    protected abstract List<RentAccountEntity> getAllRentAccounts();
-    protected abstract List<MortgageAccountEntity> getAllMortgageAccounts();
+    protected abstract List<AccountEntity> getAllAccounts();
     protected abstract List<CardDesignator> getAllUserCards();
     protected abstract Map<Integer, List<ImageView>> getUserCardImages();
     protected abstract Map<Integer, AccountSecurityEntity> getAccountSecurityDetails();

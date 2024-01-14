@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SavingsAccountDAOImpl implements SavingsAccountDAO
@@ -43,9 +44,9 @@ public class SavingsAccountDAOImpl implements SavingsAccountDAO
     }
 
     @Override
-    public SavingsAccountEntity findAllById(Long id)
+    public Optional<SavingsAccountEntity> findAllById(Long id)
     {
-        return savingsRepository.findById(id).orElse(null);
+        return savingsRepository.findById(id);
     }
 
     @Override

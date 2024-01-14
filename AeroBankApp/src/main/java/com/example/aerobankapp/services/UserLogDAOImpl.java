@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserLogDAOImpl implements UserLogDAO
@@ -50,9 +51,9 @@ public class UserLogDAOImpl implements UserLogDAO
     }
 
     @Override
-    public UserLogEntity findAllById(Long id)
+    public Optional<UserLogEntity> findAllById(Long id)
     {
-        return userLogRepo.findById((long)id).orElse(null);
+        return userLogRepo.findById(id);
     }
 
     @Override

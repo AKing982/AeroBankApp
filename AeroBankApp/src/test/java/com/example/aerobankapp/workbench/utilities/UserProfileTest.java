@@ -44,14 +44,15 @@ class UserProfileTest {
 
     @Test
     public void testConstructorForNull() {
-        assertThrows(IllegalArgumentException.class,
-                () -> userProfile = new UserProfile(null, null));
+        assertThrows(NullPointerException.class,
+                () -> userProfile = new UserProfile(null));
     }
 
     @Test
     public void testConstructorWithValidUserName() {
         mockUser = "AKing94";
-        userProfile = new UserProfile(mockUser, userProfileFacade);
+        userProfile = new UserProfile(mockUser);
+        userProfile.setUserProfileFacade(userProfileFacade);
 
         assertEquals(mockUser, userProfile.getUsername());
     }
@@ -60,7 +61,8 @@ class UserProfileTest {
     public void testAddingAccountNumbers()
     {
         mockUser = "AKing94";
-        userProfile = new UserProfile(mockUser, userProfileFacade);
+        userProfile = new UserProfile(mockUser);
+        userProfile.setUserProfileFacade(userProfileFacade);
         AccountPrefix prefix = new AccountPrefix("CA");
 
         userProfile.addAccountNumbers(new AccountNumber(prefix, "4343", "54545"));
@@ -75,8 +77,11 @@ class UserProfileTest {
         String bsmith = "BSmith23";
         String aking = "AKing94";
 
-        UserProfile akingProfile = new UserProfile(aking, userProfileFacade);
-        UserProfile bsmithProfile = new UserProfile(bsmith, userProfileFacade);
+        UserProfile akingProfile = new UserProfile(aking);
+        akingProfile.setUserProfileFacade(userProfileFacade);
+
+        UserProfile bsmithProfile = new UserProfile(bsmith);
+        bsmithProfile.setUserProfileFacade(userProfileFacade);
 
         assertNotNull(akingProfile);
         assertNotNull(bsmithProfile);
@@ -91,7 +96,7 @@ class UserProfileTest {
     public void testAllAccountNumbers()
     {
         mockUser = "AKing94";
-        userProfile = new UserProfile(mockUser, userProfileFacade);
+        userProfile = new UserProfile(mockUser);
 
 
         List<AccountNumber> accountNumberList = userProfile.getAllAccountNumbers();

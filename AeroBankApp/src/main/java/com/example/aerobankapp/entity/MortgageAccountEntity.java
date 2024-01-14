@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @Table(name="mortgageAccount")
 @NoArgsConstructor
 @AllArgsConstructor
+@Deprecated
 public class MortgageAccountEntity
 {
     @Id

@@ -50,8 +50,8 @@ class UserDAOImplTest
                 .pinNumber("5988")
                 .username("AKing94")
                 .isEnabled(true)
-                .id(1)
-                .role(Role.valueOf("Admin"))
+                .userID(1)
+                .role(Role.ADMIN)
                 .build();
 
         // Act

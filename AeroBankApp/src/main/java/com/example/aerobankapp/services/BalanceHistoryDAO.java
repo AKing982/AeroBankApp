@@ -4,6 +4,7 @@ import com.example.aerobankapp.entity.BalanceHistoryEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BalanceHistoryDAO extends ServiceDAOModel<BalanceHistoryEntity>
 {
@@ -17,7 +18,7 @@ public interface BalanceHistoryDAO extends ServiceDAOModel<BalanceHistoryEntity>
     void delete(BalanceHistoryEntity obj);
 
     @Override
-    BalanceHistoryEntity findAllById(Long id);
+    Optional<BalanceHistoryEntity> findAllById(Long id);
 
     @Override
     List<BalanceHistoryEntity> findByUserName(String user);

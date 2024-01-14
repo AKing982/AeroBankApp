@@ -4,7 +4,9 @@ import com.example.aerobankapp.entity.InvestmentAccountEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
+import java.util.Optional;
 
+@Deprecated
 public interface InvestmentAccountDAO extends ServiceDAOModel<InvestmentAccountEntity>
 {
     @Override
@@ -17,7 +19,7 @@ public interface InvestmentAccountDAO extends ServiceDAOModel<InvestmentAccountE
     void delete(InvestmentAccountEntity obj);
 
     @Override
-    InvestmentAccountEntity findAllById(Long id);
+    Optional<InvestmentAccountEntity> findAllById(Long id);
 
     @Override
     List<InvestmentAccountEntity> findByUserName(String user);

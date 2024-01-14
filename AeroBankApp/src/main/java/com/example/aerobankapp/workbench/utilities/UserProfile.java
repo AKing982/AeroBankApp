@@ -27,11 +27,15 @@ public class UserProfile extends AbstractUserProfile
 {
     private UserProfileFacade userProfileFacade;
 
-    @Autowired
-    public UserProfile(String user, UserProfileFacade userProfileFacade)
+    public UserProfile(String user)
     {
         super(user);
-        this.userProfileFacade = userProfileFacade;
+    }
+
+    @Autowired
+    public void setUserProfileFacade(UserProfileFacade profileFacade)
+    {
+        this.userProfileFacade = profileFacade;
     }
 
     @Override
@@ -55,33 +59,10 @@ public class UserProfile extends AbstractUserProfile
     }
 
     @Override
-    protected List<CheckingAccountEntity> getAllCheckingAccounts() {
+    protected List<AccountEntity> getAllAccounts() {
         String user = super.username;
         return null;
 
-    }
-
-    @Override
-    protected List<SavingsAccountEntity> getAllSavingsAccounts() {
-        return null;
-    }
-
-    @Override
-    protected List<InvestmentAccountEntity> getAllInvestmentAccounts()
-    {
-        return null;
-    }
-
-    @Override
-    protected List<RentAccountEntity> getAllRentAccounts()
-    {
-        return null;
-    }
-
-    @Override
-    protected List<MortgageAccountEntity> getAllMortgageAccounts()
-    {
-        return null;
     }
 
     @Override

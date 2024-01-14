@@ -4,6 +4,7 @@ import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface UserLogDAO extends ServiceDAOModel<UserLogEntity>
@@ -18,5 +19,5 @@ public interface UserLogDAO extends ServiceDAOModel<UserLogEntity>
     void delete(UserLogEntity obj);
 
     @Override
-    UserLogEntity findAllById(Long id);
+    Optional<UserLogEntity> findAllById(Long id);
 }

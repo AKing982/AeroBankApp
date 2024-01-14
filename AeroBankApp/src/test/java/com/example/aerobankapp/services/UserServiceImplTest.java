@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,7 +58,7 @@ class UserServiceImplTest {
                 .pinNumber("5988")
                 .role(Role.valueOf("ADMIN"))
                 .isEnabled(true)
-                .id(9)
+                .userID(9)
                 .build();
         userService = new UserDAOImpl(userRepository, manager);
 
@@ -109,7 +110,7 @@ class UserServiceImplTest {
 
         userService.save(test);
 
-        UserEntity allUsers = userService.findAllById(1L);
+        Optional<UserEntity> allUsers = userService.findAllById(Long.valueOf(1));
 
         assertNotNull(allUsers);
         assertEquals(test, allUsers);

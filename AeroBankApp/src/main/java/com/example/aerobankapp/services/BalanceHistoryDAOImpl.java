@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BalanceHistoryDAOImpl implements BalanceHistoryDAO
@@ -49,9 +50,9 @@ public class BalanceHistoryDAOImpl implements BalanceHistoryDAO
 
     @Override
     @Transactional
-    public BalanceHistoryEntity findAllById(Long id)
+    public Optional<BalanceHistoryEntity> findAllById(Long id)
     {
-        return balanceHistRepo.findById(id).orElse(null);
+        return balanceHistRepo.findById(id);
     }
 
     @Override

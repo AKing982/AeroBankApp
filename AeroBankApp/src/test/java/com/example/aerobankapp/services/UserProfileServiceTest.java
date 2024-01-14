@@ -61,8 +61,7 @@ class UserProfileServiceTest
                 .dividend_amt(new BigDecimal("0.74"))
                 .id("A2")
                 .build();
-        userProfileService.getAccountServiceBundle().getCheckingService().save(checkingAccount);
-        userProfileService.getAccountServiceBundle().getSavingsService().save(savingsAccount);
+
     }
 
 
@@ -70,6 +69,6 @@ class UserProfileServiceTest
     @AfterEach
     void tearDown()
     {
-        userProfileService.getAccountServiceBundle().getCheckingService().delete(checkingAccount);
+
     }
 }

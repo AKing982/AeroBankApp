@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Getter
@@ -37,7 +38,15 @@ public class UserDAOImpl implements UserDAO
     @Transactional
     public List<UserEntity> findAll()
     {
-        return userRepository.findAll();
+        try
+        {
+            return userRepository.findAll();
+
+        }catch(ArrayIndexOutOfBoundsException ex)
+        {
+            aeroLogger.error("ArrayIndexOutOfBoundsException occured: " + ex.getMessage(), ex);
+        }
+        return null;
     }
 
     @Override
@@ -58,9 +67,9 @@ public class UserDAOImpl implements UserDAO
 
     @Override
     @Transactional
-    public UserEntity findAllById(Long id)
+    public Optional<UserEntity> findAllById(Long id)
     {
-        return userRepository.findById((long)id).orElse(null);
+        return userRepository.findById(id);
     }
 
     @Override

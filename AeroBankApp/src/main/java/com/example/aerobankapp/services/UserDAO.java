@@ -6,6 +6,7 @@ import com.example.aerobankapp.workbench.utilities.Role;
 import jakarta.persistence.NoResultException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserDAO extends ServiceDAOModel<UserEntity>
 {
@@ -19,7 +20,7 @@ public interface UserDAO extends ServiceDAOModel<UserEntity>
     void delete(UserEntity obj);
 
     @Override
-    UserEntity findAllById(Long id);
+    Optional<UserEntity> findAllById(Long id);
 
     @Override
     List<UserEntity> findByUserName(String user);

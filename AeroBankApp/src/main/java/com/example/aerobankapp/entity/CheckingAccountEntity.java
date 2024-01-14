@@ -17,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name="checkingAccount")
+@Deprecated
 public class CheckingAccountEntity
 {
     @Id
@@ -48,8 +49,4 @@ public class CheckingAccountEntity
 
     @Column(name="minimum_balance")
     private BigDecimal minimumBalance;
-
-    @ManyToMany(mappedBy = "checkingAccount")
-    private Set<UserEntity> users;
-
 }

@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@Deprecated
 public class InvestmentAccountDAOImpl implements InvestmentAccountDAO
 {
     @PersistenceContext
@@ -40,7 +42,7 @@ public class InvestmentAccountDAOImpl implements InvestmentAccountDAO
     }
 
     @Override
-    public InvestmentAccountEntity findAllById(Long id) {
+    public Optional<InvestmentAccountEntity> findAllById(Long id) {
         return null;
     }
 

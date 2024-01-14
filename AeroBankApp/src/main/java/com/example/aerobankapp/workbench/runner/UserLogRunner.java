@@ -52,7 +52,7 @@ public class UserLogRunner implements Runnable {
                 aeroLogger.info("User: " + user.toString());
                 if (user.getUsername().equals(getUserName()))
                 {
-                    userID = user.getId();
+                    userID = user.getUserID();
                     break;
                 }
             }

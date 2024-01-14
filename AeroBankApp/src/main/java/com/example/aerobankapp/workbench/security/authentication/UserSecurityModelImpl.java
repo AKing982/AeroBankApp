@@ -42,7 +42,8 @@ public class UserSecurityModelImpl implements UserSecurityModel
    public UserSecurityModelImpl(@Qualifier("beanString") String username)
    {
      // usernameCheck(username);
-      this.currentUserProfile = new UserProfile(username, userProfileFacade);
+      this.currentUserProfile = new UserProfile(username);
+      this.currentUserProfile.setUserProfileFacade(userProfileFacade);
    }
 
    private void usernameCheck(String username)

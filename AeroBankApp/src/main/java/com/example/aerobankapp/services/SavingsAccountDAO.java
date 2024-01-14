@@ -6,6 +6,7 @@ import com.example.aerobankapp.entity.SavingsAccountEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface SavingsAccountDAO extends ServiceDAOModel<SavingsAccountEntity>
@@ -20,5 +21,5 @@ public interface SavingsAccountDAO extends ServiceDAOModel<SavingsAccountEntity>
     void delete(SavingsAccountEntity obj);
 
     @Override
-    SavingsAccountEntity findAllById(Long id);
+    Optional<SavingsAccountEntity> findAllById(Long id);
 }

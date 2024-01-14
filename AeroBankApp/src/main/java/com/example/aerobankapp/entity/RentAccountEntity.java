@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="rentAccount")
+@Deprecated
 public class RentAccountEntity
 {
     @Id

@@ -4,6 +4,7 @@ import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserLogService extends ServiceDAOModel<UserLogEntity>
 {
@@ -17,5 +18,5 @@ public interface UserLogService extends ServiceDAOModel<UserLogEntity>
     List<UserLogEntity> findAll();
 
     @Override
-    UserLogEntity findAllById(Long id);
+    Optional<UserLogEntity> findAllById(Long id);
 }

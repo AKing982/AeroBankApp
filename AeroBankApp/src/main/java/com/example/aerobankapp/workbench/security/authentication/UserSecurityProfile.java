@@ -31,7 +31,8 @@ public class UserSecurityProfile implements Cloneable {
     public UserSecurityProfile(RoleService role, String user) {
         Objects.requireNonNull(role, "Role cannot but null");
         this.role = role;
-        this.userProfile = new UserProfile(user, userProfileFacade);
+        this.userProfile = new UserProfile(user);
+        this.userProfile.setUserProfileFacade(userProfileFacade);
     }
 
 

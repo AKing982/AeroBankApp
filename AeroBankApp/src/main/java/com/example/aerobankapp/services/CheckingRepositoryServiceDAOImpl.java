@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@Deprecated
 public class CheckingRepositoryServiceDAOImpl implements CheckingAccountDAO
 {
     private CheckingRepository checkingRepo;
@@ -49,9 +51,9 @@ public class CheckingRepositoryServiceDAOImpl implements CheckingAccountDAO
     }
 
     @Override
-    public CheckingAccountEntity findAllById(Long id)
+    public Optional<CheckingAccountEntity> findAllById(Long id)
     {
-        return checkingRepo.findById(id).orElse(null);
+        return checkingRepo.findById(id);
     }
 
     @Override

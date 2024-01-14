@@ -23,7 +23,7 @@ public class UserEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int userID;
 
     @Column(name="username")
     @NotNull
@@ -50,7 +50,10 @@ public class UserEntity
     private boolean isEnabled;
 
     @ManyToMany
-    private Set<CheckingAccountEntity> checkingAccount;
+    @JoinTable(name="user_account",
+        joinColumns = @JoinColumn(name="userID"),
+    inverseJoinColumns = @JoinColumn(name="acctID"))
+    private Set<AccountEntity> accounts;
 
     @Column(name="role")
     private Role role;

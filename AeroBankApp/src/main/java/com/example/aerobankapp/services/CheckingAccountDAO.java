@@ -5,7 +5,9 @@ import com.example.aerobankapp.entity.CheckingAccountEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
+import java.util.Optional;
 
+@Deprecated
 public interface CheckingAccountDAO extends ServiceDAOModel<CheckingAccountEntity>
 {
     @Override
@@ -18,5 +20,5 @@ public interface CheckingAccountDAO extends ServiceDAOModel<CheckingAccountEntit
     void delete(CheckingAccountEntity obj);
 
     @Override
-    CheckingAccountEntity findAllById(Long id);
+    Optional<CheckingAccountEntity> findAllById(Long id);
 }
