@@ -1,11 +1,8 @@
 package com.example.aerobankapp.manager;
 
 import com.example.aerobankapp.dto.WithdrawDTO;
-import com.example.aerobankapp.entity.WithdrawEntity;
 import com.example.aerobankapp.workbench.transactions.Withdraw;
-import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface WithdrawManager extends TransactionManager<Withdraw>
