@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface WithdrawCalculationEngine extends CalculationEngine<Withdraw>
 {
+
     @Override
     List<Withdraw> calculateBatch(List<Withdraw> transactions);
 
