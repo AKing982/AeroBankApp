@@ -10,6 +10,8 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,7 @@ public class UserDAOImpl implements UserDAO
 
     @PersistenceContext
     private EntityManager entityManager;
-    private AeroLogger aeroLogger = new AeroLogger(UserDAOImpl.class);
+    private Logger aeroLogger = LoggerFactory.getLogger(UserDAOImpl.class);
 
     @Autowired
     public UserDAOImpl(UserRepository repository, EntityManager manager)
@@ -38,15 +40,7 @@ public class UserDAOImpl implements UserDAO
     @Transactional
     public List<UserEntity> findAll()
     {
-        try
-        {
-            return userRepository.findAll();
-
-        }catch(ArrayIndexOutOfBoundsException ex)
-        {
-            aeroLogger.error("ArrayIndexOutOfBoundsException occured: " + ex.getMessage(), ex);
-        }
-        return null;
+        return userRepository.findAll();
     }
 
     @Override
@@ -77,6 +71,7 @@ public class UserDAOImpl implements UserDAO
         TypedQuery<UserEntity> query = entityManager.createQuery("FROM UserEntity where username=:user", UserEntity.class)
                 .setParameter("user", user)
                 .setMaxResults(10);
+        aeroLogger.debug("Found User: " + query.getResultList());
 
         return query.getResultList();
     }

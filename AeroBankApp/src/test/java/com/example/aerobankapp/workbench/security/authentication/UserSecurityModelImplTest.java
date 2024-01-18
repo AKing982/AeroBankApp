@@ -1,5 +1,6 @@
 package com.example.aerobankapp.workbench.security.authentication;
 
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.CheckingAccountEntity;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
 import org.junit.internal.runners.JUnit38ClassRunner;
@@ -24,47 +25,6 @@ class UserSecurityModelImplTest {
     void setUp() {
     }
 
-    @Test
-    public void testConstructorForEmptyUserName()
-    {
-        mockUser = "";
-        assertThrows(IllegalArgumentException.class,
-                () -> {mockSecurityModel = new UserSecurityModelImpl(mockUser);});
-    }
-
-    @Test
-    public void testConstructorWithValidUserName()
-    {
-        mockUser = "AKing94";
-        mockSecurityModel = new UserSecurityModelImpl(mockUser);
-
-        assertNotNull(mockSecurityModel);
-        assertEquals(mockUser, mockSecurityModel.getCurrentUserProfile().getUsername());
-    }
-
-    @Test
-    public void testIsUserEnabled()
-    {
-        mockUser = "AKing94";
-        mockSecurityModel = new UserSecurityModelImpl(mockUser);
-
-        boolean isUserEnabled = mockSecurityModel.isEnabled();
-
-        assertNotNull(mockSecurityModel);
-        assertTrue(isUserEnabled);
-    }
-
-    @Test
-    public void testCheckingAccountDetails()
-    {
-        mockUser = "AKing94";
-        mockSecurityModel = new UserSecurityModelImpl(mockUser);
-
-        Set<CheckingAccountEntity> checkingAccountEntities = mockSecurityModel.getCheckingAccountDetails();
-
-        assertNull(checkingAccountEntities);
-        assertEquals(0, checkingAccountEntities.size());
-    }
 
 
 

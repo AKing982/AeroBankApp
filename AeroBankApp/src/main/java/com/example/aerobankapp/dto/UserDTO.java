@@ -1,7 +1,9 @@
 package com.example.aerobankapp.dto;
 
 import com.example.aerobankapp.workbench.utilities.Role;
+import lombok.Builder;
 
+@Builder
 public record UserDTO(int userID,
                       String userName,
                       String email,

@@ -2,8 +2,12 @@ package com.example.aerobankapp.workbench.utilities;
 
 import com.example.aerobankapp.account.AccountNumber;
 import com.example.aerobankapp.account.AccountPrefix;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.CheckingAccountModel;
+import com.example.aerobankapp.repositories.UserRepository;
+import com.example.aerobankapp.services.UserDAOImpl;
 import com.example.aerobankapp.services.UserProfileService;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,13 +33,7 @@ class UserProfileTest {
     @MockBean
     private UserProfile userProfile;
 
-    @Autowired
-    private UserProfileFacade userProfileFacade;
-
     private String mockUser;
-
-    @Autowired
-    private UserProfileService userProfileService;
 
     @BeforeEach
     void setUp() {
@@ -50,59 +48,49 @@ class UserProfileTest {
 
     @Test
     public void testConstructorWithValidUserName() {
-        mockUser = "AKing94";
+        User mockUser = User.builder()
+                .userID(1)
+                .userName("AKing")
+                .password("Halflifer45!")
+                .role(Role.ADMIN)
+                .build();
+
         userProfile = new UserProfile(mockUser);
-        userProfile.setUserProfileFacade(userProfileFacade);
 
         assertEquals(mockUser, userProfile.getUsername());
     }
 
-    @Test
-    public void testAddingAccountNumbers()
-    {
-        mockUser = "AKing94";
-        userProfile = new UserProfile(mockUser);
-        userProfile.setUserProfileFacade(userProfileFacade);
-        AccountPrefix prefix = new AccountPrefix("CA");
-
-        userProfile.addAccountNumbers(new AccountNumber(prefix, "4343", "54545"));
-        userProfile.addAccountNumbers(new AccountNumber(prefix, "6767", "23232"));
-
-        assertEquals(2, userProfile.getAccountNumbers().size());
-    }
 
     @Test
     public void testDistinctUserProfilesWithDistinctUserNames()
     {
-        String bsmith = "BSmith23";
-        String aking = "AKing94";
+        User bsmith = User.builder()
+                .userID(2)
+                .userName("BSmith23")
+                .password("HGamer21")
+                .role(Role.CUSTOMER)
+                .build();
+
+        User aking = User.builder()
+                .userID(1)
+                .userName("AKing")
+                .password("Halflifer45!")
+                .role(Role.ADMIN)
+                .build();
 
         UserProfile akingProfile = new UserProfile(aking);
-        akingProfile.setUserProfileFacade(userProfileFacade);
 
         UserProfile bsmithProfile = new UserProfile(bsmith);
-        bsmithProfile.setUserProfileFacade(userProfileFacade);
 
         assertNotNull(akingProfile);
         assertNotNull(bsmithProfile);
-        assertEquals(aking, akingProfile.getUsername());
-        assertEquals(bsmith, bsmithProfile.getUsername());
+        assertEquals(aking.getUserName(), akingProfile.getUsername());
+        assertEquals(bsmith.getUserName(), bsmithProfile.getUsername());
         assertNotEquals(akingProfile.getUsername(), bsmithProfile.getUsername());
         assertNotEquals(akingProfile, bsmithProfile);
-        assertNotEquals(akingProfile.getAllCheckingAccounts(), bsmithProfile.getAllCheckingAccounts());
+        assertNotEquals(akingProfile.getAllAccounts(), bsmithProfile.getAllAccounts());
     }
 
-    @Test
-    public void testAllAccountNumbers()
-    {
-        mockUser = "AKing94";
-        userProfile = new UserProfile(mockUser);
-
-
-        List<AccountNumber> accountNumberList = userProfile.getAllAccountNumbers();
-
-        assertEquals(0, accountNumberList.size());
-    }
 
     @AfterEach
     void tearDown()

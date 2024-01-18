@@ -5,12 +5,10 @@ import java.time.LocalDate;
 
 public record DepositDTO(int depositID,
                          int userID,
-                         int acctID,
-                         String acctCode,
+                         String accountID,
                          BigDecimal amount,
-                         boolean isDebit,
-                         boolean isBankTransfer,
-                         LocalDate date_posted)
+                         LocalDate date,
+                         String description)
 {
 
 }

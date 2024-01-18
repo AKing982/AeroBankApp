@@ -1,51 +1,46 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.manager.*;
+import com.example.aerobankapp.model.BalanceHistoryManager;
+import com.example.aerobankapp.model.BalanceHistoryModel;
+import com.example.aerobankapp.workbench.security.authentication.UserSecurityProfile;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Getter
 @Setter
 @Service
 public class UserProfileService
 {
-    private UserServiceBundle userServiceBundle;
-    private AccountServiceBundle accountServiceBundle;
-    private BalanceHistoryDAOImpl balanceHistoryDAO;
+    private final AccountManager accountManager;
+    private final BalanceHistoryManager balanceHistoryModel;
+    private final DepositManager depositManager;
+    private final WithdrawManager withdrawManager;
+    private final PurchaseManager purchaseManager;
+    private final TransferManager transferManager;
+    private final FeeManager feeManager;
+    private final UserSecurityProfile userSecurityProfile;
 
     @Autowired
-    public UserProfileService(UserServiceBundle userServiceBundle,
-                              AccountServiceBundle accountServiceBundle,
-                              BalanceHistoryDAOImpl balanceHistoryDAO)
+    public UserProfileService(AccountManager accountManager,
+                              BalanceHistoryManager balanceHistoryModel,
+                              DepositManager depositManager,
+                              WithdrawManager withdrawManager,
+                              PurchaseManager purchaseManager,
+                              TransferManager transactionManager,
+                              FeeManager feeManager,
+                              UserSecurityProfile securityProfile)
     {
-        this.userServiceBundle = userServiceBundle;
-        this.accountServiceBundle = accountServiceBundle;
-        this.balanceHistoryDAO = balanceHistoryDAO;
-    }
-
-    public List<AccountEntity> getAccountsByUser(String user)
-    {
-        return getAccountServiceBundle().getAccountsByUserName(user);
-    }
-
-    public void saveAccount(AccountEntity accountEntity)
-    {
-        getAccountServiceBundle().saveAccount(accountEntity);
-    }
-
-    public void deleteAccount(AccountEntity accountEntity)
-    {
-        getAccountServiceBundle().deleteAccount(accountEntity);
-    }
-
-    public List<UserEntity> getUser()
-    {
-        return null;
+        this.accountManager = accountManager;
+        this.balanceHistoryModel = balanceHistoryModel;
+        this.depositManager = depositManager;
+        this.withdrawManager = withdrawManager;
+        this.purchaseManager = purchaseManager;
+        this.transferManager = transactionManager;
+        this.feeManager = feeManager;
+        this.userSecurityProfile = securityProfile;
     }
 
 

@@ -1,98 +1,51 @@
 package com.example.aerobankapp.workbench.utilities;
 
-import com.example.aerobankapp.account.AccountNumber;
-import com.example.aerobankapp.entity.*;
-import com.example.aerobankapp.fees.FeesDTO;
-import com.example.aerobankapp.services.*;
-import com.example.aerobankapp.workbench.history.BalanceHistory;
-import com.example.aerobankapp.workbench.transactions.CardDesignator;
-import com.example.aerobankapp.workbench.transactions.Deposit;
-import com.example.aerobankapp.workbench.transactions.Purchase;
-import com.example.aerobankapp.workbench.transactions.Withdraw;
-import javafx.scene.image.ImageView;
+import com.example.aerobankapp.dto.AccountDTO;
+import com.example.aerobankapp.manager.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.Set;
 
 
 @Getter
 @Setter
 @Component
-public class UserProfile extends AbstractUserProfile
+public class UserProfile
 {
+    private User user;
+
     private UserProfileFacade userProfileFacade;
 
-    public UserProfile(String user)
+    public UserProfile(User user)
     {
-        super(user);
+        Objects.requireNonNull(user, "User Cannot be null");
+        this.user = user;
     }
 
     @Autowired
-    public void setUserProfileFacade(UserProfileFacade profileFacade)
+    public void setUserProfileFacade(UserProfileFacade userProfileFacade)
     {
-        this.userProfileFacade = profileFacade;
+        this.userProfileFacade = userProfileFacade;
     }
 
-    @Override
-    protected List<AccountNumber> getAllAccountNumbers() {
-        return null;
-    }
-
-    @Override
-    protected List<Withdraw> getAllWithdraws() {
-        return null;
-    }
-
-    @Override
-    protected List<Purchase> getAllPurchases() {
-        return null;
-    }
-
-    @Override
-    protected List<Deposit> getAllDeposits() {
-        return null;
-    }
-
-    @Override
-    protected List<AccountEntity> getAllAccounts() {
-        String user = super.username;
-        return null;
-
-    }
-
-    @Override
-    protected List<CardDesignator> getAllUserCards() {
-        return null;
-    }
-
-    @Override
-    protected Map<Integer, List<ImageView>> getUserCardImages() {
-        return null;
-    }
-
-    @Override
-    protected Map<Integer, AccountSecurityEntity> getAccountSecurityDetails() {
-        return null;
-    }
-
-    @Override
-    protected Map<Integer, List<BalanceHistory>> getBalanceHistories() {
-        return null;
-    }
-
-    @Override
-    protected Map<Integer, List<FeesDTO>> getAccountFees() {
-        return null;
-    }
-
-
-    public boolean isCurrentUser(String user)
+    public String getUsername()
     {
-        return false;
+        return user.getUserName();
+    }
+
+    public Set<AccountDTO> getAllAccounts()
+    {
+        return null;
+    }
+
+    public BigDecimal getAccountBalance(String acctID)
+    {
+        AccountManager accountManager = userProfileFacade.getUserProfileService().getAccountManager();
+        return accountManager.getBalanceFromAccount(acctID);
     }
 }

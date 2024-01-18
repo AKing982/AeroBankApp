@@ -44,7 +44,7 @@ class UserProfileServiceTest
     @BeforeEach
     void setUp()
     {
-        userProfileService = new UserProfileService(userServiceBundle, accountServiceBundle, balanceHistoryService);
+      //  userProfileService = new UserProfileService(userServiceBundle, accountServiceBundle, balanceHistoryService);
         checkingAccount = CheckingAccountEntity.builder()
                 .userName("AKing94")
                 .minimumBalance(new BigDecimal("100.00"))

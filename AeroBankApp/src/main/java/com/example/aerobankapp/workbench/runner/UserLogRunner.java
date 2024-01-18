@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -35,8 +36,8 @@ public class UserLogRunner implements Runnable {
         return getLoginModel().getUsername();
     }
 
-    private Date getDate() {
-        return new Date();
+    private LocalDateTime getDate() {
+        return null;
     }
 
     public int getCurrentUserID()
@@ -86,7 +87,7 @@ public class UserLogRunner implements Runnable {
         storeUserLog(userLog1);
     }
 
-    public UserLogEntity createUserLog(final String username, final int userID, final Date date)
+    public UserLogEntity createUserLog(final String username, final int userID, final LocalDateTime date)
     {
         return UserLogEntity.builder()
                 .userID(userID)

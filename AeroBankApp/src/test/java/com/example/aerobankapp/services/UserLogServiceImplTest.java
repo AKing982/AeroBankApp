@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -49,11 +50,11 @@ class UserLogServiceImplTest {
         UserLogEntity userLog = UserLogEntity.builder()
                 .userID(1)
                 .username("AKing94")
-                .lastLogin(new Date())
+              //  .lastLogin(new Date())
                 .build();
 
         userLogService.save(userLog);
-        List<UserLogEntity> expected = Arrays.asList(userLog);
+        List<UserLogEntity> expected = Collections.singletonList(userLog);
         List<UserLogEntity> actual = userLogService.findByUserName("AKing94");
 
         assertEquals(expected, actual);

@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -56,5 +57,22 @@ public class AccountDAOImpl implements AccountDAO
         accountEntityTypedQuery.setParameter("user", user);
         accountEntityTypedQuery.setMaxResults(1);
         return accountEntityTypedQuery.getResultList();
+    }
+
+    @Override
+    public BigDecimal getBalanceByAcctID(String acctID)
+    {
+       TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery("SELECT e.balance FROM AccountEntity e WHERE e.acctID=:acctID", AccountEntity.class);
+       accountEntityTypedQuery.setParameter("acctID", acctID);
+       accountEntityTypedQuery.setMaxResults(1);
+       return accountEntityTypedQuery.getResultList().getFirst().getBalance();
+    }
+
+    @Override
+    public BigDecimal getBalanceByAccountCode(String acctCode) {
+        TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery("SELECT e.balance FROM AccountEntity e WHERE e.accountCode=:acctCode", AccountEntity.class);
+        accountEntityTypedQuery.setParameter("acctCode", acctCode);
+        accountEntityTypedQuery.setMaxResults(1);
+        return accountEntityTypedQuery.getResultList().getFirst().getBalance();
     }
 }

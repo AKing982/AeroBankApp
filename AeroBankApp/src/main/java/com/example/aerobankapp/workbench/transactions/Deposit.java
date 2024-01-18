@@ -1,6 +1,7 @@
 package com.example.aerobankapp.workbench.transactions;
 
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+import com.example.aerobankapp.workbench.utilities.TransactionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,18 +10,29 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 
-@Builder
+
 @NoArgsConstructor
-@AllArgsConstructor
 @Component
-public class Deposit extends TransactionBase implements Serializable
+public class Deposit extends TransactionBase
 {
-    private Long id;
-    private String acctID;
-    private String accountName;
-    private BigDecimal debitAmount;
-    private BigDecimal creditAmount;
+    private Long depositID;
+    public Deposit(int userID, String descr, String acctID, BigDecimal amount, LocalDate date, TransactionStatus status)
+    {
+        super(userID, descr, acctID, amount, date, status);
+    }
+
+    @Override
+    public void executeTransaction() {
+
+    }
+
+    @Override
+    public boolean validateTransaction() {
+        return false;
+    }
+
 
 }

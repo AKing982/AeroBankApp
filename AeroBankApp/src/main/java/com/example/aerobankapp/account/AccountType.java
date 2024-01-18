@@ -1,5 +1,7 @@
 package com.example.aerobankapp.account;
 
+import org.springframework.stereotype.Component;
+
 public enum AccountType
 {
     CHECKING("Checking"),

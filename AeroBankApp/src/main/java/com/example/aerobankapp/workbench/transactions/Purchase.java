@@ -1,6 +1,7 @@
 package com.example.aerobankapp.workbench.transactions;
 
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+import com.example.aerobankapp.workbench.utilities.TransactionStatus;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
@@ -11,29 +12,28 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 @Data
-@Builder
 @Component
 @NoArgsConstructor(access=AccessLevel.PUBLIC, force=true)
 public class Purchase extends TransactionBase implements Serializable
 {
-    private Long id;
-    private String accountID;
-    private CardDesignator card;
+    private Long purchaseID;
+    private String merchant;
+    private PurchaseCategory category;
 
-    public Purchase(Long id, String acctID, CardDesignator card)
+    public Purchase(int userID, String merchant, PurchaseCategory purchaseCategory, String description, String acctID, BigDecimal amount, LocalDate timestamp, TransactionStatus status)
     {
-        super();
-        this.id = id;
-        this.accountID = acctID;
-        this.card = card;
+        super(userID, description, acctID, amount, timestamp, status);
+        this.merchant = merchant;
+        this.category = purchaseCategory;
     }
 
-    public Purchase(String descr, String acctID, CardDesignator card, BigDecimal amount, LocalDate date, boolean isDebit)
-    {
-        super(descr, amount, date, isDebit);
-        this.accountID = acctID;
-        this.card = card;
+    @Override
+    public void executeTransaction() {
+
     }
 
-
+    @Override
+    public boolean validateTransaction() {
+        return false;
+    }
 }

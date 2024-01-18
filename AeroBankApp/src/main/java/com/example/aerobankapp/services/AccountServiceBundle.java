@@ -16,6 +16,7 @@ import java.util.Optional;
 @Builder
 @Getter
 @Setter
+@Deprecated
 public class AccountServiceBundle
 {
     private final AccountDAOImpl accountDAO;

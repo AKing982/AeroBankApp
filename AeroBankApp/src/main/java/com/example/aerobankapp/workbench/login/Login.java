@@ -5,12 +5,9 @@ import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.services.AuthenticationServiceImpl;
 import com.example.aerobankapp.services.UserDetailsServiceImpl;
 import com.example.aerobankapp.services.UserProfileService;
-import com.example.aerobankapp.workbench.controllers.fxml.LoginController;
 import com.example.aerobankapp.workbench.home.Home;
-import com.example.aerobankapp.workbench.home.HomePane;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
-import com.example.aerobankapp.workbench.utilities.UserProfileCache;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -18,8 +15,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -32,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -56,7 +50,6 @@ public class Login extends Application
     private HBox checkPasswordBox;
     private UserProfile userProfile;
     private UserProfileModel userProfileModel;
-    private UserProfileCache userProfileCache = new UserProfileCache();
     private final double BUTTON_HEIGHT = 20;
     private AeroLogger logger = new AeroLogger(Login.class);
     private static String textStyle = "-fx-font-size: 32px;\n" +
@@ -323,7 +316,6 @@ public class Login extends Application
      private UserProfile loadUserProfile(String user)
      {
          this.userProfileModel = getUserProfileModel(user);
-         this.userProfile = userProfileCache.getCachedProfileByUser(user);
          return userProfile;
      }
 

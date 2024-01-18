@@ -22,19 +22,15 @@ public class UserSecurityProfile implements Cloneable {
     private Set<SchedulingSecurity> schedulingSecuritySet;
     private Set<UserSecurityModelImpl> userStatusSet;
     private UserSecurityModelImpl userSecurity;
-    private UserProfile userProfile;
 
     @Autowired
     private UserProfileFacade userProfileFacade;
 
     @Autowired
-    public UserSecurityProfile(RoleService role, String user) {
+    public UserSecurityProfile(RoleService role, User user) {
         Objects.requireNonNull(role, "Role cannot but null");
         this.role = role;
-        this.userProfile = new UserProfile(user);
-        this.userProfile.setUserProfileFacade(userProfileFacade);
     }
-
 
     public UserSecurityProfile getUserSecurityProfileFromFactory() {
         String user = getSecurityUser().getUsername();

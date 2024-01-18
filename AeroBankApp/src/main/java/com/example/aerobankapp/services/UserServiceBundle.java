@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @Setter
+@Deprecated
 public class UserServiceBundle
 {
     private UserLogDAOImpl userLogService;

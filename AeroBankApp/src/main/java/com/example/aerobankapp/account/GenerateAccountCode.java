@@ -1,15 +1,16 @@
 package com.example.aerobankapp.account;
 
+import com.example.aerobankapp.model.AccountCodeModel;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Objects;
 
 @Getter
 @Setter
 public class GenerateAccountCode
 {
-    private AccountType accountType;
-    private String name;
-
+    private AccountCodeModel accountCode;
     /**
      * This constructor is to be used when AccountType and Fullname or FirstName are provided
      * @param accountType
@@ -18,30 +19,22 @@ public class GenerateAccountCode
 
     public GenerateAccountCode(AccountType accountType, String fullName)
     {
-        nullCheck(accountType);
-        this.name = fullName;
+        Objects.requireNonNull(accountType, "AccountType cannot be null");
+        Objects.requireNonNull(fullName, "FullName cannot be null");
+        this.accountCode = new AccountCodeModel(accountType, fullName);
     }
 
     private String getFirstNamePrefix()
     {
-        if(name == null || name.isEmpty())
+        if(accountCode.getFirstName() == null || accountCode.getFirstName().isEmpty())
         {
-            throw new IllegalArgumentException("Invalid First Name found: " + name);
+            throw new IllegalArgumentException("Invalid First Name found: " + accountCode.getFirstName());
         }
-        return name.trim().substring(0, 1);
+        return accountCode.getFirstName().trim().substring(0, 1);
     }
 
-    private void nullCheck(AccountType accountType)
-    {
-        if(accountType == null)
-        {
-            throw new IllegalArgumentException("Invalid Account Type argument: " + accountType);
-        }
-        this.accountType = accountType;
-    }
-
-
-    public String buildID() {
+    public String build() {
+        AccountType accountType = getAccountCode().getAccountType();
         int numPrefix;
         switch (accountType) {
             case CHECKING -> {

@@ -1,11 +1,10 @@
 package com.example.aerobankapp.scheduler;
 
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
-import com.example.aerobankapp.scheduler.jobdetail.DepositJobDetail;
 import com.example.aerobankapp.scheduler.jobdetail.JobDetailBase;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.Purchase;
-import com.example.aerobankapp.workbench.transactions.TransferDTO;
+import com.example.aerobankapp.workbench.transactions.Transfer;
 import com.example.aerobankapp.workbench.transactions.Withdraw;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
 import org.quartz.CronTrigger;
@@ -40,7 +39,7 @@ public class SchedulerEngineImpl<T extends TransactionBase, S extends JobDetailB
         {
             this.transactionType = (T) transactionType;
         }
-        else if(transactionType instanceof TransferDTO)
+        else if(transactionType instanceof Transfer)
         {
             this.transactionType = (T) transactionType;
         }

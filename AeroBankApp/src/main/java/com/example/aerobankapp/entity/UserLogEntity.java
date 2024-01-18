@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -30,10 +31,9 @@ public class UserLogEntity
 
     @NotNull
     @Column(name="lastLogin",nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date lastLogin;
+    private LocalDateTime lastLogin;
 
-    public UserLogEntity(String username, int userID, Date lastLogin)
+    public UserLogEntity(String username, int userID, LocalDateTime lastLogin)
     {
         this.username = username;
         this.userID = userID;
