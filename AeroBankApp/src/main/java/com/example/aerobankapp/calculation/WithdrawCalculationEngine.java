@@ -2,13 +2,13 @@ package com.example.aerobankapp.calculation;
 
 import com.example.aerobankapp.workbench.transactions.Withdraw;
 
-import java.util.List;
+import java.util.Queue;
 
 public interface WithdrawCalculationEngine extends CalculationEngine<Withdraw>
 {
 
     @Override
-    List<Withdraw> calculateBatch(List<Withdraw> transactions);
+    Queue<Withdraw> calculateBatch(Queue<Withdraw> transactions);
 
     @Override
     Withdraw calculateSingle(Withdraw transaction);

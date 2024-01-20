@@ -33,17 +33,9 @@ public class WithdrawEntity
     @NotNull
     private int fromAccountID;
 
-    @Column(name="toAccountID")
-    @NotNull
-    private int toAccountID;
-
     @Column(name="fromAccountCode")
     @NotNull
     private String fromAccountCode;
-
-    @Column(name="toAccountCode")
-    @NotNull
-    private String toAccountCode;
 
     @Column(name="description")
     @NotNull
@@ -58,6 +50,9 @@ public class WithdrawEntity
 
     @Column(name="isProcessed")
     private boolean isProcessed;
+
+    @Column(name="status")
+    private String status;
 
     @OneToOne
     private TransactionDetailEntity transactionDetailEntity;

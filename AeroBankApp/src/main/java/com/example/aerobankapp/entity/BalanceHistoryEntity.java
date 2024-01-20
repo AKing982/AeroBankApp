@@ -6,6 +6,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -17,13 +18,10 @@ public class BalanceHistoryEntity implements Serializable
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int historyID;
 
     @Column(name="acctID")
     private String acctID;
-
-    @Column(name="user")
-    private String user;
 
     @Column(name="transactionID")
     private int transactionID;
@@ -36,6 +34,21 @@ public class BalanceHistoryEntity implements Serializable
 
     @Column(name="lastBalance")
     private BigDecimal lastBalance;
+
+    @Column(name="transactionType")
+    private String transactionType;
+
+    @Column(name="createdBy")
+    private String createdBy;
+
+    @Column(name="createdAt")
+    private LocalDateTime createdAt;
+
+    @Column(name="updatedBy")
+    private String updatedBy;
+
+    @Column(name="currency")
+    private String currency;
 
     @Column(name="posted")
     private LocalDate posted;

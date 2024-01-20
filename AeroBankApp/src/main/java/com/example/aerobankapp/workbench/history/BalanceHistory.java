@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Component
 @AllArgsConstructor(access=AccessLevel.PUBLIC)
 @NoArgsConstructor(access=AccessLevel.PRIVATE, force=true)
+@Deprecated
 public class BalanceHistory implements HistoryModel
 {
     private int id;

@@ -11,8 +11,11 @@ import java.time.LocalDate;
 public record WithdrawDTO<T extends AbstractAccountBase>(Long withdrawID,
                                                          int userID,
                                                          String fromAccountID,
+                                                         String fromAccountCode,
                                                          T fromAccount,
                                                          BigDecimal amount,
+                                                         String description,
+                                                         String currency,
                                                          LocalDate posted,
                                                          TransactionStatus status)
 {

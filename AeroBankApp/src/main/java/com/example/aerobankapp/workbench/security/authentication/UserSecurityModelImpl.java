@@ -1,20 +1,20 @@
 package com.example.aerobankapp.workbench.security.authentication;
 
-import com.example.aerobankapp.entity.*;
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.services.UserProfileService;
 import com.example.aerobankapp.workbench.transactions.CardDesignator;
 import com.example.aerobankapp.workbench.utilities.User;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
 import com.example.aerobankapp.workbench.utilities.UserProfileFacade;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 @Builder
