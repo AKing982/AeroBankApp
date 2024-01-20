@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-01-20T22:41:57.224Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="dr4_6HZXU3SqYfFfNtpO" version="22.1.18" type="github">
+<mxfile host="app.diagrams.net" modified="2024-01-20T22:43:24.870Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="xRTsHBCiLew6vxGsrv9A" version="22.1.18" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="954" dy="536" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -87,6 +87,12 @@
         </mxCell>
         <mxCell id="3O7Xmyq-LpkWE0VzfRME-21" value="/transactions/recurring/get" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry y="640" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3O7Xmyq-LpkWE0VzfRME-24" value="/auth/get" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry y="710" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3O7Xmyq-LpkWE0VzfRME-25" value="/accounts/balance/get" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry y="780" width="130" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
