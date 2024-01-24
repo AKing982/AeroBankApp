@@ -19,9 +19,21 @@ export default function LoginFormOLD()
     };
 
     const fetchCsrfToken = async () => {
-        const response = await fetch("http://localhost:8080/csrf/token");
-        const data = await response.json();
-        return data.token;
+        try
+        {
+            const response = await fetch("http://localhost:8080/csrf/token");
+            if(!response.ok)
+            {
+                throw new Error(`Server returned status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.token;
+
+        }catch(error)
+        {
+            console.error('Error fetching CSRF Token: ', error)
+        }
     }
 
 

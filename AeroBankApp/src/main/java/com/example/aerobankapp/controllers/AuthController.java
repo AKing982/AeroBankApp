@@ -21,7 +21,7 @@ import java.security.Principal;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(value = "/api/auth", method = RequestMethod.POST)
 @Getter
 public class AuthController
 {

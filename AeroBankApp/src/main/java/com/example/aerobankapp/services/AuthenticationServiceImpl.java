@@ -9,10 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -82,6 +79,11 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
         Authentication authentication = authenticate(new UsernamePasswordAuthenticationToken(user, password));
         if(authentication.isAuthenticated()) {
             String token = jwtUtil.generateToken(authentication);
+            if(token == null)
+            {
+                aeroLogger.error("Failed to generated token for user: {}", user);
+                throw new AuthenticationServiceException("Token Generation failed");
+            }
             aeroLogger.warn("Token: " + token);
             return token;
         }
