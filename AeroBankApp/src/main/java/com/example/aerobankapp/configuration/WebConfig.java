@@ -25,7 +25,8 @@ public class WebConfig {
                 .csrf(Customizer.withDefaults())
                 .addFilterAfter(new CsrfTokenLogger(), CsrfFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
-                                .anyRequest().authenticated());
+                        .requestMatchers("/api/auth/login").permitAll()
+                               .anyRequest().authenticated());
 
         return http.build();
     }

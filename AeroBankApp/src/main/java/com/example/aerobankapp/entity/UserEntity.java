@@ -49,13 +49,14 @@ public class UserEntity
     @Column(name="isEnabled")
     private boolean isEnabled;
 
-    @ManyToMany
-    @JoinTable(name="user_account",
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="account_users",
         joinColumns = @JoinColumn(name="userID"),
     inverseJoinColumns = @JoinColumn(name="acctID"))
     private Set<AccountEntity> accounts;
 
     @Column(name="role")
+    @Enumerated(EnumType.STRING)
     private Role role;
 
 }

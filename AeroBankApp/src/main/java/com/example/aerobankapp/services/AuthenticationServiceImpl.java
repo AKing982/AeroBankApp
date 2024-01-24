@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,7 +46,8 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
-       UserDetails userDetails = getUserDetailsService().loadUserByUsername(authentication.getName());
+        aeroLogger.info("Authentication Name: " + authentication.getName());
+       UserDetails userDetails = loadUserDetails(authentication.getName());
        final String foundUserName = userDetails.getUsername().trim();
        final String foundPassword = userDetails.getPassword().trim();
        final String authName = authentication.getName().trim();
@@ -56,11 +58,12 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
        aeroLogger.info("UserName: " + authName);
        aeroLogger.info("Found User: " + foundUserName);
        aeroLogger.info("Found Password: " + foundPassword);
+       aeroLogger.info("User Roles: " + Arrays.toString(grantedRoles.toArray()));
 
        if(getPasswordEncoder().matches(authCredentials, foundPassword) && authName.equals(foundUserName))
        {
-           aeroLogger.info("Password Matches: " + getPasswordEncoder().matches(authCredentials, foundPassword));
-           return new UsernamePasswordAuthenticationToken(authName, authCredentials);
+           aeroLogger.warn("Password Matches: " + getPasswordEncoder().matches(authCredentials, foundPassword));
+           return new UsernamePasswordAuthenticationToken(authName, null, grantedRoles);
        }
        else
        {
@@ -69,11 +72,18 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
 
     }
 
+    public UserDetails loadUserDetails(String user)
+    {
+        return getUserDetailsService().loadUserByUsername(user);
+    }
+
     public String login(String user, String password)
     {
         Authentication authentication = authenticate(new UsernamePasswordAuthenticationToken(user, password));
         if(authentication.isAuthenticated()) {
-            return jwtUtil.generateToken(authentication);
+            String token = jwtUtil.generateToken(authentication);
+            aeroLogger.warn("Token: " + token);
+            return token;
         }
         else
         {

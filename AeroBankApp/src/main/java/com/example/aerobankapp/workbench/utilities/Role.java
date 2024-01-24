@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 @Getter
 public enum Role
 {
-    CUSTOMER("ROLE_USER"),
-    TELLER("ROLE_TELLER"),
-    MANAGER("ROLE_MANAGER"),
-    AUDITOR("ROLE_AUDITOR"),
-    ADMIN("ROLE_ADMIN");
+    CUSTOMER("USER"),
+    TELLER("TELLER"),
+    MANAGER("MANAGER"),
+    AUDITOR("AUDITOR"),
+    ADMIN("ADMIN");
 
    private String description;
 

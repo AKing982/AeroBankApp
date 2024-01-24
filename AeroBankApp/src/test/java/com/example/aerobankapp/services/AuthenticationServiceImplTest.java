@@ -2,8 +2,10 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
+import com.example.aerobankapp.workbench.security.authentication.JWTUtil;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,16 +36,22 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class AuthenticationServiceImplTest {
 
-    @Qualifier("userDetailsServiceImpl")
-    @Mock
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @InjectMocks
+    @MockBean
     private AuthenticationServiceImpl authenticationService;
+
+
+
+    @BeforeEach
+    void setUp()
+    {
+        authenticationService = new AuthenticationServiceImpl(userDetailsService);
+    }
 
     @Test
     void authenticateSuccessfully() {
@@ -66,6 +74,30 @@ class AuthenticationServiceImplTest {
         assertNotNull(result);
         assertEquals(username, result.getName());
     }
+
+    @Test
+    public void testLoadUserDetails()
+    {
+        String user = "AKing94";
+
+        UserDetails userDetails = authenticationService.loadUserDetails(user);
+
+        assertNotNull(userDetails);
+    }
+
+    @Test
+    public void testLoginToken()
+    {
+        String name = "AKing94";
+        String pass = "Halflifer45!";
+        JWTUtil jwtUtil = new JWTUtil();
+
+        String token = "eyJhbGciOiJub25lIn0.eyJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4ifQ.";
+        String actual = authenticationService.login(name, pass);
+
+        assertEquals(token, actual);
+    }
+
 
     @Test
     void authenticateWithBadCredentials() {

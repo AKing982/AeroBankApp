@@ -67,6 +67,7 @@ public class UserDAOImpl implements UserDAO
     }
 
     @Override
+    @Transactional
     public List<UserEntity> findByUserName(String user) {
         TypedQuery<UserEntity> query = entityManager.createQuery("FROM UserEntity where username=:user", UserEntity.class)
                 .setParameter("user", user)

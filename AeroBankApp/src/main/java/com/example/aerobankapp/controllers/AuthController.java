@@ -5,6 +5,7 @@ import com.example.aerobankapp.workbench.tokens.AuthTokenResponse;
 import com.example.aerobankapp.workbench.utilities.LoginRequest;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,22 +33,45 @@ public class AuthController
     public AuthController(AuthenticationServiceImpl authenticationService)
     {
         this.authenticationService = authenticationService;
+        if(authenticationService == null)
+        {
+            LOGGER.error("Authentication Service is null");
+        }
     }
 
-    @PostMapping("/")
+    @PostMapping(value ="/login")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<?> createAuthenticateToken(@RequestBody LoginRequest loginRequest)
+    public ResponseEntity<?> createAuthenticateToken(@Valid @RequestBody LoginRequest loginRequest)
     {
+        String username = loginRequest.getUsername().trim();
+        String password = loginRequest.getPassword().trim();
+
         try
         {
-            String token = authenticationService.login(loginRequest.getUsername(), loginRequest.getPassword());
-            return ResponseEntity.ok().body(new AuthTokenResponse(token));
+            String token = getAuthenticationToken(username,password);
+            LOGGER.warn("Token: " + token);
+            if(token == null)
+            {
+                LOGGER.warn("Authentication Failed for User: " + loginRequest.getUsername());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token Generated");
+            }
+            LOGGER.debug("User Generated Token: " + token);
+            return ResponseEntity.ok(new AuthTokenResponse(token, "Bearer"));
 
         }catch(AuthenticationException ex)
         {
             LOGGER.debug("Authentication Exception for user: " + loginRequest.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
         }
+    }
+
+    private String getAuthenticationToken(String user, String password)
+    {
+        LOGGER.warn("User: " + user);
+        LOGGER.warn("Password: " + password);
+        String token = getAuthenticationService().login(user, password);
+        LOGGER.warn("Authentication Token: " + token);
+        return token;
     }
 
     @GetMapping("/status")

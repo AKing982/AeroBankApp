@@ -26,7 +26,7 @@ public class AccountMapperUtil {
                 .hasDividend(accountEntity.isHasDividend())
                 .aSecID(accountEntity.getASecID())
                 .accountType(AccountType.valueOf(accountEntity.getAccountType()))
-                .users(accountEntity.getUsers().stream().map(UserMapperHelper::convertToDTO).collect(Collectors.toSet()))
+              //  .users(accountEntity.getUsers().stream().map(UserMapperHelper::convertToDTO).collect(Collectors.toSet()))
                 .build();
     }
 }

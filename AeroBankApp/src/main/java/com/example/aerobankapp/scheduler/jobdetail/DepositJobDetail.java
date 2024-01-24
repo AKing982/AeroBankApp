@@ -21,7 +21,6 @@ import static org.quartz.JobBuilder.newJob;
 @Component
 @Getter
 @Setter
-@Scope(value= ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DepositJobDetail extends JobDetailBase<Deposit>
 {
     private Deposit deposit;
