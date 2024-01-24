@@ -18,6 +18,12 @@ export default function LoginFormOLD()
         return true;
     };
 
+    const fetchCsrfToken = async () => {
+        const response = await fetch("http://localhost:8080/csrf/token");
+        const data = await response.json();
+        return data.token;
+    }
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -26,11 +32,15 @@ export default function LoginFormOLD()
             return;
         }
         try{
+
+            const csrfToken = await fetchCsrfToken();
+
             const response = await fetch('http://localhost:8080/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify({
                     username: username,
