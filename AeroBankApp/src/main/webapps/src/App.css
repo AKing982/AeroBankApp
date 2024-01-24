@@ -13,6 +13,44 @@
   }
 }
 
+.form-field p {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+.registration-container {
+  background-color: lightblue; /* Your chosen color */
+  padding: 20px;
+  max-width: 800px; /* Adjust as needed */
+  margin: auto;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between; /* Distributes space evenly between fields */
+  margin-bottom: 15px; /* Space between rows */
+}
+
+.form-field {
+  flex-basis: calc(20% - 10px); /* Adjusts width of each field */
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  margin-bottom: 5px;
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+  padding: 5px;
+}
+
+.form-field input[type="checkbox"]
+{
+  margin-right: 5px;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -43,6 +81,22 @@
   background-repeat: no-repeat;
   height: 100vh;
   width: 100%;
+}
+
+.links-container{
+  padding: 10px;
+  background-color: #f4f4f4;
+  text-align: left;
+}
+
+.links-container a {
+  color: blue;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+.links-container a:hover {
+  text-decoration: underline;
 }
 
 form div {
@@ -78,6 +132,45 @@ input[type="text"], input[type="password"]
   border:none;
   cursor: pointer;
 }
+.account-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.account-code-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #4CAF50; /* Example color */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.account-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-item {
+  margin-bottom: 5px;
+}
+
+.account-label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.account-value {
+  font-size: 14px;
+}
+
 
 .form-button {
   margin-right: 15px;
@@ -95,6 +188,21 @@ input[type="text"], input[type="password"]
 .button:active {
 
 }
+
+a:link, a:visited {
+  color: blue;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: darkblue;
+  text-decoration: none;
+}
+
+a:active {
+  color:navy;
+}
+
 
 
 @keyframes App-logo-spin {

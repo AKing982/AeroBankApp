@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.Callable;
 
-@Service
+
 public class UserProfileRunner implements Callable<UserProfile>
 {
-    @Autowired
+
     private UserProfileService userProfileService;
 
     public UserProfileRunner()

@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Getter
-@Component
+
 @Builder
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class UserSecurityProfile implements Cloneable {
@@ -23,10 +23,9 @@ public class UserSecurityProfile implements Cloneable {
     private Set<UserSecurityModelImpl> userStatusSet;
     private UserSecurityModelImpl userSecurity;
 
-    @Autowired
     private UserProfileFacade userProfileFacade;
 
-    @Autowired
+
     public UserSecurityProfile(RoleService role, User user) {
         Objects.requireNonNull(role, "Role cannot but null");
         this.role = role;

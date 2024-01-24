@@ -3,8 +3,10 @@ package com.example.aerobankapp.workbench.security.authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
@@ -22,8 +24,7 @@ import javax.sql.DataSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-@Configuration
-@EnableMethodSecurity
+
 public class SecurityConfig{
 
     @Bean
@@ -44,16 +45,6 @@ public class SecurityConfig{
         return new JdbcUserDetailsManager(dataSource);
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
-    {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated())
-                .httpBasic(withDefaults())
-                .build();
-    }
 
 
     @Bean

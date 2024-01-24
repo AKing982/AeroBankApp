@@ -17,14 +17,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 @Getter
 @Setter
 public class UserProfileFacade
 {
     private final UserProfileService userProfileService;
 
-    @Autowired
+
     public UserProfileFacade(UserProfileService userProfileService)
     {
         this.userProfileService = userProfileService;

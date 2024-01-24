@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Component
+
 public class UserProfile
 {
     private User user;

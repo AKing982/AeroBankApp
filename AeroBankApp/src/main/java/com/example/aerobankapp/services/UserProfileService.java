@@ -2,7 +2,6 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.manager.*;
 import com.example.aerobankapp.model.BalanceHistoryManager;
-import com.example.aerobankapp.model.BalanceHistoryModel;
 import com.example.aerobankapp.workbench.security.authentication.UserSecurityProfile;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Getter
 @Setter
-@Service
+
 public class UserProfileService
 {
     private final AccountManager accountManager;
@@ -23,7 +22,7 @@ public class UserProfileService
     private final FeeManager feeManager;
     private final UserSecurityProfile userSecurityProfile;
 
-    @Autowired
+
     public UserProfileService(AccountManager accountManager,
                               BalanceHistoryManager balanceHistoryModel,
                               DepositManager depositManager,

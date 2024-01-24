@@ -24,6 +24,6 @@ public class BalanceHistoryConverter implements Convert
         final BigDecimal last_balance = balanceHistory.getLastBalance();
         final LocalDate posted = balanceHistory.getPosted();
 
-        return new BalanceHistoryEntity(id, acctID, user, transactionID, balance, adjusted, last_balance, posted);
+        return null;
     }
 }

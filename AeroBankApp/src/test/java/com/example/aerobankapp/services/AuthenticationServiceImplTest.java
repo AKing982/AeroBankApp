@@ -6,54 +6,84 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 class AuthenticationServiceImplTest {
 
-    @MockBean
+    @Qualifier("userDetailsServiceImpl")
+    @Mock
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @InjectMocks
     private AuthenticationServiceImpl authenticationService;
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    @Test
+    void authenticateSuccessfully() {
+        // Set up
+        String username = "AKing94";
+        String password = "Halflifer45!";
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        when(mockUserDetails.getUsername()).thenReturn(username);
+        when(mockUserDetails.getPassword()).thenReturn(password);
+        Mockito.lenient().when(userDetailsService.loadUserByUsername(username)).thenReturn(mockUserDetails);
+        Mockito.lenient().when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
-    @BeforeEach
-    void setUp()
-    {
-        authenticationService = new AuthenticationServiceImpl(userDetailsService);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
+
+        // Action
+        Authentication result = authenticationService.authenticate(authentication);
+
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(username, result.getName());
     }
 
     @Test
-    public void testConstructor()
-    {
-        UserDetailsService userService = authenticationService.getUserDetailsService();
+    void authenticateWithBadCredentials() {
+        // Set up
+        String username = "AKing";
+        String wrongPassword = "Halflifer";
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        when(mockUserDetails.getUsername()).thenReturn(username);
+        when(mockUserDetails.getPassword()).thenReturn("Halflifer");
+        when(userDetailsService.loadUserByUsername(username)).thenReturn(mockUserDetails);
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
-        assertNotNull(userService);
-        assertNotNull(authenticationService);
-    }
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, wrongPassword);
 
-    @Test
-    public void authenticateUserSuccess()
-    {
-        final String user = "AKing94";
-        final String pass = "Halflifer94!";
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user, pass);
-        Authentication authenticatedToken = authenticationService.authenticate(authentication);
-        boolean isAuthenticated = authenticatedToken.isAuthenticated();
-
-        assertTrue(authenticatedToken.isAuthenticated());
-        assertTrue(isAuthenticated);
+        // Action & Assert
+        assertThrows(BadCredentialsException.class, () -> {
+            authenticationService.authenticate(authentication);
+        });
     }
 
     @AfterEach

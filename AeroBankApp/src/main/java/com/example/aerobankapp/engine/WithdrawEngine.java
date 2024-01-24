@@ -12,7 +12,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Queue;
 
-@Service
+
 public class WithdrawEngine extends Engine<Withdraw>
 {
     private Queue<Withdraw> withdrawQueue;
@@ -28,7 +28,7 @@ public class WithdrawEngine extends Engine<Withdraw>
 
     @Override
     protected BigDecimal calculateTransactionFee() {
-
+        return null;
     }
 
     @Override

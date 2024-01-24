@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 import java.net.URL;
 
 @Slf4j
-@Component
 @Setter
 public class Login extends Application
 {

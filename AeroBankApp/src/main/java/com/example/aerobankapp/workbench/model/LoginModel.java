@@ -23,8 +23,6 @@ public class LoginModel
     private boolean isEncoded;
     private Map<String, String> credentialsMap = new HashMap<>();
 
-    @Autowired
-    private SecurityConfig securityConfig = new SecurityConfig();
 
     public LoginModel(String user, String pass)
     {
@@ -42,11 +40,6 @@ public class LoginModel
         return credentialsMap;
     }
 
-    public String getEncodedPassword()
-    {
-        this.encodedPassword = encode(password);
-        return encodedPassword;
-    }
 
     public boolean isEncoded()
     {
@@ -59,10 +52,7 @@ public class LoginModel
         credentialsMap.put(user, pass);
     }
 
-    private String encode(final String param)
-    {
-        return securityConfig.passwordEncoder().encode(param);
-    }
+
 
     public String getPasswordFromMap()
     {

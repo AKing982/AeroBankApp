@@ -1,6 +1,7 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.credentials.Credentials;
+import com.example.aerobankapp.workbench.security.authentication.JWTUtil;
 import com.example.aerobankapp.workbench.utilities.UserType;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.AccessLevel;
@@ -30,10 +31,11 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
 
     private UserDetailsService userDetailsService;
     private PasswordEncoder passwordEncoder;
+    private JWTUtil jwtUtil = new JWTUtil();
     private AeroLogger aeroLogger;
 
     @Autowired
-    public AuthenticationServiceImpl(@Qualifier("userDetailsServiceImpl") UserDetailsService userService)
+    public AuthenticationServiceImpl(@Qualifier("userDetailsServiceImpl") UserDetailsServiceImpl userService)
     {
         this.userDetailsService = userService;
         this.passwordEncoder = new BCryptPasswordEncoder();
@@ -49,13 +51,15 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
        final String authName = authentication.getName().trim();
        final String authCredentials = authentication.getCredentials().toString().trim();
        final Collection<? extends GrantedAuthority> grantedRoles = userDetails.getAuthorities();
+       aeroLogger.info("UserDetails: " + userDetails.toString());
        aeroLogger.info("Credentials: " + authCredentials);
        aeroLogger.info("UserName: " + authName);
        aeroLogger.info("Found User: " + foundUserName);
        aeroLogger.info("Found Password: " + foundPassword);
 
-       if(authCredentials.equals(foundPassword) && authName.equals(foundUserName))
+       if(getPasswordEncoder().matches(authCredentials, foundPassword) && authName.equals(foundUserName))
        {
+           aeroLogger.info("Password Matches: " + getPasswordEncoder().matches(authCredentials, foundPassword));
            return new UsernamePasswordAuthenticationToken(authName, authCredentials);
        }
        else
@@ -63,6 +67,18 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
            throw new BadCredentialsException("Invalid Username or Password");
        }
 
+    }
+
+    public String login(String user, String password)
+    {
+        Authentication authentication = authenticate(new UsernamePasswordAuthenticationToken(user, password));
+        if(authentication.isAuthenticated()) {
+            return jwtUtil.generateToken(authentication);
+        }
+        else
+        {
+            throw new BadCredentialsException("Invalid Username or Password");
+        }
     }
 
     private Credentials<String> getUserCredentials()

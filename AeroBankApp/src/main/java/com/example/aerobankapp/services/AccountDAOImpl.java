@@ -65,7 +65,15 @@ public class AccountDAOImpl implements AccountDAO
        TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery("SELECT e.balance FROM AccountEntity e WHERE e.acctID=:acctID", AccountEntity.class);
        accountEntityTypedQuery.setParameter("acctID", acctID);
        accountEntityTypedQuery.setMaxResults(1);
-       return accountEntityTypedQuery.getResultList().getFirst().getBalance();
+       List<AccountEntity> results = accountEntityTypedQuery.getResultList();
+       if(!results.isEmpty())
+       {
+           return results.get(0).getBalance();
+       }
+       else
+       {
+           return null;
+       }
     }
 
     @Override
@@ -73,6 +81,14 @@ public class AccountDAOImpl implements AccountDAO
         TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery("SELECT e.balance FROM AccountEntity e WHERE e.accountCode=:acctCode", AccountEntity.class);
         accountEntityTypedQuery.setParameter("acctCode", acctCode);
         accountEntityTypedQuery.setMaxResults(1);
-        return accountEntityTypedQuery.getResultList().getFirst().getBalance();
+        List<AccountEntity> results = accountEntityTypedQuery.getResultList();
+        if(!results.isEmpty())
+        {
+            return results.get(0).getBalance();
+        }
+        else
+        {
+            return null;
+        }
     }
 }

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
 @Builder
 @AllArgsConstructor
 @Getter
@@ -30,10 +29,10 @@ public class UserSecurityModelImpl implements UserSecurityModel
 
    private UserProfileService userProfileService;
 
-   @Autowired
+
    private UserProfileFacade userProfileFacade;
 
-   @Autowired
+
    public UserSecurityModelImpl(User user)
    {
      // usernameCheck(username);
