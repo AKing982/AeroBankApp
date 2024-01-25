@@ -24,7 +24,7 @@ public class WebConfig {
                 .csrf(Customizer.withDefaults())
                 .addFilterAfter(new CsrfTokenLogger(), CsrfFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/login").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER", "ROLE_MANAGER", "ROLE_TELLER")
+                        .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/csrf/token").permitAll()
                                .anyRequest().authenticated());
 
@@ -39,11 +39,11 @@ public class WebConfig {
             public void addCorsMappings(@NotNull CorsRegistry registry) {
                 registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET", "POST")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
 
-                registry.addMapping("/csrf/**")
+                registry.addMapping("/csrf/token")
                         .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET")
                         .allowedHeaders("*")

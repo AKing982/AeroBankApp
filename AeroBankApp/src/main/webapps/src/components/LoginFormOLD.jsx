@@ -18,17 +18,29 @@ export default function LoginFormOLD()
         return true;
     };
 
+    const isValidCsrfToken = (csrfToken) => {
+        if(typeof csrfToken === 'string' && csrfToken.trim() !== '' || csrfToken instanceof Promise)
+        {
+            console.error("CSRF Token is a Promise, not a resolved value");
+        }
+    }
+
     const fetchCsrfToken = async () => {
         try
         {
-            const response = await fetch("http://localhost:8080/csrf/token");
-            if(!response.ok)
+            let csrfToken = sessionStorage.getItem('csrfToken');
+            if(!csrfToken && isValidCsrfToken(csrfToken))
             {
-                throw new Error(`Server returned status: ${response.status}`);
+                const response = await fetch("http://localhost:8080/csrf/token");
+                if(!response.ok)
+                {
+                    throw new Error(`Server returned status: ${response.status}`);
+                }
+                csrfToken = await extractCsrFToken(response);
+                saveToken(csrfToken);
             }
 
-            const data = await response.json();
-            return data.token;
+            return csrfToken;
 
         }catch(error)
         {
@@ -36,6 +48,36 @@ export default function LoginFormOLD()
         }
     }
 
+    const extractCsrFToken = async (response) => {
+
+        const data = await response.json();
+        return data.token;
+    }
+
+    const saveToken = (token) => {
+        sessionStorage.setItem('csrfToken', token);
+    }
+
+    const authenticationResponse = async (token) => {
+        if(!token)
+        {
+            console.error("CSRF Token is missing");
+            return;
+        }
+
+        return await fetch('http://localhost:8080/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': token
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -46,36 +88,34 @@ export default function LoginFormOLD()
         try{
 
             const csrfToken = await fetchCsrfToken();
-
-            const response = await fetch('http://localhost:8080/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            });
-
-            if(response.ok)
+            if(!csrfToken)
             {
-                console.log('Login Successful');
-                navigate('/home')
+                console.error("CSRF Token is missing");
+                return;
             }
-            else
-            {
-                console.log('Login Failed');
-            }
+
+            const response = await authenticationResponse(csrfToken);
+
+                if(response.ok)
+                {
+                    console.log('Login Successful');
+                    navigateToHomePage();
+                }
+                else
+                {
+                    console.log('Login Failed');
+                }
+
         }catch(error)
         {
              console.error("Network Error: ", error);
         }
 
-
     };
+
+    const navigateToHomePage = () => {
+        navigate('/home')
+    }
 
     const handleForgotPassword = () => {
         navigate("/forgot-password");
@@ -117,7 +157,7 @@ export default function LoginFormOLD()
                  </div>
                  <div className="button-container">
                      <button className="button" type="submit" onClick={handleSubmit}>Login</button>
-                     <button className="button" type="register" onClick={navigateToRegister}>Register</button>
+                     <button className="button" type="submit" onClick={navigateToRegister}>Register</button>
                  </div>
              </form>
          </div>
