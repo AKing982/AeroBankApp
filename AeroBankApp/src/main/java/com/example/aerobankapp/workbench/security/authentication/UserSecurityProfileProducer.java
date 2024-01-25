@@ -45,7 +45,7 @@ public class UserSecurityProfileProducer
                 abstractUserSecurityProfileFactory = new TellerSecurityProfileFactory();
                 yield abstractUserSecurityProfileFactory.createAuthority();
             }
-            case CUSTOMER -> {
+            case USER -> {
                 abstractUserSecurityProfileFactory = new StandardSecurityUserProfileFactory();
                 yield abstractUserSecurityProfileFactory.createAuthority();
             }

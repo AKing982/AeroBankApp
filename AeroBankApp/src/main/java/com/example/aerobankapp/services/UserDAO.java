@@ -1,5 +1,6 @@
 package com.example.aerobankapp.services;
 ;
+import com.example.aerobankapp.dto.RegistrationDTO;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 import com.example.aerobankapp.workbench.utilities.Role;
@@ -26,4 +27,6 @@ public interface UserDAO extends ServiceDAOModel<UserEntity>
     List<UserEntity> findByUserName(String user);
 
     Role getUserRole(String user) throws NoResultException;
+
+    UserEntity registerUser(RegistrationDTO registrationDTO);
 }

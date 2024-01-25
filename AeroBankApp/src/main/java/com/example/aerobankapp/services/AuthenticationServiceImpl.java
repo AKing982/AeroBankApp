@@ -7,6 +7,8 @@ import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.*;
@@ -30,36 +32,36 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
     private UserDetailsService userDetailsService;
     private PasswordEncoder passwordEncoder;
     private JWTUtil jwtUtil = new JWTUtil();
-    private AeroLogger aeroLogger;
+    private Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     @Autowired
     public AuthenticationServiceImpl(@Qualifier("userDetailsServiceImpl") UserDetailsServiceImpl userService)
     {
         this.userDetailsService = userService;
         this.passwordEncoder = new BCryptPasswordEncoder();
-        this.aeroLogger = new AeroLogger(AuthenticationServiceImpl.class);
+
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
-        aeroLogger.info("Authentication Name: " + authentication.getName());
+        logger.info("Authentication Name: " + authentication.getName());
        UserDetails userDetails = loadUserDetails(authentication.getName());
        final String foundUserName = userDetails.getUsername().trim();
        final String foundPassword = userDetails.getPassword().trim();
        final String authName = authentication.getName().trim();
        final String authCredentials = authentication.getCredentials().toString().trim();
        final Collection<? extends GrantedAuthority> grantedRoles = userDetails.getAuthorities();
-       aeroLogger.info("UserDetails: " + userDetails.toString());
-       aeroLogger.info("Credentials: " + authCredentials);
-       aeroLogger.info("UserName: " + authName);
-       aeroLogger.info("Found User: " + foundUserName);
-       aeroLogger.info("Found Password: " + foundPassword);
-       aeroLogger.info("User Roles: " + Arrays.toString(grantedRoles.toArray()));
+       logger.info("UserDetails: " + userDetails.toString());
+       logger.info("Credentials: " + authCredentials);
+       logger.info("UserName: " + authName);
+       logger.info("Found User: " + foundUserName);
+       logger.info("Found Password: " + foundPassword);
+       logger.info("User Roles: " + Arrays.toString(grantedRoles.toArray()));
 
        if(getPasswordEncoder().matches(authCredentials, foundPassword) && authName.equals(foundUserName))
        {
-           aeroLogger.warn("Password Matches: " + getPasswordEncoder().matches(authCredentials, foundPassword));
+           logger.warn("Password Matches: " + getPasswordEncoder().matches(authCredentials, foundPassword));
            return new UsernamePasswordAuthenticationToken(authName, null, grantedRoles);
        }
        else
@@ -78,14 +80,14 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
     {
         Authentication authentication = authenticate(new UsernamePasswordAuthenticationToken(user, password));
         if(authentication.isAuthenticated()) {
-            String token = jwtUtil.generateToken(authentication);
-            if(token == null)
+            String jwtToken = jwtUtil.generateToken(authentication);
+            if(jwtToken == null)
             {
-                aeroLogger.error("Failed to generated token for user: {}", user);
+                logger.error("Failed to generated token for user: {}", user);
                 throw new AuthenticationServiceException("Token Generation failed");
             }
-            aeroLogger.warn("Token: " + token);
-            return token;
+            logger.warn("Token: " + jwtToken);
+            return jwtToken;
         }
         else
         {

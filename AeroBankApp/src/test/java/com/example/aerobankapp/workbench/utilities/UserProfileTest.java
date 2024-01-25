@@ -68,7 +68,7 @@ class UserProfileTest {
                 .userID(2)
                 .userName("BSmith23")
                 .password("HGamer21")
-                .role(Role.CUSTOMER)
+                .role(Role.USER)
                 .build();
 
         User aking = User.builder()

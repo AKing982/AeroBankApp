@@ -48,15 +48,15 @@ public class AuthController
 
         try
         {
-            String token = getAuthenticationToken(username,password);
-            LOGGER.warn("Token: " + token);
-            if(token == null)
+            String authToken = getAuthenticationToken(username,password);
+            LOGGER.warn("Token: " + authToken);
+            if(authToken == null)
             {
                 LOGGER.warn("Authentication Failed for User: " + loginRequest.getUsername());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token Generated");
             }
-            LOGGER.debug("User Generated Token: " + token);
-            return ResponseEntity.ok(new AuthTokenResponse(token, "Bearer"));
+            LOGGER.debug("User Generated Token: " + authToken);
+            return ResponseEntity.ok(new AuthTokenResponse(authToken, "Bearer"));
 
         }catch(AuthenticationException ex)
         {
@@ -69,9 +69,9 @@ public class AuthController
     {
         LOGGER.warn("User: " + user);
         LOGGER.warn("Password: " + password);
-        String token = getAuthenticationService().login(user, password);
-        LOGGER.warn("Authentication Token: " + token);
-        return token;
+        String authToken = getAuthenticationService().login(user, password);
+        LOGGER.warn("Authentication Token: " + authToken);
+        return authToken;
     }
 
     @GetMapping("/status")

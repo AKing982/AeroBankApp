@@ -21,11 +21,9 @@ public class WebConfig {
     {
         http
                 .cors(Customizer.withDefaults())
-                .csrf(Customizer.withDefaults())
-                .addFilterAfter(new CsrfTokenLogger(), CsrfFilter.class)
+                .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/csrf/token").permitAll()
                                .anyRequest().authenticated());
 
         return http.build();

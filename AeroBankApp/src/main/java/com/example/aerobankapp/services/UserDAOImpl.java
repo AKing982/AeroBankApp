@@ -1,6 +1,7 @@
 package com.example.aerobankapp.services;
 
 
+import com.example.aerobankapp.dto.RegistrationDTO;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.Role;
@@ -86,6 +87,20 @@ public class UserDAOImpl implements UserDAO
 
         UserEntity userEntity = userRoleQuery.getSingleResult();
         return userEntity.getRole();
+    }
+
+    @Override
+    public UserEntity registerUser(RegistrationDTO registrationDTO)
+    {
+        UserEntity userEntity = UserEntity.builder()
+                .username(registrationDTO.userName())
+                .password(registrationDTO.password())
+                .email(registrationDTO.email())
+                .pinNumber(registrationDTO.PIN())
+                .build();
+
+        save(userEntity);
+        return userEntity;
     }
 
 }
