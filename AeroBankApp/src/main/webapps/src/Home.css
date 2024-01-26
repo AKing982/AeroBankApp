@@ -1,0 +1,88 @@
+.home-container {
+    font-family: Arial, sans-serif;
+}
+
+.home-tabs{
+    display:flex;
+    justify-content: center;
+    margin:0;
+    padding:0;
+    background-color: #f2f2f2;
+}
+
+.home-tab {
+    flex-grow: 1;
+    padding: 10px 0;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid #ccc;
+    margin: 0;
+    background-image: linear-gradient(to right, #6e48aa, #9d50bb);
+    color:white;
+}
+
+.home-tab:not(:first-of-type)
+{
+    border-left: none;
+}
+
+.home-tab.active {
+    background-image: linear-gradient(to right, #4b6cb7, #182848);
+    border-top: 2px solid #4CAF50;
+    margin-top: -2px;
+}
+
+.home-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+}
+
+.home-header > div {
+    margin: 5px;
+    white-space: nowrap;
+}
+
+.welcome-message{
+    align-self: flex-start;
+    font-size: 1.2em;
+}
+
+.date-info{
+    align-self: flex-end;
+}
+
+.balance-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.current-balance,
+.account-number,
+.total-accounts {
+    margin: 0;
+}
+
+.home-tabs {
+    display: flex;
+    justify-content: space-around;
+    background-color: #f2f2f2;
+    padding: 10px 0;
+}
+
+.home-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-bottom: none; /* Tabs appear connected to the content area */
+}
+
+.home-tab.active {
+    background-color: white;
+    border-top: 2px solid #4CAF50;
+}

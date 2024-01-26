@@ -175,7 +175,7 @@ export default function LoginFormOLD()
                 <div className="login-body">
                     <form onSubmit={handleSubmit}>
                         <div className="input-field">
-                            <label htmlFor="username" className="input-label">UserName </label>
+                            <label htmlFor="username" className="input-label">User Name </label>
                             <input
                                 type="text"
                                 id="username"
