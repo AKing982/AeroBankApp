@@ -175,44 +175,7 @@ input[type="text"], input[type="password"]
 **/
 
 
-.account-box {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
 
-.account-code-circle {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #4CAF50; /* Example color */
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 15px;
-}
-
-.account-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.account-item {
-  margin-bottom: 5px;
-}
-
-.account-label {
-  font-weight: bold;
-  margin-right: 5px;
-}
-
-.account-value {
-  font-size: 14px;
-}
 
 
 .form-button {

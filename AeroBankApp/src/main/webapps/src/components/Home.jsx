@@ -1,6 +1,11 @@
 import '../Home.css';
 import HomeTab from "./HomeTab";
 import {useEffect, useState} from "react";
+import TransactionView from "./TransactionView";
+import DepositView from "./DepositView";
+import WithdrawView from "./WithdrawView";
+import TransferView from "./TransferView";
+import SettingsView from "./SettingsView";
 
 export default function Home()
 {
@@ -12,7 +17,6 @@ export default function Home()
     const [error, setError] = useState(null);
 
     const username = sessionStorage.getItem('username');
-    console.log("Username: ", username);
 
     useEffect(() => {
             setIsLoading(true);
@@ -46,7 +50,7 @@ export default function Home()
             <header className="home-header">
                 <div className="welcome-message">Welcome, {username}</div>
                 <div className="date-info">Date: {new Date().toLocaleDateString()}</div>
-                <div className="current-balance">Current Balance: {balance}</div>
+                <div className="current-balance">Total Balance: {balance}</div>
                 <div className="account-number">Account Number: {accountNumber}</div>
                 <div className="total-accounts">Total Accounts: {totalAccounts}</div>
             </header>
@@ -59,11 +63,11 @@ export default function Home()
                 />
             </div>
             <div className="tab-content">
-                {activeTab === 'Transactions' && <div>Transaction Content</div>}
-                {activeTab === 'Make a Deposit' && <div>Deposit Content</div>}
-                {activeTab === 'Make a Withdraw' && <div>Withdraw Content</div>}
-                {activeTab === 'Make a Transfer' && <div>Transfer Content</div>}
-                {activeTab === 'Settings' && <div>Settings Content</div>}
+                {activeTab === 'Transactions' && <div><TransactionView /></div>}
+                {activeTab === 'Make a Deposit' && <div><DepositView /></div>}
+                {activeTab === 'Make a Withdraw' && <div><WithdrawView /></div>}
+                {activeTab === 'Make a Transfer' && <div><TransferView /></div>}
+                {activeTab === 'Settings' && <div><SettingsView/></div>}
             </div>
         </div>
     )
