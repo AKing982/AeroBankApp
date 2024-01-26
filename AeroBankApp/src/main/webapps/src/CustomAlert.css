@@ -1,6 +1,6 @@
 .custom-alert-overlay {
     position: fixed;
-    top: 0;
+    top: -160px;
     left: 0;
     width: 100%;
     height: 100%;
@@ -8,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+
 }
 
 .custom-alert-box {
@@ -20,12 +20,12 @@
 
 .custom-alert-header {
     padding: 10px;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 3px solid #ccc;
     border-radius: 7px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #818181;
+    background-color: #61a2b1;
 }
 
 .custom-alert-title {
@@ -48,11 +48,14 @@
 }
 
 .custom-alert-footer {
-    padding: 0;
+    padding: 15px;
     text-align: center;
-    border-top: 1px solid #ccc;
+    border-top: 3px solid #a1c4fd;
+    box-sizing: border-box;
+    width:100%;
+    margin:0;
 
-    background-color: grey;
+    background-color: #61dafb;
 }
 
 .custom-alert-ok {

@@ -10,6 +10,7 @@ export default function LoginFormOLD()
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const isLoginButtonEnabled = !username && !password;
     const [dialogMessage, setDialogMessage] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -165,7 +166,49 @@ export default function LoginFormOLD()
     }
 
     return (
-         <div className="background-image">
+
+        <div className="background-image">
+            <div className="login-box">
+                <div className="login-header">
+                    <span className="header-title">AeroBank Login</span>
+                </div>
+                <div className="login-body">
+                    <form onSubmit={handleSubmit}>
+                        <div className="input-field">
+                            <label htmlFor="username" className="input-label">UserName </label>
+                            <input
+                                type="text"
+                                id="username"
+                                className="input-field"
+                                value={username}
+                                onChange={e => setUserName(e.target.value)}
+                            />
+                        </div>
+                        <div className="input-field">
+                            <label htmlFor="password" className="input-label">Password </label>
+                            <input
+                                type="password"
+                                id="password"
+                                className="input-field"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="login-footer">
+                            <button className={`button2 ${isLoginButtonEnabled ? 'disabled' : ''}`} disabled={isLoginButtonEnabled}>Login</button>
+                            <AlertDialog
+                                title="Failed"
+                                message="Invalid Credentials"
+                                isOpen={isDialogOpen}
+                                onClose={() => setIsDialogOpen(false)}/>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+       /**  <div className="background-image">
              <Header />
              <form onSubmit={handleSubmit}>
                  {error && <div className="error-message"> {error} </div>}
@@ -200,6 +243,7 @@ export default function LoginFormOLD()
                  </div>
              </form>
          </div>
+        **/
         );
 
 }

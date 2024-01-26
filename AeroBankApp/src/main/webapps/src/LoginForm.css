@@ -1,15 +1,135 @@
-.input-field {
+.background-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Example to center the box vertically in the viewport */
+}
+
+
+.login-box2 {
+    border-radius: 8px;
+    width: 340px; /* Width of the box */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+    overflow:hidden;
+}
+
+.login-box {
+    width: 340px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+/**
+.input-field label {
+    position:absolute;
+    left: 15px;
+    top: 10px;
+    background: #fff;
+    padding: 0 5px;
+    margin-left: 1px;
+    color: #333;
+}
+**/
+
+
+.input-field label {
+    display: inline-block;
+    color: #333;
     margin-bottom: 5px;
+    font-weight: bold;
+}
+
+
+.login-header {
+    text-align: center;
+    padding:15px;
+    background-color: #d3d3d3;
+}
+
+.header-title {
+    font-size: 20px;
+    color: #333;
+    margin: 0;
+}
+
+.login-body{
+
+
+    justify-content: center;
+    text-align: left;
+}
+
+.input-field {
+    margin-bottom: 10px; /* Space between input fields */
+    position: relative;
+
 }
 
 .input-field input {
-    width: 30%;
-    padding: 10px;
-    margin-top: 5px;
+    width: 98%;
+    padding:10px;
     border: 1px solid #ccc;
-    border-radius: 7px;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
-.input-label {
+
+.input-field input:focus + label,
+.input-field input:not(:placeholder-shown) + label {
+    top: 0;
+    left: 0;
+    transform: translateY(-100%);
+    font-size: 12px;
+}
+
+.input-field input2 {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+    display: block;
+}
+
+
+.login-footer {
+    text-align: right;
+    padding: 15px;
+    background-color: #d3d3d3;
+    box-sizing: border-box;
+    width:100%;
+    margin:0;
+}
+
+.button2.disabled{
+    background-color: #555555;
+    cursor:not-allowed;
+}
+
+.button2.disabled:hover{
+    background-color: #555555;
+}
+
+
+
+.button2 {
+    width: 40%; /* Match the width of the input fields */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background-image: linear-gradient(to right, #555555, #000000);
+    color: white;
+    cursor: pointer;
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+    display:inline-block;
     font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.button2:hover {
+    background-image: linear-gradient(to right, #c2e9fb, #a1c4fd); /* Darker shade on hover */
 }

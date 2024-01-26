@@ -8,12 +8,12 @@ export default function Header()
 
     if(!welcomeText)
     {
-        setWelcomeText("Welcome to \nAeroBank");
+        setWelcomeText("Welcome to AeroBank");
     }
 
     return (
         <header id="header">
-            <h1 className="welcome-text">{welcomeText}</h1>
+            <h2 className="welcome-text">{welcomeText}</h2>
         </header>
     );
 }
