@@ -5,7 +5,6 @@ import {useEffect, useState} from "react";
 export default function Home()
 {
     const [activeTab, setIsActiveTab] = useState('Transactions');
-    const [welcomeName, setWelcomeName] = useState('');
     const [balance, setBalance] = useState(0);
     const [accountNumber, setAccountNumber] = useState('');
     const [totalAccounts, setTotalAccounts] = useState(0);
@@ -26,7 +25,6 @@ export default function Home()
                     return response.json();
                 })
                 .then(data => {
-                    setWelcomeName(data.welcomeName);
                     setBalance(data.balance);
                     setAccountNumber(data.accountNumber);
                     setTotalAccounts(data.totalAccounts);
@@ -46,7 +44,7 @@ export default function Home()
     return (
         <div className="home-container">
             <header className="home-header">
-                <div className="welcome-message">Welcome, {welcomeName}</div>
+                <div className="welcome-message">Welcome, {username}</div>
                 <div className="date-info">Date: {new Date().toLocaleDateString()}</div>
                 <div className="current-balance">Current Balance: {balance}</div>
                 <div className="account-number">Account Number: {accountNumber}</div>

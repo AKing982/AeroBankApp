@@ -14,15 +14,17 @@ public class UserProfileController {
 
     private UserDAOImpl userDAO;
 
-
-    public UserProfileController()
+    @Autowired
+    public UserProfileController(UserDAOImpl userDAO)
     {
-
+        this.userDAO = userDAO;
     }
 
     @GetMapping(value="/data/{username}")
     public ResponseEntity<?> getUserProfileData(@PathVariable String username)
     {
-        return ResponseEntity.ok(null);
+
+
+        return ResponseEntity.ok(username);
     }
 }

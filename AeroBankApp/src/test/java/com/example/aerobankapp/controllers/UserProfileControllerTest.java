@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static com.example.aerobankapp.controllers.AuthControllerTest.asJsonString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,9 +57,10 @@ class UserProfileControllerTest {
         UserProfile userProfile = new UserProfile(user);
 
         mockMvc.perform(get("http://localhost:8080/api/profile/data/" + username)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .content(asJsonString(null))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.username").value(username));
     }
 
