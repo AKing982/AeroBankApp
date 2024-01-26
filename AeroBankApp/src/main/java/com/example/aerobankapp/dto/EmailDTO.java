@@ -1,4 +1,4 @@
-package com.example.aerobankapp.model;
+package com.example.aerobankapp.dto;
 
 import lombok.*;
 

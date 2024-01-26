@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Deprecated
 public class UserLogDTO
 {
     private int id;

@@ -1,22 +1,19 @@
 import React, {useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import Header from "./Header";
+import '../LoginForm.css';
+import AlertDialog from "./CustomAlert";
+import '../CustomAlert.css';
 
 export default function LoginFormOLD()
 {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const validateForm = () => {
-        if (!username || !password) {
-            setError('Username and password are required');
-            return false;
-        }
-        setError('');
-        return true;
-    };
 
     const isValidCsrfToken = (csrfToken) => {
         if(typeof csrfToken === 'string' && csrfToken.trim() !== '' || csrfToken instanceof Promise)
@@ -64,7 +61,7 @@ export default function LoginFormOLD()
             }
 
             const token = await extractCsrFToken(response);
-            saveToken(token);
+            saveCSRFToken(token);
 
             return token;
 
@@ -81,9 +78,15 @@ export default function LoginFormOLD()
         return data.token;
     }
 
-    const saveToken = (token) => {
+    const saveCSRFToken = (token) => {
         sessionStorage.setItem('csrfToken', token);
     }
+
+
+    const saveJWTSession = (jwt) => {
+        sessionStorage.setItem('jwtToken', jwt);
+    }
+
 
     const authenticationResponse = async () => {
       /**  if(!token)
@@ -110,24 +113,31 @@ export default function LoginFormOLD()
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if(!validateForm())
-        {
-            return;
-        }
+
         try{
 
          //   const csrfToken = await fetchCsrfToken();
 
             const response = await authenticationResponse();
 
+            // Store the JWT Token in the sessionStorage
+
                 if(response.ok)
                 {
                     console.log('Login Successful');
+
+                    const data = await response.json();
+                    const token = data.token;
+                    saveJWTSession(token);
+
+
                     navigateToHomePage();
                 }
                 else
                 {
                     console.log('Login Failed');
+                    setDialogMessage(`Incorrect Username or Password`);
+                    setIsDialogOpen(true);
                 }
 
         }catch(error)
@@ -157,31 +167,36 @@ export default function LoginFormOLD()
     return (
          <div className="background-image">
              <Header />
-             <form>
-                 <div>
-                     <label htmlFor="username">Username: </label>
+             <form onSubmit={handleSubmit}>
+                 {error && <div className="error-message"> {error} </div>}
+                 <div className="input-field">
+                     <label htmlFor="username" className="input-label">Username: </label>
                      <input
                          type="text"
                          id="username"
+                         className="input-field"
                          value={username}
                          onChange={e => setUserName(e.target.value)}
                          />
                  </div>
-                 <div>
-                     <label htmlFor="password">Password: </label>
+                 <div className="input-field">
+                     <label htmlFor="password" className="input-label">Password: </label>
                      <input
                          type="password"
                          id="password"
+                         className="input-field"
                          value={password}
                          onChange={e => setPassword(e.target.value)}
                          />
                  </div>
-                 <div className="forgot-password-container">
-                     <button className="button" onClick={handleForgotPassword}>Forgot Password </button>
-                 </div>
                  <div className="button-container">
-                     <button className="button" type="submit" onClick={handleSubmit}>Login</button>
-                     <button className="button" type="submit" onClick={navigateToRegister}>Register</button>
+                     <button className="button2" type="submit">Login</button>
+                     <AlertDialog
+                         title="Failed"
+                         message="Invalid Credentials"
+                         isOpen={isDialogOpen}
+                         onClose={() => setIsDialogOpen(false)}/>
+                     <button className="button2" type="submit" onClick={navigateToRegister}>Register</button>
                  </div>
              </form>
          </div>
