@@ -14,10 +14,10 @@ public class UserProfileController {
 
     private UserDAOImpl userDAO;
 
-    @Autowired
-    public UserProfileController(UserDAOImpl userDAO)
+
+    public UserProfileController()
     {
-        this.userDAO = userDAO;
+
     }
 
     @GetMapping(value="/data/{username}")
