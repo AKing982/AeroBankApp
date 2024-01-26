@@ -57,7 +57,7 @@ class UserProfileTest {
 
         userProfile = new UserProfile(mockUser);
 
-        assertEquals(mockUser, userProfile.getUsername());
+        assertEquals(mockUser, userProfile.getUserName());
     }
 
 
@@ -84,9 +84,9 @@ class UserProfileTest {
 
         assertNotNull(akingProfile);
         assertNotNull(bsmithProfile);
-        assertEquals(aking.getUserName(), akingProfile.getUsername());
-        assertEquals(bsmith.getUserName(), bsmithProfile.getUsername());
-        assertNotEquals(akingProfile.getUsername(), bsmithProfile.getUsername());
+        assertEquals(aking.getUserName(), akingProfile.getUserName());
+        assertEquals(bsmith.getUserName(), bsmithProfile.getUserName());
+        assertNotEquals(akingProfile.getUserName(), bsmithProfile.getUserName());
         assertNotEquals(akingProfile, bsmithProfile);
         assertNotEquals(akingProfile.getAllAccounts(), bsmithProfile.getAllAccounts());
     }

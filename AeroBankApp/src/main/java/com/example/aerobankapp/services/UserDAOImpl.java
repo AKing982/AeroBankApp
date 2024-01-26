@@ -70,7 +70,11 @@ public class UserDAOImpl implements UserDAO
     @Override
     @Transactional
     public List<UserEntity> findByUserName(String user) {
-        TypedQuery<UserEntity> query = entityManager.createQuery("FROM UserEntity where username=:user", UserEntity.class)
+        if(!entityManager.isOpen())
+        {
+            aeroLogger.error("EntityManager Session is Closed");
+        }
+        TypedQuery<UserEntity> query = entityManager.createQuery("SELECT e FROM UserEntity e where e.username=:user", UserEntity.class)
                 .setParameter("user", user)
                 .setMaxResults(10);
         aeroLogger.debug("Found User: " + query.getResultList());
@@ -99,8 +103,19 @@ public class UserDAOImpl implements UserDAO
                 .pinNumber(registrationDTO.PIN())
                 .build();
 
-        save(userEntity);
+
         return userEntity;
+    }
+
+    @Override
+    @Transactional
+    public String getAccountNumber(String user) {
+        TypedQuery<UserEntity> accountNumberQuery = entityManager.createQuery("SELECT e.accountNumber FROM UserEntity e WHERE e.username=:user", UserEntity.class);
+        accountNumberQuery.setParameter("user", user);
+        accountNumberQuery.setMaxResults(1);
+
+        UserEntity userEntity = accountNumberQuery.getSingleResult();
+        return userEntity.getAccountNumber();
     }
 
 }

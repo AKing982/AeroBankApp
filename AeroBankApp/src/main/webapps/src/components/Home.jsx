@@ -12,10 +12,12 @@ export default function Home()
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const username = sessionStorage.getItem('username');
+    console.log("Username: ", username);
 
     useEffect(() => {
             setIsLoading(true);
-            fetch('http://localhost:8080/api/user/data')
+            fetch(`http://localhost:8080/api/profile/data/${username}`)
                 .then(response => {
                     if(!response.ok)
                     {

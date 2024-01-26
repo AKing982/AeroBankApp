@@ -43,6 +43,10 @@ public class UserEntity
     @Size(min=6, message="You must choose at least 6 characters")
     private String pinNumber;
 
+    @Column(name="accountNumber")
+    @NotNull
+    private String accountNumber;
+
     @Column(name="isAdmin")
     private boolean isAdmin;
 

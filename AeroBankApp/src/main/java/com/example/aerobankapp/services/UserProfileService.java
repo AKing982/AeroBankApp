@@ -6,11 +6,11 @@ import com.example.aerobankapp.workbench.security.authentication.UserSecurityPro
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Getter
 @Setter
-
 public class UserProfileService
 {
     private final AccountManager accountManager;
@@ -20,6 +20,7 @@ public class UserProfileService
     private final PurchaseManager purchaseManager;
     private final TransferManager transferManager;
     private final FeeManager feeManager;
+    private final UserDAOImpl userManager;
     private final UserSecurityProfile userSecurityProfile;
 
 
@@ -30,6 +31,7 @@ public class UserProfileService
                               PurchaseManager purchaseManager,
                               TransferManager transactionManager,
                               FeeManager feeManager,
+                              UserDAOImpl userManager,
                               UserSecurityProfile securityProfile)
     {
         this.accountManager = accountManager;
@@ -39,6 +41,7 @@ public class UserProfileService
         this.purchaseManager = purchaseManager;
         this.transferManager = transactionManager;
         this.feeManager = feeManager;
+        this.userManager = userManager;
         this.userSecurityProfile = securityProfile;
     }
 

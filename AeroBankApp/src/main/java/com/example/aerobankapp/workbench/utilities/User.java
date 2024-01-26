@@ -16,6 +16,8 @@ public class User
     private String email;
     private String password;
     private String pinNumber;
+    private String accountNumber;
     private Role role;
+
 
 }

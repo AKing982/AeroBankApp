@@ -12,6 +12,7 @@ public class UserMapperHelper
         return new UserDTO(entity.getUserID(),
                 entity.getUsername(), entity.getEmail(),
                 entity.getPassword(), entity.getPinNumber(),
+                entity.getAccountNumber(),
                 entity.isAdmin(), entity.isEnabled(), entity.getRole());
     }
 }

@@ -28,6 +28,27 @@
     background-color: #61a2b1;
 }
 
+.custom-alert-box::before,
+.custom-alert-box::after
+{
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    background-color: #d3d3d3;
+}
+
+.custom-alert-box::before{
+    left: 0;
+}
+
+.custom-alert-box::after{
+    right: 0;
+}
+
+
+
 .custom-alert-title {
     font-weight: bold;
 }

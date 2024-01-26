@@ -9,6 +9,7 @@ public record UserDTO(int userID,
                       String email,
                       String password,
                       String pinNumber,
+                      String accountNumber,
                       boolean isAdmin,
                       boolean isEnabled,
                       Role role)

@@ -10,9 +10,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+
 class UserDAOImplTest
 {
     @MockBean
@@ -60,6 +64,21 @@ class UserDAOImplTest
         // Assert
         assertEquals(1, userDAO.findAll().size());
     }
+
+    @Test
+    @Transactional
+    public void testFindByUserNameWithValidUser()
+    {
+        String user = "AKing94";
+
+        List<UserEntity> userEntities = userDAO.findByUserName(user);
+        UserEntity foundUser = userEntities.get(0);
+
+        assertEquals(user, foundUser.getUsername());
+    }
+
+
+
 
     @AfterEach
     void tearDown() {

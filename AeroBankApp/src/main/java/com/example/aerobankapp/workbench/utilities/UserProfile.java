@@ -1,13 +1,16 @@
 package com.example.aerobankapp.workbench.utilities;
 
 import com.example.aerobankapp.dto.AccountDTO;
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.manager.*;
+import com.example.aerobankapp.services.UserDAOImpl;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -27,19 +30,37 @@ public class UserProfile
         this.user = user;
     }
 
-    @Autowired
+    public String getUserName()
+    {
+        return user.getUserName();
+    }
+
+    public String getEmail()
+    {
+        return user.getEmail();
+    }
+
+    public String getPinNumber()
+    {
+        return user.getPinNumber();
+    }
+
+    public String getAccountNumber()
+    {
+        UserDAOImpl userDAO = userProfileFacade.getUserProfileService().getUserManager();
+
+        return null;
+    }
+
     public void setUserProfileFacade(UserProfileFacade userProfileFacade)
     {
         this.userProfileFacade = userProfileFacade;
     }
 
-    public String getUsername()
-    {
-        return user.getUserName();
-    }
 
     public Set<AccountDTO> getAllAccounts()
     {
+        AccountManager accountManager = userProfileFacade.getUserProfileService().getAccountManager();
         return null;
     }
 
@@ -48,4 +69,16 @@ public class UserProfile
         AccountManager accountManager = userProfileFacade.getUserProfileService().getAccountManager();
         return accountManager.getBalanceFromAccount(acctID);
     }
+
+    public String getAccountNumber(String user)
+    {
+        UserDAOImpl userDAO = userProfileFacade.getUserProfileService().getUserManager();
+        return userDAO.getAccountNumber(user);
+    }
+
+    public int getTotalAccounts(String user)
+    {
+        return 0;
+    }
+
 }

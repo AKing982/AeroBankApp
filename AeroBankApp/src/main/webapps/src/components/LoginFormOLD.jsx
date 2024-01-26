@@ -23,6 +23,10 @@ export default function LoginFormOLD()
         }
     }
 
+    const saveUserNameToSession = (username) => {
+        sessionStorage.setItem('username', username);
+    }
+
     const makeRequestWithCsrf = async (url, method, body) => {
         let csrfToken = sessionStorage.getItem('csrfToken');
 
@@ -128,8 +132,11 @@ export default function LoginFormOLD()
                     console.log('Login Successful');
 
                     const data = await response.json();
+                    console.log(data);
                     const token = data.token;
+                    const username = data.username;
                     saveJWTSession(token);
+                    saveUserNameToSession(username);
 
 
                     navigateToHomePage();
@@ -170,7 +177,7 @@ export default function LoginFormOLD()
         <div className="background-image">
             <div className="login-box">
                 <div className="login-header">
-                    <span className="header-title">AeroBank Login</span>
+                    <span className="header-title">Please Login</span>
                 </div>
                 <div className="login-body">
                     <form onSubmit={handleSubmit}>

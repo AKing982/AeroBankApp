@@ -29,4 +29,6 @@ public interface UserDAO extends ServiceDAOModel<UserEntity>
     Role getUserRole(String user) throws NoResultException;
 
     UserEntity registerUser(RegistrationDTO registrationDTO);
+
+    String getAccountNumber(String user);
 }

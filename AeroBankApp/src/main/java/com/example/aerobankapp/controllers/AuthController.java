@@ -56,7 +56,8 @@ public class AuthController
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token Generated");
             }
             LOGGER.debug("User Generated Token: " + authToken);
-            return ResponseEntity.ok(new AuthTokenResponse(authToken, "Bearer"));
+           // return ResponseEntity.ok(new AuthTokenResponse(authToken, "Bearer"));
+            return ResponseEntity.ok(new AuthTokenResponse(authToken, "Bearer", username));
 
         }catch(AuthenticationException ex)
         {

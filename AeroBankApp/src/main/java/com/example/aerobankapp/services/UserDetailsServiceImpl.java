@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Getter
@@ -39,7 +40,7 @@ public class UserDetailsServiceImpl implements UserDetailsService
 
         UserEntity matchingUser = userEntities.stream()
                 .filter(userEntity -> username.equals(userEntity.getUsername()))
-                .findFirst().orElse(null);
+                .findFirst().orElseThrow(() -> new NoSuchElementException("User Not Found"));
 
         return User.builder()
                 .username(matchingUser.getUsername())
