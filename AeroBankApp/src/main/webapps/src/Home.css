@@ -12,13 +12,21 @@
 
 .home-tab {
     flex-grow: 1;
-    padding: 10px 0;
+    padding: 20px 0;
     cursor: pointer;
     text-align: center;
-    border: 1px solid #ccc;
-    margin: 0;
-    background-image: linear-gradient(to right, #6e48aa, #9d50bb);
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    margin: 5px;
+    background-color: #4a90e2;
     color:white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.home-tab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .home-tab:not(:first-of-type)
@@ -68,19 +76,6 @@
     margin: 0;
 }
 
-.home-tabs {
-    display: flex;
-    justify-content: space-around;
-    background-color: #f2f2f2;
-    padding: 10px 0;
-}
-
-.home-tab {
-    padding: 10px 20px;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    border-bottom: none; /* Tabs appear connected to the content area */
-}
 
 .home-tab.active {
     background-color: white;

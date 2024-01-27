@@ -24,7 +24,7 @@ public class WebConfig {
                 .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/accounts/{user}").hasRole("ADMIN")
+                        .requestMatchers("/api/accounts/{user}").permitAll()
                         .requestMatchers("/api/profile/data/{user}").permitAll()
                                .anyRequest().authenticated());
 

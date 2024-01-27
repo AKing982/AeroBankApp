@@ -31,7 +31,7 @@ public class AccountController
     public ResponseEntity<?> getUserAccounts(@PathVariable String user)
     {
         List<AccountEntity> accountEntities = accountDAO.findByUserName(user);
-        List<AccountResponse> accountResponseList = getAccountResponseList(accountEntities);
+       // List<AccountResponse> accountResponseList = getAccountResponseList(accountEntities);
 
         return ResponseEntity.ok(accountEntities);
     }

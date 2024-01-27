@@ -1,19 +1,27 @@
 .vertical-line {
     width: 1px;
     background-color: #000000;
-    margin: 0 1px;
-    height: 670px;
+    height: 100%;
 }
 
 .transaction-view-container {
     display:flex;
-    flex-direction: row;
-    align-items: stretch;
+    align-items: flex-start;
 }
 
 .account-list-body{
     flex: 1;
-    padding: 20px;
+    padding: 16px;
+}
+
+.transaction-pending-table{
+    flex: 1;
+    padding: 16px;
+}
+
+.transaction-view-right{
+    flex: 2;
+    padding: 16px;
 }
 
 table {
