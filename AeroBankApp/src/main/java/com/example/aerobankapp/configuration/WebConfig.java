@@ -24,6 +24,8 @@ public class WebConfig {
                 .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/accounts/{user}").hasRole("ADMIN")
+                        .requestMatchers("/api/profile/data/{user}").permitAll()
                                .anyRequest().authenticated());
 
         return http.build();
@@ -42,6 +44,18 @@ public class WebConfig {
                         .allowCredentials(true);
 
                 registry.addMapping("/csrf/token")
+                        .allowedOrigins("http://localhost:3000")
+                        .allowedMethods("GET")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+
+                registry.addMapping("/api/profile/data/{user}")
+                        .allowedOrigins("http://localhost:3000")
+                        .allowedMethods("GET")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+
+                registry.addMapping("/api/accounts/data/{user}")
                         .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET")
                         .allowedHeaders("*")

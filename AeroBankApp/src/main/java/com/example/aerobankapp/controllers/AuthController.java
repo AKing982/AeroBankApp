@@ -41,6 +41,7 @@ public class AuthController
 
     @PostMapping(value ="/login")
     @CrossOrigin(origins = "http://localhost:3000")
+    @ResponseBody
     public ResponseEntity<?> createAuthenticateToken(@Valid @RequestBody LoginRequest loginRequest)
     {
         String username = loginRequest.getUsername().trim();
