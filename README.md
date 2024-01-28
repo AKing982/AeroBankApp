@@ -55,7 +55,6 @@ Open a pull request.
 License
 Distributed under the MIT License. See LICENSE for more information.
 
-
 Project Link: https://github.com/AKing982/AeroBankApp
 
 Acknowledgements
