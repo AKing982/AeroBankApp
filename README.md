@@ -58,7 +58,7 @@ Distributed under the MIT License. See LICENSE for more information.
 Contact
 Your Name - email@example.com
 
-Project Link: https://github.com/your-username/AeroBankApp
+Project Link: https://github.com/AKing982/AeroBankApp
 
 Acknowledgements
 React
