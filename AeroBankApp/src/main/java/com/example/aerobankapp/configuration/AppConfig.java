@@ -1,5 +1,10 @@
 package com.example.aerobankapp.configuration;
 
+import com.example.aerobankapp.repositories.UserRepository;
+
+import com.example.aerobankapp.services.UserService;
+import com.example.aerobankapp.services.UserServiceImpl;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,6 +27,12 @@ public class AppConfig
     public AppConfig(@Qualifier("dataSource") DataSource source)
     {
         this.dataSource = source;
+    }
+
+    @Bean
+    public UserService userDAO(UserRepository userRepository, EntityManager entityManager)
+    {
+        return new UserServiceImpl(userRepository, entityManager);
     }
 
     @Bean

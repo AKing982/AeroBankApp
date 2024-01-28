@@ -31,7 +31,7 @@
     margin-right: 15px;
 }
 
-.account-details {
+.account-details-container {
     display: flex;
     flex-direction: column;
 }

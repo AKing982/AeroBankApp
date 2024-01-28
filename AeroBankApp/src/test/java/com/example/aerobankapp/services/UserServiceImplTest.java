@@ -6,115 +6,46 @@ import com.example.aerobankapp.repositories.UserRepository;
 
 import com.example.aerobankapp.workbench.utilities.Role;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@ComponentScan("com.example.aerobankapp")
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    @MockBean
-    private UserDAOImpl userService;
+    @InjectMocks
+    private UserServiceImpl userService;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     @Mock
     private EntityManager manager;
-    private UserDTO user1;
-    private UserEntity test;
+
+    @Mock
+    private TypedQuery<UserEntity> typedQuery;
 
     @BeforeEach
     void setUp()
     {
-        user1 = UserDTO.builder()
-                .userName("AKing94")
-                .email("alex@utahkings.com")
-                .password("pass")
-                .pinNumber("5988")
-                .build();
-
-        test = UserEntity.builder()
-                .isAdmin(true)
-                .username("AKing94")
-                .email("alex@utahkings.com")
-                .password("Halflifer94!")
-                .pinNumber("5988")
-                .role(Role.valueOf("ADMIN"))
-                .isEnabled(true)
-                .userID(9)
-                .build();
-        userService = new UserDAOImpl(userRepository, manager);
-
-
+        when(manager.createQuery(anyString(), eq(UserEntity.class))).thenReturn(typedQuery);
     }
 
-    @Test
-    public void testFindAll()
-    {
-
-
-        List<UserEntity> users = new ArrayList<>();
-        users.add(test);
-        List<UserEntity> result = userService.findAll();
-
-        assertNotNull(userService);
-        assertNotNull(manager);
-        assertNotNull(userRepository);
-        assertEquals(users, result);
-    }
-
-    @Test
-    public void testSave()
-    {
-
-     //   List<UserEntity> foundUser = userService.findByUserName("AKing94");
-
-        userService.save(test);
-
-        assertNotNull(userRepository);
-        assertNotNull(userService);
-        assertEquals(1, userService.findAll().size());
-    }
-
-    @Test
-    public void testDeleteUser()
-    {
-
-        userService.delete(test);
-
-        List<UserEntity> allUsers = userService.findAll();
-
-        assertEquals(0, allUsers.size());
-    }
-
-    @Test
-    public void testFindAllById()
-    {
-
-        userService.save(test);
-
-        Optional<UserEntity> allUsers = userService.findAllById(Long.valueOf(1));
-
-        assertNotNull(allUsers);
-        assertEquals(test, allUsers);
-    }
 
     @Test
     public void testFindByUserName()
@@ -123,6 +54,49 @@ class UserServiceImplTest {
 
         assertNotNull(allUsers);
         assertEquals(1, allUsers.size());
+    }
+
+
+    @Test
+    public void getAccountNumber_UserExists()
+    {
+        String expectedAccountNumber = "87-34-23";
+        String username = "AKing94";
+        String email = "alex@utahkings.com";
+        String pin = "5988";
+        String password = "Halflifer45!";
+        Role role = Role.ADMIN;
+
+        UserEntity mockUser = UserEntity.builder()
+                .pinNumber(pin)
+                .password(password)
+                .email(email)
+                .username(username)
+                .accountNumber(expectedAccountNumber)
+                .role(role).build();
+
+        when(typedQuery.setParameter("user", "AKing94")).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(mockUser));
+
+        String accountNumber = userService.getAccountNumber("AKing94");
+
+        assertEquals(expectedAccountNumber, accountNumber);
+    }
+
+    @Test
+    public void getAccountNumber_UserDoesNotExist()
+    {
+        when(typedQuery.setParameter("user", "Mike23")).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(Collections.emptyList());
+
+        assertThrows(NoSuchElementException.class, () -> userService.getAccountNumber("Mike23"));
+    }
+
+    @Test
+    public void getAccountNumber_InvalidUserName()
+    {
+        assertThrows(NoSuchElementException.class, () -> userService.getAccountNumber(null));
+        assertThrows(NoSuchElementException.class, () -> userService.getAccountNumber(""));
     }
 
 

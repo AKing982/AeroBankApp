@@ -4,6 +4,7 @@ import Header from "./Header";
 import '../LoginForm.css';
 import AlertDialog from "./CustomAlert";
 import '../CustomAlert.css';
+import {Spinner} from "./Spinner";
 
 export default function LoginFormOLD()
 {
@@ -12,6 +13,7 @@ export default function LoginFormOLD()
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const isLoginButtonEnabled = !username && !password;
     const [dialogMessage, setDialogMessage] = useState('');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -118,6 +120,7 @@ export default function LoginFormOLD()
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setLoading(true);
 
         try{
 
@@ -151,6 +154,8 @@ export default function LoginFormOLD()
         }catch(error)
         {
              console.error("Network Error: ", error);
+        }finally {
+            setLoading(false);
         }
 
     };
@@ -172,85 +177,50 @@ export default function LoginFormOLD()
 
     }
 
+
     return (
-
-        <div className="background-image">
-            <div className="login-box">
-                <div className="login-header">
-                    <span className="header-title">Please Login</span>
-                </div>
-                <div className="login-body">
-                    <form onSubmit={handleSubmit}>
-                        <div className="input-field">
-                            <label htmlFor="username" className="input-label">User Name </label>
-                            <input
-                                type="text"
-                                id="username"
-                                className="input-field"
-                                value={username}
-                                onChange={e => setUserName(e.target.value)}
-                            />
-                        </div>
-                        <div className="input-field">
-                            <label htmlFor="password" className="input-label">Password </label>
-                            <input
-                                type="password"
-                                id="password"
-                                className="input-field"
-                                value={password}
-                                onChange={e => setPassword(e.target.value)}
-                            />
-                        </div>
-                        <div className="login-footer">
-                            <button className={`button2 ${isLoginButtonEnabled ? 'disabled' : ''}`} disabled={isLoginButtonEnabled}>Login</button>
-                            <AlertDialog
-                                title="Failed"
-                                message="Invalid Credentials"
-                                isOpen={isDialogOpen}
-                                onClose={() => setIsDialogOpen(false)}/>
-
-                        </div>
-                    </form>
+        <div className="login-container">
+            {loading === true ? <Spinner/> : ''}
+            <div className="background-image">
+                <div className="login-box">
+                    <div className="login-header">
+                        <span className="header-title">Please Login</span>
+                    </div>
+                    <div className="login-body">
+                        <form onSubmit={handleSubmit}>
+                            <div className="input-field">
+                                <label htmlFor="username" className="input-label">User Name </label>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    className="input-field"
+                                    value={username}
+                                    onChange={e => setUserName(e.target.value)}
+                                />
+                            </div>
+                            <div className="input-field">
+                                <label htmlFor="password" className="input-label">Password </label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    className="input-field"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                />
+                            </div>
+                            <div className="login-footer">
+                                <button className={`button2 ${isLoginButtonEnabled ? 'disabled' : ''}`} disabled={isLoginButtonEnabled}>Login</button>
+                                <AlertDialog
+                                    title="Failed"
+                                    message="Invalid Credentials"
+                                    isOpen={isDialogOpen}
+                                    onClose={() => setIsDialogOpen(false)}/>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-
-       /**  <div className="background-image">
-             <Header />
-             <form onSubmit={handleSubmit}>
-                 {error && <div className="error-message"> {error} </div>}
-                 <div className="input-field">
-                     <label htmlFor="username" className="input-label">Username: </label>
-                     <input
-                         type="text"
-                         id="username"
-                         className="input-field"
-                         value={username}
-                         onChange={e => setUserName(e.target.value)}
-                         />
-                 </div>
-                 <div className="input-field">
-                     <label htmlFor="password" className="input-label">Password: </label>
-                     <input
-                         type="password"
-                         id="password"
-                         className="input-field"
-                         value={password}
-                         onChange={e => setPassword(e.target.value)}
-                         />
-                 </div>
-                 <div className="button-container">
-                     <button className="button2" type="submit">Login</button>
-                     <AlertDialog
-                         title="Failed"
-                         message="Invalid Credentials"
-                         isOpen={isDialogOpen}
-                         onClose={() => setIsDialogOpen(false)}/>
-                     <button className="button2" type="submit" onClick={navigateToRegister}>Register</button>
-                 </div>
-             </form>
-         </div>
-        **/
         );
 
 }

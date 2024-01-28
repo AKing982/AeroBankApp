@@ -11,21 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Getter
 @Setter
-public class AccountDAOImpl implements AccountDAO
+public class AccountServiceImpl implements AccountService
 {
     @PersistenceContext
     private final EntityManager entityManager;
     private final AccountRepository accountRepository;
 
     @Autowired
-    public AccountDAOImpl(EntityManager entityManager, AccountRepository accountRepository)
+    public AccountServiceImpl(EntityManager entityManager, AccountRepository accountRepository)
     {
         this.entityManager = entityManager;
         this.accountRepository = accountRepository;
@@ -53,9 +52,10 @@ public class AccountDAOImpl implements AccountDAO
 
     @Override
     public List<AccountEntity> findByUserName(String user) {
-        TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery("SELECT e.username FROM UserEntity e WHERE e.username=:user", AccountEntity.class);
-        accountEntityTypedQuery.setParameter("user", user);
-        accountEntityTypedQuery.setMaxResults(1);
+       // TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery("SELECT e FROM AccountEntity e INNER JOIN e.userID WHERE e.username=:user", AccountEntity.class);
+        TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery("SELECT a FROM AccountEntity a JOIN a.users u WHERE u.username =: username", AccountEntity.class);
+        accountEntityTypedQuery.setParameter("username", user);
+        accountEntityTypedQuery.setMaxResults(10);
         return accountEntityTypedQuery.getResultList();
     }
 
@@ -90,5 +90,32 @@ public class AccountDAOImpl implements AccountDAO
         {
             return null;
         }
+    }
+
+    @Override
+    public BigDecimal getTotalAccountBalances(String user)
+    {
+        String totalBalancesQuery =  "SELECT SUM(a.balance) as TotalBalance " +
+                "FROM AccountEntity a " +
+                "JOIN a.users u " + // Assuming 'user' is the field name in AccountEntity for the UserEntity relationship
+                "WHERE u.username = :username";;
+
+        TypedQuery<BigDecimal> accountEntityTypedQuery = getEntityManager().createQuery(totalBalancesQuery, BigDecimal.class);
+        accountEntityTypedQuery.setParameter("username", user);
+        return accountEntityTypedQuery.getSingleResult();
+    }
+
+    @Override
+    public Long getNumberOfAccounts(String user)
+    {
+        String totalAccountsQuery =  "SELECT COUNT(a) " +
+                "FROM AccountEntity a " +
+                "JOIN a.users u " + // Assuming 'user' is the field name in AccountEntity that refers to UserEntity
+                "WHERE u.username = :username";
+
+        TypedQuery<Long> totalAccounts = getEntityManager().createQuery(totalAccountsQuery, Long.class);
+        totalAccounts.setParameter("username", user);
+        return totalAccounts.getSingleResult();
+
     }
 }

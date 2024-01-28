@@ -5,12 +5,17 @@ import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.AccountRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.junit.internal.runners.JUnit38ClassRunner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,19 +26,21 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
-@RunWith(JUnit38ClassRunner.class)
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class AccountDAOImplTest
 {
-    @MockBean
-    private AccountDAOImpl accountDAO;
+    @InjectMocks
+    private AccountServiceImpl accountDAO;
 
-    @Autowired
+    @Mock
+    private TypedQuery<Integer> typedQuery;
+
+    @Mock
     private EntityManager entityManager;
-
-    @Autowired
-    private AccountRepository accountRepository;
 
     private AccountEntity accountEntity;
 
@@ -41,7 +48,7 @@ class AccountDAOImplTest
     @BeforeEach
     void setUp()
     {
-        accountDAO = new AccountDAOImpl(entityManager, accountRepository);
+        when(entityManager.createQuery(anyString(), eq(Integer.class))).thenReturn(typedQuery);
         accountEntity = AccountEntity.builder()
                 .accountName("AKing Checking")
                 .accountType("Checking")
@@ -84,9 +91,44 @@ class AccountDAOImplTest
       //  int expectedUserID = Objects.requireNonNull(accountEntities.stream().findFirst().orElse(null)).getUserID();
        // int actualID = Objects.requireNonNull(akingAccounts.stream().findFirst().orElse(null)).getUserID();
 
-        assertEquals(accountEntities.size(), akingAccounts.size());
+      //  assertEquals(accountEntities.size(), akingAccounts.size());
+        assertEquals(3, akingAccounts.size());
        // assertEquals(expectedUserID, actualID);
 
+    }
+
+    @Test
+    public void testValidUserNameBSmith23()
+    {
+        String username = "BSmith23";
+        List<AccountEntity> accountEntities = accountDAO.findByUserName(username);
+
+        assertEquals(1, accountEntities.size());
+    }
+
+    @Test
+    void getNumberOfAccounts_ValidUsername() {
+        String username = "AKing94";
+        int expectedCount = 5;
+
+        when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(expectedCount);
+
+        Long actualCount = accountDAO.getNumberOfAccounts(username);
+
+        assertEquals(expectedCount, actualCount);
+    }
+
+    @Test
+    void getNumberOfAccounts_NoUserFound() {
+        String username = "NonExistentUser";
+
+        when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(0); // Assuming 0 is returned when no user is found
+
+        Long actualCount = accountDAO.getNumberOfAccounts(username);
+
+        assertEquals(0, actualCount);
     }
 
     @AfterEach

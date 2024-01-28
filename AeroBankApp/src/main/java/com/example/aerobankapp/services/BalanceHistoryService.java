@@ -6,7 +6,7 @@ import com.example.aerobankapp.model.ServiceDAOModel;
 import java.util.List;
 import java.util.Optional;
 
-public interface BalanceHistoryDAO extends ServiceDAOModel<BalanceHistoryEntity>
+public interface BalanceHistoryService extends ServiceDAOModel<BalanceHistoryEntity>
 {
     @Override
     List<BalanceHistoryEntity> findAll();

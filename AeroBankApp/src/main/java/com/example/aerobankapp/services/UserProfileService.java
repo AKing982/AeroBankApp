@@ -20,7 +20,7 @@ public class UserProfileService
     private final PurchaseManager purchaseManager;
     private final TransferManager transferManager;
     private final FeeManager feeManager;
-    private final UserDAOImpl userManager;
+    private final UserServiceImpl userManager;
     private final UserSecurityProfile userSecurityProfile;
 
 
@@ -31,7 +31,7 @@ public class UserProfileService
                               PurchaseManager purchaseManager,
                               TransferManager transactionManager,
                               FeeManager feeManager,
-                              UserDAOImpl userManager,
+                              UserServiceImpl userManager,
                               UserSecurityProfile securityProfile)
     {
         this.accountManager = accountManager;

@@ -1,11 +1,14 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.services.AccountDAOImpl;
+import com.example.aerobankapp.services.AccountServiceImpl;
 import com.example.aerobankapp.workbench.utilities.response.AccountResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -17,23 +20,26 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 public class AccountController
 {
-    private final AccountDAOImpl accountDAO;
+    private final AccountServiceImpl accountDAO;
+
+    private final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Autowired
-    public AccountController(AccountDAOImpl accountDAO)
+    public AccountController(AccountServiceImpl accountDAO)
     {
         this.accountDAO = accountDAO;
     }
 
     @GetMapping("/data/{user}")
-    @Secured("ROLE_ADMIN")
+    @PreAuthorize("isAuthenticated()")
     @ResponseBody
     public ResponseEntity<?> getUserAccounts(@PathVariable String user)
     {
         List<AccountEntity> accountEntities = accountDAO.findByUserName(user);
-       // List<AccountResponse> accountResponseList = getAccountResponseList(accountEntities);
+        accountEntities.forEach(results -> System.out.println(results.getClass().getName()));
+        List<AccountResponse> accountResponseList = getAccountResponseList(accountEntities, new BigDecimal("1200"), new BigDecimal("1150"));
 
-        return ResponseEntity.ok(accountEntities);
+        return ResponseEntity.ok(accountResponseList);
     }
 
     private List<AccountResponse> getAccountResponseList(List<AccountEntity> entityList, BigDecimal pending, BigDecimal available)
@@ -41,6 +47,7 @@ public class AccountController
         List<AccountResponse> accountResponseList = new ArrayList<>();
         for(AccountEntity entity : entityList)
         {
+            logger.warn("Entity: " + entity.getClass().getName());
             BigDecimal balance = entity.getBalance();
             String acctCode = entity.getAccountCode();
             AccountResponse accountResponse = new AccountResponse(acctCode, balance, pending, available);

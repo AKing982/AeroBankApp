@@ -1,0 +1,18 @@
+.deposit-schedule-combobox{
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+#schedule-combo{
+    width: 10%;
+    padding: 10px;
+    font-size: 1.2em;
+    align-self: flex-start;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#schedule-combo option{
+    font-size: 1.2em;
+}

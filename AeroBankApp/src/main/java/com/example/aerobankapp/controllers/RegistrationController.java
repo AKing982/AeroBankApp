@@ -2,7 +2,7 @@ package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.dto.RegistrationDTO;
 import com.example.aerobankapp.entity.UserEntity;
-import com.example.aerobankapp.services.UserDAOImpl;
+import com.example.aerobankapp.services.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 public class RegistrationController
 {
 
-    private final UserDAOImpl userDAO;
+    private final UserServiceImpl userDAO;
 
     @Autowired
-    public RegistrationController(UserDAOImpl userDAO)
+    public RegistrationController(UserServiceImpl userDAO)
     {
         this.userDAO = userDAO;
     }

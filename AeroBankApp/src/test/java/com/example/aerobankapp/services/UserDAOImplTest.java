@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class UserDAOImplTest
 {
     @MockBean
-    private UserDAOImpl userDAO;
+    private UserServiceImpl userDAO;
 
     @Autowired
     private EntityManager entityManager;
@@ -40,7 +40,7 @@ class UserDAOImplTest
     @BeforeEach
     void setUp()
     {
-        userDAO = new UserDAOImpl(userRepository, entityManager);
+        userDAO = new UserServiceImpl(userRepository, entityManager);
     }
 
     @Test

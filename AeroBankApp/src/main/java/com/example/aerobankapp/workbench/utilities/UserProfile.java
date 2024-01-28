@@ -3,7 +3,8 @@ package com.example.aerobankapp.workbench.utilities;
 import com.example.aerobankapp.dto.AccountDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.manager.*;
-import com.example.aerobankapp.services.UserDAOImpl;
+
+import com.example.aerobankapp.services.UserServiceImpl;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +48,9 @@ public class UserProfile
 
     public String getAccountNumber()
     {
-        UserDAOImpl userDAO = userProfileFacade.getUserProfileService().getUserManager();
+        UserServiceImpl userDAO = userProfileFacade.getUserProfileService().getUserManager();
 
-        return null;
+        return userDAO.getAccountNumber(user.getUserName());
     }
 
     public void setUserProfileFacade(UserProfileFacade userProfileFacade)
@@ -57,12 +58,6 @@ public class UserProfile
         this.userProfileFacade = userProfileFacade;
     }
 
-
-    public Set<AccountDTO> getAllAccounts()
-    {
-        AccountManager accountManager = userProfileFacade.getUserProfileService().getAccountManager();
-        return null;
-    }
 
     public BigDecimal getAccountBalance(String acctID)
     {
@@ -72,7 +67,7 @@ public class UserProfile
 
     public String getAccountNumber(String user)
     {
-        UserDAOImpl userDAO = userProfileFacade.getUserProfileService().getUserManager();
+        UserServiceImpl userDAO = userProfileFacade.getUserProfileService().getUserManager();
         return userDAO.getAccountNumber(user);
     }
 

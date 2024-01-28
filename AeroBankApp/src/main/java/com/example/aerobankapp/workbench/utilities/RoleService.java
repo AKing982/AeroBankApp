@@ -1,7 +1,7 @@
 package com.example.aerobankapp.workbench.utilities;
 
 import com.example.aerobankapp.exceptions.IllegalRoleException;
-import com.example.aerobankapp.services.UserDAOImpl;
+import com.example.aerobankapp.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 public class RoleService
 {
 
-    private UserDAOImpl userDAO;
+    private UserServiceImpl userDAO;
 
     @Autowired
-    public RoleService(UserDAOImpl userDAO)
+    public RoleService(UserServiceImpl userDAO)
     {
         this.userDAO = userDAO;
     }

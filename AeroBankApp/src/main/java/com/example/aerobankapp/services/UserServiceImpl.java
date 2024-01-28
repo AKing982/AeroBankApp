@@ -5,7 +5,6 @@ import com.example.aerobankapp.dto.RegistrationDTO;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.Role;
-import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
@@ -22,16 +21,16 @@ import java.util.Optional;
 
 @Service
 @Getter
-public class UserDAOImpl implements UserDAO
+public class UserServiceImpl implements UserService
 {
     private final UserRepository userRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
-    private Logger aeroLogger = LoggerFactory.getLogger(UserDAOImpl.class);
+    private Logger aeroLogger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    public UserDAOImpl(UserRepository repository, EntityManager manager)
+    public UserServiceImpl(UserRepository repository, EntityManager manager)
     {
         this.userRepository = repository;
         this.entityManager = manager;
@@ -110,11 +109,14 @@ public class UserDAOImpl implements UserDAO
     @Override
     @Transactional
     public String getAccountNumber(String user) {
-        TypedQuery<UserEntity> accountNumberQuery = entityManager.createQuery("SELECT e.accountNumber FROM UserEntity e WHERE e.username=:user", UserEntity.class);
+        TypedQuery<UserEntity> accountNumberQuery = getEntityManager().createQuery("FROM UserEntity WHERE username=:user", UserEntity.class);
         accountNumberQuery.setParameter("user", user);
         accountNumberQuery.setMaxResults(1);
 
-        UserEntity userEntity = accountNumberQuery.getSingleResult();
+        List<UserEntity> userEntityList = accountNumberQuery.getResultList();
+
+        UserEntity userEntity = userEntityList.stream().findFirst().orElseThrow();
+
         return userEntity.getAccountNumber();
     }
 

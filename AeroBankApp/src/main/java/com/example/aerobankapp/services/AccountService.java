@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public interface AccountDAO extends ServiceDAOModel<AccountEntity>
+public interface AccountService extends ServiceDAOModel<AccountEntity>
 {
     @Override
     List<AccountEntity> findAll();
@@ -27,4 +27,8 @@ public interface AccountDAO extends ServiceDAOModel<AccountEntity>
     BigDecimal getBalanceByAcctID(String acctID);
 
     BigDecimal getBalanceByAccountCode(String acctCode);
+
+    BigDecimal getTotalAccountBalances(String user);
+
+    Long getNumberOfAccounts(String user);
 }

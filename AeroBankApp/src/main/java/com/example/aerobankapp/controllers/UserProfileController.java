@@ -1,29 +1,39 @@
 package com.example.aerobankapp.controllers;
 
-import com.example.aerobankapp.services.UserDAOImpl;
-import com.example.aerobankapp.workbench.utilities.User;
-import com.example.aerobankapp.workbench.utilities.UserProfile;
+import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.utilities.response.UserProfileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping(value="/api/profile", method= RequestMethod.GET)
 @CrossOrigin(value="http://localhost:3000")
 public class UserProfileController {
 
-    private UserDAOImpl userDAO;
+    private UserServiceImpl userDAO;
+    private AccountService accountDAO;
 
     @Autowired
-    public UserProfileController(UserDAOImpl userDAO)
+    public UserProfileController(UserServiceImpl userDAO, AccountService accountDAO)
     {
         this.userDAO = userDAO;
+        this.accountDAO = accountDAO;
     }
 
     @GetMapping(value="/data/{username}")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
     public ResponseEntity<?> getUserProfileData(@PathVariable String username)
     {
-        return ResponseEntity.ok(new UserProfileResponse(username));
+        BigDecimal totalBalances = accountDAO.getTotalAccountBalances(username);
+        String accountNumber = userDAO.getAccountNumber(username);
+        Long numberOfAccounts = accountDAO.getNumberOfAccounts(username);
+
+        return ResponseEntity.ok(new UserProfileResponse(username, accountNumber, totalBalances, numberOfAccounts));
     }
+
 }

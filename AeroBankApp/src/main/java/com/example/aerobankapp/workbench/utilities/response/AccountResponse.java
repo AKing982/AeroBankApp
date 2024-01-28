@@ -1,8 +1,16 @@
 package com.example.aerobankapp.workbench.utilities.response;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class AccountResponse
+@Getter
+@Setter
+@EqualsAndHashCode
+public class AccountResponse implements Serializable
 {
     private String accountCode;
     private BigDecimal balance;

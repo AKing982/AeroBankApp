@@ -6,7 +6,7 @@ import com.example.aerobankapp.dto.AccountDTO;
 import com.example.aerobankapp.dto.BalanceHistoryDTO;
 import com.example.aerobankapp.dto.UserDTO;
 import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.services.AccountDAOImpl;
+import com.example.aerobankapp.services.AccountServiceImpl;
 import com.example.aerobankapp.workbench.utilities.conversion.AccountMapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 @Service
 public class AccountManagerImpl implements AccountManager
 {
-    private AccountDAOImpl accountDAO;
+    private AccountServiceImpl accountDAO;
 
     @Autowired
-    public AccountManagerImpl(AccountDAOImpl accountDAO)
+    public AccountManagerImpl(AccountServiceImpl accountDAO)
     {
         Objects.requireNonNull(accountDAO, "AccountDAO cannot be null");
         this.accountDAO = accountDAO;

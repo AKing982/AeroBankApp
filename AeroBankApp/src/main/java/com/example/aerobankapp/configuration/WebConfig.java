@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalAuthentication
 public class WebConfig {
 
     @Bean
@@ -23,10 +25,10 @@ public class WebConfig {
                 .cors(Customizer.withDefaults())
                 .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/accounts/{user}").permitAll()
-                        .requestMatchers("/api/profile/data/{user}").permitAll()
-                               .anyRequest().authenticated());
+                    //    .requestMatchers("/api/auth/login").permitAll()
+                    //    .requestMatchers("/api/accounts/{user}").permitAll()
+                    //    .requestMatchers("/api/profile/data/{user}").permitAll()
+                               .anyRequest().permitAll());
 
         return http.build();
     }

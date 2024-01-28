@@ -19,11 +19,11 @@ import java.util.NoSuchElementException;
 @Getter
 public class UserDetailsServiceImpl implements UserDetailsService
 {
-    private final UserDAOImpl userDAO;
+    private final UserServiceImpl userDAO;
     private Logger LOGGER = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
     @Autowired
-    public UserDetailsServiceImpl(UserDAOImpl userDAO)
+    public UserDetailsServiceImpl(UserServiceImpl userDAO)
     {
         this.userDAO = userDAO;
     }

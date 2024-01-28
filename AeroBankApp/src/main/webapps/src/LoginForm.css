@@ -90,13 +90,13 @@
 
 .login-body{
 
-
     justify-content: center;
     text-align: center;
 }
 
 .input-field {
-    margin-bottom: 10px; /* Space between input fields */
+    margin-bottom: 3px;
+    margin-left: -12px;
     position: relative;
 
 }

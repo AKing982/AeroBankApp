@@ -22,7 +22,7 @@ class UserDetailsServiceImplTest
     private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    private UserDAOImpl userDAO;
+    private UserServiceImpl userDAO;
 
     @BeforeEach
     void setUp()

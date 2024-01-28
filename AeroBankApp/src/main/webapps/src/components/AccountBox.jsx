@@ -28,7 +28,7 @@ export default function AccountBox({color, accountCode, balance, pending, availa
     return (
         <div className="account-box" role="button" onClick={handleClick} onKeyPress={handleKeyPress} tabIndex="0">
             <div style={circleStyle}>{accountCode}</div>
-            <div className="account-details">
+            <div className="account-details-container">
                 <div className="account-item">
                     <span className="account-label">Balance:</span>
                     <span className="account-value">${balance}</span>

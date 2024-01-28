@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 class UserLogServiceImplTest {
 
     @MockBean
-    private UserLogDAOImpl userLogService;
+    private UserLogServiceImpl userLogService;
 
     @Autowired
     private UserLogRepository userLogRepository;
@@ -41,7 +41,7 @@ class UserLogServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        userLogService = new UserLogDAOImpl(userLogRepository, entityManager);
+        userLogService = new UserLogServiceImpl(userLogRepository, entityManager);
     }
 
     @Test
@@ -64,7 +64,7 @@ class UserLogServiceImplTest {
     public void testFindAll()
     {
         List<UserLogDTO> userLogModelList = Arrays.asList(new UserLogDTO(), new UserLogDTO());
-        userLogService = mock(UserLogDAOImpl.class);
+        userLogService = mock(UserLogServiceImpl.class);
 
     }
 

@@ -1,5 +1,6 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.dao.UserLogService;
 import com.example.aerobankapp.entity.UserLogEntity;
 
 import com.example.aerobankapp.repositories.UserLogRepository;
@@ -15,15 +16,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserLogDAOImpl implements UserLogDAO
+public class UserLogServiceImpl implements UserLogService
 {
     private UserLogRepository userLogRepo;
     @PersistenceContext
     private EntityManager em;
-    private AeroLogger aeroLogger = new AeroLogger(UserLogDAOImpl.class);
+    private AeroLogger aeroLogger = new AeroLogger(UserLogServiceImpl.class);
 
     @Autowired
-    public UserLogDAOImpl(UserLogRepository userLogRepo, EntityManager entityManager)
+    public UserLogServiceImpl(UserLogRepository userLogRepo, EntityManager entityManager)
     {
         this.userLogRepo = userLogRepo;
         this.em = entityManager;

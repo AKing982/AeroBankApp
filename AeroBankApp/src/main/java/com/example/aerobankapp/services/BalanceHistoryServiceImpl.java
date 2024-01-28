@@ -2,7 +2,6 @@ package com.example.aerobankapp.services;
 
 
 import com.example.aerobankapp.entity.BalanceHistoryEntity;
-import com.example.aerobankapp.model.ServiceDAOModel;
 import com.example.aerobankapp.repositories.BalanceHistoryRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -15,14 +14,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BalanceHistoryDAOImpl implements BalanceHistoryDAO
+public class BalanceHistoryServiceImpl implements BalanceHistoryService
 {
     private BalanceHistoryRepository balanceHistRepo;
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    public BalanceHistoryDAOImpl(BalanceHistoryRepository balanceHistRepo, EntityManager entityManager)
+    public BalanceHistoryServiceImpl(BalanceHistoryRepository balanceHistRepo, EntityManager entityManager)
     {
         this.balanceHistRepo = balanceHistRepo;
         this.entityManager = entityManager;
