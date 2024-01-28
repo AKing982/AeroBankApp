@@ -61,4 +61,3 @@ Acknowledgements
 React
 Material-UI
 Node.js
-[Your additional dependencies or shoutouts]
