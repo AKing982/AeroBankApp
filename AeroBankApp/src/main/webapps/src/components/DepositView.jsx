@@ -20,9 +20,11 @@ import EnhancedTable from "./EnhancedTable";
 import {EnhancedTableHead} from "./EnhancedTable";
 import {Button} from "@mui/material";
 import BasicButton from "./BasicButton";
+import AlertDialog from "./AlertDialog";
 
 export default function DepositView()
 {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [schedule, setSchedule] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
@@ -53,6 +55,7 @@ export default function DepositView()
     }, []);
 
     const handleDeposit = async() => {
+        setIsDialogOpen(true);
         const requestData = {
             accountID,
             deposit,
@@ -63,6 +66,8 @@ export default function DepositView()
             schedule
         }
 
+
+
       try{
           console.log(requestData);
           const response = await axios.post('http://localhost:8080/api/deposits/create', requestData);
@@ -71,7 +76,12 @@ export default function DepositView()
       {
           console.error('There was an error!', error);
       }
+
     };
+
+    const handleCloseDialog = () => {
+        setIsDialogOpen(false);
+    }
 
     return (
         <div className="deposit-view-container">
