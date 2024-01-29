@@ -40,7 +40,7 @@ export default function DepositView()
 
     useEffect(() => {
         setIsLoading(true);
-      axios.get(`http://localhost:8080/api/accounts/data/codes/${user}`)
+      axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/accounts/data/codes/${user}`)
           .then(response => {
               setAccountCodes(response.data)
               console.log('Fetching Account Codes: ', response.data);

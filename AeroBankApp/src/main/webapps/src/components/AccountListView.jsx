@@ -11,7 +11,7 @@ export default function AccountListView()
     useEffect(() => {
         const fetchAccounts = async () => {
             try{
-                const response = await axios.get(`http://localhost:8080/api/accounts/data/${username}`);
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/accounts/data/${username}`);
 
                 console.log('Fetching Accounts: ', response.data);
                 setAccountData(response.data);

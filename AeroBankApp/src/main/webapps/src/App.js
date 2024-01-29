@@ -12,7 +12,7 @@ import ForgotPasswordForm from "./components/ForgotPasswordForm";
 function App() {
   return (
       <div className="App">
-          <Router>
+          <Router basename="/AeroBankApp">
               <Routes>
                   <Route path="/" element={<LoginFormOLD/>}/>
                   <Route path="/register" element={<RegistrationForm />}/>

@@ -27,7 +27,7 @@ export default function Home()
 
     useEffect(() => {
             setIsLoading(true);
-            axios.get(`http://localhost:8080/api/profile/data/${username}`)
+            axios.get(`http://localhost:8080/AeroBankApp/api/profile/data/${username}`)
                 .then(response => {
                     setAccountNumber(response.data.accountNumber);
                     setTotalAccounts(response.data.totalAccounts);
