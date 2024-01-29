@@ -31,4 +31,6 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
     BigDecimal getTotalAccountBalances(String user);
 
     Long getNumberOfAccounts(String user);
+
+    List<String> getListOfAccountCodes(String user);
 }

@@ -11,6 +11,11 @@
     background-color: #f2f2f2;
 }
 
+.logout-button-header{
+    margin-left: 190px;
+    margin-top: 10px;
+}
+
 .home-tab {
     flex-grow: 1;
     padding: 20px 0;

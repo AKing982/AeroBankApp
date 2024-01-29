@@ -118,4 +118,15 @@ public class AccountServiceImpl implements AccountService
         return totalAccounts.getSingleResult();
 
     }
+
+    @Override
+    public List<String> getListOfAccountCodes(String user) {
+        String accountCodesQuery = "SELECT a.accountCode " +
+                    "FROM AccountEntity a " +
+                    "JOIN a.users u " +
+                    "WHERE u.username = :username";
+        TypedQuery<String> accountCodes = getEntityManager().createQuery(accountCodesQuery, String.class);
+        accountCodes.setParameter("username", user);
+        return accountCodes.getResultList();
+    }
 }

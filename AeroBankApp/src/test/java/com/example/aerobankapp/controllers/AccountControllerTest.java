@@ -91,6 +91,27 @@ class AccountControllerTest {
         return accountResponseList;
     }
 
+    @Test
+    @WithMockUser
+    public void whenGetAccountCodes_thenReturnListOfAccountCodes() throws Exception
+    {
+        String user = "AKing94";
+
+        List<String> accountCodes = new ArrayList<>();
+        accountCodes.add("A1");
+        accountCodes.add("A2");
+        accountCodes.add("A3");
+
+        given(accountDAO.getListOfAccountCodes(user)).willReturn(accountCodes);
+
+        mockMvc.perform(get("/api/accounts/data/codes/{user}", user)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("[0].accountCode", is("A1")));
+
+
+    }
+
     @AfterEach
     void tearDown() {
     }

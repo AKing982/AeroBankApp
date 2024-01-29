@@ -42,6 +42,29 @@ public class AccountController
         return ResponseEntity.ok(accountResponseList);
     }
 
+    @GetMapping("/data/codes/{user}")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public ResponseEntity<?> getListOfExistingAccountCodes(@PathVariable String user)
+    {
+        List<String> accountCodes = accountDAO.getListOfAccountCodes(user);
+        List<AccountResponse> accountResponseList = getAccountCodesAsResponse(accountCodes);
+
+        return ResponseEntity.ok(accountResponseList);
+    }
+
+    private List<AccountResponse> getAccountCodesAsResponse(List<String> accountCodes)
+    {
+        List<AccountResponse> accountResponseList = new ArrayList<>();
+        for(String code : accountCodes)
+        {
+            AccountResponse accountResponse = new AccountResponse(code);
+            accountResponseList.add(accountResponse);
+        }
+
+        return accountResponseList;
+    }
+
     private List<AccountResponse> getAccountResponseList(List<AccountEntity> entityList, BigDecimal pending, BigDecimal available)
     {
         List<AccountResponse> accountResponseList = new ArrayList<>();

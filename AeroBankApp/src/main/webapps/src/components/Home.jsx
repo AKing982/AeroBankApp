@@ -8,6 +8,7 @@ import TransferView from "./TransferView";
 import SettingsView from "./SettingsView";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import BasicButton from "./BasicButton";
 
 export default function Home()
 {
@@ -129,11 +130,14 @@ export default function Home()
                         <div className="current-balance">Total Balance: ${formatAmount(balance)}</div>
                         <div className="total-accounts">Total Accounts: {totalAccounts}</div>
                     </div>
-                    <button className="logout-button" onClick={handleLogout}>Logout</button>
+                    <div className="logout-button-header">
+                        <BasicButton text="Logout" submit={handleLogout}/>
+                    </div>
+
                 </div>
             </header>
             <div className="home-tabs">
-                <HomeTab label="Transactions" isActive={activeTab === 'Transactions'} onTabClick={() => setIsActiveTab('Transactions')} />
+               <HomeTab label="Transactions" isActive={activeTab === 'Transactions'} onTabClick={() => setIsActiveTab('Transactions')} />
                 <HomeTab label="Make a Deposit" isActive={activeTab === 'Make a Deposit'} onTabClick={() => setIsActiveTab('Make a Deposit')} />
                 <HomeTab label="Make a Withdrawal" isActive={activeTab === 'Make a Withdraw'} onTabClick={() => setIsActiveTab('Make a Withdraw')}/>
                 <HomeTab label="Make a Transfer" isActive={activeTab === 'Make a Transfer'} onTabClick={() => setIsActiveTab('Make a Transfer')}/>

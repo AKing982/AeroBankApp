@@ -1,3 +1,5 @@
+import BasicTextField from "./BasicTextField";
+
 export function DepositDescription({description, setDescription})
 {
     const handleDescriptionChange = (event) => {
@@ -7,13 +9,9 @@ export function DepositDescription({description, setDescription})
     return (
         <div>
             <label htmlFor="deposit-description" className="deposit-description-label">Deposit Description: </label>
-            <input
-                type="text"
-                id="description"
-                className="input-field2"
-                value={description}
-                onChange={handleDescriptionChange}
-            />
+            <div className="description-textfield">
+                <BasicTextField label="Description" value={description} height="55" onChange={handleDescriptionChange}/>
+            </div>
         </div>
     )
 }

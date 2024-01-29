@@ -1,6 +1,12 @@
 .deposit-schedule-combobox{
-    font-size: 1.2em;
+    font-size: 1.0em;
     margin-bottom: 5px;
+    margin-left: -140px;
+}
+
+.schedule-interval-combo{
+    margin-left: 40px;
+    margin-top: -30px;
 }
 
 #schedule-combo{

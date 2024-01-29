@@ -5,6 +5,7 @@ import '../LoginForm.css';
 import AlertDialog from "./CustomAlert";
 import '../CustomAlert.css';
 import {Spinner} from "./Spinner";
+import LoginAlert from "./LoginAlert";
 
 export default function LoginFormOLD()
 {
@@ -149,11 +150,13 @@ export default function LoginFormOLD()
                     console.log('Login Failed');
                     setDialogMessage(`Incorrect Username or Password`);
                     setIsDialogOpen(true);
+                    setError('Incorrect Username or Password');
                 }
 
         }catch(error)
         {
              console.error("Network Error: ", error);
+             setError('A network error occurred, please try again later.');
         }finally {
             setLoading(false);
         }
@@ -181,6 +184,10 @@ export default function LoginFormOLD()
     return (
         <div className="login-container">
             {loading === true ? <Spinner/> : ''}
+
+            {error && (
+                <LoginAlert/>
+            )}
             <div className="background-image">
                 <div className="login-box">
                     <div className="login-header">
@@ -210,11 +217,6 @@ export default function LoginFormOLD()
                             </div>
                             <div className="login-footer">
                                 <button className={`button2 ${isLoginButtonEnabled ? 'disabled' : ''}`} disabled={isLoginButtonEnabled}>Login</button>
-                                <AlertDialog
-                                    title="Failed"
-                                    message="Invalid Credentials"
-                                    isOpen={isDialogOpen}
-                                    onClose={() => setIsDialogOpen(false)}/>
                             </div>
                         </form>
                     </div>

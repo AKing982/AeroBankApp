@@ -4,6 +4,8 @@ import './TransactionView.css';
 import TableView from "./TableView";
 import ListView from "./AccountListView";
 import CollapsiblePanel from "./CollapsiblePanel";
+import {Divider} from "@mui/material";
+
 
 export default function TransactionView()
 {
@@ -18,13 +20,13 @@ export default function TransactionView()
 
     return (
         <div className="transaction-view-container">
-            <header className="transaction-view-header">
-            </header>
+
             <div className="account-list-body">
               <ListView items={<AccountBox accountCode={"A1"} available={4500} balance={5600} pending={15} color="red"/>
               }/>
+                <Divider orientation="vertical" variant="fullWidth"/>
             </div>
-            <div className="vertical-line"></div>
+
             <div className="transaction-view-right">
                 <CollapsiblePanel title="Pending Transactions" content={<TableView data={data}/>}/>
                 <TableView data={data}/>

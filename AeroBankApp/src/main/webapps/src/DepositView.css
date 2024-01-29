@@ -9,7 +9,7 @@
 }
 
 .deposit-account-list{
-    flex: 1;
+    display: block;
     margin-right: 20px;
 }
 
@@ -31,7 +31,7 @@
 
 .deposit-view-right{
     flex: 2;
-    display: flex;
+    display: block;
     flex-direction: column;
 }
 
@@ -48,13 +48,14 @@
 }
 
 .date-time-container{
-    display: flex;
-    justify-content: space-between;
+    margin-left: 242px;
+
+
 }
 
 .deposit-time{
     padding: 15px;
-    margin-left: 150px;
+    margin-left: 110px;
 }
 
 /**
@@ -77,17 +78,18 @@
 
 .form-group{
     margin-bottom: 20px;
+
 }
 
 .date-time.container{
     display:flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .deposit-submit-button{
     display:flex;
-    justify-content: flex-end;
+    justify-content: left;
 }
 
 .button{
@@ -102,8 +104,25 @@
 .deposit-account-label{
     font-size: 1.2em;
     margin-bottom: 5px;
-    display: block;
+    margin-left:-25px;
+
     color: #333;
+}
+
+.time-picker-label{
+    margin-left: -900px;
+}
+
+.time-pickerBox-field{
+    margin-left: 45px;
+    margin-top:-30px;
+}
+
+.basic-date-picker-label{
+    margin-left: -1039px;
+
+    margin-top:-40px;
+
 }
 .input-field2{
     width:20%;
@@ -115,7 +134,44 @@
 }
 
 .deposit-date{
-    margin-left: 90px;
+    margin-left: 110px;
+}
+
+.date-picker-choice{
+    margin-left: -70px;
+    margin-top: -20px;
+}
+
+.deposit-schedule-mode{
+    margin-left: 130px;
+}
+
+.deposit-account-selection{
+    display: block;
+}
+
+.deposit-amount-label{
+
+}
+
+.amount-textfield{
+    margin-left: 160px;
+    margin-top: -30px;
+}
+
+.description-textfield{
+    margin-left: 160px;
+    margin-top:-30px;
+}
+
+.account-select {
+    margin-left: 150px;
+    margin-top:-50px;
+    padding:20px;
+}
+
+.deposit-amount-field{
+
 }
 
 .deposit-account-selection,
@@ -123,4 +179,5 @@
 .deposit-amount-field,
 .deposit-schedule-mode{
     margin-bottom: 10px;
+    text-align: left;
 }

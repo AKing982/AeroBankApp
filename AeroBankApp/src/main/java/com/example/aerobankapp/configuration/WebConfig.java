@@ -62,6 +62,12 @@ public class WebConfig {
                         .allowedMethods("GET")
                         .allowedHeaders("*")
                         .allowCredentials(true);
+
+                registry.addMapping("/api/accounts/data/codes/{user}")
+                        .allowedOrigins("http://localhost:3000")
+                        .allowedMethods("GET")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
 

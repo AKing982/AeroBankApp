@@ -24,4 +24,9 @@ public class AccountResponse implements Serializable
         this.pendingAmount = pending;
         this.availableAmount = available;
     }
+
+    public AccountResponse(String accountCode)
+    {
+        this.accountCode = accountCode;
+    }
 }

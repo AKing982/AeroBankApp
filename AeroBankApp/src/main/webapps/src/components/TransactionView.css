@@ -10,7 +10,7 @@
 }
 
 .account-list-body{
-    flex: 1;
+    display: block;
     padding: 16px;
 }
 
