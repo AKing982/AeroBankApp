@@ -1,6 +1,7 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.dto.DepositDTO;
+import com.example.aerobankapp.engine.DepositEngine;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +13,8 @@ import java.util.List;
 @RequestMapping(value="/api/deposits")
 @CrossOrigin(value="http://localhost:3000")
 public class DepositController {
+
+    private DepositEngine depositEngine
 
 
     @GetMapping("/data/{accountID}")
@@ -25,6 +28,8 @@ public class DepositController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createDeposit(@Valid @RequestBody DepositDTO depositDTO)
     {
+
+
         return ResponseEntity.ok("Posted");
     }
 
