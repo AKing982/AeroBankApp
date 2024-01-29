@@ -44,7 +44,7 @@ public class SchedulerFactoryProducer
                 abstractSchedulerTypeFactory = new BiWeeklySchedulerFactory(scheduler);
                 yield abstractSchedulerTypeFactory.createScheduler();
             }
-            case EVERY_TWO_DAYS -> {
+            case BIDAILY -> {
                 abstractSchedulerTypeFactory = new EvenDaySchedulerFactory(scheduler, evenDayCronTriggerFactory);
                 yield abstractSchedulerTypeFactory.createScheduler();
             }

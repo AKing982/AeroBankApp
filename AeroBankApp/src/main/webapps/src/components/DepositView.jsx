@@ -21,6 +21,8 @@ import {EnhancedTableHead} from "./EnhancedTable";
 import {Button} from "@mui/material";
 import BasicButton from "./BasicButton";
 import AlertDialog from "./AlertDialog";
+import DataTable from "./DataTable";
+import Account from "./Account";
 
 export default function DepositView()
 {
@@ -61,18 +63,27 @@ export default function DepositView()
         console.log(interval);
         console.log(description);
         const requestData = {
-            account: accountID,
+            accountCode: accountID,
             amount: deposit,
-            descr: description,
+            description: description,
             scheduleInterval: schedule,
-            time: selectedTime,
+            timeScheduled: selectedTime,
             date: selectedDate,
         }
 
       try{
-          console.log(requestData);
-          const response = await axios.post('http://localhost:8080/AeroBankApp/api/deposits/create', requestData);
-          console.log('Deposit posted successfully:', response.data);
+          console.log("Request Data before POST",requestData);
+          const response = await fetch(`http://localhost:8080/AeroBankApp/api/deposits/create`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+              },
+              body: JSON.stringify(requestData)
+          });
+          const responseData = await response.json();
+
+          console.log('Deposit posted successfully:', responseData);
       }catch(error)
       {
           console.error('There was an error!', error);
@@ -97,13 +108,17 @@ export default function DepositView()
     }
 
     const handleDateChange = (newValue) => {
-        setSelectedDate(newValue);
+        let stringDate = parseDateToString(newValue);
+        setSelectedDate(stringDate);
     }
 
     const handleTimeChange = (newValue) => {
 
         setSelectedTime(newValue);
+    }
 
+    const parseDateToString = (date) => {
+        return date.toLocaleString();
     }
 
     const handleScheduleChange = (event, newValue) => {
@@ -111,7 +126,6 @@ export default function DepositView()
         {
             setSchedule(newValue);
         }
-
     }
 
     return (
@@ -119,7 +133,7 @@ export default function DepositView()
             <header className="deposit-view-header">
             </header>
             <div className="deposit-account-list">
-                <ListView items={<AccountBox accountCode={"A1"} available={4500} balance={5600} pending={15} color="red"/>}
+                <ListView items={<Account accountCode={"A1"} available={4500} balance={5600} pending={15} color="red"/>}
                 />
             </div>
             <div className="vertical-line">
@@ -152,7 +166,7 @@ export default function DepositView()
                         <BasicButton text="Submit" submit={handleDeposit}/>
                     </div>
                 </div>
-                <TableView />
+                <DataTable accountID={accountID} />
             </div>
         </div>
     );

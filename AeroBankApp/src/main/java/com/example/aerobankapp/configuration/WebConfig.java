@@ -68,6 +68,12 @@ public class WebConfig {
                         .allowedMethods("GET")
                         .allowedHeaders("*")
                         .allowCredentials(true);
+
+                registry.addMapping("/api/deposits/create")
+                        .allowedOrigins("http:localhost:3000")
+                        .allowedMethods("POST", "GET")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
 

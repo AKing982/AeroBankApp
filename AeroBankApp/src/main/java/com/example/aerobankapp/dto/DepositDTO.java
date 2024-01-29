@@ -5,9 +5,11 @@ import java.time.LocalDate;
 
 public record DepositDTO(int depositID,
                          int userID,
-                         String accountID,
-                         BigDecimal amount,
-                         LocalDate date,
+                         String accountCode,
+                         String amount,
+                         String date,
+                         String timeScheduled,
+                         String scheduleInterval,
                          String description)
 {
 

@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import AccountBox from "./AccountBox";
 import axios from "axios";
+import Account from "./Account";
 
 export default function AccountListView()
 {
@@ -31,7 +32,7 @@ export default function AccountListView()
             <div className="account-list-body">
                 {accountData.map((account) => {
                     return(
-                        <AccountBox
+                        <Account
                             key={account.id}
                             accountCode={account.accountCode}
                             balance={account.balance}

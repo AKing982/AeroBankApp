@@ -30,7 +30,7 @@ public class TriggerFactoryProducer
             case CUSTOM:
                 triggerFactory = (TriggerFactory) new CustomCronTriggerFactory(triggerCriteria);
                 return triggerFactory.createTrigger();
-            case EVERY_TWO_DAYS:
+            case BIDAILY:
                 triggerFactory = (TriggerFactory) new EvenDayCronTriggerFactory(triggerCriteria);
                 return triggerFactory.createTrigger();
             case DAILY:

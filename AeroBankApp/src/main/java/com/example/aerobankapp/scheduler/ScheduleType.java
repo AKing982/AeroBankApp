@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 public enum ScheduleType
 {
-    BIWEEKLY("Bi Weekly"),
+    BIWEEKLY("Bi-Weekly"),
     MONTHLY("Monthly"),
     WEEKLY("Weekly"),
     DAILY("Daily"),
@@ -13,7 +13,7 @@ public enum ScheduleType
 
     NONE("None"),
 
-    EVERY_TWO_DAYS("Every Two Days");
+    BIDAILY("Bi-Daily");
 
     private String schedule;
 
