@@ -3,12 +3,15 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DemoContainer} from "@mui/x-date-pickers/internals/demo";
 import {LocalizationProvider} from "@mui/x-date-pickers";
 
-export default function DatePickerBox({label, height, width})
+export default function DatePickerBox({label, height, width, value, onChange})
 {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['DatePicker']}>
-                <DatePicker label={label}
+                <DatePicker
+                    value={value}
+                    onChange={onChange}
+                    label={label}
                             sx={{
                                 height: `${height}px`,
                                 width: `${width}px`,

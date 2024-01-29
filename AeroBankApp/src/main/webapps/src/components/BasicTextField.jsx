@@ -2,14 +2,8 @@ import {TextField} from "@mui/material";
 import {Box} from "@mui/system";
 import {useState} from "react";
 
-export default function BasicTextField({label, height})
+export default function BasicTextField({label, height, value, onChange})
 {
-    const [value, setValue] = useState('');
-
-    const handleChange = (event) => {
-        setValue(event.target.value);
-    }
-
     return(
         <Box
             component="form"
@@ -19,7 +13,7 @@ export default function BasicTextField({label, height})
             noValidate
             autoComplete="off"
         >
-            <TextField id="outlined-basic" label={label} variant="outlined" value={value} onChange={handleChange}
+            <TextField id="outlined-basic" label={label} variant="outlined" value={value} onChange={onChange}
                        InputLabelProps={{style: {
                       }
                        }}

@@ -25,9 +25,9 @@ import AlertDialog from "./AlertDialog";
 export default function DepositView()
 {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [schedule, setSchedule] = useState('');
-    const [selectedDate, setSelectedDate] = useState('');
-    const [selectedTime, setSelectedTime] = useState('');
+    const [schedule, setSchedule] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedTime, setSelectedTime] = useState(null);
     const [description, setDescription] = useState('');
     const [interval, setInterval] = useState('');
     const [IsLoading, setIsLoading] = useState(false);
@@ -40,7 +40,7 @@ export default function DepositView()
 
     useEffect(() => {
         setIsLoading(true);
-      axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/accounts/data/codes/${user}`)
+      axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/codes/${user}`)
           .then(response => {
               setAccountCodes(response.data)
               console.log('Fetching Account Codes: ', response.data);
@@ -56,21 +56,22 @@ export default function DepositView()
 
     const handleDeposit = async() => {
         setIsDialogOpen(true);
+        console.log(accountID);
+        console.log(deposit);
+        console.log(interval);
+        console.log(description);
         const requestData = {
-            accountID,
-            deposit,
-            description,
-            interval,
-            selectedTime,
-            selectedDate,
-            schedule
+            account: accountID,
+            amount: deposit,
+            descr: description,
+            scheduleInterval: schedule,
+            time: selectedTime,
+            date: selectedDate,
         }
-
-
 
       try{
           console.log(requestData);
-          const response = await axios.post('http://localhost:8080/api/deposits/create', requestData);
+          const response = await axios.post('http://localhost:8080/AeroBankApp/api/deposits/create', requestData);
           console.log('Deposit posted successfully:', response.data);
       }catch(error)
       {
@@ -79,8 +80,38 @@ export default function DepositView()
 
     };
 
+    const handleAccountIDChange = (event) => {
+        setAccountID(event.target.value);
+    }
+
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
+    }
+
+    const handleDescriptionChange = (event) => {
+        setDescription(event.target.value);
+    }
+
+    const handleAmountChange = (event) => {
+        setDeposit(event.target.value);
+    }
+
+    const handleDateChange = (newValue) => {
+        setSelectedDate(newValue);
+    }
+
+    const handleTimeChange = (newValue) => {
+
+        setSelectedTime(newValue);
+
+    }
+
+    const handleScheduleChange = (event, newValue) => {
+        if(newValue !== null && newValue !== undefined)
+        {
+            setSchedule(newValue);
+        }
+
     }
 
     return (
@@ -97,25 +128,25 @@ export default function DepositView()
                 <div className="form-group">
                     <div className="deposit-account-selection">
                         <label htmlFor="account-deposit" className="deposit-account-label">Account to Deposit: </label>
-                        <AccountSelect accounts={accountCodes} setAccountCodes={setAccountCodes}/>
+                        <AccountSelect accounts={accountCodes} value={accountID} onChange={handleAccountIDChange}/>
                     </div>
                     <div className="deposit-deposit-description">
-                        <DepositDescription description={description}
-                                            setDescription={setDescription} />
+                        <DepositDescription value={description}
+                                            onChange={handleDescriptionChange} />
                     </div>
                     <div className="deposit-amount-field">
-                        <DepositAmount deposit={deposit} setDeposit={setDeposit}/>
+                        <DepositAmount value={deposit} onChange={handleAmountChange}/>
                     </div>
                     <div className="deposit-schedule-mode">
-                       <ScheduleComboBox data={options} setSchedule={setSchedule}/>
+                       <ScheduleComboBox data={options} value={schedule} onChange={handleScheduleChange}/>
                     </div>
                     <div className="date-time-container">
                         <BasicDatePicker label="Select Date" height="60" width="20" title="Choose a Date: "
-                        selectedDate={selectedDate}
-                                         onDateChange={setSelectedDate}/>
+                        value={selectedDate}
+                                         onChange={handleDateChange}/>
                 </div>
                     <div className="deposit-time">
-                        <TimePickerBox height="60"/>
+                        <TimePickerBox height="60" value={selectedTime} onChange={handleTimeChange}/>
                     </div>
                     <div className="deposit-submit-button">
                         <BasicButton text="Submit" submit={handleDeposit}/>
