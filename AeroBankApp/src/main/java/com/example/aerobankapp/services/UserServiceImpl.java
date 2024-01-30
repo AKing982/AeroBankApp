@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService
 
     @Override
     @Transactional
-    public String getAccountNumber(String user) {
+    public String getAccountNumberByUserName(String user) {
         TypedQuery<UserEntity> accountNumberQuery = getEntityManager().createQuery("FROM UserEntity WHERE username=:user", UserEntity.class);
         accountNumberQuery.setParameter("user", user);
         accountNumberQuery.setMaxResults(1);
@@ -118,6 +118,26 @@ public class UserServiceImpl implements UserService
         UserEntity userEntity = userEntityList.stream().findFirst().orElseThrow();
 
         return userEntity.getAccountNumber();
+    }
+
+    @Override
+    public String getEmailByUserName(String user) {
+        return null;
+    }
+
+    @Override
+    public String getEmailByID(Long id) {
+        return null;
+    }
+
+    @Override
+    public String getPinNumberByUserName(String user) {
+        return null;
+    }
+
+    @Override
+    public String getPinNumberByID(Long id) {
+        return null;
     }
 
 }

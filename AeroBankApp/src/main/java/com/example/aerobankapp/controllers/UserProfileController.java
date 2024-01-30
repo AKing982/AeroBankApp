@@ -30,7 +30,7 @@ public class UserProfileController {
     public ResponseEntity<?> getUserProfileData(@PathVariable String username)
     {
         BigDecimal totalBalances = accountDAO.getTotalAccountBalances(username);
-        String accountNumber = userDAO.getAccountNumber(username);
+        String accountNumber = userDAO.getAccountNumberByUserName(username);
         Long numberOfAccounts = accountDAO.getNumberOfAccounts(username);
 
         return ResponseEntity.ok(new UserProfileResponse(username, accountNumber, totalBalances, numberOfAccounts));

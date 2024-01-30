@@ -78,7 +78,7 @@ class UserServiceImplTest {
         when(typedQuery.setParameter("user", "AKing94")).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(Collections.singletonList(mockUser));
 
-        String accountNumber = userService.getAccountNumber("AKing94");
+        String accountNumber = userService.getAccountNumberByUserName("AKing94");
 
         assertEquals(expectedAccountNumber, accountNumber);
     }
@@ -89,14 +89,14 @@ class UserServiceImplTest {
         when(typedQuery.setParameter("user", "Mike23")).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(Collections.emptyList());
 
-        assertThrows(NoSuchElementException.class, () -> userService.getAccountNumber("Mike23"));
+        assertThrows(NoSuchElementException.class, () -> userService.getAccountNumberByUserName("Mike23"));
     }
 
     @Test
     public void getAccountNumber_InvalidUserName()
     {
-        assertThrows(NoSuchElementException.class, () -> userService.getAccountNumber(null));
-        assertThrows(NoSuchElementException.class, () -> userService.getAccountNumber(""));
+        assertThrows(NoSuchElementException.class, () -> userService.getAccountNumberByUserName(null));
+        assertThrows(NoSuchElementException.class, () -> userService.getAccountNumberByUserName(""));
     }
 
 

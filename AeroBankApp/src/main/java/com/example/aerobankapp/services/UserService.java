@@ -30,5 +30,13 @@ public interface UserService extends ServiceDAOModel<UserEntity>
 
     UserEntity registerUser(RegistrationDTO registrationDTO);
 
-    String getAccountNumber(String user);
+    String getAccountNumberByUserName(String user);
+
+    String getEmailByUserName(String user);
+
+    String getEmailByID(Long id);
+
+    String getPinNumberByUserName(String user);
+
+    String getPinNumberByID(Long id);
 }

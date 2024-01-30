@@ -1,0 +1,14 @@
+.withdraw-view-container{
+    display:flex;
+    flex-direction: row;
+    padding: 20px;
+}
+
+.withdraw-view-header{
+
+}
+
+.withdraw-account-list{
+    display: block;
+    margin-right: 20px;
+}

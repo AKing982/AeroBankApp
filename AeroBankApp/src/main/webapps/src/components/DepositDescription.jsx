@@ -9,5 +9,5 @@ export function DepositDescription({value, onChange})
                 <BasicTextField label="Description" value={value} height="55" onChange={onChange}/>
             </div>
         </div>
-    )
+    );
 }

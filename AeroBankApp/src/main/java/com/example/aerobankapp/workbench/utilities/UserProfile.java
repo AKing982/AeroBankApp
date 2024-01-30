@@ -50,7 +50,7 @@ public class UserProfile
     {
         UserServiceImpl userDAO = userProfileFacade.getUserProfileService().getUserManager();
 
-        return userDAO.getAccountNumber(user.getUserName());
+        return userDAO.getAccountNumberByUserName(user.getUserName());
     }
 
     public void setUserProfileFacade(UserProfileFacade userProfileFacade)
@@ -68,7 +68,7 @@ public class UserProfile
     public String getAccountNumber(String user)
     {
         UserServiceImpl userDAO = userProfileFacade.getUserProfileService().getUserManager();
-        return userDAO.getAccountNumber(user);
+        return userDAO.getAccountNumberByUserName(user);
     }
 
     public int getTotalAccounts(String user)

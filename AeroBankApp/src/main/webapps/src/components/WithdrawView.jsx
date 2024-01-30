@@ -1,11 +1,16 @@
 import {useEffect, useState} from "react";
 import AccountSelect from "./AccountSelect";
 import axios from "axios";
+import AccountListView from "./AccountListView";
+import Account from "./Account";
+import WithdrawDescription from "./WithdrawDescription";
+import '../WithdrawView.css';
 
 export default function WithdrawView()
 {
     const [accountCode, setAccountCode] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [description, setDescription] = useState(null);
 
     const user = sessionStorage.getItem('username');
 
@@ -24,15 +29,26 @@ export default function WithdrawView()
 
     }, []);
 
+    const handleDescriptionChange = (event) => {
+        setDescription(event.target.value);
+    }
+
     return (
         <div className="withdraw-view-container">
-            <header clasName="withdraw-view-header">
+            <header className="withdraw-view-header">
             </header>
+            <div className="withdraw-account-list">
+                <AccountListView items={<Account accountCode={"A1"} available={4500} balance={5600} pending={15} color="red" />} />
+            </div>
+
             <div className="withdraw-view-center">
                 <div className="withdraw-group">
                     <div className="withdraw-account-selection">
                         <label htmlFor="account-withdraw" className="withdraw-account-selection-label">Account to Withdraw:</label>
                         <AccountSelect accounts={accountCode} />
+                    </div>
+                    <div className="withdraw-description">
+                        <WithdrawDescription value={description} onChange={handleDescriptionChange}/>
                     </div>
                 </div>
             </div>

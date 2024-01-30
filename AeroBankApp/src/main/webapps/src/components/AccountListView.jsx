@@ -3,7 +3,7 @@ import AccountBox from "./AccountBox";
 import axios from "axios";
 import Account from "./Account";
 
-export default function AccountListView()
+export default function AccountListView({setAccountCode})
 {
     const [accountData, setAccountData] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
@@ -36,7 +36,6 @@ export default function AccountListView()
        setSelectedAccount(accountCode);
        storeAccountCode(accountCode);
        console.log("Selected AccountCode: ", accountCode);
-
     };
 
     return (

@@ -3,6 +3,7 @@ package com.example.aerobankapp.controllers;
 import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.engine.DepositEngine;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
+import com.example.aerobankapp.workbench.utilities.DepositRequest;
 import com.example.aerobankapp.workbench.utilities.response.DepositResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.example.aerobankapp.controllers.utils.DepositControllerUtil.getDepositResponse;
 
 @RestController
 @RequestMapping(value="/api/deposits", method = RequestMethod.POST)
@@ -28,29 +31,18 @@ public class DepositController {
     @PreAuthorize("isAuthenticated()")
     @CrossOrigin(origins="http://localhost:3000")
     @ResponseBody
-    public ResponseEntity<?> createDeposit(@Valid @RequestBody DepositDTO depositDTO)
+    public ResponseEntity<?> createDeposit(@Valid @RequestBody DepositRequest request)
     {
-        DepositResponse depositResponse = getDepositResponse(depositDTO);
-        System.out.println("AccountCode: " + depositDTO.accountCode());
-        System.out.println("Deposit Amount: " + depositDTO.amount());
-        System.out.println("Description: " + depositDTO.description());
-        System.out.println("Scheduled Interval: " + depositDTO.scheduleInterval());
-        System.out.println("Scheduled Time: " + depositDTO.timeScheduled());
-        System.out.println("Scheduled Date: " + depositDTO.date());
+        DepositResponse depositResponse = getDepositResponse(request);
+        System.out.println("AccountCode: " + request.getAccountCode());
+        System.out.println("Deposit Amount: " + request.getAmount());
+        System.out.println("Description: " + request.getDescription());
+        System.out.println("Scheduled Interval: " + request.getScheduleInterval());
+        System.out.println("Scheduled Time: " + request.getTimeScheduled());
+        System.out.println("Scheduled Date: " + request.getDate());
         return ResponseEntity.ok(depositResponse);
     }
 
-    private DepositResponse getDepositResponse(final DepositDTO depositDTO)
-    {
-        return DepositResponse.builder()
-                .amount(depositDTO.amount())
-                .description(depositDTO.description())
-                .accountCode(depositDTO.accountCode())
-                .interval(depositDTO.scheduleInterval())
-                .scheduledDate(depositDTO.date())
-                .selectedTime(depositDTO.timeScheduled())
-                .build();
-    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")

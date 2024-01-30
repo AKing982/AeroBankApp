@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Deprecated
 public class SavingsAccountDAOImpl implements SavingsAccountDAO
 {
     private EntityManager entityManager;

@@ -25,28 +25,30 @@ const columns = [
 ];
 
 
-export default function DataTable()
+export default function DataTable({selectedAccount})
 {
     const [rows, setRows] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
+
     useEffect(() => {
-        setIsLoading(true);
+        if (selectedAccount) {
+            console.log("Selected Account: ", selectedAccount);
+            setIsLoading(true);
 
-        const accountID = sessionStorage.getItem('AccountCode');
-
-        axios.get(`http://localhost:8080/AeroBankApp/api/deposits/data/${accountID}`)
-            .then(response => {
-                setRows(response.data);
-                console.log('Fetching Deposit data: ', response.data);
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation: ', error);
-            })
-            .then(() => {
-                setIsLoading(false);
-            })
-    },[]);
+            axios.get(`http://localhost:8080/AeroBankApp/api/deposits/data/${selectedAccount}`)
+                .then(response => {
+                    setRows(response.data);
+                    console.log('Fetching Deposit data: ', response.data);
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation: ', error);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        }
+    }, [selectedAccount]); //
 
     return (
         <div style={{ height: 400, width: '100%' }}>

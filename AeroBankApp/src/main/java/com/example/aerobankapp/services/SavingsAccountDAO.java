@@ -8,7 +8,7 @@ import com.example.aerobankapp.model.ServiceDAOModel;
 import java.util.List;
 import java.util.Optional;
 
-
+@Deprecated
 public interface SavingsAccountDAO extends ServiceDAOModel<SavingsAccountEntity>
 {
     @Override

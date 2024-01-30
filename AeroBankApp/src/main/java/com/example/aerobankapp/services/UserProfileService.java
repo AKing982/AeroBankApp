@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Getter
 @Setter
+@Deprecated
 public class UserProfileService
 {
     private final AccountManager accountManager;

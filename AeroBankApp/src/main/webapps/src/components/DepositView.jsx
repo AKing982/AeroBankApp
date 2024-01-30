@@ -92,6 +92,7 @@ export default function DepositView()
     };
 
     const handleAccountIDChange = (event) => {
+        console.log(event.target.value);
         setAccountID(event.target.value);
     }
 
@@ -133,7 +134,7 @@ export default function DepositView()
             <header className="deposit-view-header">
             </header>
             <div className="deposit-account-list">
-                <ListView items={<Account accountCode={"A1"} available={4500} balance={5600} pending={15} color="red"/>}
+                <ListView items={<Account accountCode={"A1"} available={4500} balance={5600} pending={15} color="red" onAccountClick={handleAccountIDChange}/>}
                 />
             </div>
             <div className="vertical-line">
@@ -166,7 +167,7 @@ export default function DepositView()
                         <BasicButton text="Submit" submit={handleDeposit}/>
                     </div>
                 </div>
-                <DataTable accountID={accountID} />
+                <DataTable selectedAccount={accountID} />
             </div>
         </div>
     );
