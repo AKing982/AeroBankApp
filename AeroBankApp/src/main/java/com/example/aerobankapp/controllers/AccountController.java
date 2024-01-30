@@ -15,6 +15,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.aerobankapp.controllers.utils.AccountControllerUtil.getAccountCodesAsResponse;
+import static com.example.aerobankapp.controllers.utils.AccountControllerUtil.getAccountResponseList;
+
 @RestController
 @RequestMapping(value = "/api/accounts", method = RequestMethod.GET)
 @CrossOrigin(origins = "http://localhost:3000")
@@ -53,30 +56,5 @@ public class AccountController
         return ResponseEntity.ok(accountResponseList);
     }
 
-    private List<AccountResponse> getAccountCodesAsResponse(List<String> accountCodes)
-    {
-        List<AccountResponse> accountResponseList = new ArrayList<>();
-        for(String code : accountCodes)
-        {
-            AccountResponse accountResponse = new AccountResponse(code);
-            accountResponseList.add(accountResponse);
-        }
 
-        return accountResponseList;
-    }
-
-    private List<AccountResponse> getAccountResponseList(List<AccountEntity> entityList, BigDecimal pending, BigDecimal available)
-    {
-        List<AccountResponse> accountResponseList = new ArrayList<>();
-        for(AccountEntity entity : entityList)
-        {
-            logger.warn("Entity: " + entity.getClass().getName());
-            BigDecimal balance = entity.getBalance();
-            String acctCode = entity.getAccountCode();
-            AccountResponse accountResponse = new AccountResponse(acctCode, balance, pending, available);
-            accountResponseList.add(accountResponse);
-        }
-
-        return accountResponseList;
-    }
 }

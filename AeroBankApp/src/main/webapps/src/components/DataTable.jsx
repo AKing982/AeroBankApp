@@ -25,13 +25,16 @@ const columns = [
 ];
 
 
-export default function DataTable({accountID})
+export default function DataTable()
 {
     const [rows, setRows] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         setIsLoading(true);
+
+        const accountID = sessionStorage.getItem('AccountCode');
+
         axios.get(`http://localhost:8080/AeroBankApp/api/deposits/data/${accountID}`)
             .then(response => {
                 setRows(response.data);

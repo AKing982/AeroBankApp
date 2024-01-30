@@ -3,12 +3,10 @@ import { Box, Typography, Grid, Paper } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import {blue} from "@mui/material/colors";
 
-export default function Account({ color, accountCode, balance, pending, available })
+export default function Account({ color, accountCode, balance, pending, available, onAccountClick, isSelected})
 {
-    const [clicked, setClicked] = useState(false);
     const handleClick = () => {
-        setClicked(!clicked);
-        console.log('Clicked');
+        onAccountClick(accountCode);
     };
 
     const handleKeyPress = (event) => {
@@ -19,6 +17,7 @@ export default function Account({ color, accountCode, balance, pending, availabl
 
     const greyColor = '#9e9e9e';
     const gradient = 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)';
+    const gradients = ['#9e9e9e', 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)'];
 
 
     return (
@@ -31,7 +30,7 @@ export default function Account({ color, accountCode, balance, pending, availabl
                    display: 'flex',
                    alignItems: 'center',
                    cursor: 'pointer',
-                   backgroundColor: clicked ? gradient : greyColor,
+                   backgroundColor: isSelected ? gradient : greyColor,
                    mb: 2,
                    transition: 'background-color 0.3s'
                }}>

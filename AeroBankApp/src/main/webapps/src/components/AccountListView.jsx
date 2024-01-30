@@ -6,8 +6,13 @@ import Account from "./Account";
 export default function AccountListView()
 {
     const [accountData, setAccountData] = useState([]);
+    const [selectedAccount, setSelectedAccount] = useState(null);
 
     const username = sessionStorage.getItem('username');
+
+    const storeAccountCode = (accountCode) => {
+        sessionStorage.setItem('AccountCode', accountCode);
+    }
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -26,6 +31,14 @@ export default function AccountListView()
 
     }, [username]);
 
+
+    const handleAccountButtonClick = (accountCode) => {
+       setSelectedAccount(accountCode);
+       storeAccountCode(accountCode);
+       console.log("Selected AccountCode: ", accountCode);
+
+    };
+
     return (
         <div>
             <h2>{username}'s Accounts</h2>
@@ -38,6 +51,8 @@ export default function AccountListView()
                             balance={account.balance}
                             pending={account.pendingAmount}
                             available={account.availableAmount}
+                            onAccountClick={handleAccountButtonClick}
+                            isSelected = {selectedAccount === account.accountCode}
                         />
                         );
                 })}

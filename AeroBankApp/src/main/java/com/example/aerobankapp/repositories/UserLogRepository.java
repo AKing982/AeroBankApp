@@ -4,7 +4,7 @@ import com.example.aerobankapp.entity.UserLogEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
+@Deprecated
 public interface UserLogRepository extends JpaRepository<UserLogEntity, Long>
 {
 
