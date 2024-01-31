@@ -84,7 +84,7 @@ export default function UserSetupSettings()
             </div>
             <div className="user-setup-right">
                 <div className="user-setup-list">
-                    <UserList />
+
                 </div>
             </div>
             <div className="user-setup-footer">

@@ -1,6 +1,26 @@
 import {List, ListItem, ListItemText} from "@mui/material";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {Container} from "@mui/system";
+import {FixedSizeList} from "react-window";
+
+const usersList = [
+    'AKing94',
+    'BSmith23',
+
+];
+
+
+function renderRow(props)
+{
+    const {index, style} = props;
+
+    return (
+        <ListItem button style={style} key={index}>
+            <ListItemText primary={usersList[index]} />
+        </ListItem>
+    );
+}
 
 export default function UserList()
 {
@@ -16,13 +36,16 @@ export default function UserList()
             })
     }, []);
 
+
     return (
-        <List>
-            {users.map((user, index) => (
-                <ListItem key={index} divider>
-                    <ListItemText primary={user.username}/>
-                </ListItem>
-            ))}
-        </List>
-    )
+        <FixedSizeList
+            height={400}
+            width={360}
+            itemSize={46}
+            itemCount={usersList.length}
+            overscanCount={5}
+        >
+            {renderRow}
+        </FixedSizeList>
+    );
 }
