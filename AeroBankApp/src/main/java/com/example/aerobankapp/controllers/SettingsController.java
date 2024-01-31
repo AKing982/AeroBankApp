@@ -1,0 +1,13 @@
+package com.example.aerobankapp.controllers;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/settings")
+@CrossOrigin(origins = "http://localhost:3000")
+public class SettingsController
+{
+
+}

@@ -24,7 +24,6 @@ public class UserSecurityModelImpl implements UserSecurityModel
    private Set<CardDesignator> userPaymentCards;
    private UserProfile currentUserProfile;
 
-   private UserProfileService userProfileService;
 
 
    private UserProfileFacade userProfileFacade;

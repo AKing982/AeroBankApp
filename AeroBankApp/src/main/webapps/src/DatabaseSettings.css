@@ -1,0 +1,35 @@
+.database-settings-panel {
+    /* Other styles */
+}
+
+.server-port-field, .database-sql-credentials {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px; /* Adjust as needed */
+}
+
+.database-container-name {
+    /* Styles for database name field, if needed */
+}
+
+.test-connection-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.test-connection-button, .connect-button {
+ /*   display: flex;
+    justify-content: space-between;
+    margin-top: 10px; /* Adjust spacing as needed */
+}
+.connect-button {
+    display: flex;
+    justify-content: right; /* Centers horizontally in the container */
+    align-items: center; /* Centers vertically in the container */
+    height: 100%; /* Set an appropriate height or remove this if not needed */
+}
+
+
+/* You can add more specific styles for each field if needed */

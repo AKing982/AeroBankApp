@@ -140,4 +140,9 @@ public class UserServiceImpl implements UserService
         return null;
     }
 
+    @Override
+    public List<String> getListOfUserNames() {
+        return null;
+    }
+
 }

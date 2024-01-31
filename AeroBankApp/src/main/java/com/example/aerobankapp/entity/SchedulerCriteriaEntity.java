@@ -20,8 +20,8 @@ public class SchedulerCriteriaEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int schedulerCriteriaID;
 
-    @Column(name="schedulerUserID")
-    private int schedulerUserID;
+    @ManyToOne
+    private UserEntity schedulerUserID;
 
     @Column(name="scheduledTime")
     private String scheduledTime;

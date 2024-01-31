@@ -1,5 +1,6 @@
 package com.example.aerobankapp.workbench.utilities;
 
+import com.example.aerobankapp.services.UserProfileService;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,4 +15,5 @@ public class UserProfileFacade
     {
         this.userProfileService = userProfileService;
     }
+
 }

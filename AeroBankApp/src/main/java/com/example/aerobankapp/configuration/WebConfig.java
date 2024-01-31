@@ -74,6 +74,18 @@ public class WebConfig {
                         .allowedMethods("POST", "GET")
                         .allowedHeaders("*")
                         .allowCredentials(true);
+
+                registry.addMapping("/api/email/data")
+                        .allowedOrigins("http://localhost:3000")
+                        .allowedHeaders("POST", "GET")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+
+                registry.addMapping("/api/users/list")
+                        .allowedOrigins("http://localhost:3000")
+                        .allowedHeaders("POST", "GET")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
 

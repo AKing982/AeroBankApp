@@ -14,17 +14,23 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access=AccessLevel.PUBLIC, force=true)
 @AllArgsConstructor(access=AccessLevel.PUBLIC)
 @Table(name="balanceHistory")
-public class BalanceHistoryEntity implements Serializable
+public class BalanceHistoryEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int historyID;
 
-    @Column(name="acctID")
-    private String acctID;
+    @ManyToOne
+    @JoinColumn(name="acctID")
+    private AccountEntity account;
 
-    @Column(name="transactionID")
-    private int transactionID;
+    @ManyToOne
+    @JoinColumn(name="transactionID")
+    private TransactionEntity transaction;
+
+    @ManyToOne
+    @JoinColumn(name="accountDetailsID")
+    private AccountDetailsEntity accountDetails;
 
     @Column(name="balance")
     private BigDecimal balance;

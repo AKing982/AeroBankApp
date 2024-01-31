@@ -23,52 +23,44 @@ import java.security.Principal;
 @RestController
 @RequestMapping(value = "/api/auth", method = RequestMethod.POST)
 @Getter
-public class AuthController
-{
+public class AuthController {
 
     private final AuthenticationServiceImpl authenticationService;
     private Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
-    public AuthController(AuthenticationServiceImpl authenticationService)
-    {
+    public AuthController(AuthenticationServiceImpl authenticationService) {
         this.authenticationService = authenticationService;
-        if(authenticationService == null)
-        {
+        if (authenticationService == null) {
             LOGGER.error("Authentication Service is null");
         }
     }
 
-    @PostMapping(value ="/login")
+    @PostMapping(value = "/login")
     @CrossOrigin(origins = "http://localhost:3000")
     @ResponseBody
-    public ResponseEntity<?> createAuthenticateToken(@Valid @RequestBody LoginRequest loginRequest)
-    {
+    public ResponseEntity<?> createAuthenticateToken(@Valid @RequestBody LoginRequest loginRequest) {
         String username = loginRequest.getUsername().trim();
         String password = loginRequest.getPassword().trim();
 
-        try
-        {
-            String authToken = getAuthenticationToken(username,password);
+        try {
+            String authToken = getAuthenticationToken(username, password);
             LOGGER.warn("Token: " + authToken);
-            if(authToken == null)
-            {
+            if (authToken == null) {
                 LOGGER.warn("Authentication Failed for User: " + loginRequest.getUsername());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token Generated");
             }
             LOGGER.debug("User Generated Token: " + authToken);
-           // return ResponseEntity.ok(new AuthTokenResponse(authToken, "Bearer"));
+            // return ResponseEntity.ok(new AuthTokenResponse(authToken, "Bearer"));
             return ResponseEntity.ok(new AuthTokenResponse(authToken, "Bearer", username));
 
-        }catch(AuthenticationException ex)
-        {
+        } catch (AuthenticationException ex) {
             LOGGER.debug("Authentication Exception for user: " + loginRequest.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
         }
     }
 
-    private String getAuthenticationToken(String user, String password)
-    {
+    private String getAuthenticationToken(String user, String password) {
         LOGGER.warn("User: " + user);
         LOGGER.warn("Password: " + password);
         String authToken = getAuthenticationService().login(user, password);
@@ -78,27 +70,12 @@ public class AuthController
 
     @GetMapping("/status")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<?> checkAuthenticationStatus(@RequestBody Principal principal)
-    {
-        if(principal != null)
-        {
+    public ResponseEntity<?> checkAuthenticationStatus(@RequestBody Principal principal) {
+        if (principal != null) {
             return ResponseEntity.ok().body("User is Authenticated");
-        }
-        else
-        {
+        } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized User");
         }
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<UserProfile> getUserProfile(Authentication authentication)
-    {
-        return null;
-    }
-
-    @PostMapping("/logout")
-    public String logout(HttpServletRequest request)
-    {
-        return "redirect:/login?logout";
-    }
 }

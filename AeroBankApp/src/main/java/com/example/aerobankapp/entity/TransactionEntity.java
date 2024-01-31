@@ -30,12 +30,13 @@ public class TransactionEntity
     @Column(name="referenceID")
     private Long referenceID;
 
-    @Column(name="userID")
-    private int userID;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userID")
+    private UserEntity user;
 
-    @Column(name="acctID")
-    @NotNull
-    private String acctID;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="acctID")
+    private AccountEntity account;
 
     @Column(name="amount")
     @NotNull

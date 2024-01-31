@@ -1,6 +1,6 @@
 package com.example.aerobankapp.configuration;
 
-import com.example.aerobankapp.scheduler.data.DepositJobData;
+
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.Purchase;
 import com.example.aerobankapp.workbench.transactions.Withdraw;
@@ -60,18 +60,6 @@ public class QuartzConfig
     }
 
 
-    @Bean
-    @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public SimpleTriggerFactoryBean dailyDepositSimpleTriggerBean(@Qualifier("depositJobData")DepositJobData depositJobData)
-    {
-        SimpleTriggerFactoryBean dailySimpleTriggerBean = new SimpleTriggerFactoryBean();
-        JobDataMap jobDataMap = depositJobData.getJobDataMap();
-        dailySimpleTriggerBean.setJobDataMap(jobDataMap);
-        dailySimpleTriggerBean.setStartDelay(0L);
-        dailySimpleTriggerBean.setPriority(1);
-        dailySimpleTriggerBean.setRepeatInterval(0);
-        return dailySimpleTriggerBean;
-    }
 
     @Bean
     public Deposit deposit2(@Qualifier("deposit") Deposit deposit)

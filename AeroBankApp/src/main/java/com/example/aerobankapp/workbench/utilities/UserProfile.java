@@ -48,9 +48,8 @@ public class UserProfile
 
     public String getAccountNumber()
     {
-        UserServiceImpl userDAO = userProfileFacade.getUserProfileService().getUserManager();
-
-        return userDAO.getAccountNumberByUserName(user.getUserName());
+        UserServiceImpl userService = userProfileFacade.getUserProfileService().getUserManager();
+        return userService.getAccountNumberByUserName(user.getUserName());
     }
 
     public void setUserProfileFacade(UserProfileFacade userProfileFacade)

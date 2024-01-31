@@ -41,6 +41,6 @@ public class CronExpressionBuilderImpl implements CronExpressionBuilder
     @Override
     public String getCronExpression()
     {
-        return createCronExpression(triggerCriteria);
+        return null;
     }
 }

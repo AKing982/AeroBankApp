@@ -18,14 +18,13 @@ import java.util.List;
 @Slf4j
 @Getter
 public class UserLogRunner implements Runnable {
-    private final UserLogServiceImpl userLogService;
     private final UserServiceImpl userService;
     private final LoginModel loginModel;
     private AeroLogger aeroLogger = new AeroLogger(UserLogRunner.class);
 
     @Autowired
-    public UserLogRunner(UserLogServiceImpl userLogService, UserServiceImpl userSvc, LoginModel loginModel) {
-        this.userLogService = userLogService;
+    public UserLogRunner(UserServiceImpl userSvc, LoginModel loginModel) {
+
         this.userService = userSvc;
         this.loginModel = loginModel;
     }
@@ -82,7 +81,7 @@ public class UserLogRunner implements Runnable {
     public void addUserLogToDatabase()
     {
         UserLogEntity userLog1 = createUserLog(getUserName(), getCurrentUserID(), getDate());
-        storeUserLog(userLog1);
+
     }
 
     public UserLogEntity createUserLog(final String username, final int userID, final LocalDateTime date)
@@ -95,11 +94,5 @@ public class UserLogRunner implements Runnable {
                 .build();
     }
 
-    public void storeUserLog(UserLogEntity userLog)
-    {
-        if(userLog != null)
-        {
-            getUserLogService().save(userLog);
-        }
-    }
+
 }

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -18,15 +19,14 @@ public class AccountDetailsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long accountDetailsID;
 
-    @Column(name="historyID", nullable = false)
-    @NotNull
-    private Long historyID;
+    @OneToMany(mappedBy="accountDetails",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<BalanceHistoryEntity> balanceHistories;
 
-    @Column(name="accountID", nullable = false)
-    @NotNull
-    private int accountID;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="acctID")
+    private AccountEntity account;
 
     @Column(name="balance", nullable = false)
     @NotNull

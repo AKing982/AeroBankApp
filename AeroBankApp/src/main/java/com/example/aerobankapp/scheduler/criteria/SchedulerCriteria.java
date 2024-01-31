@@ -23,8 +23,6 @@ public final class SchedulerCriteria {
     private LocalDate scheduledDate;
     private ScheduleType scheduleType;
     private int priority;
-    private ScheduleRole scheduleRole;
     private LocalDate createdAt;
     private String createdByUser;
-    private List<Object> criteria;
 }

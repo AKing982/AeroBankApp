@@ -95,6 +95,13 @@ public class AccountController {
         return null;
     }
 
+    @GetMapping("/{accountID}/pending")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<BigDecimal> pendingBalance(@PathVariable Long accountID)
+    {
+        return null;
+    }
+
 
 
 

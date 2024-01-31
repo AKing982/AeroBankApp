@@ -54,14 +54,8 @@ public class Login extends Application
             "   -fx-fill: #818181;\n" +
             "   -fx-effect: innershadow( three-pass-box, rgba(0, 0, 0, 0.7), 6, 0.0, 0, 2);";
 
-    @Autowired
-    private UserProfileService userProfileService;
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private AuthenticationServiceImpl authenticationService = new AuthenticationServiceImpl(userDetailsService);
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -82,19 +76,7 @@ public class Login extends Application
 
                     // TODO: Is the User Authenticated and Authorized?
                     Authentication authentication = new UsernamePasswordAuthenticationToken(getUserNameField().getText(), getPasswordField().getText());
-                    Authentication authenticatedToken = authenticationService.authenticate(authentication);
-                    if(authenticationService.isAuthenticated(authenticatedToken))
-                    {
-                        Stage s = new Stage();
-                        new Home().start(s);
-                        getLoginAlert().setText("");
 
-                        closeStage(stage);
-                    }
-                    else
-                    {
-                        getLoginAlert().setText("Incorrect UserName or Password!");
-                    }
                     // TODO: If the User's login fails, show an alert message
                 }catch(Exception ex)
                 {
