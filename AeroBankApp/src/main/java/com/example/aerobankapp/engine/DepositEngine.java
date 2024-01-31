@@ -2,12 +2,21 @@ package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.TransactionSummary;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.List;
 
+@Service
 public class DepositEngine extends Engine<Deposit>
 {
+    private List<Deposit> depositList;
+
+    public DepositEngine(List<Deposit> deposits)
+    {
+
+    }
 
     @Override
     protected BigDecimal calculateTransactionFee() {
@@ -38,4 +47,6 @@ public class DepositEngine extends Engine<Deposit>
     protected void storeTransaction(Deposit transaction) {
 
     }
+
+
 }

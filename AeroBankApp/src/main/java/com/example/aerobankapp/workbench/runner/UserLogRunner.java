@@ -2,7 +2,6 @@ package com.example.aerobankapp.workbench.runner;
 
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.UserLogEntity;
-import com.example.aerobankapp.services.UserLogServiceImpl;
 import com.example.aerobankapp.services.UserServiceImpl;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
@@ -13,7 +12,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service

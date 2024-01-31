@@ -15,6 +15,7 @@ import java.util.Objects;
 @Component
 @AllArgsConstructor
 @NoArgsConstructor
+@Deprecated
 public class LoginModel
 {
     private String username;

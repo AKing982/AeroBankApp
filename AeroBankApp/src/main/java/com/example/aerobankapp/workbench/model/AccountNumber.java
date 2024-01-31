@@ -7,6 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Deprecated
 @Data
 public class AccountNumber
 {

@@ -1,5 +1,6 @@
 package com.example.aerobankapp.entity;
 
+import com.example.aerobankapp.workbench.utilities.TransferStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,17 +22,21 @@ public class TransferEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transferID;
 
-    @Column(name="toUserID")
-    private int toUserID;
+    @ManyToOne
+    @JoinColumn(name="toUser", referencedColumnName = "userID")
+    private UserEntity toUser;
 
-    @Column(name="fromUserID")
-    private int fromUserID;
+    @ManyToOne
+    @JoinColumn(name="fromUser", referencedColumnName = "userID")
+    private UserEntity fromUser;
 
-    @Column(name="fromAcctID")
-    private String fromAcctID;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="fromAcctID")
+    private AccountEntity fromAccount;
 
-    @Column(name="toAcctID")
-    private String toAcctID;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="toAcctID")
+    private AccountEntity toAccount;
 
     @Column(name="toAcctName")
     private String toAcctName;
@@ -47,4 +52,8 @@ public class TransferEntity
 
     @Column(name="dateTransferred")
     private LocalDate dateTransferred;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="status")
+    private TransferStatus status;
 }

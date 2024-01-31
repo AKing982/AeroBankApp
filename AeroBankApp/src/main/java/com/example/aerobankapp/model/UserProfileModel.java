@@ -1,6 +1,5 @@
 package com.example.aerobankapp.model;
 
-import com.example.aerobankapp.services.UserProfileService;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,27 +1,12 @@
 package com.example.aerobankapp.workbench.utilities;
 
-import com.example.aerobankapp.account.AccountNumber;
-import com.example.aerobankapp.account.AccountPrefix;
-import com.example.aerobankapp.entity.UserEntity;
-import com.example.aerobankapp.model.CheckingAccountModel;
-import com.example.aerobankapp.repositories.UserRepository;
-import com.example.aerobankapp.services.UserProfileService;
-import jakarta.persistence.EntityManager;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.testfx.framework.junit5.ApplicationExtension;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

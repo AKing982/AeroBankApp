@@ -4,7 +4,6 @@ import com.example.aerobankapp.messages.CommonLabels;
 import com.example.aerobankapp.model.UserProfileModel;
 import com.example.aerobankapp.services.AuthenticationServiceImpl;
 import com.example.aerobankapp.services.UserDetailsServiceImpl;
-import com.example.aerobankapp.services.UserProfileService;
 import com.example.aerobankapp.workbench.home.Home;
 import com.example.aerobankapp.workbench.model.LoginModel;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
@@ -27,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 
 import java.net.URL;
 

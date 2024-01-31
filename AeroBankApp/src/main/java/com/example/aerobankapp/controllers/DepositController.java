@@ -11,11 +11,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.example.aerobankapp.controllers.utils.DepositControllerUtil.getDepositResponse;
 
 @RestController
-@RequestMapping(value="/api/deposits", method = RequestMethod.POST)
+@RequestMapping(value="/api/deposits")
 @CrossOrigin(value="http://localhost:3000")
 public class DepositController {
 
@@ -27,11 +28,10 @@ public class DepositController {
         return null;
     }
 
-    @PostMapping("/create")
+    @PostMapping("/submit")
     @PreAuthorize("isAuthenticated()")
-    @CrossOrigin(origins="http://localhost:3000")
     @ResponseBody
-    public ResponseEntity<?> createDeposit(@Valid @RequestBody DepositRequest request)
+    public ResponseEntity<?> submitDeposit(@Valid @RequestBody DepositRequest request)
     {
         DepositResponse depositResponse = getDepositResponse(request);
         System.out.println("AccountCode: " + request.getAccountCode());
@@ -43,10 +43,38 @@ public class DepositController {
         return ResponseEntity.ok(depositResponse);
     }
 
-
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}/confirm")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> deleteDeposit(@PathVariable Long id)
+    public ResponseEntity<?> confirmDeposit(@PathVariable Long id)
+    {
+        return null;
+    }
+
+    @GetMapping("/user/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<DepositDTO>> getAllDepositsByUser(@PathVariable Long id)
+    {
+        return null;
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<DepositDTO>> search(@RequestParam Map<String, String> criteria)
+    {
+        return null;
+    }
+
+    @GetMapping("/scheduled")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<DepositDTO>> getScheduledDeposits()
+    {
+        return null;
+    }
+
+
+    @PostMapping("/cancel")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> cancelScheduledDeposit(@PathVariable Long id)
     {
         return null;
     }
