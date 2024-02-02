@@ -2,6 +2,11 @@ import {Tab, Tabs, Typography} from "@mui/material";
 import {Box} from "@mui/system";
 import PropTypes from "prop-types";
 import {useState} from "react";
+import TransactionView from "./TransactionView";
+import DepositView from "./DepositView";
+import WithdrawView from "./WithdrawView";
+import TransferView from "./TransferView";
+import SettingsView from "./SettingsView";
 
 export default function CustomTabPanel({children, value, index, ...other})
 {
@@ -46,19 +51,27 @@ function BasicTabs() {
         <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                    <Tab label="Item One" {...a11yProps(0)} />
-                    <Tab label="Item Two" {...a11yProps(1)} />
-                    <Tab label="Item Three" {...a11yProps(2)} />
+                    <Tab label="Transactions" {...a11yProps(0)} />
+                    <Tab label="Make Deposit" {...a11yProps(1)} />
+                    <Tab label="Make a Withdrawal" {...a11yProps(2)} />
+                    <Tab label="Make a Transfer" {...a11yProps(3)}/>
+                    <Tab label="Settings" {...a11yProps(4)}/>
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
-                Item One
+                <TransactionView />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-                Item Two
+                <DepositView />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={2}>
-                Item Three
+                <WithdrawView />
+            </CustomTabPanel>
+            <CustomTabPanel value={value} index={3}>
+                <TransferView />
+            </CustomTabPanel>
+            <CustomTabPanel value={value} index={4}>
+                <SettingsView />
             </CustomTabPanel>
         </Box>
     )

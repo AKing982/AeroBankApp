@@ -41,4 +41,5 @@ public interface UserService extends ServiceDAOModel<UserEntity>
     String getPinNumberByID(Long id);
 
     List<String> getListOfUserNames();
+    boolean userNameExists(String user);
 }

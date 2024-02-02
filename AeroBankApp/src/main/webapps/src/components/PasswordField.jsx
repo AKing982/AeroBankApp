@@ -3,7 +3,7 @@ import {Box} from "@mui/system";
 import {FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput} from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 
-export default function PasswordField({label, value, onChange})
+export default function PasswordField({label, value, onChange, isValidPassword})
 {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -15,10 +15,17 @@ export default function PasswordField({label, value, onChange})
         event.preventDefault();
     };
 
+    const invalidPasswordStyle = {
+        borderColor: 'red',
+            '&:hover': {
+            borderColor: 'darkred',
+        },
+    };
+
     return (
         <div>
             <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
-                <FormControl sx={{ m: 1, width: '25ch'}} variant="outlined">
+                <FormControl sx={{ m: 1, width: '25ch', ...(isValidPassword ? {} : invalidPasswordStyle) }} variant="outlined" error={!isValidPassword}>
                     <InputLabel htmlFor="outlined-adornment-password">{label}</InputLabel>
                     <OutlinedInput
                         id="outlined-adornment-password"

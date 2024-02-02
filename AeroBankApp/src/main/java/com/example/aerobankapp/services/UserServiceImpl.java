@@ -13,11 +13,14 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Getter
@@ -48,7 +51,7 @@ public class UserServiceImpl implements UserService
     public void save(UserEntity obj)
     {
         aeroLogger.info("Saving User: " + obj);
-        userRepository.save(obj);
+        getUserRepository().save(obj);
     }
 
     @Override
@@ -69,11 +72,8 @@ public class UserServiceImpl implements UserService
     @Override
     @Transactional
     public List<UserEntity> findByUserName(String user) {
-        if(!entityManager.isOpen())
-        {
-            aeroLogger.error("EntityManager Session is Closed");
-        }
-        TypedQuery<UserEntity> query = entityManager.createQuery("SELECT e FROM UserEntity e where e.username=:user", UserEntity.class)
+
+        TypedQuery<UserEntity> query = getEntityManager().createQuery("SELECT e FROM UserEntity e where e.username=:user", UserEntity.class)
                 .setParameter("user", user)
                 .setMaxResults(10);
         aeroLogger.debug("Found User: " + query.getResultList());
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService
     @Override
     public Role getUserRole(String user) throws NoResultException
     {
-        TypedQuery<UserEntity> userRoleQuery = entityManager.createQuery("FROM UserEntity where username=:user", UserEntity.class)
+        TypedQuery<UserEntity> userRoleQuery = getEntityManager().createQuery("FROM UserEntity where username=:user", UserEntity.class)
                 .setParameter("user", user)
                 .setMaxResults(10);
 
@@ -141,8 +141,20 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public List<String> getListOfUserNames() {
-        return null;
+    public List<String> getListOfUserNames()
+    {
+       TypedQuery<UserEntity> typedQuery = getEntityManager().createQuery("FROM UserEntity u", UserEntity.class);
+       List<UserEntity> userEntities = typedQuery.getResultList();
+
+        return userEntities.stream().map(UserEntity::getUsername).toList();
+    }
+
+    @Override
+    public boolean userNameExists(String user) {
+        TypedQuery<UserEntity> typedQuery = getEntityManager().createQuery("FROM UserEntity u", UserEntity.class);
+        List<UserEntity> userEntities = typedQuery.getResultList();
+        String userName = userEntities.stream().map(UserEntity::getUsername).collect(Collectors.joining());
+        return userName.equals(user);
     }
 
 }

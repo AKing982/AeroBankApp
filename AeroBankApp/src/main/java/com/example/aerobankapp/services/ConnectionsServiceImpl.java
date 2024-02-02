@@ -5,6 +5,7 @@ import com.example.aerobankapp.repositories.ConnectionRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,12 +20,20 @@ public class ConnectionsServiceImpl implements ConnectionsService
     private EntityManager entityManager;
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
     public ConnectionsServiceImpl(ConnectionRepository connectionRepository, EntityManager entityManager)
     {
         this.connectionRepository = connectionRepository;
         this.entityManager = entityManager;
     }
 
+
+    @Override
+    public List<ConnectionsEntity> findAll() {
+        return connectionRepository.findAll();
+    }
 
     @Override
     public ConnectionsEntity getConnectionById(Long id)
@@ -55,5 +64,15 @@ public class ConnectionsServiceImpl implements ConnectionsService
     @Override
     public String getUserNameById(Long id) {
         return null;
+    }
+
+    @Override
+    public void connectToDB(ConnectionsEntity connectionsEntity) {
+
+    }
+
+    @Override
+    public void testConnection(ConnectionsEntity connectionsEntity) {
+
     }
 }

@@ -2,8 +2,8 @@ package com.example.aerobankapp.workbench.utilities.db;
 
 public enum DBType
 {
-    MYSQL("MySQL"), SQLSERVER("SQL Server"),
-    POSTGRESQL("PostgreSQL"),
+    MYSQL("MySQL"), SSQL("SQL Server"),
+    PSQL("PostgreSQL"),
     NONE("NONE");
 
     private String code;
@@ -25,9 +25,9 @@ public enum DBType
             case "MySQL":
                 return MYSQL;
             case "SQL Server":
-                return SQLSERVER;
+                return SSQL;
             case "PostgreSQL":
-                return POSTGRESQL;
+                return PSQL;
             default:
                 return null;
         }

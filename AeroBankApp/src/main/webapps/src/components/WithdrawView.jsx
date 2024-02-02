@@ -50,6 +50,15 @@ export default function WithdrawView()
                     <div className="withdraw-description">
                         <WithdrawDescription value={description} onChange={handleDescriptionChange}/>
                     </div>
+                    <div className="withdraw-amount">
+                    </div>
+                    <div className="withdraw-schedule">
+                    </div>
+                    <div className="withdraw-date-picker">
+                    </div>
+                    <div className="withdraw-time-picker">
+                    </div>
+
                 </div>
             </div>
         </div>

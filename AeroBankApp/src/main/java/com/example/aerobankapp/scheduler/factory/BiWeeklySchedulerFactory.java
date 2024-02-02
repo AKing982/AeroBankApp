@@ -11,7 +11,7 @@ public class BiWeeklySchedulerFactory implements AbstractSchedulerTypeFactory
     private Scheduler scheduler;
 
     @Autowired
-    public BiWeeklySchedulerFactory(@Qualifier("scheduler") Scheduler scheduler)
+    public BiWeeklySchedulerFactory(Scheduler scheduler)
     {
         this.scheduler = scheduler;
     }

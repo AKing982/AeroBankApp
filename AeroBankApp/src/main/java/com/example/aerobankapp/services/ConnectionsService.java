@@ -3,8 +3,12 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.entity.ConnectionsEntity;
 import com.example.aerobankapp.model.ConnectionModel;
 
+import java.util.List;
+
 public interface ConnectionsService extends ConnectionModel
 {
+    List<ConnectionsEntity> findAll();
+
     @Override
     ConnectionsEntity getConnectionById(Long id);
 
@@ -22,4 +26,10 @@ public interface ConnectionsService extends ConnectionModel
 
     @Override
     String getUserNameById(Long id);
+
+    @Override
+    void connectToDB(ConnectionsEntity connectionsEntity);
+
+    @Override
+    void testConnection(ConnectionsEntity connectionsEntity);
 }

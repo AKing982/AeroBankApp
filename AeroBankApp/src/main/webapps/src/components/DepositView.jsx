@@ -23,6 +23,7 @@ import BasicButton from "./BasicButton";
 import AlertDialog from "./AlertDialog";
 import DataTable from "./DataTable";
 import Account from "./Account";
+import CollapsiblePanel from "./CollapsiblePanel";
 
 export default function DepositView()
 {
@@ -134,8 +135,9 @@ export default function DepositView()
             <header className="deposit-view-header">
             </header>
             <div className="deposit-account-list">
-                <ListView items={<Account accountCode={"A1"} available={4500} balance={5600} pending={15} color="red" onAccountClick={handleAccountIDChange}/>}
-                />
+                <CollapsiblePanel title="Accounts" content={<ListView items={<Account accountCode={"A1"} available={4500} balance={5600} pending={15} color="red" onAccountClick={handleAccountIDChange}/>}
+                />}/>
+
             </div>
             <div className="vertical-line">
             </div>

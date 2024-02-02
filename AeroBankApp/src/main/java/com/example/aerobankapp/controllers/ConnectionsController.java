@@ -2,6 +2,7 @@ package com.example.aerobankapp.controllers;
 
 
 import com.example.aerobankapp.dto.ConnectionsDTO;
+import com.example.aerobankapp.entity.ConnectionsEntity;
 import com.example.aerobankapp.services.ConnectionsService;
 import com.example.aerobankapp.services.ConnectionsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.example.aerobankapp.controllers.utils.ConnectionsControllerUtil.getListOfConnectionDTO;
+
 @Controller
-@RequestMapping(value="/api/connections")
+@RequestMapping(value="/api/connections", method = RequestMethod.GET)
 @CrossOrigin(value="http://localhost:3000")
 public class ConnectionsController {
 
@@ -27,7 +30,11 @@ public class ConnectionsController {
     @GetMapping("/list")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ConnectionsDTO>> getConnections() {
-        return null;
+        List<ConnectionsEntity> connectionsEntities = connectionsService.findAll();
+
+        List<ConnectionsDTO> connectionsDTOS = getListOfConnectionDTO(connectionsEntities);
+
+        return ResponseEntity.ok(connectionsDTOS);
     }
 
     @GetMapping("/server-name/{connectionID}")

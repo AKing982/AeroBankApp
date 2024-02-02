@@ -6,6 +6,7 @@ import AlertDialog from "./CustomAlert";
 import '../CustomAlert.css';
 import {Spinner} from "./Spinner";
 import LoginAlert from "./LoginAlert";
+import BasicButton from "./BasicButton";
 
 export default function LoginFormOLD()
 {
@@ -172,7 +173,7 @@ export default function LoginFormOLD()
     }
 
     const navigateToRegister = () => {
-        navigate('/register')
+        navigate('/registration')
     }
 
     const handleRegister = (event) => {
@@ -194,7 +195,7 @@ export default function LoginFormOLD()
                         <span className="header-title">Please Login</span>
                     </div>
                     <div className="login-body">
-                        <form onSubmit={handleSubmit}>
+                        <form>
                             <div className="input-field">
                                 <label htmlFor="username" className="input-label">User Name </label>
                                 <input
@@ -216,7 +217,8 @@ export default function LoginFormOLD()
                                 />
                             </div>
                             <div className="login-footer">
-                                <button className={`button2 ${isLoginButtonEnabled ? 'disabled' : ''}`} disabled={isLoginButtonEnabled}>Login</button>
+                                <button className="button2" onClick={navigateToRegister}>Register</button>
+                                <button className={`button2 ${isLoginButtonEnabled ? 'disabled' : ''}`} disabled={isLoginButtonEnabled} onClick={handleSubmit}>Login</button>
                             </div>
                         </form>
                     </div>

@@ -45,10 +45,10 @@ public class BasicDataSourceImpl implements BasicDataSource
             case MYSQL:
                 driver = "com.mysql.cj.jdbc.Driver";
                 break;
-            case SQLSERVER:
+            case SSQL:
                 driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
                 break;
-            case POSTGRESQL:
+            case PSQL:
                 driver = "org.postgresql.Driver";
             default:
                 aeroLogger.info("No Such Driver exists in this context");
@@ -82,10 +82,10 @@ public class BasicDataSourceImpl implements BasicDataSource
             case MYSQL:
                 protocol = "jdbc:mysql";
                 break;
-            case SQLSERVER:
+            case SSQL:
                 protocol = "jdbc:sqlserver";
                 break;
-            case POSTGRESQL:
+            case PSQL:
                 protocol = "jdbc:postgresql";
                 break;
         }
@@ -111,7 +111,7 @@ public class BasicDataSourceImpl implements BasicDataSource
         StringBuilder dbURL = null;
         switch(getDBType())
         {
-            case SQLSERVER:
+            case SSQL:
                 dbURL = new StringBuilder();
                 dbURL.append(dbProtocol);
                 dbURL.append("://");
@@ -126,7 +126,7 @@ public class BasicDataSourceImpl implements BasicDataSource
                 dbURL.append("trustServerCertificate=true");
                 break;
             case MYSQL:
-            case POSTGRESQL:
+            case PSQL:
                 dbURL = new StringBuilder();
                 dbURL.append(dbProtocol);
                 dbURL.append("://");

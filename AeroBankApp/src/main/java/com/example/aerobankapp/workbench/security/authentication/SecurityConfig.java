@@ -25,18 +25,9 @@ import javax.sql.DataSource;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 
+
 public class SecurityConfig{
 
-    @Bean
-    public DataSource dataSource()
-    {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/aerobank");
-        dataSource.setUsername("root");
-        dataSource.setPassword("Halflifer94!");
-        return dataSource;
-    }
 
 
     @Bean

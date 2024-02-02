@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import EmailSettings from "./EmailSettings";
 import DatabaseSettings from "./DatabaseSettings";
 import UserSetupSettings from "./UserSetupSettings";
+import AccountSettings from "./AccountSettings";
 
 function VerticalTab(props) {
     const { children, value, index, ...other } = props;
@@ -80,7 +81,7 @@ export default function VerticalTabs() {
                 <UserSetupSettings />
             </VerticalTab>
             <VerticalTab value={value} index={3}>
-
+                <AccountSettings />
             </VerticalTab>
             <VerticalTab value={value} index={4}>
                 Item Five

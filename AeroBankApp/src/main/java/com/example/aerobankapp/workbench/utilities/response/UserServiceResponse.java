@@ -11,9 +11,15 @@ import java.util.List;
 public class UserServiceResponse
 {
     private List<UserDTO> userDTOList;
+    private String posted;
 
     public UserServiceResponse(List<UserDTO> userDTOList)
     {
         this.userDTOList = userDTOList;
+    }
+
+    public UserServiceResponse(String response)
+    {
+        this.posted = response;
     }
 }

@@ -2,11 +2,12 @@ import {TextField} from "@mui/material";
 
 export default function PortField({value, onChange, isError})
 {
+    const label = value ? null : "Port";
     return (
         <div>
             <TextField
                 type="number"
-                label="Port"
+                label={label}
                 value={value}
                 onChange={onChange}
                 error={isError}

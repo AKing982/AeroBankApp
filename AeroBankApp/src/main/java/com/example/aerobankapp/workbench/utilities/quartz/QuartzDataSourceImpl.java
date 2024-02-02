@@ -57,7 +57,7 @@ public class QuartzDataSourceImpl implements QuartzDataSource
         StringBuilder quartzURL = null;
         switch(dbType)
         {
-            case POSTGRESQL:
+            case PSQL:
             case MYSQL:
                 quartzURL = new StringBuilder();
                 quartzURL.append(dbSource.getDBProtocol());
@@ -69,7 +69,7 @@ public class QuartzDataSourceImpl implements QuartzDataSource
                 quartzURL.append(dbSource.getDBName());
                 dbQuartzURL = quartzURL.toString();
                 break;
-            case SQLSERVER:
+            case SSQL:
                 StringBuilder quartSSQL = new StringBuilder();
                 quartSSQL.append(dbSource.getDBProtocol());
                 quartSSQL.append("://");
@@ -95,10 +95,10 @@ public class QuartzDataSourceImpl implements QuartzDataSource
         switch(dbType)
         {
             case MYSQL:
-            case SQLSERVER:
+            case SSQL:
                 jobStore = "org.quartz.impl.jdbcjobstore.StdJDBCDelegate";
                 break;
-            case POSTGRESQL:
+            case PSQL:
                 jobStore = "org.quartz.impl.jdbcjobstore.PostgreSQLDelegate";
                 break;
         }

@@ -24,6 +24,8 @@ export default function PinNumberField({value, onChange})
                     <OutlinedInput
                         id="outlined-adornment-password"
                         type={showPIN ? 'text' : 'password'}
+                        value={value}
+                        onChange={onChange}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton

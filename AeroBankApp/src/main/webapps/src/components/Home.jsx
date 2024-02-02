@@ -9,10 +9,11 @@ import SettingsView from "./SettingsView";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import BasicButton from "./BasicButton";
+import CustomTabPanel from "./CustomTabPanel";
 
 export default function Home()
 {
-    const [activeTab, setIsActiveTab] = useState('Transactions');
+
     const [balance, setBalance] = useState(0);
     const [accountNumber, setAccountNumber] = useState('');
     const [totalAccounts, setTotalAccounts] = useState(0);
@@ -21,17 +22,22 @@ export default function Home()
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState('Transactions');
+    const [role, setRole] = useState(null);
     const navigate = useNavigate();
+
 
     const username = sessionStorage.getItem('username');
 
     useEffect(() => {
             setIsLoading(true);
-            axios.get(`http://localhost:8080/AeroBankApp/api/profile/data/${username}`)
+            axios.get(`http://localhost:8080/AeroBankApp/api/profile/${username}`)
                 .then(response => {
                     setAccountNumber(response.data.accountNumber);
                     setTotalAccounts(response.data.totalAccounts);
                     setBalance(response.data.totalBalance);
+                    setRole(response.data.role);
+                    console.log('Role:', role);
                     console.log(response.data);
                     console.log(response.data.totalBalance);
                     console.log("AccountNumber: ", accountNumber);
@@ -48,7 +54,7 @@ export default function Home()
         }, []);
 
     const handleTabClick = (tab) => {
-        setIsActiveTab(tab);
+        setActiveTab(tab);
     }
 
     const handleLogout = () => {
@@ -116,6 +122,14 @@ export default function Home()
 
     }
 
+    const tabContent = {
+        'Transactions': <TransactionView />,
+        'Make a Deposit': <DepositView />,
+        'Make a Withdraw': <WithdrawView />,
+        'Make a Transfer': <TransferView />,
+        'Settings': <SettingsView />
+    };
+
     return (
         <div className="home-container">
             <header className="home-header">
@@ -137,19 +151,21 @@ export default function Home()
                 </div>
             </header>
             <div className="home-tabs">
-               <HomeTab label="Transactions" isActive={activeTab === 'Transactions'} onTabClick={() => setIsActiveTab('Transactions')} />
-                <HomeTab label="Make a Deposit" isActive={activeTab === 'Make a Deposit'} onTabClick={() => setIsActiveTab('Make a Deposit')} />
-                <HomeTab label="Make a Withdrawal" isActive={activeTab === 'Make a Withdraw'} onTabClick={() => setIsActiveTab('Make a Withdraw')}/>
-                <HomeTab label="Make a Transfer" isActive={activeTab === 'Make a Transfer'} onTabClick={() => setIsActiveTab('Make a Transfer')}/>
-                <HomeTab label="Settings" isActive={activeTab === 'Settings'} onTabClick={() => setIsActiveTab('Settings')}
-                />
+               <HomeTab label="Transactions" isActive={activeTab === 'Transactions'} onTabClick={() => setActiveTab('Transactions')} />
+                <HomeTab label="Make a Deposit" isActive={activeTab === 'Make a Deposit'} onTabClick={() => setActiveTab('Make a Deposit')} />
+                <HomeTab label="Make a Withdrawal" isActive={activeTab === 'Make a Withdraw'} onTabClick={() => setActiveTab('Make a Withdraw')}/>
+                <HomeTab label="Make a Transfer" isActive={activeTab === 'Make a Transfer'} onTabClick={() => setActiveTab('Make a Transfer')}/>
+                {role === 'ADMIN' && (
+                    <HomeTab label="Settings" isActive={activeTab === 'Settings'} onTabClick={() => setActiveTab('Settings')} />
+                )}
+
             </div>
             <div className="tab-content">
-                {activeTab === 'Transactions' && <div><TransactionView /></div>}
-                {activeTab === 'Make a Deposit' && <div><DepositView /></div>}
-                {activeTab === 'Make a Withdraw' && <div><WithdrawView /></div>}
-                {activeTab === 'Make a Transfer' && <div><TransferView /></div>}
-                {activeTab === 'Settings' && <div><SettingsView/></div>}
+                {Object.entries(tabContent).map(([tab, component], index) => (
+                    <CustomTabPanel key={tab} value={activeTab} index={tab}>
+                        {component}
+                    </CustomTabPanel>
+                ))}
             </div>
         </div>
     )

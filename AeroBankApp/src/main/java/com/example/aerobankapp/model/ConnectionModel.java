@@ -13,4 +13,6 @@ public interface ConnectionModel
     String getServerAddressById(Long id);
     int getPortById(Long id);
     String getUserNameById(Long id);
+    void connectToDB(ConnectionsEntity connectionsEntity);
+    void testConnection(ConnectionsEntity connectionsEntity);
 }

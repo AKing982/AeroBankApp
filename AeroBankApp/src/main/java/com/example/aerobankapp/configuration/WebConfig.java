@@ -39,11 +39,6 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NotNull CorsRegistry registry) {
-                registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
 
                 registry.addMapping("/csrf/token")
                         .allowedOrigins("http://localhost:3000")
@@ -51,39 +46,9 @@ public class WebConfig {
                         .allowedHeaders("*")
                         .allowCredentials(true);
 
-                registry.addMapping("/api/profile/data/{user}")
+                registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-
-                registry.addMapping("/api/accounts/data/{user}")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-
-                registry.addMapping("/api/accounts/data/codes/{user}")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-
-                registry.addMapping("/api/deposits/create")
-                        .allowedOrigins("http:localhost:3000")
-                        .allowedMethods("POST", "GET")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-
-                registry.addMapping("/api/email/data")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedHeaders("POST", "GET")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-
-                registry.addMapping("/api/users/list")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedHeaders("POST", "GET")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }

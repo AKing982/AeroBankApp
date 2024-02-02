@@ -60,7 +60,7 @@ class YAMLConnectionWriterTest {
                 .setDBPass("pass")
                 .setDBName("aerobank")
                 .setDBPort(1433)
-                .setDBType(DBType.SQLSERVER)
+                .setDBType(DBType.SSQL)
                 .build();
         YAMLConnectionWriter yamlConnectionWriter1 = new YAMLConnectionWriter(basicDataSource);
         BasicDataSourceImpl dataSource = yamlConnectionWriter1.getConversion(name);
@@ -73,7 +73,7 @@ class YAMLConnectionWriterTest {
     public void testReadConfigFile()
     {
         File configFile = new File("db-config.yaml");
-        final DBType SSQL = DBType.SQLSERVER;
+        final DBType SSQL = DBType.SSQL;
         BasicDataSourceImpl basicDataSource = new BasicDataSourceImpl.BasicDataSourceBuilder()
                 .setDBServer("localhost")
                 .setDBUser("sa")
@@ -102,7 +102,7 @@ class YAMLConnectionWriterTest {
     @Test
     public void testWriteToYAML()
     {
-        final DBType SSQL = DBType.SQLSERVER;
+        final DBType SSQL = DBType.SSQL;
         BasicDataSourceImpl basicDataSource = new BasicDataSourceImpl.BasicDataSourceBuilder()
                 .setDBServer("localhost")
                 .setDBUser("sa")
@@ -119,7 +119,7 @@ class YAMLConnectionWriterTest {
     @Test
     public void testConfigurationMap()
     {
-        final DBType SSQL = DBType.SQLSERVER;
+        final DBType SSQL = DBType.SSQL;
         BasicDataSourceImpl basicDataSource = new BasicDataSourceImpl.BasicDataSourceBuilder()
                 .setDBServer("localhost")
                 .setDBUser("sa")

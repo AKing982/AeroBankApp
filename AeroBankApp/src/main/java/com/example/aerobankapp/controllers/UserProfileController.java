@@ -1,6 +1,7 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.services.*;
+import com.example.aerobankapp.workbench.utilities.Role;
 import com.example.aerobankapp.workbench.utilities.response.UserProfileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class UserProfileController {
         this.accountDAO = accountDAO;
     }
 
-    @GetMapping(value="/data/{username}")
+    @GetMapping(value="/{username}")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
     public ResponseEntity<?> getUserProfileData(@PathVariable String username)
@@ -32,8 +33,9 @@ public class UserProfileController {
         BigDecimal totalBalances = accountDAO.getTotalAccountBalances(username);
         String accountNumber = userDAO.getAccountNumberByUserName(username);
         Long numberOfAccounts = accountDAO.getNumberOfAccounts(username);
+        Role role = userDAO.getUserRole(username);
 
-        return ResponseEntity.ok(new UserProfileResponse(username, accountNumber, totalBalances, numberOfAccounts));
+        return ResponseEntity.ok(new UserProfileResponse(username, accountNumber, totalBalances, numberOfAccounts, role));
     }
 
 }

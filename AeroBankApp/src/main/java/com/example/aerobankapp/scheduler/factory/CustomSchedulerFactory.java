@@ -11,7 +11,7 @@ public class CustomSchedulerFactory implements AbstractSchedulerTypeFactory
     private final Scheduler scheduler;
 
     @Autowired
-    public CustomSchedulerFactory(@Qualifier("scheduler") Scheduler scheduler)
+    public CustomSchedulerFactory(Scheduler scheduler)
     {
         this.scheduler = scheduler;
     }

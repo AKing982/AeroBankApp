@@ -15,7 +15,7 @@ function App() {
           <Router basename="/AeroBankApp">
               <Routes>
                   <Route path="/" element={<LoginFormOLD/>}/>
-                  <Route path="/register" element={<RegistrationForm />}/>
+                  <Route path="/registration" element={<RegistrationForm />}/>
                   <Route path="/home" element={<Home />}/>
                   <Route path="/forgot-password" element={<ForgotPasswordForm />}/>
               </Routes>

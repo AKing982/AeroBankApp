@@ -4,6 +4,7 @@ import {useState} from "react";
 
 export default function RoleSelectBox({value, onChange})
 {
+    const selectValue = value == null ? '' : value;
     return (
         <Box sx={{ minWidth: 90 }}>
             <FormControl fullWidth>
@@ -11,15 +12,15 @@ export default function RoleSelectBox({value, onChange})
                 <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={value}
+                    value={selectValue}
                     label="Age"
                     onChange={onChange}
                 >
-                    <MenuItem value={10}>User</MenuItem>
-                    <MenuItem value={20}>Admin</MenuItem>
-                    <MenuItem value={30}>Manager</MenuItem>
-                    <MenuItem value={40}>Teller</MenuItem>
-                    <MenuItem value={50}>Auditor</MenuItem>
+                    <MenuItem value="USER">User</MenuItem>
+                    <MenuItem value="ADMIN">Admin</MenuItem>
+                    <MenuItem value="MANAGER">Manager</MenuItem>
+                    <MenuItem value="TELLER">Teller</MenuItem>
+                    <MenuItem value="AUDITOR">Auditor</MenuItem>
                 </Select>
             </FormControl>
         </Box>

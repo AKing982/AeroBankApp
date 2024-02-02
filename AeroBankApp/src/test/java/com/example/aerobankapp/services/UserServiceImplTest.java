@@ -20,19 +20,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
 class UserServiceImplTest {
 
-    @InjectMocks
+    @Autowired
     private UserServiceImpl userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Mock
     private EntityManager manager;
@@ -43,7 +48,8 @@ class UserServiceImplTest {
     @BeforeEach
     void setUp()
     {
-        when(manager.createQuery(anyString(), eq(UserEntity.class))).thenReturn(typedQuery);
+
+
     }
 
 
@@ -97,6 +103,41 @@ class UserServiceImplTest {
     {
         assertThrows(NoSuchElementException.class, () -> userService.getAccountNumberByUserName(null));
         assertThrows(NoSuchElementException.class, () -> userService.getAccountNumberByUserName(""));
+    }
+
+    @Test
+    public void getListOfUserNames()
+    {
+
+        TypedQuery<String> mockQuery = mock(TypedQuery.class);
+        when(mockQuery.getResultList()).thenReturn(Arrays.asList("username1", "username2"));
+        when(manager.createQuery("SELECT u.username FROM UserEntity u", String.class)).thenReturn(mockQuery);
+
+        List<String> usernames = userService.getListOfUserNames();
+
+
+
+        assertEquals(3, usernames.size());
+    }
+
+    @Test
+    void testSave() {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("Adam552");
+        userEntity.setPassword("password");
+        userEntity.setAccountNumber("37-23-21");
+        userEntity.setPinNumber("2222");
+        userEntity.setEmail("adam@outlook.com");
+        userEntity.setEnabled(true);
+        userEntity.setRole(Role.USER);
+        userEntity.setUserID(4);
+        // Set other necessary fields...
+
+        userService.save(userEntity);
+
+        assertNotNull(userService);
+        assertNotNull(userRepository);
+
     }
 
 

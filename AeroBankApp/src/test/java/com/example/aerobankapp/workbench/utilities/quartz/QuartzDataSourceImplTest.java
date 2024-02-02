@@ -45,7 +45,7 @@ class QuartzDataSourceImplTest {
                 .setDBPort(3306)
                 .setDBUser("root")
                 .setDBServer("localhost")
-                .setDBType(DBType.SQLSERVER)
+                .setDBType(DBType.SSQL)
                 .build();
 
        // quartzDataSource = new QuartzDataSourceImpl(basicDataSource, DBType.MYSQL);
@@ -130,7 +130,7 @@ class QuartzDataSourceImplTest {
        // quartzDataSource = new QuartzDataSourceImpl(basicDataSource, DBType.SQLSERVER);
 
         BasicDataSourceImpl basicDataSourceSQLServer = new BasicDataSourceImpl.BasicDataSourceBuilder()
-                .setDBType(DBType.SQLSERVER)
+                .setDBType(DBType.SSQL)
                 .setDBName("aerobankapp")
                 .setDBPass("pass")
                 .setDBPort(3306)
@@ -146,7 +146,7 @@ class QuartzDataSourceImplTest {
         System.out.println(quartzDataSource1.getDbSource().toString());
 
       //  assertNotNull(quartzDataSource1);
-        assertEquals(DBType.SQLSERVER, actualDBType);
+        assertEquals(DBType.SSQL, actualDBType);
        // assertEquals(expectedDBURL, actualDBURL);
         //assertEquals("sqlserver", quartzDataSource.getDbSource().getDBProtocol());
     }

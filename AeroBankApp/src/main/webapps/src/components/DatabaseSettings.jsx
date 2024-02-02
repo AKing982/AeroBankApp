@@ -17,6 +17,8 @@ export default function DatabaseSettings()
     const [databaseName, setDatabaseName] = useState(null);
     const [username, setUserName] = useState(null);
     const [password, setPassword] = useState(null);
+    const [dbType, setDBType] = useState(null);
+    const [connectionData, setConnectionData] = useState([]);
 
     useEffect(() => {
 
@@ -46,13 +48,17 @@ export default function DatabaseSettings()
     }
 
     useEffect(() => {
-        axios.get('http://localhost:8080/AeroBankApp/api/connections')
+        axios.get('http://localhost:8080/AeroBankApp/api/connections/list')
             .then(response =>{
-                setUserName(response.data.username);
-                setPort(response.data.port);
-                setServer(response.data.server);
-                setDatabaseName(response.data.name);
-                setPassword(response.data.password);
+                setConnectionData(response.data);
+                configureConnections(response.data);
+                console.log('Data: ',response.data);
+
+                if(response.data.length > 0)
+                {
+                    const connection = response.data[0];
+                    configureConnections(connection);
+                }
             })
             .catch(error => {
                 console.error('There has been a problem with your fetch operation: ', error)
@@ -60,13 +66,49 @@ export default function DatabaseSettings()
 
     }, []);
 
+    const parseDatabaseTypeToLowerCase = (type) => {
+        let dbType = null;
+        if(type === 'MYSQL')
+        {
+            dbType = 'mysql';
+        }
+        else if(type === 'SQLSERVER' || type === 'SSQL')
+        {
+            dbType = 'ssql';
+        }
+        else if(type === 'POSTGRESQL' || type === 'PSQL')
+        {
+            dbType = 'postgresql';
+        }
+        return dbType;
+
+    }
+
+    const handleRadioButtonChange = (event) => {
+        setDBType(event.target.value);
+    }
+
+    const configureConnections = (connectionData) => {
+        console.log('DBServer: ', connectionData.dbServer);
+        console.log('DBName: ', connectionData.dbName);
+        console.log('DBPort: ', connectionData.dbPort);
+        console.log('DBUser: ', connectionData.dbUser);
+        console.log('DBType: ', connectionData.dbType);
+        setUserName(connectionData.dbUser);
+        setDatabaseName(connectionData.dbName);
+        setServer(connectionData.dbServer);
+        setUserName(connectionData.dbUser);
+        setPort(connectionData.dbPort);
+        setDBType(connectionData.dbType);
+    }
+
     return(
         <div className="database-settings-container">
             <header className="database-settings-header">
             </header>
             <div className="database-settings-panel">
                 <div className="connection-type-radio-buttons">
-                    <ConnectionGroup/>
+                    <ConnectionGroup value={parseDatabaseTypeToLowerCase(dbType)} onChange={handleRadioButtonChange}/>
                 </div>
                 <div className="server-port-field">
                     <ServerField value={server} onChange={handleServerChange}/>
