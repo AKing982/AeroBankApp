@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -57,10 +58,22 @@ public class UserEntity
     @JoinTable(name="account_users",
         joinColumns = @JoinColumn(name="userID"),
     inverseJoinColumns = @JoinColumn(name="acctID"))
-    private Set<AccountEntity> accounts;
+    private Set<AccountEntity> accounts = new HashSet<>();
 
     @Column(name="role")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    public void addAccount(AccountEntity accountEntity)
+    {
+        accounts.add(accountEntity);
+        accountEntity.getUsers().add(this);
+    }
+
+    public void removeAccount(AccountEntity accountEntity)
+    {
+        accounts.remove(accountEntity);
+        accountEntity.getUsers().remove(this);
+    }
 
 }

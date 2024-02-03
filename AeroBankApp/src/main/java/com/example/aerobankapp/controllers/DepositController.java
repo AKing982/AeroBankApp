@@ -3,9 +3,12 @@ package com.example.aerobankapp.controllers;
 import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.engine.DepositEngine;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
+import com.example.aerobankapp.services.DepositService;
 import com.example.aerobankapp.workbench.utilities.DepositRequest;
 import com.example.aerobankapp.workbench.utilities.response.DepositResponse;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,13 @@ import static com.example.aerobankapp.controllers.utils.DepositControllerUtil.ge
 @CrossOrigin(value="http://localhost:3000")
 public class DepositController {
 
+    private final DepositService depositService;
+
+    @Autowired
+    public DepositController(@Qualifier("depositServiceImpl") DepositService depositService)
+    {
+        this.depositService = depositService;
+    }
 
     @GetMapping("/data/{accountID}")
     @PreAuthorize("isAuthenticated()")

@@ -99,7 +99,6 @@ export default function WithdrawView()
                     </div>
                 </div>
                 <WithdrawTable />
-
             </div>
         </div>
     );

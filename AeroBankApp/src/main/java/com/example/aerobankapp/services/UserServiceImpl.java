@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 
 import com.example.aerobankapp.dto.RegistrationDTO;
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.Role;
@@ -147,6 +148,18 @@ public class UserServiceImpl implements UserService
        List<UserEntity> userEntities = typedQuery.getResultList();
 
         return userEntities.stream().map(UserEntity::getUsername).toList();
+    }
+
+    @Override
+    public void addUserToAccount(UserEntity entity, AccountEntity accountEntity) {
+        entity.addAccount(accountEntity);
+        userRepository.save(entity);
+    }
+
+    @Override
+    public void removeUserFromAccount(UserEntity userEntity, AccountEntity accountEntity) {
+        userEntity.removeAccount(accountEntity);
+        userRepository.delete(userEntity);
     }
 
     @Override

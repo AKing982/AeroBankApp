@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -52,6 +53,7 @@ public class AccountEntity
     private boolean hasMortgage;
 
     @ManyToMany(mappedBy = "accounts")
-    private Set<UserEntity> users;
+    private Set<UserEntity> users = new HashSet<>();
+
 
 }

@@ -1,14 +1,63 @@
-.withdraw-view-container{
-    display:flex;
-    flex-direction: row;
-    padding: 20px;
+.withdraw-view-container {
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-.withdraw-view-header{
-
+.withdraw-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px; /* Space between rows */
 }
 
-.withdraw-account-list{
+.withdraw-row > div {
+    flex: 1; /* Each child takes equal space */
+    margin-right: 10px; /* Space between fields */
+}
+
+.withdraw-row > div:last-child {
+    margin-right: 0; /* No margin on the last child of the row */
+}
+
+/* Add specific styles for your AccountSelect, ScheduleComboBox, etc., if needed */
+.withdraw-account-selection,
+.withdraw-schedule,
+.withdraw-description,
+.withdraw-amount-field,
+.withdraw-data-time,
+.withdraw-time-picker {
+    /* You may need to adjust the internal padding or margin of these elements,
+       depending on their specific implementation */
+}
+
+/* Apply box-sizing to all elements within the container */
+.withdraw-view-container * {
+    box-sizing: border-box;
+}
+
+/* Ensure all inputs, selects, and date/time pickers have the same height */
+.withdraw-view-container input,
+.withdraw-view-container select {
+    height: 40px; /* Adjust as needed */
+    padding: 0 10px;
+}
+
+/* Add label styles */
+.withdraw-account-selection-label,
+.withdraw-description-label, /* Add this class to your WithdrawDescription label */
+.withdraw-amount-field-label { /* Add this class to your NumberField label */
     display: block;
-    margin-right: 20px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .withdraw-row {
+        flex-direction: column;
+    }
+
+    .withdraw-row > div {
+        margin-right: 0;
+        margin-bottom: 10px; /* Add space between stacked elements */
+    }
 }

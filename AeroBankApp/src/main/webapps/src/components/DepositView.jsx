@@ -75,7 +75,7 @@ export default function DepositView()
 
       try{
           console.log("Request Data before POST",requestData);
-          const response = await fetch(`http://localhost:8080/AeroBankApp/api/deposits/create`, {
+          const response = await fetch(`http://localhost:8080/AeroBankApp/api/deposits/submit`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
