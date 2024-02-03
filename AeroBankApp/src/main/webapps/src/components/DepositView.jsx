@@ -24,6 +24,7 @@ import AlertDialog from "./AlertDialog";
 import DataTable from "./DataTable";
 import Account from "./Account";
 import CollapsiblePanel from "./CollapsiblePanel";
+import NumberField from "./NumberField";
 
 export default function DepositView()
 {
@@ -134,36 +135,33 @@ export default function DepositView()
         <div className="deposit-view-container">
             <header className="deposit-view-header">
             </header>
-            <div className="deposit-account-list">
-                <CollapsiblePanel title="Accounts" content={<ListView items={<Account accountCode={"A1"} available={4500} balance={5600} pending={15} color="red" onAccountClick={handleAccountIDChange}/>}
-                />}/>
 
-            </div>
             <div className="vertical-line">
             </div>
             <div className="deposit-view-right">
-                <div className="form-group">
-                    <div className="deposit-account-selection">
-                        <label htmlFor="account-deposit" className="deposit-account-label">Account to Deposit: </label>
-                        <AccountSelect accounts={accountCodes} value={accountID} onChange={handleAccountIDChange}/>
+                <div className="deposit-form-container">
+                    <div className="deposit-row">
+                        <div className="deposit-account-selection">
+                            <AccountSelect accounts={accountCodes} value={accountID} onChange={handleAccountIDChange}/>
+                        </div>
+                        <div className="deposit-schedule-mode">
+                            <ScheduleComboBox data={options} value={schedule} onChange={handleScheduleChange}/>
+                        </div>
+                        <div className="deposit-deposit-description">
+                            <DepositDescription value={description} onChange={handleDescriptionChange} />
+                        </div>
                     </div>
-                    <div className="deposit-deposit-description">
-                        <DepositDescription value={description}
-                                            onChange={handleDescriptionChange} />
-                    </div>
-                    <div className="deposit-amount-field">
-                        <DepositAmount value={deposit} onChange={handleAmountChange}/>
-                    </div>
-                    <div className="deposit-schedule-mode">
-                       <ScheduleComboBox data={options} value={schedule} onChange={handleScheduleChange}/>
-                    </div>
-                    <div className="date-time-container">
-                        <BasicDatePicker label="Select Date" height="60" width="20" title="Choose a Date: "
-                        value={selectedDate}
-                                         onChange={handleDateChange}/>
-                </div>
-                    <div className="deposit-time">
-                        <TimePickerBox height="60" value={selectedTime} onChange={handleTimeChange}/>
+
+                    <div className="deposit-row">
+                        <div className="deposit-amount-field">
+                            <DepositAmount value={deposit} onChange={handleAmountChange}/>
+                        </div>
+                        <div className="date-time-container">
+                            <BasicDatePicker height="67" label="Select Date" value={selectedDate} onChange={handleDateChange}/>
+                        </div>
+                        <div className="deposit-time">
+                            <TimePickerBox height="67" value={selectedTime} onChange={handleTimeChange}/>
+                        </div>
                     </div>
                     <div className="deposit-submit-button">
                         <BasicButton text="Submit" submit={handleDeposit}/>
@@ -180,13 +178,13 @@ const accounts = [
     {value: 'A2', label: 'A2'}
 ]
 
+
+
 const options = [
     'Once',
     'Daily',
     'Weekly',
     'Monthly'
 ]
-
-
 
 

@@ -4,7 +4,7 @@ export default function TimePickerBox({height, value, onChange})
 {
     return(
         <div>
-            <label htmlFor="time-pickerbox-label" className="time-picker-label">Select a Time:</label>
+            <label htmlFor="time-pickerbox-label" className="time-picker-label">Select a Time</label>
             <div className="time-pickerBox-field">
                 <BasicTimePicker
                     value={value}

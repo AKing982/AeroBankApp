@@ -17,13 +17,21 @@
 .login-box{
     width: 340px;
     position:relative;
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: 'Arial', sans-serif;
     overflow: hidden;
+    height:auto;
     background-color: #fff;
     margin: 0 auto;
+
 }
+
+.input-field input[type="password"] { /* Assuming you can target the password input specifically */
+     margin-bottom: 12px; /* Adjust this value as needed to create space */
+ }
+
+
 
 .login-box::before,
 .login-box::after{
@@ -92,11 +100,12 @@
 
     justify-content: center;
     text-align: center;
+    margin: 0 auto;
 }
 
 .input-field {
-    margin-bottom: 3px;
-    margin-left: -12px;
+    margin-bottom: auto;
+    margin-left: auto;
     position: relative;
 
 }
