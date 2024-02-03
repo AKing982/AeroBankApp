@@ -5,6 +5,8 @@ import TableView from "./TableView";
 import ListView from "./AccountListView";
 import CollapsiblePanel from "./CollapsiblePanel";
 import {Divider} from "@mui/material";
+import {useEffect, useState} from "react";
+import axios from "axios";
 
 
 export default function TransactionView()
@@ -14,9 +16,13 @@ export default function TransactionView()
         {id: 2, description: 'Gas', balance: '1400', debit: null, credit: '50', date: '2024-01-26'}
     ]
 
+    const [transactionData, setTransactionData] = useState([]);
+
     const pending = [
 
     ]
+
+
 
     return (
         <div className="transaction-view-container">

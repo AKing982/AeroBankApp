@@ -3,26 +3,54 @@
     margin: 0 auto;
 }
 
-.deposit-row {
+.deposit-row1 {
     display: flex;
     align-items: center; /* Align items vertically */
-    justify-content: space-between; /* Space out the child elements */
+    justify-content: space-around; /* Space out the child elements */
     margin-bottom: 20px; /* Space between rows */
 }
 
-.deposit-row > div {
+.deposit-account-selection {
+    margin-left: 10px;
+    margin-bottom: -18px;
+}
+
+.deposit-schedule-mode {
+    margin-bottom: -42px;
+    margin-left: -40px;
+}
+
+.deposit-amount-field{
+    margin-bottom: -20px;
+}
+
+.deposit-submit-button {
+    padding:20px;
+    align-content: center;
+}
+
+.deposit-row2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.deposit-row1 > div,
+.deposit-row2 > div { /* Apply the same styles to children of both rows */
     flex: 1; /* Each child will take up equal space */
     margin-right: 10px; /* Space between fields */
     padding: 0; /* Reset padding */
 }
 
-.deposit-row > div:last-child {
+.deposit-row1 > div:last-child,
+.deposit-row2 > div:last-child { /* Apply the same styles to the last child of both rows */
     margin-right: 0; /* No margin on the last element of the row */
 }
 
+
 /* Specific reset for internal elements if needed */
-.deposit-account-selection > *, /* Replace * with the actual element selector if possible */
-.deposit-schedule-mode > *, /* Replace * with the actual element selector if possible */
+.deposit-account-selection > *,
+.deposit-schedule-mode > *,
 .deposit-deposit-description > *,
 .deposit-amount-field > *,
 .date-time-container > *,
@@ -32,11 +60,13 @@
 }
 
 @media (max-width: 768px) {
-    .deposit-row {
+    .deposit-row1,
+    .deposit-row2 { /* Apply the same media query styles to both rows */
         flex-direction: column; /* Stack elements on smaller screens */
     }
 
-    .deposit-row > div {
+    .deposit-row1 > div,
+    .deposit-row2 > div { /* Apply the same media query styles to children of both rows */
         margin-right: 0; /* Reset margin for stacked layout */
         margin-bottom: 10px; /* Add space between stacked elements */
     }

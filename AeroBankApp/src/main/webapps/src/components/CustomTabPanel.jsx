@@ -7,8 +7,9 @@ import DepositView from "./DepositView";
 import WithdrawView from "./WithdrawView";
 import TransferView from "./TransferView";
 import SettingsView from "./SettingsView";
+import BillPayView from "./BillPayView";
 
-export default function CustomTabPanel({children, value, index, ...other})
+function CustomTabPanel({children, value, index, ...other})
 {
     return (
         <div
@@ -40,7 +41,7 @@ function a11yProps(index) {
     };
 }
 
-function BasicTabs() {
+export default function BasicTabs({role}) {
     const [value, setValue] = useState(0);
 
     const handleChange = (event, newValue) => {
@@ -48,14 +49,17 @@ function BasicTabs() {
     };
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ width: '100%', bgcolor: 'background.paper'}}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: '#e0f2f1' }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                    <Tab label="Transactions" {...a11yProps(0)} />
-                    <Tab label="Make Deposit" {...a11yProps(1)} />
-                    <Tab label="Make a Withdrawal" {...a11yProps(2)} />
-                    <Tab label="Make a Transfer" {...a11yProps(3)}/>
-                    <Tab label="Settings" {...a11yProps(4)}/>
+                    <Tab label="Transactions" {...a11yProps(0)} sx={{fontWeight: 'bold'}} />
+                    <Tab label="Make Deposit" {...a11yProps(1)} sx={{fontWeight: 'bold'}}/>
+                    <Tab label="Make a Withdrawal" {...a11yProps(2)} sx={{fontWeight: 'bold'}} />
+                    <Tab label="Make a Transfer" {...a11yProps(3)} sx={{fontWeight: 'bold'}}/>
+                    <Tab label="Bill Pay" {...a11yProps(4)} sx={{fontWeight: 'bold'}}/>
+                    {role === 'ADMIN' &&  <Tab label="Settings" {...a11yProps(5)} sx={{fontWeight: 'bold'}}/>}
+
+
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
@@ -71,8 +75,12 @@ function BasicTabs() {
                 <TransferView />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={4}>
-                <SettingsView />
+                <BillPayView />
             </CustomTabPanel>
+            {role === 'ADMIN' && ( <CustomTabPanel value={value} index={5}>
+                <SettingsView />
+            </CustomTabPanel>)}
+
         </Box>
     )
 }

@@ -1,7 +1,5 @@
 package com.example.aerobankapp.workbench.runner;
 
-import com.example.aerobankapp.workbench.session.SessionManager;
-
 import java.util.concurrent.Callable;
 
 public class SessionRunner implements Callable<SessionManager>

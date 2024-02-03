@@ -140,7 +140,7 @@ export default function DepositView()
             </div>
             <div className="deposit-view-right">
                 <div className="deposit-form-container">
-                    <div className="deposit-row">
+                    <div className="deposit-row1">
                         <div className="deposit-account-selection">
                             <AccountSelect accounts={accountCodes} value={accountID} onChange={handleAccountIDChange}/>
                         </div>
@@ -152,7 +152,7 @@ export default function DepositView()
                         </div>
                     </div>
 
-                    <div className="deposit-row">
+                    <div className="deposit-row2">
                         <div className="deposit-amount-field">
                             <DepositAmount value={deposit} onChange={handleAmountChange}/>
                         </div>

@@ -10,6 +10,8 @@ import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import BasicButton from "./BasicButton";
 import CustomTabPanel from "./CustomTabPanel";
+import BillPayView from "./BillPayView";
+import BasicTabs from "./CustomTabPanel";
 
 export default function Home()
 {
@@ -127,6 +129,7 @@ export default function Home()
         'Make a Deposit': <DepositView />,
         'Make a Withdraw': <WithdrawView />,
         'Make a Transfer': <TransferView />,
+        'Bill Pay': <BillPayView />,
         'Settings': <SettingsView />
     };
 
@@ -151,21 +154,9 @@ export default function Home()
                 </div>
             </header>
             <div className="home-tabs">
-               <HomeTab label="Transactions" isActive={activeTab === 'Transactions'} onTabClick={() => setActiveTab('Transactions')} />
-                <HomeTab label="Make a Deposit" isActive={activeTab === 'Make a Deposit'} onTabClick={() => setActiveTab('Make a Deposit')} />
-                <HomeTab label="Make a Withdrawal" isActive={activeTab === 'Make a Withdraw'} onTabClick={() => setActiveTab('Make a Withdraw')}/>
-                <HomeTab label="Make a Transfer" isActive={activeTab === 'Make a Transfer'} onTabClick={() => setActiveTab('Make a Transfer')}/>
-                {role === 'ADMIN' && (
-                    <HomeTab label="Settings" isActive={activeTab === 'Settings'} onTabClick={() => setActiveTab('Settings')} />
-                )}
-
             </div>
             <div className="tab-content">
-                {Object.entries(tabContent).map(([tab, component], index) => (
-                    <CustomTabPanel key={tab} value={activeTab} index={tab}>
-                        {component}
-                    </CustomTabPanel>
-                ))}
+                <BasicTabs role={role}/>
             </div>
         </div>
     )

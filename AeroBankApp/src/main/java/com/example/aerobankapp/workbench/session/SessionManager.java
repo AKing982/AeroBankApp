@@ -1,41 +1,15 @@
 package com.example.aerobankapp.workbench.session;
 
-import com.example.aerobankapp.model.UserDTO;
-import com.example.aerobankapp.workbench.tokens.TokenManager;
-import com.example.aerobankapp.workbench.utilities.UserProfile;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import com.example.aerobankapp.workbench.utilities.User;
 
-@Component
-@Getter
-@Setter
-@Slf4j
-public class SessionManager
+
+public interface SessionManager
 {
-    private static SessionManager instance;
-    private TokenManager tokenManager;
-    private UserDTO currentUser;
-    private UserProfile currentProfile;
-
-    private SessionManager()
-    {
-
-    }
-
-    public static SessionManager getInstance()
-    {
-        if(instance == null)
-        {
-            instance = new SessionManager();
-        }
-        return instance;
-    }
-
-    private String getTokenFromManager()
-    {
-        return tokenManager.generateUserToken(currentUser);
-    }
-
+    Session createSession(User user);
+    Session getSession(String sessionID);
+    boolean validateSession(String sessionID);
+    void renewSession(Session session);
+    void terminateSession(Session session);
+    boolean isSessionActive(Session session);
+    void handleTimeout(Session session);
 }

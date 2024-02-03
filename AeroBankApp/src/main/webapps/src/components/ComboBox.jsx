@@ -8,7 +8,7 @@ export default function ComboBox({label, data, value, onChange}) {
             disablePortal
             id="combo-box-demo"
             options={data}
-            sx={{width: 220}}
+            sx={{width: 260}}
             value={value}
             onChange={onChange}
             getOptionLabel={(option) => option}

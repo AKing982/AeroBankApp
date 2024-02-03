@@ -12,6 +12,7 @@ import BasicDatePicker from "./BasicDatePicker";
 import TimePickerBox from "./TimePickerBox";
 import BasicButton from "./BasicButton";
 import WithdrawTable from "./WithdrawTable";
+import DataTable from "./DataTable";
 
 export default function WithdrawView()
 {
@@ -43,8 +44,11 @@ export default function WithdrawView()
         setDescription(event.target.value);
     }
 
-    const handleScheduleChange = (event) => {
-        setSchedule(event.target.value);
+    const handleScheduleChange = (event, newValue) => {
+        if(newValue !== null && newValue !== undefined)
+        {
+            setSchedule(newValue);
+        }
     }
 
     const handleAmountChange = (event) => {

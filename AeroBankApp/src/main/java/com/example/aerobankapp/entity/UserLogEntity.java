@@ -21,23 +21,37 @@ public class UserLogEntity
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
 
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="userID", referencedColumnName = "id")
+    private UserEntity userEntity;
+
     @Column(name="username")
     @Size(min=10, max=25, message="Username requires atleast 10 characters")
     @NotNull
     private String username;
 
-    @Column(name="userID")
-    private int userID;
-
     @NotNull
-    @Column(name="lastLogin",nullable = false)
+    @Column(name="lastLogin")
     private LocalDateTime lastLogin;
 
-    public UserLogEntity(String username, int userID, LocalDateTime lastLogin)
-    {
-        this.username = username;
-        this.userID = userID;
-        this.lastLogin = lastLogin;
-    }
+    @NotNull
+    @Column(name="lastLogout")
+    private LocalDateTime lastLogout;
+
+    @NotNull
+    @Column(name="sessionDuration")
+    private int sessionDuration;
+
+    @Column(name="loginSuccess")
+    private boolean loginSuccess;
+
+    @Column(name="ipAddress")
+    @Size(max=45)
+    @NotNull
+    private String ipAddress;
+
+    @Column(name="sessionToken")
+    private String sessionToken;
+
 
 }
