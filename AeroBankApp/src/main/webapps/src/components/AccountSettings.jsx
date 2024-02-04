@@ -5,6 +5,7 @@ import NumberField from "./NumberField";
 import UserAccountAccess from "./UserAccountAccess";
 import {Button, Grid, Typography} from "@mui/material";
 import '../AccountSettings.css';
+import PercentageField from "./PercentageField";
 
 export default function AccountSettings()
 {
@@ -37,8 +38,8 @@ export default function AccountSettings()
         setTransferLimit(event.target.value);
     }
 
-    const handleInterestRateChange = (event) => {
-        setInterestRate(event.target.value);
+    const handleInterestRateChange = (event, newValue) => {
+        setInterestRate(newValue);
     }
 
     const handleBalanceChange = (event) => {
@@ -92,7 +93,7 @@ export default function AccountSettings()
                                 <Typography>Interest Rate:</Typography>
                             </Grid>
                             <Grid item xs={8}>
-                                <NumberField value={interestRate} label="Interest Rate" onChange={handleInterestRateChange}/>
+                                <PercentageField value={interestRate} label="Interest Rate" onChange={handleInterestRateChange}/>
                             </Grid>
                             <Grid item xs={8}>
                                 <Button
