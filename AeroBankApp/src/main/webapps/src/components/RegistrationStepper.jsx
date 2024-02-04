@@ -1,5 +1,6 @@
-import {Step, StepLabel, Stepper} from "@mui/material";
-import {Box} from "@mui/system";
+import {Button, FormControlLabel, Step, StepLabel, Stepper, Switch, TextField, Typography} from "@mui/material";
+import {Box, Container} from "@mui/system";
+import AccountInformation from "./AccountInformation";
 import {useState} from "react";
 
 const steps = [
@@ -24,12 +25,10 @@ export default function RegistrationStepper()
         lastName:'',
         username: '',
         email: '',
-        street: '',
-        city: '',
-        zip: '',
         pin:'',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        isAdmin: false,
     });
 
 
@@ -94,6 +93,13 @@ export default function RegistrationStepper()
         return errors;
     };
 
+    const handleSwitchChange = () => {
+        setFormData({
+            ...formData,
+            isAdmin: !formData.isAdmin,
+        });
+    };
+
 
     return (
         <Box sx={{ width: '100%' }}>
@@ -105,57 +111,105 @@ export default function RegistrationStepper()
                 ))}
             </Stepper>
             {activeStep === steps.indexOf('User Information') && (
-                <form className="form-grid" onSubmit={handleSubmit}>
-                    <div className="form-row">
-                        <div className="form-field"><label>FirstName: </label><input type="text" name="firstName" value={formData.firstName} onChange={handleChange}/></div>
-                        <div className="form-field"><label>LastName: </label><input type="text" name="lastName" value={formData.lastName} onChange={handleChange}/></div>
-                        <div className="form-field"><label>Username: </label><input type="text" name="username" value={formData.username} onChange={handleChange}/>{errors.username && <p>{errors.username}</p>}</div>
-                        <div className="form-field"><label>Email: </label><input type="text" name="email" value={formData.email} onChange={handleChange}/></div>
-                        <div className="form-field"><label htmlFor="street">Street: </label><input type="text" name="street" id="street" inputMode="text" value={formData.street} onChange={handleChange}/></div>
-                    </div>
-
-                    <div className="form-row">
-                        <div><label>City: </label><input type="text" name="city" value={formData.city} onChange={handleChange}/></div>
-                        <div><label htmlFor="zip">ZIP: </label><input type="text" id="zip" name="zip" maxLength="5" inputMode="numeric" value={formData.zip} onChange={handleChange}/></div>
-                        <div><label htmlFor="pin">PIN: </label><input
-                            type="password"
-                            id="pin"
-                            name="pin"
-                            value={formData.pin}
-                            maxLength="4"
-                            inputMode="numeric"
-                            pattern="\d*"
+                <Container maxWidth="sm">
+                    <Typography variant="h4" align="center" gutterBottom>
+                        User Registration
+                    </Typography>
+                    <form onSubmit={handleSubmit}>
+                        <TextField
+                            fullWidth
+                            label="First Name"
+                            name="firstName"
+                            value={formData.firstName}
                             onChange={handleChange}
+                            margin="normal"
+                            required
                         />
-                        </div>
-                        <div>
-                            <label htmlFor="password">Password: </label>
-                            <input
-                                type="password"
-                                name="password"
-                                id="password"
-                                inputMode="numeric"
-                                value={formData.password}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="confirmPassword">Confirm Password: </label>
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </div>
-                    <button type="submit" className="button" onSubmit={handleSubmit}>Register</button>
-                </form>
+                        <TextField
+                            fullWidth
+                            label="Last Name"
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            label="Username"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            label="Email"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            label="PIN"
+                            name="pin"
+                            type="number"
+                            value={formData.pin}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            label="Password"
+                            name="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            label="Confirm Password"
+                            name="confirmPassword"
+                            type="password"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            margin="normal"
+                            required
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={formData.isAdmin}
+                                    onChange={handleSwitchChange}
+                                    name="isAdmin"
+                                    color="primary"
+                                />
+                            }
+                            label="Administrator"
+                        />
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            size="large"
+                        >
+                            Register
+                        </Button>
+                    </form>
+                </Container>
             )}
             {activeStep === steps.indexOf('Account Information') && (
                 <form className="account-form-grid" onSubmit={handleSubmit}>
                     <div className="form-row">
-
+                        <AccountInformation />
                     </div>
                 </form>
             )}

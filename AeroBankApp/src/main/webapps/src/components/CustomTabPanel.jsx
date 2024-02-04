@@ -9,9 +9,12 @@ import TransferView from "./TransferView";
 import SettingsView from "./SettingsView";
 import BillPayView from "./BillPayView";
 import DashBoard from "./DashBoard";
+import BillPayPage from "./BillPayPage";
+import {useNavigate} from "react-router-dom";
 
 function CustomTabPanel({children, value, index, ...other})
 {
+    const navigate = useNavigate();
     return (
         <div
             role="tabpanel"
@@ -60,8 +63,6 @@ export default function BasicTabs({role, accounts}) {
                     <Tab label="Make a Transfer" {...a11yProps(4)} sx={{fontWeight: 'bold'}}/>
                     <Tab label="Bill Pay" {...a11yProps(5)} sx={{fontWeight: 'bold'}}/>
                     {role === 'ADMIN' &&  <Tab label="Settings" {...a11yProps(6)} sx={{fontWeight: 'bold'}}/>}
-
-
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
@@ -80,11 +81,14 @@ export default function BasicTabs({role, accounts}) {
                 <TransferView />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={5}>
-                <BillPayView />
+                <BillPayPage />
             </CustomTabPanel>
-            {role === 'ADMIN' && ( <CustomTabPanel value={value} index={6}>
+            {role === 'ADMIN' && (
+                <CustomTabPanel value={value} index={6}>
                 <SettingsView />
-            </CustomTabPanel>)}
+            </CustomTabPanel>
+
+            )}
 
         </Box>
     )

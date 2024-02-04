@@ -36,7 +36,7 @@ export default function TransferView()
     };
 
     return (
-        <Container style={{ marginTop: '20px' }}>
+        <Container style={{ marginTop: '20px'}}>
             <Typography variant="h4">Make a Transfer</Typography>
             <form style={{ marginTop: '20px' }}>
                 <FormControl component="fieldset" style={{ marginBottom: '20px' }}>

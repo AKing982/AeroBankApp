@@ -16,13 +16,15 @@ public class AccountResponse implements Serializable
     private BigDecimal balance;
     private BigDecimal pendingAmount;
     private BigDecimal availableAmount;
+    private String acctColor;
 
-    public AccountResponse(String acctCode, BigDecimal bal, BigDecimal pending, BigDecimal available)
+    public AccountResponse(String acctCode, BigDecimal bal, BigDecimal pending, BigDecimal available, String acctColor)
     {
         this.accountCode = acctCode;
         this.balance = bal;
         this.pendingAmount = pending;
         this.availableAmount = available;
+        this.acctColor = acctColor;
     }
 
     public AccountResponse(String accountCode)

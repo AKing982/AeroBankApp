@@ -30,7 +30,8 @@ public class AccountControllerUtil
         {
             BigDecimal balance = entity.getBalance();
             String acctCode = entity.getAccountCode();
-            AccountResponse accountResponse = new AccountResponse(acctCode, balance, pending, available);
+            String acctColor = entity.getAcct_color();
+            AccountResponse accountResponse = new AccountResponse(acctCode, balance, pending, available, acctColor);
             accountResponseList.add(accountResponse);
         }
 

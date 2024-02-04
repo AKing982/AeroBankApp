@@ -1,9 +1,9 @@
 package com.example.aerobankapp.controllers;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping(value="/pending", method=RequestMethod.GET)
@@ -11,4 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class PendingTransactionsController
 {
 
+    @GetMapping("/size")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> totalPendingTransctions()
+    {
+        return null;
+    }
 }

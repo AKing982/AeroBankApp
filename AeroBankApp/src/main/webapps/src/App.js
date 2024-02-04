@@ -7,6 +7,7 @@ import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import Home from "./components/Home";
 import LoginForm from "./components/LoginForm";
 import ForgotPasswordForm from "./components/ForgotPasswordForm";
+import MFAuthenticate from "./components/MFAuthenticate";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
                   <Route path="/registration" element={<RegistrationForm />}/>
                   <Route path="/home" element={<Home />}/>
                   <Route path="/forgot-password" element={<ForgotPasswordForm />}/>
+                  <Route path="/mfa/authenticate" element={<MFAuthenticate />}/>
               </Routes>
           </Router>
       </div>

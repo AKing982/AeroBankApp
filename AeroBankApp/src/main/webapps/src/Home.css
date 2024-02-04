@@ -54,7 +54,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    background-image: linear-gradient(to right, #61a2b1, #2A5058);
+    background-image: linear-gradient(to right, #0E0F52, #2A5058);
     color: white;
     padding: 15px;
 }

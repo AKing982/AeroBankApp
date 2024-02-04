@@ -40,7 +40,7 @@ export default function AccountListView({setAccountCode})
 
     return (
         <div>
-            <h2>{username}'s Accounts</h2>
+            <h2>{username}'s Shares</h2>
             <div className="account-list-body">
                 {accountData.map((account) => {
                     return(
@@ -51,6 +51,7 @@ export default function AccountListView({setAccountCode})
                             pending={account.pendingAmount}
                             available={account.availableAmount}
                             onAccountClick={handleAccountButtonClick}
+                            color={account.acctColor}
                             isSelected = {selectedAccount === account.accountCode}
                         />
                         );

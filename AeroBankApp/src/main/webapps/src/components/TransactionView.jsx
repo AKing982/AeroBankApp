@@ -7,6 +7,8 @@ import CollapsiblePanel from "./CollapsiblePanel";
 import {Divider} from "@mui/material";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import TransactionTable from "./TransactionTable";
+import PendingTransactionsTable from "./PendingTransactionsTable";
 
 
 export default function TransactionView()
@@ -34,8 +36,8 @@ export default function TransactionView()
             </div>
 
             <div className="transaction-view-right">
-                <CollapsiblePanel title="Pending Transactions" content={<TableView data={data}/>}/>
-                <TableView data={data}/>
+                <PendingTransactionsTable />
+                <TransactionTable />
             </div>
             <div className="transaction-view-footer">
             </div>

@@ -52,8 +52,7 @@ export default function TableView()
           <Table sx={{minWidth: 100}} aria-label="customized table">
               <TableHead>
                   <TableRow>
-                      <StyledTableCell>ID</StyledTableCell>
-                      <StyledTableCell align="right">Description</StyledTableCell>
+                      <StyledTableCell>Description</StyledTableCell>
                       <StyledTableCell align="right">Debit</StyledTableCell>
                       <StyledTableCell align="right">Credit</StyledTableCell>
                       <StyledTableCell align="right">Balance</StyledTableCell>
@@ -68,7 +67,6 @@ export default function TableView()
                           <StyledTableCell align="right">{row.calories}</StyledTableCell>
                           <StyledTableCell align="right">{row.fat}</StyledTableCell>
                           <StyledTableCell align="right">{row.carbs}</StyledTableCell>
-                          <StyledTableCell align="right">{row.protein}</StyledTableCell>
                       </StyledTableRow>
                   ))}
               </TableBody>

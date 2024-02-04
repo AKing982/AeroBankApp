@@ -11,20 +11,33 @@ import DepositAmount from "./DepositAmount";
 import {DepositDescription} from "./DepositDescription";
 import axios from "axios";
 import BasicDatePicker from "./BasicDatePicker";
-import {TimePicker} from "@mui/x-date-pickers";
+import {DesktopDatePicker, LocalizationProvider, TimePicker} from "@mui/x-date-pickers";
 import BasicTimePicker from "./BasicTimePicker";
 import ComboBox from "./ComboBox";
 import AccountSelect from "./AccountSelect";
 import TimePickerBox from "./TimePickerBox";
 import EnhancedTable from "./EnhancedTable";
 import {EnhancedTableHead} from "./EnhancedTable";
-import {Button} from "@mui/material";
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Button,
+    FormControl,
+    InputLabel, MenuItem, Select, Snackbar,
+    TextField,
+    Typography
+} from "@mui/material";
 import BasicButton from "./BasicButton";
 import AlertDialog from "./AlertDialog";
 import DataTable from "./DataTable";
 import Account from "./Account";
 import CollapsiblePanel from "./CollapsiblePanel";
 import NumberField from "./NumberField";
+import {Container} from "@mui/system";
+import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DepositAccountCode from "./DepositAccountCode";
 
 export default function DepositView()
 {
@@ -42,6 +55,15 @@ export default function DepositView()
 
     const user = sessionStorage.getItem('username');
 
+    const [selectedAccountCode, setSelectedAccountCode] = useState('');
+    const [amount, setAmount] = useState('');
+    const [selectedAccount, setSelectedAccount] = useState('');
+    const [depositDate, setDepositDate] = useState(new Date());
+    const [depositTime, setDepositTime] = useState(new Date());
+    const [scheduleInterval, setScheduleInterval] = useState('');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [deposits, setDeposits] = useState([]);
+
     useEffect(() => {
         setIsLoading(true);
       axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/codes/${user}`)
@@ -57,6 +79,26 @@ export default function DepositView()
           })
 
     }, []);
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
+
+    const handleAccountSelect = (account) => {
+        setSelectedAccount(account);
+        // Fetch and set deposits for the selected account
+        setDeposits(sampleDeposits); // Replace with actual API call
+    };
+
+    const accounts = ['Checking', 'Savings'];
+
+    const sampleDeposits = [
+        // Sample deposit data
+    ];
+
+    // Sample data for account codes and deposit intervals
+    const scheduleIntervals = ['Once', 'Daily', 'BiWeekly', 'Weekly', 'Monthly'];
+
 
     const handleDeposit = async() => {
         setIsDialogOpen(true);
@@ -130,47 +172,93 @@ export default function DepositView()
             setSchedule(newValue);
         }
     }
-
     return (
-        <div className="deposit-view-container">
-            <header className="deposit-view-header">
-            </header>
+        <Container style={{ marginTop: '20px' }}>
+            <Typography variant="h4">Make a Deposit</Typography>
 
-            <div className="vertical-line">
-            </div>
-            <div className="deposit-view-right">
-                <div className="deposit-form-container">
-                    <div className="deposit-row1">
-                        <div className="deposit-account-selection">
-                            <AccountSelect accounts={accountCodes} value={accountID} onChange={handleAccountIDChange}/>
-                        </div>
-                        <div className="deposit-schedule-mode">
-                            <ScheduleComboBox data={options} value={schedule} onChange={handleScheduleChange}/>
-                        </div>
-                        <div className="deposit-deposit-description">
-                            <DepositDescription value={description} onChange={handleDescriptionChange} />
-                        </div>
-                    </div>
+            <Accordion style={{ marginBottom: '20px' }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography>Select Account</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {accounts.map((account, index) => (
+                        <Button key={index} variant="text" onClick={() => handleAccountSelect(account)}>
+                            {account}
+                        </Button>
+                    ))}
+                </AccordionDetails>
+            </Accordion>
 
-                    <div className="deposit-row2">
-                        <div className="deposit-amount-field">
-                            <DepositAmount value={deposit} onChange={handleAmountChange}/>
-                        </div>
-                        <div className="date-time-container">
-                            <BasicDatePicker height="67" label="Select Date" value={selectedDate} onChange={handleDateChange}/>
-                        </div>
-                        <div className="deposit-time">
-                            <TimePickerBox height="67" value={selectedTime} onChange={handleTimeChange}/>
-                        </div>
-                    </div>
-                    <div className="deposit-submit-button">
-                        <BasicButton text="Submit" submit={handleDeposit}/>
-                    </div>
-                </div>
-                <DataTable selectedAccount={accountID} />
-            </div>
-        </div>
+            <form style={{ marginTop: '20px' }}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+
+                    <DepositAccountCode
+                        accounts={accountCodes}
+                        value={selectedAccountCode}
+                        onChange={(event) => setSelectedAccountCode(event.target.value)}
+                    />
+
+                    <TextField
+                        fullWidth
+                        label="Amount"
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        style={{ marginBottom: '20px' }}
+                    />
+
+                    <TextField
+                        fullWidth
+                        label="Description (Optional)"
+                        multiline
+                        rows={2}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        style={{ marginBottom: '20px' }}
+                    />
+
+                    <DesktopDatePicker
+                        label="Deposit Date"
+                        value={depositDate}
+                        onChange={setDepositDate}
+                        renderInput={(params) => <TextField {...params} fullWidth style={{ marginBottom: '20px' }} />}
+                    />
+
+                    <TimePicker
+                        label="Deposit Time"
+                        value={depositTime}
+                        onChange={setDepositTime}
+                        renderInput={(params) => <TextField {...params} fullWidth style={{ marginBottom: '20px' }} />}
+                    />
+
+                    <FormControl fullWidth style={{ marginBottom: '20px' }}>
+                        <InputLabel>Schedule Interval</InputLabel>
+                        <Select
+                            value={scheduleInterval}
+                            onChange={(e) => setScheduleInterval(e.target.value)}
+                        >
+                            {scheduleIntervals.map((interval, index) => (
+                                <MenuItem key={index} value={interval}>{interval}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <Button variant="contained" color="primary" onClick={handleDeposit}>
+                        Schedule Deposit
+                    </Button>
+                </LocalizationProvider>
+            </form>
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                message="Deposit scheduled"
+            />
+            <DataTable />
+        </Container>
     );
+
 }
 
 const accounts = [

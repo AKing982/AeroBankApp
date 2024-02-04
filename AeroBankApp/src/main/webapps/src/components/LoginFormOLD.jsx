@@ -7,6 +7,20 @@ import '../CustomAlert.css';
 import {Spinner} from "./Spinner";
 import LoginAlert from "./LoginAlert";
 import BasicButton from "./BasicButton";
+import {
+    Alert,
+    Button,
+    Card,
+    CardContent,
+    CircularProgress,
+    IconButton,
+    InputAdornment,
+    TextField,
+    Typography
+} from "@mui/material";
+import {Box} from "@mui/system";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
+import backgroundImage from '../background.jpg';
 
 export default function LoginFormOLD()
 {
@@ -18,6 +32,7 @@ export default function LoginFormOLD()
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
 
 
     const isValidCsrfToken = (csrfToken) => {
@@ -181,50 +196,118 @@ export default function LoginFormOLD()
 
     }
 
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
+
 
     return (
-        <div className="login-container">
-            {loading === true ? <Spinner/> : ''}
-
-            {error && (
-                <LoginAlert/>
-            )}
-            <div className="background-image">
-                <div className="login-box">
-                    <div className="login-header">
-                        <span className="header-title">Please Login</span>
-                    </div>
-                    <div className="login-body">
-                        <form>
-                            <div className="input-field">
-                                <label htmlFor="username" className="input-label">User Name </label>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    className="input-field"
-                                    value={username}
-                                    onChange={e => setUserName(e.target.value)}
-                                />
-                            </div>
-                            <div className="input-field">
-                                <label htmlFor="password" className="input-label">Password </label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    className="input-field"
-                                    value={password}
-                                    onChange={e => setPassword(e.target.value)}
-                                />
-                            </div>
-                            <div className="login-footer">
-                                <button className="button2" onClick={navigateToRegister}>Register</button>
-                                <button className={`button2 ${isLoginButtonEnabled ? 'disabled' : ''}`} disabled={isLoginButtonEnabled} onClick={handleSubmit}>Login</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        );
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', p: 2, backgroundImage:`url(${backgroundImage})` }}>
+            <Card>
+                <CardContent>
+                    <Typography variant="h5" component="div" gutterBottom sx={{fontWeight: 'bold', textAlign: 'left'}}>
+                        Sign In
+                    </Typography>
+                    {loading && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                            <CircularProgress />
+                        </Box>
+                    )}
+                    {error && (
+                        <Alert severity="error">{error}</Alert>
+                    )}
+                    <Box
+                        component="form"
+                        noValidate
+                        autoComplete="off"
+                        onSubmit={handleSubmit}
+                        sx={{ mt: 2 }}
+                    >
+                        <TextField
+                            required
+                            fullWidth
+                            id="username"
+                            label="User Name"
+                            margin="normal"
+                            value={username}
+                            onChange={(e) => setUserName(e.target.value)}
+                            variant="outlined"
+                            InputProps={{
+                                style: {
+                                    height: '55px',
+                                    padding: '0 5px', // Adjust horizontal padding if needed
+                                    // You might not need to adjust the line height if the height and padding are set correctly
+                                    // lineHeight: 'normal' // Adjust if the text isn't vertically centered
+                                }
+                            }}
+                            // Adjust the height of the TextField, considering label and border
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    height: '55px', // Adjust to the desired input height
+                                    alignItems: 'center', // This will vertically center the text field content
+                                },
+                                // Adjust the label position if needed
+                                '& .MuiInputLabel-outlined.MuiInputLabel-shrink': {
+                                    transform: 'translate(14px, -6px) scale(0.75)', // Adjust translation if needed
+                                }
+                            }}
+                        />
+                        <TextField
+                            required
+                            fullWidth
+                            id="password"
+                            label="Password"
+                            type={showPassword ? 'text' : 'password'}
+                            margin="normal"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            sx={{ fieldset: { height: 55 } }}
+                            InputProps={{
+                                style: {
+                                    alignItems: 'center'
+                                },
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                            inputProps={{
+                                style: {
+                                    height: '40px',
+                                    padding: '10px',
+                                },
+                            }}
+                        />
+                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+                            <Button variant="outlined" onClick={navigateToRegister}>
+                                Register
+                            </Button>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                disabled={!username || !password}
+                            >
+                                Login
+                            </Button>
+                        </Box>
+                    </Box>
+                </CardContent>
+            </Card>
+        </Box>
+    );
 
 }
