@@ -12,6 +12,7 @@ import BasicButton from "./BasicButton";
 import CustomTabPanel from "./CustomTabPanel";
 import BillPayView from "./BillPayView";
 import BasicTabs from "./CustomTabPanel";
+import DashBoard from "./DashBoard";
 
 export default function Home()
 {
@@ -125,6 +126,7 @@ export default function Home()
     }
 
     const tabContent = {
+        'Dashboard': <DashBoard />,
         'Transactions': <TransactionView />,
         'Make a Deposit': <DepositView />,
         'Make a Withdraw': <WithdrawView />,

@@ -8,13 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class SessionService
 {
-    @Autowired
-    private SessionRepository sessionRepository;
-
-    public void saveSession(Session session)
-    {
-        sessionRepository.save(session);
-    }
 
     public Session getSession(String sessionID)
     {

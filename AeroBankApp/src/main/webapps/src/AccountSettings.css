@@ -1,0 +1,19 @@
+.account-settings-container {
+    margin: 20px;
+}
+
+.account-properties, .users-list {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.account-properties > div, .users-list > div {
+    margin-bottom: 15px;
+}
+
+.users-list {
+    overflow-y: auto;
+    max-height: 300px; /* Adjust height as needed */
+}

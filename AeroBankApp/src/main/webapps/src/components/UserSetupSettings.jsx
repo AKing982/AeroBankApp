@@ -226,20 +226,6 @@ export default function UserSetupSettings()
                         <label htmlFor="Current Users" className="current-users-label">Current Users</label>
                         <UserList />
                     </div>
-                    <div className="user-setup-account-settings-bottom">
-                        <div className="account-type">
-                            <AccountTypeSelect value={accountType} onChange={handleAccountTypeChange} />
-                        </div>
-                        <div className="account-name-field">
-                            <label htmlFor="account-name" className="user-setup-account-name-label">Account Name: </label>
-                            <UserTextField label="Account Name" value={accountName}/>
-                        </div>
-                        <div className="starting-balance">
-                            <label htmlFor="user-setup-balance" className="user-setup-balance-label">Initial Balance: </label>
-                            <NumberField label="Initial Balance" value={balance} />
-                            <BasicButton text="Create Account" />
-                        </div>
-                    </div>
                 </div>
                 <div className="user-setup-footer">
                 </div>

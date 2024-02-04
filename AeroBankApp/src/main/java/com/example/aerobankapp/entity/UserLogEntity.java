@@ -22,7 +22,7 @@ public class UserLogEntity
     private int id;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="userID", referencedColumnName = "id")
+    @JoinColumn(name="userID")
     private UserEntity userEntity;
 
     @Column(name="username")

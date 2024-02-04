@@ -19,7 +19,12 @@ public class DepositEngine extends Engine<Deposit>
 
     public DepositEngine(List<Deposit> deposits)
     {
+        this.depositList = deposits;
+    }
 
+    public void initializeDepositQueue(List<Deposit> deposits)
+    {
+        this.depositQueue.addDepositList(deposits);
     }
 
     @Override

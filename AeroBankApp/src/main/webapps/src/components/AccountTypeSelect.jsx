@@ -5,7 +5,7 @@ export default function AccountTypeSelect({value, onChange})
 {
     const selectValue = value == null ? '' : value;
     return (
-        <Box sx={{ minWidth: 90 }}>
+        <Box sx={{ minWidth: 40 }}>
             <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">AccountType</InputLabel>
                 <Select

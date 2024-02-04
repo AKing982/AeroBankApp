@@ -8,6 +8,8 @@ import EmailSettings from "./EmailSettings";
 import DatabaseSettings from "./DatabaseSettings";
 import UserSetupSettings from "./UserSetupSettings";
 import AccountSettings from "./AccountSettings";
+import SchedulerSettings from "./SchedulerSettings";
+import APIIntegrationSettings from "./APIIntegrationSettings";
 
 function VerticalTab(props) {
     const { children, value, index, ...other } = props;
@@ -84,13 +86,16 @@ export default function VerticalTabs() {
                 <AccountSettings />
             </VerticalTab>
             <VerticalTab value={value} index={4}>
-                Item Five
+                TransactionSecurity
             </VerticalTab>
             <VerticalTab value={value} index={5}>
-                Item Six
+                Security
             </VerticalTab>
             <VerticalTab value={value} index={6}>
-                Item Seven
+                <SchedulerSettings />
+            </VerticalTab>
+            <VerticalTab value={value} index={7}>
+                <APIIntegrationSettings />
             </VerticalTab>
         </Box>
     );
