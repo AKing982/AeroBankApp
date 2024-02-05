@@ -2,16 +2,18 @@ import * as React from 'react';
 import {DataGrid} from '@mui/x-data-grid';
 import {useEffect, useState} from "react";
 import axios from "axios";
+import { Resizable } from 'react-resizable';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 const columns = [
-    { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'Description', headerName: 'Description', width: 130 },
-    { field: 'Debit', headerName: 'Debit', width: 130 },
+    { field: 'Description', headerName: 'Description', width: 600 },
+    { field: 'Debit', headerName: 'Debit', width: 120 },
     {
         field: 'Credit',
         headerName: 'Credit',
         type: 'number',
-        width: 90,
+        width:  130,
     },
     {
         field: 'Balance',
@@ -24,11 +26,65 @@ const columns = [
     },
 ];
 
+const ResizableColumn = ({ onResize, width, ...restProps }) => {
+    return (
+        <Resizable
+            width={width}
+            height={0}
+            onResize={(_, { size }) => {
+                onResize(size.width);
+            }}
+        >
+            <div {...restProps} />
+        </Resizable>
+    );
+};
+
+const mockData = [
+    {
+        id: 1,
+        Description: 'Item 1',
+        Debit: 100,
+        Credit: 50,
+    },
+    {
+        id: 2,
+        Description: 'Item 2',
+        Debit: 150,
+        Credit: 75,
+    },
+    // Add more mock data as needed
+];
+
 
 export default function DataTable({selectedAccount})
 {
     const [rows, setRows] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    const [columnWidths, setColumnWidths] = useState({
+        Description: 700,
+        Debit: 130,
+        Credit: 130,
+        Balance: 160,
+    });
+
+    const handleColumnResize = (fieldName, newWidth) => {
+        // Update the column widths state when a column is resized
+        setColumnWidths((prevWidths) => ({
+            ...prevWidths,
+            [fieldName]: newWidth,
+        }));
+    };
+
+
+
+
+    const handleColumnWidthChange = (newColumnWidths) => {
+        // Update the column widths state when a column width changes
+        setColumnWidths(newColumnWidths);
+    };
+
 
 
     useEffect(() => {
@@ -38,32 +94,54 @@ export default function DataTable({selectedAccount})
 
             axios.get(`http://localhost:8080/AeroBankApp/api/deposits/data/${selectedAccount}`)
                 .then(response => {
-                    setRows(response.data);
-                    console.log('Fetching Deposit data: ', response.data);
+
+                    setTimeout(() => {
+                        setRows(response.data);
+                        console.log('Fetching Deposit data: ', response.data);
+                        setIsLoading(false);
+                    }, 2000)
+
                 })
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation: ', error);
+                    setIsLoading(false);
                 })
                 .finally(() => {
-                    setIsLoading(false);
+
                 });
         }
     }, [selectedAccount]); //
 
     return (
         <div style={{ height: 400, width: '100%' }}>
-            <DataGrid
-                style={{backgroundColor: 'darkgrey', color:'black'}}
-                rows={rows}
-                columns={columns}
-                initialState={{
-                    pagination: {
-                        paginationModel: { page: 0, pageSize: 5 },
-                    },
-                }}
-                pageSizeOptions={[5, 10]}
-                checkboxSelection
-            />
+            {isLoading ? (
+                <CircularProgress style={{margin: 'auto'}}/>
+
+            ) : (
+                <DataGrid
+                    style={{backgroundColor: 'darkgrey', color:'black'}}
+                    rows={rows}
+                    columns={columns.map((col) => ({
+                        ...col,
+                        width: columnWidths[col.field],
+                        headerRenderer: (props) => (
+                            <ResizableColumn
+                                {...props}
+                                onResize={(newWidth) => handleColumnResize(col.field, newWidth)}
+                            />
+                        ),
+                    }))}
+
+                    autoHeight
+                    initialState={{
+                        pagination: {
+                            paginationModel: { page: 0, pageSize: 5 },
+                        },
+                    }}
+                    pageSizeOptions={[5, 10]}
+                    checkboxSelection
+                />
+            )}
         </div>
     );
 }

@@ -2,11 +2,14 @@ import {useEffect, useState} from "react";
 import AccountBox from "./AccountBox";
 import axios from "axios";
 import Account from "./Account";
+import {CircularProgress} from "@mui/material";
+
 
 export default function AccountListView({setAccountCode})
 {
     const [accountData, setAccountData] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const username = sessionStorage.getItem('username');
 
@@ -15,20 +18,24 @@ export default function AccountListView({setAccountCode})
     }
 
     useEffect(() => {
-        const fetchAccounts = async () => {
-            try{
-                const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/${username}`);
 
-                console.log('Fetching Accounts: ', response.data);
-                setAccountData(response.data);
-            }catch(error)
-            {
-                console.error('Error fetching account data: ', error);
-            }
-        };
+        const timeout = setTimeout(() => {
+            const fetchAccounts = async () => {
+                try{
+                    const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/${username}`);
 
-        fetchAccounts();
+                    console.log('Fetching Accounts: ', response.data);
+                    setAccountData(response.data);
+                    setIsLoading(false);
+                }catch(error)
+                {
+                    console.error('Error fetching account data: ', error);
+                    setIsLoading(false);
+                }
+            };
 
+            fetchAccounts();
+        }, 2000)
     }, [username]);
 
 
@@ -41,22 +48,26 @@ export default function AccountListView({setAccountCode})
     return (
         <div>
             <h2>{username}'s Shares</h2>
-            <div className="account-list-body">
-                {accountData.map((account) => {
-                    return(
-                        <Account
-                            key={account.id}
-                            accountCode={account.accountCode}
-                            balance={account.balance}
-                            pending={account.pendingAmount}
-                            available={account.availableAmount}
-                            onAccountClick={handleAccountButtonClick}
-                            color={account.acctColor}
-                            isSelected = {selectedAccount === account.accountCode}
-                        />
+            {isLoading ? (
+                <CircularProgress />
+            ) : (
+                <div className="account-list-body">
+                    {accountData.map((account) => {
+                        return (
+                            <Account
+                                key={account.id}
+                                accountCode={account.accountCode}
+                                balance={account.balance}
+                                pending={account.pendingAmount}
+                                available={account.availableAmount}
+                                onAccountClick={handleAccountButtonClick}
+                                color={account.acctColor}
+                                isSelected={selectedAccount === account.accountCode}
+                            />
                         );
-                })}
-            </div>
+                    })}
+                </div>
+            )}
         </div>
     );
 }

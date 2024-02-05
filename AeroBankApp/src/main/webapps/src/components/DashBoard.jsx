@@ -16,11 +16,13 @@ import {
 import axios from "axios";
 import {useEffect, useState} from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {Skeleton} from "@mui/lab";
 
 export default function DashBoard()
 {
     const user = sessionStorage.getItem('username');
     const [accounts, setAccounts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/${user}`)
@@ -30,6 +32,9 @@ export default function DashBoard()
             .catch(error => {
                 console.log(`There was an error fetching accounts for:${user} `);
             })
+            .finally(() => {
+             
+            })
     }, [])
 
     return (
@@ -38,21 +43,24 @@ export default function DashBoard()
             <Grid item xs={12} md={6}>
                 <Paper style={{ padding: 16 }}>
                     <Typography variant="h6">Account Summaries</Typography>
-                    {/* Map through accounts to display in Accordion */}
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel-content"
-                            id="panel-header"
-                        >
-                            <Typography>Account 1</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <List>
-                                {/* Details of Account 1 */}
-                            </List>
-                        </AccordionDetails>
-                    </Accordion>
+                    {isLoading ? ( // Display Skeleton when loading
+                        <Skeleton variant="rectangular" height={100} />
+                    ) : (
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel-content"
+                                id="panel-header"
+                            >
+                                <Typography>Account 1</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <List>
+                                    {/* Details of Account 1 */}
+                                </List>
+                            </AccordionDetails>
+                        </Accordion>
+                    )}
                     {/* Repeat for other accounts */}
                 </Paper>
             </Grid>
@@ -61,19 +69,23 @@ export default function DashBoard()
             <Grid item xs={12} md={6}>
                 <Paper style={{ padding: 16 }}>
                     <Typography variant="h6">Recent Transactions</Typography>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Date</TableCell>
-                                <TableCell>Description</TableCell>
-                                <TableCell>Amount</TableCell>
-                                {/* Add more table headers as needed */}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-
-                        </TableBody>
-                    </Table>
+                    {isLoading ? ( // Display Skeleton when loading
+                        <Skeleton variant="rectangular" height={300} />
+                    ) : (
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>Description</TableCell>
+                                    <TableCell>Amount</TableCell>
+                                    {/* Add more table headers as needed */}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {/* Map through transactions or add Skeleton rows */}
+                            </TableBody>
+                        </Table>
+                    )}
                 </Paper>
             </Grid>
 
@@ -81,7 +93,11 @@ export default function DashBoard()
             <Grid item xs={12} md={6}>
                 <Paper style={{ padding: 16 }}>
                     <Typography variant="h6">Scheduled Payments</Typography>
-                    {/* Content for Scheduled Payments */}
+                    {isLoading ? ( // Display Skeleton when loading
+                        <Skeleton variant="rectangular" height={200} />
+                    ) : (
+                        {/* Content for Scheduled Payments */}
+                    )}
                 </Paper>
             </Grid>
 
@@ -89,7 +105,11 @@ export default function DashBoard()
             <Grid item xs={12} md={6}>
                 <Paper style={{ padding: 16 }}>
                     <Typography variant="h6">Bills Due</Typography>
-                    {/* Content for Bills Due */}
+                    {isLoading ? ( // Display Skeleton when loading
+                        <Skeleton variant="rectangular" height={200} />
+                    ) : (
+                        {/* Content for Bills Due */}
+                    )}
                 </Paper>
             </Grid>
         </Grid>
