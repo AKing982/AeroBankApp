@@ -21,8 +21,8 @@ import {EnhancedTableHead} from "./EnhancedTable";
 import {
     Accordion,
     AccordionDetails,
-    AccordionSummary,
-    Button,
+    AccordionSummary, Alert,
+    Button, CircularProgress,
     FormControl,
     InputLabel, MenuItem, Select, Snackbar,
     TextField,
@@ -38,6 +38,7 @@ import {Container} from "@mui/system";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DepositAccountCode from "./DepositAccountCode";
+import Dialog from "@mui/material/Dialog";
 
 export default function DepositView()
 {
@@ -63,6 +64,7 @@ export default function DepositView()
     const [scheduleInterval, setScheduleInterval] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [deposits, setDeposits] = useState([]);
+    const [snackbarmessage, setSnackbarMessage] = useState('');
 
     useEffect(() => {
         setIsLoading(true);
@@ -101,6 +103,35 @@ export default function DepositView()
 
 
     const handleDeposit = async() => {
+
+        if(!amount || amount <= 0)
+        {
+            setOpenSnackbar(true);
+            setSnackbarMessage('Please enter a valid amount.');
+            return;
+        }
+
+        // Confirmation dialog logic
+        const confirm = window.confirm('Do you want to schedule this deposit?'); // This is a simple example. In a real app, you might use a MUI Dialog for better UX.
+        if (confirm) {
+            // If confirmed, proceed with deposit
+            setIsLoading(true); // Show loading indicator
+            try {
+                // API call to submit the deposit
+                const requestData = { /* ... */ };
+                const response = await axios.post('http://localhost:8080/AeroBankApp/api/deposits/submit', requestData);
+                setSnackbarMessage('Deposit scheduled successfully');
+                setOpenSnackbar(true);
+                // Handle successful deposit here
+            } catch (error) {
+                // Handle errors
+                setSnackbarMessage('Failed to schedule deposit. Please try again.');
+                setOpenSnackbar(true);
+            } finally {
+                setIsLoading(false); // Hide loading indicator
+            }
+        }
+
         setIsDialogOpen(true);
         console.log(accountID);
         console.log(deposit);
@@ -254,7 +285,16 @@ export default function DepositView()
                 autoHideDuration={6000}
                 onClose={handleCloseSnackbar}
                 message="Deposit scheduled"
-            />
+            >
+                <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%'}}>
+                    {snackbarmessage}
+                </Alert>
+            </Snackbar>
+
+            <Dialog open={IsLoading}>
+                <CircularProgress />
+            </Dialog>
+
             <DataTable />
         </Container>
     );
@@ -274,5 +314,7 @@ const options = [
     'Weekly',
     'Monthly'
 ]
+
+
 
 
