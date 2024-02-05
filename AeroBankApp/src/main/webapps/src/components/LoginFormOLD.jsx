@@ -34,6 +34,18 @@ export default function LoginFormOLD()
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
 
+    const overlayStyle = {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
+        display: loading ? 'block' : 'none',
+        zIndex: 1, // Ensure it's above other elements
+    };
+
+
 
     const isValidCsrfToken = (csrfToken) => {
         if(typeof csrfToken === 'string' && csrfToken.trim() !== '' || csrfToken instanceof Promise)
@@ -135,6 +147,11 @@ export default function LoginFormOLD()
         });
     }
 
+    const circularProgressStyle = {
+        color: 'blue', // Change the color of CircularProgress
+        size: 90, // Increase the size to make it brighter
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
@@ -142,10 +159,10 @@ export default function LoginFormOLD()
         try{
 
          //   const csrfToken = await fetchCsrfToken();
+            setTimeout(async () => {
+                const response = await authenticationResponse();
 
-            const response = await authenticationResponse();
-
-            // Store the JWT Token in the sessionStorage
+                // Store the JWT Token in the sessionStorage
 
                 if(response.ok)
                 {
@@ -169,12 +186,14 @@ export default function LoginFormOLD()
                     setError('Incorrect Username or Password');
                 }
 
+            }, 2000);
+
         }catch(error)
         {
              console.error("Network Error: ", error);
              setError('A network error occurred, please try again later.');
         }finally {
-            setLoading(false);
+            setTimeout(() => setLoading(false), 2000);
         }
 
     };
@@ -207,15 +226,16 @@ export default function LoginFormOLD()
 
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', p: 2, backgroundImage:`url(${backgroundImage})` }}>
-            <Card>
+        <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', p: 2, backgroundImage:`url(${backgroundImage})` }}>
+            <div style={overlayStyle}></div>
+            <Card sx={{position: 'relative'}}>
                 <CardContent>
                     <Typography variant="h5" component="div" gutterBottom sx={{fontWeight: 'bold', textAlign: 'left'}}>
                         Sign In
                     </Typography>
                     {loading && (
                         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                            <CircularProgress />
+                            <CircularProgress color="secondary" sx={{circularProgressStyle}} />
                         </Box>
                     )}
                     {error && (
