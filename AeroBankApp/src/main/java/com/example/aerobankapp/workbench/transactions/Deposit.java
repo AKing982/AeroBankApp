@@ -19,6 +19,7 @@ import java.time.LocalDate;
 public class Deposit extends TransactionBase
 {
     private Long depositID;
+
     public Deposit(int userID, String descr, String acctID, BigDecimal amount, LocalDate date, TransactionStatus status)
     {
         super(userID, descr, acctID, amount, date, status);

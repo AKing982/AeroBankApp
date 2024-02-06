@@ -1,13 +1,20 @@
 package com.example.aerobankapp.engine;
 
+import com.example.aerobankapp.workbench.transactions.Purchase;
 import com.example.aerobankapp.workbench.transactions.TransactionSummary;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
 
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.List;
 
-public class PurchaseEngine extends Engine
+public class PurchaseEngine extends Engine<Purchase>
 {
+
+    @Override
+    protected void processTransaction(List<Purchase> transactions) {
+
+    }
 
     @Override
     protected BigDecimal calculateTransactionFee() {
@@ -30,12 +37,13 @@ public class PurchaseEngine extends Engine
     }
 
     @Override
-    protected TransactionSummary generateTransactionSummary(TransactionBase transaction) {
+    protected TransactionSummary generateTransactionSummary(Purchase transaction) {
         return null;
     }
 
     @Override
-    protected void storeTransaction(TransactionBase transaction) {
+    protected void storeTransaction(Purchase transaction) {
 
     }
+
 }

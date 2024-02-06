@@ -27,6 +27,11 @@ public class WithdrawEngine extends Engine<Withdraw>
     }
 
     @Override
+    protected void processTransaction(List<Withdraw> transactions) {
+
+    }
+
+    @Override
     protected BigDecimal calculateTransactionFee() {
         return null;
     }

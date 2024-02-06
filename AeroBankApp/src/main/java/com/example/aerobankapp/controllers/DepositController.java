@@ -25,11 +25,13 @@ import static com.example.aerobankapp.controllers.utils.DepositControllerUtil.*;
 public class DepositController {
 
     private final DepositService depositService;
+    private final DepositEngine depositEngine;
 
     @Autowired
-    public DepositController(@Qualifier("depositServiceImpl") DepositService depositService)
+    public DepositController(@Qualifier("depositServiceImpl") DepositService depositService, DepositEngine depositEngine)
     {
         this.depositService = depositService;
+        this.depositEngine = depositEngine;
     }
 
     @GetMapping("/data/{accountID}")

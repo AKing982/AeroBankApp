@@ -4,9 +4,13 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public abstract class QueueModel<T>
+public interface QueueModel<T>
 {
-    protected Queue<T> queue = new ConcurrentLinkedQueue<>();
+    void add(T transaction);
+    void addAll(List<T> transactions);
 
+    T remove();
+    T peek();
+    boolean isEmpty();
 
 }

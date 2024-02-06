@@ -1,9 +1,8 @@
 package com.example.aerobankapp.scheduler;
 
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +16,7 @@ public class SchedulerEngineImpl implements SchedulerEngine
 {
     private final CronExpressionBuilder cronExpressionBuilder;
     private final Scheduler scheduler;
+    private Logger LOGGER = LoggerFactory.getLogger(SchedulerEngineImpl.class);
 
     @Autowired
     public SchedulerEngineImpl(Scheduler scheduler, CronExpressionBuilder cronExpressionBuilder)
@@ -33,13 +33,25 @@ public class SchedulerEngineImpl implements SchedulerEngine
     @Override
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public String scheduleJob(JobDetail jobDetail, Trigger trigger) throws SchedulerException {
-        return null;
+        scheduler.scheduleJob(jobDetail, trigger);
+        return trigger.getKey().toString();
     }
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void updateJobSchedule(String jobName, String groupName, Trigger trigger) {
-
+    public void updateJobSchedule(String jobName, String groupName, Trigger trigger)
+    {
+        JobKey jobKey = new JobKey(jobName, groupName);
+        try
+        {
+            if(scheduler.checkExists(jobKey))
+            {
+                scheduler.rescheduleJob(TriggerKey.triggerKey(jobName, groupName), trigger);
+            }
+        }catch(SchedulerException e)
+        {
+            LOGGER.error("An exception has occurred updating Job Schedule: ", e);
+        }
     }
 
     @Override

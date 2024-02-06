@@ -144,6 +144,7 @@ export default function DepositView()
     const scheduleIntervals = ['Once', 'Daily', 'BiWeekly', 'Weekly', 'Monthly'];
 
 
+
     const handleDeposit = async() => {
 
         if(!amount || amount <= 0)
@@ -151,6 +152,15 @@ export default function DepositView()
             setOpenSnackbar(true);
             setSnackbarMessage('Please enter a valid amount.');
             return;
+        }
+
+        const requestData = {
+            accountCode: selectedAccountCode,
+            amount: amount,
+            description: description,
+            scheduleInterval: scheduleInterval,
+            timeScheduled: depositTime,
+            date: depositDate,
         }
 
         // Confirmation dialog logic
@@ -166,6 +176,7 @@ export default function DepositView()
                 // Handle successful deposit here
             } catch (error) {
                 // Handle errors
+                console.log('An error has occurred while submitting the deposit request: ', error);
                 setSnackbarMessage('Failed to schedule deposit. Please try again.');
                 setOpenSnackbar(true);
             } finally {
@@ -179,14 +190,7 @@ export default function DepositView()
         console.log(interval);
         console.log(description);
 
-        const requestData = {
-            accountCode: selectedAccountCode,
-            amount: amount,
-            description: description,
-            scheduleInterval: scheduleInterval,
-            timeScheduled: depositTime,
-            date: depositDate,
-        }
+
 
       try{
           console.log("Request Data before POST",requestData);
@@ -271,7 +275,7 @@ export default function DepositView()
                     <DepositAccountCode
                         accounts={accountCodes}
                         value={selectedAccountCode}
-                        onChange={handleSelectedAccountCode}
+                        onChange={(e) => setSelectedAccountCode(e.target.value)}
                     />
 
                     <TextField

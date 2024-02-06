@@ -27,6 +27,7 @@ public abstract class TransactionBase
         this.amount = amount;
         this.date_posted = posted;
         this.transactionStatus = status;
+
     }
 
     public abstract void executeTransaction();
