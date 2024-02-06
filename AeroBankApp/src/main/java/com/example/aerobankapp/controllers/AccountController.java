@@ -52,7 +52,7 @@ public class AccountController {
         List<String> accountCodes = accountDAO.getListOfAccountCodes(user);
         List<AccountCodeResponse> accountCodeResponseList = getAccountCodesAsResponse(accountCodes);
 
-        return ResponseEntity.ok(accountCodes);
+        return ResponseEntity.ok(accountCodeResponseList);
     }
 
     @GetMapping("/{userName}/account-types")

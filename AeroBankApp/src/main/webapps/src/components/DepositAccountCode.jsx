@@ -19,8 +19,8 @@ export default function DepositAccountCode({accounts, value, onChange})
                         onChange={onChange}
                     >
                         {Array.isArray(accounts) ? accounts.map((account) => (
-                            <MenuItem key={account} value={account}>
-                                {account}
+                            <MenuItem key={account.accountCode} value={account.accountCode}>
+                                {account.accountCode}
                             </MenuItem>
                         )) : <MenuItem disabled>Loading...</MenuItem>}
 

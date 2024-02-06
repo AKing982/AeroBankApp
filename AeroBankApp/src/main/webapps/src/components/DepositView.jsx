@@ -95,7 +95,7 @@ export default function DepositView()
               {
                   console.log('Account Codes Response: ', response.data);
                   setAccountCodes(response.data);
-                  console.log('Fetching Account Codes: ', accountCodes);
+                  console.log('Fetching Account Codes: ', accountCodes.accountCode);
               }
               else {
                   console.error('Invalid data format received:', response.data);
