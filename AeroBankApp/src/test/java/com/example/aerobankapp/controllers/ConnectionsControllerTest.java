@@ -54,7 +54,7 @@ class ConnectionsControllerTest {
                 .connectionID(1L)
                 .dbName("aerobank")
                 .dbServer("localhost")
-                .dbPort("3306")
+                .dbPort(3306)
                 .dbPass("Halflifer94!")
                 .dbType(DBType.MYSQL)
                 .dbUser("root")

@@ -16,9 +16,9 @@ function createData(date, description, debit, credit, balance) {
 
 const rows = [
     createData('February 4, 2024', 'PIN Purchase HARMONS - DIST 11453 S. PARKWAY South', '-$20.84', '', '$931.02'),
-    createData('February 4, 2024', 'PIN Purchase WALMART', '-15.84', '', '915.02'),
-    createData('February 5, 2024', 'PIN Purchase WINCO', '-10.00', '', '905.02'),
-    createData('February 6, 2024', 'Deposit Transfer', '', '10.00', '915.02')
+    createData('February 4, 2024', 'PIN Purchase WALMART', '-$15.84', '', '$915.02'),
+    createData('February 5, 2024', 'PIN Purchase WINCO', '-$10.00', '', '$905.02'),
+    createData('February 6, 2024', 'Deposit Transfer', '', '$10.00', '$915.02')
     // ... add more row data here
 ];
 

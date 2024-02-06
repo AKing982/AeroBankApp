@@ -14,6 +14,7 @@ import BillPayView from "./BillPayView";
 import BasicTabs from "./CustomTabPanel";
 import DashBoard from "./DashBoard";
 
+
 export default function Home()
 {
 
@@ -28,6 +29,9 @@ export default function Home()
     const [activeTab, setActiveTab] = useState('Transactions');
     const [role, setRole] = useState(null);
     const navigate = useNavigate();
+
+    const route = '/';
+
 
 
     const username = sessionStorage.getItem('username');
@@ -55,6 +59,13 @@ export default function Home()
                     setIsLoading(false);
                 })
         }, []);
+
+    const handleUserInteraction = () => {
+
+    };
+
+
+
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
@@ -134,6 +145,18 @@ export default function Home()
         'Bill Pay': <BillPayView />,
         'Settings': <SettingsView />
     };
+
+    useEffect(() => {
+        document.addEventListener('click', handleUserInteraction);
+        document.addEventListener('keypress', handleUserInteraction);
+
+        return () => {
+            document.removeEventListener('click', handleUserInteraction);
+            document.removeEventListener('keypress', handleUserInteraction);
+        };
+
+
+    }, []);
 
     return (
         <div className="home-container">

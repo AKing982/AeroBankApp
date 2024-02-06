@@ -1,11 +1,13 @@
 package com.example.aerobankapp.entity;
 
+import com.example.aerobankapp.scheduler.ScheduleType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="deposits")
@@ -27,13 +29,8 @@ public class DepositsEntity
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="accountID")
+    @JoinColumn(name="acctID")
     private AccountEntity account;
-
-    @Column(name="accountCode", nullable = false)
-    @NotNull
-    @Size(max=2, message="Maximum of 2 characters required")
-    private String accountCode;
 
     @Column(name="amount", nullable = false)
     @NotNull
@@ -41,13 +38,21 @@ public class DepositsEntity
     @Digits(integer=10, fraction = 2)
     private BigDecimal amount;
 
-    @Column(name="isDebit", nullable = false, columnDefinition = "DEFAULT FALSE")
-    private boolean isDebit;
+    @Column(name="description")
+    @NotNull
+    private String description;
 
-    @Column(name="isBankTransfer", nullable = false, columnDefinition = "DEFAULT FALSE")
-    private boolean isBankTransfer;
+    @Column(name="scheduledInterval")
+    @Enumerated(EnumType.STRING)
+    private ScheduleType scheduleInterval;
 
-    @Column(name="date_posted")
-    private LocalDate date_posted;
+    @Column(name="scheduledTime")
+    private LocalDateTime scheduledTime;
+
+    @Column(name="scheduledDate")
+    private LocalDate scheduledDate;
+
+    @Column(name="posted")
+    private LocalDate posted;
 
 }

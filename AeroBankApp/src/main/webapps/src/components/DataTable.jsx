@@ -7,8 +7,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 
 const columns = [
-    { field: 'Description', headerName: 'Description', width: 600 },
-    { field: 'Debit', headerName: 'Debit', width: 120 },
+    { field: 'description', headerName: 'Description', width: 600 },
+    { field: 'amount', headerName: 'Amount', width: 180 },
     {
         field: 'Credit',
         headerName: 'Credit',
@@ -57,7 +57,7 @@ const mockData = [
 ];
 
 
-export default function DataTable({selectedAccount})
+export default function DataTable({selectedAccount, accountID})
 {
     const [rows, setRows] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -92,11 +92,15 @@ export default function DataTable({selectedAccount})
             console.log("Selected Account: ", selectedAccount);
             setIsLoading(true);
 
-            axios.get(`http://localhost:8080/AeroBankApp/api/deposits/data/${selectedAccount}`)
+            axios.get(`http://localhost:8080/AeroBankApp/api/deposits/data/${accountID}`)
                 .then(response => {
+                    const dataWithIds = response.data.map((item, index) => {
+                        return {...item, id: index};
+                    });
 
                     setTimeout(() => {
-                        setRows(response.data);
+                        setRows(dataWithIds);
+                        console.log("Row Data: ", rows);
                         console.log('Fetching Deposit data: ', response.data);
                         setIsLoading(false);
                     }, 2000)
@@ -121,6 +125,7 @@ export default function DataTable({selectedAccount})
                 <DataGrid
                     style={{backgroundColor: 'darkgrey', color:'black'}}
                     rows={rows}
+                    getRowId={(row) => row.userID}
                     columns={columns.map((col) => ({
                         ...col,
                         width: columnWidths[col.field],

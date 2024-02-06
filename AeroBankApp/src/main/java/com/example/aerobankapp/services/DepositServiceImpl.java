@@ -5,6 +5,8 @@ import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.repositories.DepositRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Getter
 public class DepositServiceImpl implements DepositService
 {
     private final DepositRepository depositRepository;
@@ -57,6 +60,15 @@ public class DepositServiceImpl implements DepositService
     @Override
     public List<DepositsEntity> getDepositsByUserNameDesc(String user) {
         return null;
+    }
+
+    @Override
+    public List<DepositsEntity> getDepositsByAcctID(int acctID) {
+        TypedQuery<DepositsEntity> depositsEntityTypedQuery = getEntityManager()
+                .createQuery("SELECT d FROM DepositsEntity d JOIN d.account a WHERE a.acctID = :acctID", DepositsEntity.class);
+        depositsEntityTypedQuery.setParameter("acctID", acctID);
+        depositsEntityTypedQuery.setMaxResults(30);
+        return depositsEntityTypedQuery.getResultList();
     }
 
     @Override

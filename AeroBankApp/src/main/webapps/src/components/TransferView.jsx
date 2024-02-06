@@ -81,6 +81,7 @@ export default function TransferView()
                     <>
                         <TextField
                             fullWidth
+                            height="55"
                             label="Recipient's Account Number"
                             value={recipientAccount}
                             onChange={(e) => setRecipientAccount(e.target.value)}

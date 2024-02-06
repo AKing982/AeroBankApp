@@ -5,6 +5,7 @@ import com.example.aerobankapp.dto.AccountDetailsDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.services.AccountServiceImpl;
 import com.example.aerobankapp.workbench.utilities.AccountCreationRequest;
+import com.example.aerobankapp.workbench.utilities.response.AccountCodeResponse;
 import com.example.aerobankapp.workbench.utilities.response.AccountResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -16,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
-import static com.example.aerobankapp.controllers.utils.AccountControllerUtil.getAccountCodesAsResponse;
-import static com.example.aerobankapp.controllers.utils.AccountControllerUtil.getAccountResponseList;
+import static com.example.aerobankapp.controllers.utils.AccountControllerUtil.*;
 
 @RestController
 @RequestMapping(value = "/api/accounts", method = RequestMethod.GET)
@@ -49,9 +50,19 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<?> getListOfExistingAccountCodes(@PathVariable String user) {
         List<String> accountCodes = accountDAO.getListOfAccountCodes(user);
-        List<AccountResponse> accountResponseList = getAccountCodesAsResponse(accountCodes);
+        List<AccountCodeResponse> accountCodeResponseList = getAccountCodesAsResponse(accountCodes);
 
-        return ResponseEntity.ok(accountResponseList);
+        return ResponseEntity.ok(accountCodes);
+    }
+
+    @GetMapping("/{userName}/account-types")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public ResponseEntity<Map<Integer, String>> getAccountTypeMapByAccountID(@PathVariable String userName)
+    {
+        Map<Integer, String> accountTypeMap = accountDAO.getAccountTypeMapByAccountId(userName);
+
+        return ResponseEntity.ok(accountTypeMap);
     }
 
     @PostMapping("/create")

@@ -11,6 +11,8 @@ public enum ScheduleType
     DAILY("Daily"),
     CUSTOM("Custom"),
 
+    ONCE("Once"),
+
     NONE("None"),
 
     BIDAILY("Bi-Daily");

@@ -19,7 +19,7 @@ function createData(description, debit, credit, balance, status) {
 }
 
 const pendingTransactions = [
-    createData('PURCHASE 933334 FIREHOUSE SUBS 1178 ECOSOUTH JORDAN UTUS', '-$10.24', '', '', 'pending'),
+    createData('PURCHASE 933334 FIREHOUSE SUBS 1178 ECOSOUTH ', '-$10.24', '', '', 'pending'),
     // ... add more pending transactions here
 ];
 

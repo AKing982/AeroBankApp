@@ -8,10 +8,12 @@ import java.time.LocalDate;
 @Builder
 public record ConnectionsDTO(Long connectionId,
                              String dbServer,
-                             String dbPort,
+                             int dbPort,
                              String dbName,
                              String dbUser,
                              String dbPass,
+                             String dbUrl,
+                             String dbDriver,
                              DBType dbType,
                              LocalDate dateModified) {
 }

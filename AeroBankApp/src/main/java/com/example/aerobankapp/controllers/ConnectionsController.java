@@ -6,6 +6,7 @@ import com.example.aerobankapp.entity.ConnectionsEntity;
 import com.example.aerobankapp.services.ConnectionsService;
 import com.example.aerobankapp.services.ConnectionsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,7 @@ public class ConnectionsController {
     private final ConnectionsService connectionsService;
 
     @Autowired
-    public ConnectionsController(ConnectionsService connectionsService) {
+    public ConnectionsController(@Qualifier("connectionsServiceImpl")ConnectionsService connectionsService) {
         this.connectionsService = connectionsService;
     }
 

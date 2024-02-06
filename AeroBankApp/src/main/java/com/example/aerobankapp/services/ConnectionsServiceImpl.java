@@ -2,8 +2,14 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.ConnectionsEntity;
 import com.example.aerobankapp.repositories.ConnectionRepository;
+import com.example.aerobankapp.workbench.utilities.DataSourceProperties;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -12,23 +18,27 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Getter
 public class ConnectionsServiceImpl implements ConnectionsService
 {
     private final ConnectionRepository connectionRepository;
-
     @PersistenceContext
     private EntityManager entityManager;
+    private final JdbcTemplate jdbcTemplate;
+    private final DataSourceProperties dataSourceProperties;
+    private final Logger LOGGER = LoggerFactory.getLogger(ConnectionsServiceImpl.class);
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public ConnectionsServiceImpl(ConnectionRepository connectionRepository, EntityManager entityManager)
+    public ConnectionsServiceImpl(DataSourceProperties dataSource,
+                                  JdbcTemplate jdbcTemplate,
+                                  ConnectionRepository connectionRepository,
+                                  EntityManager entityManager)
     {
         this.connectionRepository = connectionRepository;
         this.entityManager = entityManager;
+        this.jdbcTemplate = jdbcTemplate;
+        this.dataSourceProperties = dataSource;
     }
-
 
     @Override
     public List<ConnectionsEntity> findAll() {
@@ -38,36 +48,64 @@ public class ConnectionsServiceImpl implements ConnectionsService
     @Override
     public ConnectionsEntity getConnectionById(Long id)
     {
-        return null;
+        return connectionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
     }
 
     @Override
-    public void saveConnection(ConnectionsEntity connectionsEntity) {
-
+    public void saveConnection(ConnectionsEntity connectionsEntity)
+    {
+        connectionRepository.save(connectionsEntity);
     }
 
     @Override
     public void deleteConnection(ConnectionsEntity connectionsEntity) {
-
+        connectionRepository.delete(connectionsEntity);
     }
 
     @Override
     public String getServerAddressById(Long id) {
-        return null;
+        TypedQuery<ConnectionsEntity> connectionsEntityTypedQuery = getEntityManager().createQuery("FROM ConnectionsEntity WHERE id=:id", ConnectionsEntity.class);
+        connectionsEntityTypedQuery.setParameter("id", id);
+        connectionsEntityTypedQuery.setMaxResults(2);
+        ConnectionsEntity connectionsEntity = connectionsEntityTypedQuery.getSingleResult();
+        return connectionsEntity.getDbServer();
     }
 
     @Override
     public int getPortById(Long id) {
-        return 0;
+        TypedQuery<ConnectionsEntity> connectionsEntityTypedQuery = getEntityManager().createQuery("FROM ConnectionsEntity WHERE id=:id", ConnectionsEntity.class);
+        connectionsEntityTypedQuery.setParameter("id", id);
+        connectionsEntityTypedQuery.setMaxResults(2);
+        ConnectionsEntity connectionsEntity = connectionsEntityTypedQuery.getSingleResult();
+        return connectionsEntity.getDbPort();
     }
 
     @Override
     public String getUserNameById(Long id) {
-        return null;
+        TypedQuery<ConnectionsEntity> connectionsEntityTypedQuery = getEntityManager().createQuery("FROM ConnectionsEntity WHERE id=:id", ConnectionsEntity.class);
+        connectionsEntityTypedQuery.setParameter("id", id);
+        connectionsEntityTypedQuery.setMaxResults(2);
+        ConnectionsEntity connectionsEntity = connectionsEntityTypedQuery.getSingleResult();
+        return connectionsEntity.getDbUser();
     }
 
     @Override
     public void connectToDB(ConnectionsEntity connectionsEntity) {
+        String url = connectionsEntity.getDbURL();
+
+        try
+        {
+            dataSourceProperties.setUrl(url);
+            dataSourceProperties.setUsername(connectionsEntity.getDbUser());
+            dataSourceProperties.setPassword(connectionsEntity.getDbPass());
+            dataSourceProperties.setDriverClassName(connectionsEntity.getDbDriver());
+
+            jdbcTemplate.queryForObject("SELECT 1", Integer.class);
+
+        }catch(Exception e)
+        {
+            LOGGER.error("An exception has occurred: ", e);
+        }
 
     }
 

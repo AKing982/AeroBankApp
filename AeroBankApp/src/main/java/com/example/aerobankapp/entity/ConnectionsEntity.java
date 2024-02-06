@@ -23,7 +23,7 @@ public class ConnectionsEntity {
     private String dbServer;
 
     @Column(name="dbPort")
-    private String dbPort;
+    private int dbPort;
 
     @Column(name="dbName")
     private String dbName;
@@ -33,6 +33,12 @@ public class ConnectionsEntity {
 
     @Column(name="dbPass")
     private String dbPass;
+
+    @Column(name="dbURL")
+    private String dbURL;
+
+    @Column(name="dbDriver")
+    private String dbDriver;
 
     @Column(name="dbType")
     @Enumerated(EnumType.STRING)

@@ -58,5 +58,10 @@ public class AccountEntity
     @ManyToMany(mappedBy = "accounts")
     private Set<UserEntity> users = new HashSet<>();
 
+    public AccountEntity(int acctID, String accountType)
+    {
+        this.acctID = acctID;
+        this.accountType = accountType;
+    }
 
 }

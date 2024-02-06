@@ -8,7 +8,7 @@ import {Spinner} from "./Spinner";
 import LoginAlert from "./LoginAlert";
 import BasicButton from "./BasicButton";
 import {
-    Alert,
+    Alert, Backdrop,
     Button,
     Card,
     CardContent,
@@ -33,6 +33,7 @@ export default function LoginFormOLD()
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const [showBackdrop, setShowBackdrop] = useState(false);
 
     const overlayStyle = {
         position: 'absolute',
@@ -155,6 +156,7 @@ export default function LoginFormOLD()
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
+        setShowBackdrop(true);
 
         try{
 
@@ -186,12 +188,17 @@ export default function LoginFormOLD()
                     setError('Incorrect Username or Password');
                 }
 
+                setLoading(false);
+                setShowBackdrop(false);
+
             }, 2000);
 
         }catch(error)
         {
              console.error("Network Error: ", error);
              setError('A network error occurred, please try again later.');
+             setLoading(false);
+             setShowBackdrop(false);
         }finally {
             setTimeout(() => setLoading(false), 2000);
         }
@@ -233,11 +240,15 @@ export default function LoginFormOLD()
                     <Typography variant="h5" component="div" gutterBottom sx={{fontWeight: 'bold', textAlign: 'left'}}>
                         Sign In
                     </Typography>
-                    {loading && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                            <CircularProgress color="secondary" sx={{circularProgressStyle}} />
-                        </Box>
-                    )}
+                    <Backdrop
+                        sx={{
+                            zIndex: (theme) => theme.zIndex.drawer + 1,
+                            color: '#fff',
+                        }}
+                        open={showBackdrop} // Show the backdrop conditionally
+                    >
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
                     {error && (
                         <Alert severity="error">{error}</Alert>
                     )}

@@ -16,9 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
@@ -112,6 +110,26 @@ class AccountControllerTest {
 
 
     }
+
+    @Test
+    @WithMockUser
+    public void whenGetAccountTypeMapByAccountID_thenReturnMap() throws Exception {
+        String userName = "AKing94";
+        Map<Integer, String> accountTypeMap = new HashMap<>();
+        accountTypeMap.put(1, "Checking");
+        accountTypeMap.put(2, "Savings");
+
+        // Mock the behavior of accountDAO to return the accountTypeMap when getAccountTypeMapByAccountId is called
+        given(accountDAO.getAccountTypeMapByAccountId(userName)).willReturn(accountTypeMap);
+
+        // Perform the request and verify the response
+        mockMvc.perform(get("/api/accounts/{userName}/account-types", userName)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.1", is("Checking")))
+                .andExpect(jsonPath("$.2", is("Savings")));
+    }
+
 
     @AfterEach
     void tearDown() {

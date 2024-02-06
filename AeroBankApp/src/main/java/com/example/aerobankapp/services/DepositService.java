@@ -26,6 +26,8 @@ public interface DepositService extends ServiceDAOModel<DepositsEntity>
 
     List<DepositsEntity> getDepositsByUserNameDesc(String user);
 
+    List<DepositsEntity> getDepositsByAcctID(int acctID);
+
     List<DepositsEntity> getListOfDepositsByUserIDASC(Long id);
     List<DepositsEntity> getListOfDepositsByUserID_DESC(Long id);
 

@@ -65,34 +65,76 @@ export default function DepositView()
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [deposits, setDeposits] = useState([]);
     const [snackbarmessage, setSnackbarMessage] = useState('');
+    const [depositData, setDepositData] = useState([]);
+    const [accounts, setAccounts] = useState(null);
+    const [accountData, setAccountData] = useState([]);
+    const [selectedAccountType, setSelectedAccountType] = useState(null);
+    const [selectedAccountID, setSelectedAccountID] = useState(null);
 
     useEffect(() => {
-        setIsLoading(true);
+        axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${user}/account-types`)
+            .then(response => {
+                const accountMapping = response.data;
+                const accountPairs = Object.entries(accountMapping).map(([key, value]) => {
+                    console.log('Account Type: ', value);
+                    return { accountId: key, accountType: value };
+                });
+                setAccountData(accountPairs);
+            })
+            .catch(error => {
+                console.log('There was an error in fetching account-types: ', error);
+            })
+
+    }, [user])
+
+
+    useEffect(() => {
       axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/codes/${user}`)
           .then(response => {
-              setAccountCodes(response.data)
-              console.log('Fetching Account Codes: ', response.data);
+              if(Array.isArray(response.data))
+              {
+                  console.log('Account Codes Response: ', response.data);
+                  setAccountCodes(response.data);
+                  console.log('Fetching Account Codes: ', accountCodes);
+              }
+              else {
+                  console.error('Invalid data format received:', response.data);
+              }
+
           })
           .catch(error => {
               console.error('There has been a problem with your fetch operation: ', error);
           })
           .then(() => {
-              setIsLoading(false);
+
           })
 
     }, []);
+
+    const handleSelectedAccountCode = (event) => {
+
+        setAccountCodes(event.target.value);
+    }
 
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
     };
 
+
+    const handleSelectedAccountID = (account) => {
+        setSelectedAccountID(account.accountID);
+    }
+
     const handleAccountSelect = (account) => {
-        setSelectedAccount(account);
+        console.log('Account: ', account);
+        console.log('Selected Account Type: ', account.accountType);
+        setSelectedAccountType(account.accountType);
+        setSelectedAccountID(account.accountId);
+        console.log('Selected Account ID: ', selectedAccountID);
         // Fetch and set deposits for the selected account
         setDeposits(sampleDeposits); // Replace with actual API call
     };
 
-    const accounts = ['Checking', 'Savings'];
 
     const sampleDeposits = [
         // Sample deposit data
@@ -118,7 +160,6 @@ export default function DepositView()
             setIsLoading(true); // Show loading indicator
             try {
                 // API call to submit the deposit
-                const requestData = { /* ... */ };
                 const response = await axios.post('http://localhost:8080/AeroBankApp/api/deposits/submit', requestData);
                 setSnackbarMessage('Deposit scheduled successfully');
                 setOpenSnackbar(true);
@@ -137,13 +178,14 @@ export default function DepositView()
         console.log(deposit);
         console.log(interval);
         console.log(description);
+
         const requestData = {
-            accountCode: accountID,
-            amount: deposit,
+            accountCode: selectedAccountCode,
+            amount: amount,
             description: description,
-            scheduleInterval: schedule,
-            timeScheduled: selectedTime,
-            date: selectedDate,
+            scheduleInterval: scheduleInterval,
+            timeScheduled: depositTime,
+            date: depositDate,
         }
 
       try{
@@ -212,9 +254,12 @@ export default function DepositView()
                     <Typography>Select Account</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    {accounts.map((account, index) => (
-                        <Button key={index} variant="text" onClick={() => handleAccountSelect(account)}>
-                            {account}
+                    {accountData.map((account, index) => (
+                        <Button key={index} variant="text"
+                                onClick={() => handleAccountSelect(account)}
+                                className={account.accountType === selectedAccountType ? 'selected' : ''}
+                        >
+                            {account.accountType}
                         </Button>
                     ))}
                 </AccordionDetails>
@@ -226,7 +271,7 @@ export default function DepositView()
                     <DepositAccountCode
                         accounts={accountCodes}
                         value={selectedAccountCode}
-                        onChange={(event) => setSelectedAccountCode(event.target.value)}
+                        onChange={handleSelectedAccountCode}
                     />
 
                     <TextField
@@ -295,7 +340,7 @@ export default function DepositView()
                 <CircularProgress />
             </Dialog>
 
-            <DataTable />
+            <DataTable selectedAccount={selectedAccountType} accountID={selectedAccountID}/>
         </Container>
     );
 

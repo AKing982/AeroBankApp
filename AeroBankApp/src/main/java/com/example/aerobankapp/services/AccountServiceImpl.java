@@ -9,9 +9,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -128,5 +131,26 @@ public class AccountServiceImpl implements AccountService
         TypedQuery<String> accountCodes = getEntityManager().createQuery(accountCodesQuery, String.class);
         accountCodes.setParameter("username", user);
         return accountCodes.getResultList();
+    }
+
+    @Override
+    @Transactional
+    public Map<Integer, String> getAccountTypeMapByAccountId(String userName)
+    {
+        if(userName.isEmpty())
+        {
+            throw new IllegalArgumentException("Invalid UserName has been entered");
+        }
+        final String accountTypeToAccountIDQuery = "SELECT a FROM AccountEntity a JOIN a.users u WHERE u.username =: userName";
+        TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery(accountTypeToAccountIDQuery, AccountEntity.class);
+        accountEntityTypedQuery.setParameter("userName", userName);
+        List<AccountEntity> accountEntities = accountEntityTypedQuery.getResultList();
+
+        Map<Integer, String> accountTypeMap = new HashMap<>();
+        for(AccountEntity accountEntity : accountEntities)
+        {
+            accountTypeMap.put(accountEntity.getAcctID(), accountEntity.getAccountType());
+        }
+        return accountTypeMap;
     }
 }

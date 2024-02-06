@@ -5,6 +5,7 @@ import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface AccountService extends ServiceDAOModel<AccountEntity>
@@ -33,4 +34,6 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
     Long getNumberOfAccounts(String user);
 
     List<String> getListOfAccountCodes(String user);
+
+    Map<Integer, String> getAccountTypeMapByAccountId(String userName);
 }

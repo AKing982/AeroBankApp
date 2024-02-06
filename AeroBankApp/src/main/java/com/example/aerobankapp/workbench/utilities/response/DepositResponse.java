@@ -6,13 +6,10 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
 @Builder
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
-@NoArgsConstructor
 public class DepositResponse
 {
+    private int userID;
     private String accountCode;
     private String amount;
     private String description;

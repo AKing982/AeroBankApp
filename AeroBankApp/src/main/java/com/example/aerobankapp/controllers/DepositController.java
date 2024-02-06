@@ -2,6 +2,7 @@ package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.engine.DepositEngine;
+import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 import com.example.aerobankapp.services.DepositService;
 import com.example.aerobankapp.workbench.utilities.DepositRequest;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.aerobankapp.controllers.utils.DepositControllerUtil.getDepositResponse;
+import static com.example.aerobankapp.controllers.utils.DepositControllerUtil.*;
 
 @RestController
 @RequestMapping(value="/api/deposits")
@@ -33,9 +34,13 @@ public class DepositController {
 
     @GetMapping("/data/{accountID}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<DepositDTO>> getDeposits(@PathVariable Long accountID)
+    @ResponseBody
+    public ResponseEntity<List<DepositResponse>> getDeposits(@PathVariable int accountID)
     {
-        return null;
+       List<DepositsEntity> depositsEntities = depositService.getDepositsByAcctID(accountID);
+       List<DepositResponse> depositDTOS = getDepositResponseList(depositsEntities);
+
+       return ResponseEntity.ok(depositDTOS);
     }
 
     @PostMapping("/submit")

@@ -3,6 +3,7 @@ import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 
 export default function DepositAccountCode({accounts, value, onChange})
 {
+    console.log('Accounts: ', accounts, 'Type: ', typeof(accounts));
     return (
         <div className="account-select">
             <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end', minWidth: 120 }}>
@@ -17,11 +18,12 @@ export default function DepositAccountCode({accounts, value, onChange})
                         label="Account"
                         onChange={onChange}
                     >
-                        {accounts.map((account) => (
-                            <MenuItem key={account.id} value={account.accountCode}>
-                                {account.accountCode}
+                        {Array.isArray(accounts) ? accounts.map((account) => (
+                            <MenuItem key={account} value={account}>
+                                {account}
                             </MenuItem>
-                        ))}
+                        )) : <MenuItem disabled>Loading...</MenuItem>}
+
                     </Select>
                 </FormControl>
             </Box>
