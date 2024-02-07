@@ -70,6 +70,7 @@ export default function DepositView()
     const [accountData, setAccountData] = useState([]);
     const [selectedAccountType, setSelectedAccountType] = useState(null);
     const [selectedAccountID, setSelectedAccountID] = useState(null);
+    const [isAccountCodeLoading, setIsAccountCodeLoading] = useState(false);
 
     useEffect(() => {
         axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${user}/account-types`)
@@ -87,29 +88,30 @@ export default function DepositView()
 
     }, [user])
 
-
     useEffect(() => {
-      axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/codes/${user}`)
-          .then(response => {
-              if(Array.isArray(response.data))
-              {
-                  console.log('Account Codes Response: ', response.data);
-                  setAccountCodes(response.data);
-                  console.log('Fetching Account Codes: ', accountCodes.accountCode);
-              }
-              else {
-                  console.error('Invalid data format received:', response.data);
-              }
+        setIsAccountCodeLoading(true)// Start showing the loading indicator
 
-          })
-          .catch(error => {
-              console.error('There has been a problem with your fetch operation: ', error);
-          })
-          .then(() => {
+        // Simulating a delay using setTimeout
+        const timeoutId = setTimeout(() => {
+            axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/codes/${user}`)
+                .then(response => {
+                    if (Array.isArray(response.data)) {
+                        setAccountCodes(response.data);
+                    } else {
+                        console.error('Invalid data format received:', response.data);
+                    }
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                })
+                .finally(() => {
+                    setIsAccountCodeLoading(false);// Stop showing the loading indicator
+                });
+        }, 4000); // Delay of 2000 milliseconds (2 seconds)
 
-          })
-
-    }, []);
+        // Cleanup function to clear the timeout if the component unmounts before the timeout is completed
+        return () => clearTimeout(timeoutId);
+    }, [user]);
 
     const handleSelectedAccountCode = (event) => {
 
@@ -147,10 +149,35 @@ export default function DepositView()
 
     const handleDeposit = async() => {
 
+        if(!amount && !description && !selectedAccountCode && !scheduleInterval)
+        {
+            setOpenSnackbar(true);
+            setSnackbarMessage('Please Select an Amount, Description, AccountCode, and Schedule Interval.');
+            return;
+        }
+
         if(!amount || amount <= 0)
         {
             setOpenSnackbar(true);
             setSnackbarMessage('Please enter a valid amount.');
+            return;
+        }
+        if(!description || !isNaN(description))
+        {
+            setOpenSnackbar(true);
+            setSnackbarMessage('Please enter a valid description.');
+            return;
+        }
+        if(!selectedAccountCode)
+        {
+            setOpenSnackbar(true);
+            setSnackbarMessage('Please select an AccountCode.');
+            return;
+        }
+        if(!scheduleInterval)
+        {
+            setOpenSnackbar(true);
+            setSnackbarMessage('Please Select a Schedule Interval.');
             return;
         }
 
@@ -276,6 +303,7 @@ export default function DepositView()
                         accounts={accountCodes}
                         value={selectedAccountCode}
                         onChange={(e) => setSelectedAccountCode(e.target.value)}
+                        loading={isAccountCodeLoading}
                     />
 
                     <TextField
@@ -343,6 +371,14 @@ export default function DepositView()
             <Dialog open={IsLoading}>
                 <CircularProgress />
             </Dialog>
+            <TextField
+                fullWidth
+                label="Search"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                margin="normal"
+                variant="outlined"
+            />
 
             <DataTable selectedAccount={selectedAccountType} accountID={selectedAccountID}/>
         </Container>

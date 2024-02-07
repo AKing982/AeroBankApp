@@ -1,7 +1,7 @@
 import {Box} from "@mui/system";
-import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import {CircularProgress, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 
-export default function DepositAccountCode({accounts, value, onChange})
+export default function DepositAccountCode({accounts, value, onChange, loading})
 {
     console.log('Accounts: ', accounts, 'Type: ', typeof(accounts));
     return (
@@ -18,11 +18,17 @@ export default function DepositAccountCode({accounts, value, onChange})
                         label="Account"
                         onChange={onChange}
                     >
-                        {Array.isArray(accounts) ? accounts.map((account) => (
-                            <MenuItem key={account.accountCode} value={account.accountCode}>
-                                {account.accountCode}
+                        {loading ? (
+                            <MenuItem disabled>
+                                <CircularProgress size={24} />
                             </MenuItem>
-                        )) : <MenuItem disabled>Loading...</MenuItem>}
+                        ) : (
+                            accounts.map((account, index) => (
+                                <MenuItem key={index} value={account.accountCode}>
+                                    {account.accountCode}
+                                </MenuItem>
+                            ))
+                        )}
 
                     </Select>
                 </FormControl>

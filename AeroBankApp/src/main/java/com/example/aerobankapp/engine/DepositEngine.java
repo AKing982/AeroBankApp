@@ -42,7 +42,7 @@ public class DepositEngine extends Engine<DepositDTO>
     private SchedulerCriteria buildSchedulerCriteria(DepositDTO deposit)
     {
         return SchedulerCriteria.builder()
-                .scheduledTime(String.valueOf(deposit.timeScheduled()))
+                .scheduledTime(deposit.timeScheduled())
                 .scheduledDate(deposit.date())
                 .scheduleType(deposit.scheduleInterval())
                 .schedulerUserID(deposit.userID())

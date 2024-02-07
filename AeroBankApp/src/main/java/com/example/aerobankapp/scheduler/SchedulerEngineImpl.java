@@ -1,6 +1,7 @@
 package com.example.aerobankapp.scheduler;
 
 import org.quartz.*;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -56,46 +58,88 @@ public class SchedulerEngineImpl implements SchedulerEngine
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void pauseJob(String jobName, String groupName) throws SchedulerException {
+    public void pauseJob(String jobName, String groupName) {
+        JobKey jobKey = new JobKey(jobName, groupName);
+        try
+        {
+            scheduler.pauseJob(jobKey);
 
+        }catch(SchedulerException e)
+        {
+            LOGGER.error("An exception has occurred pausing Job: ", e);
+        }
     }
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void resumeJob(String jobName, String groupName) throws SchedulerException {
+    public void resumeJob(String jobName, String groupName) {
+        JobKey jobKey = new JobKey(jobName, groupName);
+        try
+        {
+            scheduler.resumeJob(jobKey);
 
+        }catch(SchedulerException e)
+        {
+            LOGGER.error("An exception has occurred while resuming job: ", e);
+        }
     }
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteJob(String jobName, String groupName) throws SchedulerException {
+    public void deleteJob(String jobName, String groupName)
+    {
+        JobKey jobKey = new JobKey(jobName, groupName);
+        try
+        {
+            scheduler.deleteJob(jobKey);
 
+        }catch(SchedulerException ex)
+        {
+            LOGGER.error("An exception has ocurred while deleting a job: ", ex);
+        }
     }
 
     @Override
     public JobDetail getJobDetails(String job, String group) throws SchedulerException {
-        return null;
+        JobKey jobKey = new JobKey(job, group);
+        return scheduler.getJobDetail(jobKey);
     }
 
     @Override
     public List<JobDetail> listJobs() throws SchedulerException {
-        return null;
+        List<JobDetail> jobDetails = new ArrayList<>();
+        for(String groupName : scheduler.getJobGroupNames())
+        {
+            for(JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName)))
+            {
+                jobDetails.add(scheduler.getJobDetail(jobKey));
+            }
+        }
+        return jobDetails;
     }
 
     @Override
     public void triggerJob(String job, String group) throws SchedulerException {
-
+        JobKey jobKey = new JobKey(job, group);
+        scheduler.triggerJob(jobKey);
     }
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public boolean checkJobExists(String job, String group) throws SchedulerException {
-        return false;
+        return scheduler.checkExists(new JobKey(job, group));
     }
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public boolean isJobRunning(String job, String group) throws SchedulerException {
+        List<JobExecutionContext> currentlyExecutingJobs = scheduler.getCurrentlyExecutingJobs();
+        for (JobExecutionContext jobCtx : currentlyExecutingJobs) {
+            if (jobCtx.getJobDetail().getKey().getName().equals(job) &&
+                    jobCtx.getJobDetail().getKey().getGroup().equals(group)) {
+                return true;
+            }
+        }
         return false;
     }
 }

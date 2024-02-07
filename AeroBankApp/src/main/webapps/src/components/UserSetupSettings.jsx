@@ -201,9 +201,6 @@ export default function UserSetupSettings()
                         <label htmlFor="user-setup-PIN" className="setup-PIN-label">PIN: </label>
                         <PinNumberField value={pinNumber} onChange={handlePINChange} />
                     </div>
-                    <div className="user-setup-admin-checkbox">
-                        <CheckBoxIcon label="Is Admin"/>
-                    </div>
                     <div className="user-setup-password">
                         <label htmlFor="setup-password" className="setup-password-label">Password: </label>
                         <PasswordField label="Password" value={password} onChange={handlePasswordChange} isValidPassword={handleValidatePasswordFields} />

@@ -19,6 +19,8 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import javax.sql.DataSource;
 import javax.xml.crypto.Data;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
@@ -99,6 +101,8 @@ public class SchedulerConfig
         jobDetailFactory.setDurability(true);
         return jobDetailFactory;
     }
+
+
 
     @Bean
     public JobDetailFactoryBean withdrawJobDetail()

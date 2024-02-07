@@ -5,10 +5,11 @@ import org.springframework.stereotype.Component;
 
 @Builder
 @Getter
+@Setter
 @Component
 @AllArgsConstructor
 @NoArgsConstructor
-public final class TriggerCriteria {
+public class TriggerCriteria {
 
     private int day;
     private int minute;
