@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-02-08T21:40:53.363Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="cqbt0-XttMuvLq1s-rcb" version="23.1.2" type="github">
+<mxfile host="app.diagrams.net" modified="2024-02-08T21:44:46.253Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="UfJSpc9roGCkuiEfM1kM" version="23.1.2" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="1711" dy="809" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -185,6 +185,9 @@
             <mxPoint x="1750" y="900" as="sourcePoint" />
             <mxPoint x="2080" y="970" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-22" value="Call the BalanceHistoryController and persist the balance histories to the /save endpoint" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="2080" y="940" width="220" height="80" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
