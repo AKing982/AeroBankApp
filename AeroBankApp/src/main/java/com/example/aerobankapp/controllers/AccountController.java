@@ -5,6 +5,7 @@ import com.example.aerobankapp.dto.AccountDetailsDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.services.AccountServiceImpl;
 import com.example.aerobankapp.workbench.utilities.AccountCreationRequest;
+import com.example.aerobankapp.workbench.utilities.BalanceRequest;
 import com.example.aerobankapp.workbench.utilities.response.AccountCodeResponse;
 import com.example.aerobankapp.workbench.utilities.response.AccountResponse;
 import jakarta.validation.Valid;
@@ -81,6 +82,13 @@ public class AccountController {
     @PostMapping("/{accountID}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateAccount(@PathVariable Long accountID)
+    {
+        return null;
+    }
+
+    @PutMapping("/{accountID}/balance")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> updateAccountBalance(@PathVariable Long accountID, @RequestBody BalanceRequest request)
     {
         return null;
     }

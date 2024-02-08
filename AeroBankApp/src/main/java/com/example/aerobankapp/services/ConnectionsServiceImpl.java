@@ -24,19 +24,16 @@ public class ConnectionsServiceImpl implements ConnectionsService
     private final ConnectionRepository connectionRepository;
     @PersistenceContext
     private EntityManager entityManager;
-    private final JdbcTemplate jdbcTemplate;
     private final DataSourceProperties dataSourceProperties;
     private final Logger LOGGER = LoggerFactory.getLogger(ConnectionsServiceImpl.class);
 
     @Autowired
     public ConnectionsServiceImpl(DataSourceProperties dataSource,
-                                  JdbcTemplate jdbcTemplate,
                                   ConnectionRepository connectionRepository,
                                   EntityManager entityManager)
     {
         this.connectionRepository = connectionRepository;
-        this.entityManager = entityManager;
-        this.jdbcTemplate = jdbcTemplate;
+        this.entityManager = entityManager;;
         this.dataSourceProperties = dataSource;
     }
 
@@ -99,8 +96,6 @@ public class ConnectionsServiceImpl implements ConnectionsService
             dataSourceProperties.setUsername(connectionsEntity.getDbUser());
             dataSourceProperties.setPassword(connectionsEntity.getDbPass());
             dataSourceProperties.setDriverClassName(connectionsEntity.getDbDriver());
-
-            jdbcTemplate.queryForObject("SELECT 1", Integer.class);
 
         }catch(Exception e)
         {
