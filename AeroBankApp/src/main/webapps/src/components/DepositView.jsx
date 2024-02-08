@@ -71,6 +71,7 @@ export default function DepositView()
     const [selectedAccountType, setSelectedAccountType] = useState(null);
     const [selectedAccountID, setSelectedAccountID] = useState(null);
     const [isAccountCodeLoading, setIsAccountCodeLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${user}/account-types`)
@@ -121,6 +122,14 @@ export default function DepositView()
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
     };
+
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    }
+
+    const filteredDeposits = deposits.filter(deposit => {
+        deposit.description.toLowerCase().includes(searchTerm.toLowerCase())
+    });
 
 
     const handleSelectedAccountID = (account) => {

@@ -20,13 +20,7 @@ public class ScheduleParserImpl implements ScheduleParser
     @Autowired
     public ScheduleParserImpl(SchedulerCriteria schedulerCriteria)
     {
-        Objects.requireNonNull(schedulerCriteria, "Non Null Criteria required.");
         this.schedulerCriteria = schedulerCriteria;
-    }
-
-    private void nullCheck(SchedulerCriteria schedulerCriteria1)
-    {
-
     }
 
     @Override

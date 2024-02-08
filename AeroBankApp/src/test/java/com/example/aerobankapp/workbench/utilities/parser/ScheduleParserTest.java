@@ -122,6 +122,22 @@ class ScheduleParserTest {
         assertEquals(expectedInterval, interval);
     }
 
+    @Test
+    public void testNullTimeAndDate()
+    {
+        SchedulerCriteria schedulerCriteria1 = SchedulerCriteria.builder()
+                .scheduledDate(null)
+                .scheduledTime(null)
+                .schedulerUserID(1)
+                .scheduleType(null)
+                .priority(1)
+                .build();
+
+        assertThrows(NullPointerException.class, () -> {
+            ScheduleParserImpl scheduleParser = new ScheduleParserImpl(schedulerCriteria1);
+        });
+    }
+
     @AfterEach
     void tearDown() {
     }
