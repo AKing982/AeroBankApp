@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-02-08T18:22:38.123Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="ii6eYEnjJLemwtjWPqrl" version="23.1.2" type="github">
+<mxfile host="app.diagrams.net" modified="2024-02-08T21:29:06.246Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="r62D178zUKp9TMbpT8qi" version="23.1.2" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="1711" dy="808" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1711" dy="809" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -126,23 +126,32 @@
         <mxCell id="y_lWkLaHVjZ2EOGm8Hay-2" value="Send Message via RabbitMQ" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="1140" y="680" width="180" height="160" as="geometry" />
         </mxCell>
-        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-3" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y_lWkLaHVjZ2EOGm8Hay-2">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="890" y="780" as="sourcePoint" />
-            <mxPoint x="1370" y="760" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-8" value="Calculate the deposit" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="1710" y="730" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-4" value="Execute DepositEngine" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-10" value="Load Deposits from Deposit Queue" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="1370" y="730" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-6" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y_lWkLaHVjZ2EOGm8Hay-4">
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-11" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y_lWkLaHVjZ2EOGm8Hay-2" target="y_lWkLaHVjZ2EOGm8Hay-10">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="1300" y="670" as="sourcePoint" />
-            <mxPoint x="1560" y="760" as="targetPoint" />
+            <mxPoint x="1290" y="840" as="sourcePoint" />
+            <mxPoint x="1340" y="790" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-8" value="Calculate the deposit" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="1560" y="730" width="120" height="60" as="geometry" />
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-12" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y_lWkLaHVjZ2EOGm8Hay-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1290" y="840" as="sourcePoint" />
+            <mxPoint x="1540" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-13" value="Execute Deposit Engine" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="1540" y="730" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-14" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y_lWkLaHVjZ2EOGm8Hay-13" target="y_lWkLaHVjZ2EOGm8Hay-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1290" y="840" as="sourcePoint" />
+            <mxPoint x="1340" y="790" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
