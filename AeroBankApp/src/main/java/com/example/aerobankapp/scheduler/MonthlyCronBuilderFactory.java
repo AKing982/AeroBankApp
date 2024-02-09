@@ -39,7 +39,7 @@ public class MonthlyCronBuilderFactory implements CronBuilderFactory {
     public List<String> createCron(final TriggerCriteria triggerCriteria) {
         List<String> cronSchedules = new ArrayList<>();
         if (triggerCriteria != null) {
-            int interval = triggerCriteria.getInterval();
+            ScheduleType interval = triggerCriteria.getInterval();
             int min = triggerCriteria.getMinute();
             int hour = triggerCriteria.getHour();
             int day = triggerCriteria.getDay();
@@ -54,13 +54,13 @@ public class MonthlyCronBuilderFactory implements CronBuilderFactory {
         return cronSchedules;
     }
 
-    private List<String> getMonthlyCronSchedules(int interval, int min, int hour, int day, int month, int year) {
+    private List<String> getMonthlyCronSchedules(ScheduleType interval, int min, int hour, int day, int month, int year) {
         List<String> monthlyCronSchedules = new ArrayList<>();
-        if (interval == 1) {
+        if (interval == ScheduleType.ONCE) {
             String cronSchedule = String.format("0 %d %d %d %d ? %d", min, hour, day, month, year);
             aeroLogger.info("CronSchedule: " + cronSchedule);
             monthlyCronSchedules.add(cronSchedule);
-        } else if (interval <= 0 || min <= 0 || hour <= 0 || day <= 0 || month <= 0 || year <= 0) {
+        } else if (min <= 0 || hour <= 0 || day <= 0 || month <= 0 || year <= 0) {
             throw new IllegalArgumentException("Trigger Criteria is invalid");
         } else {
             monthlyCronSchedules = generateSchedule(interval, min, hour, day, month, year, monthlyCronSchedules);
@@ -68,16 +68,19 @@ public class MonthlyCronBuilderFactory implements CronBuilderFactory {
         return monthlyCronSchedules;
     }
 
-    private List<String> generateSchedule(int interval, int min, int hour, int day, int month, int year, List<String> monthlyCronSchedules) {
+    private List<String> generateSchedule(ScheduleType interval, int min, int hour, int day, int month, int year, List<String> monthlyCronSchedules) {
         List<String> schedules = new ArrayList<>();
-        for (int i = 0; i < 12; i += interval) {
-            int currentMonth = (month + i - 1) % 12 + 1;
+        if(interval == ScheduleType.MONTHLY)
+        {
+            for (int i = 0; i < 12; i += 1) {
+                int currentMonth = (month + i - 1) % 12 + 1;
 
                 // Get the cron schedule for the next year
                 String cronExpression = getMonthlyCronScheduleAdjustmentByYearRoleOver(year, month, interval);
                 aeroLogger.info("Current Month: " + currentMonth);
                 aeroLogger.info("Cron expression: " + cronExpression);
                 schedules.add(cronExpression);
+            }
         }
         return schedules;
     }
@@ -160,7 +163,7 @@ public class MonthlyCronBuilderFactory implements CronBuilderFactory {
         return cronScheduleByMonth;
     }
 
-    public String getMonthlyCronScheduleAdjustmentByYearRoleOver(int year, int month, int interval) {
+    public String getMonthlyCronScheduleAdjustmentByYearRoleOver(int year, int month, ScheduleType interval) {
         List<String> monthlySchedules = getMonthlyCronSchedules();
         if (year > 0) {
             if (month > 0 && month <= 12) {
@@ -172,9 +175,10 @@ public class MonthlyCronBuilderFactory implements CronBuilderFactory {
                             int cronMonth = Integer.parseInt(parts[4]);
                             if (cronYear == year && cronMonth == month) {
                                 // Increment the year
-                                int yearIncremented = getYearIncrementWithCycle(year, month, interval);
-                                parts[6] = String.valueOf(yearIncremented);
-                                return String.join(" ", parts);
+                             //   int yearIncremented = getYearIncrementWithCycle(year, month, interval);
+                            ///    parts[6] = String.valueOf(yearIncremented);
+                               // return String.join(" ", parts);
+
                             }
                         }
                     }

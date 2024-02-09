@@ -1,5 +1,6 @@
 package com.example.aerobankapp.scheduler.factory.trigger;
 
+import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.scheduler.TriggerCriteria;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,8 +80,8 @@ class CustomCronTriggerFactoryTest
         CronTrigger customTrigger = customCronTriggerFactory.createCronTrigger();
         CronTrigger triggerBuilder = customCronTriggerFactory.getCustomCronTrigger(cronExpression, triggerCriteria);
         TriggerCriteria nullDetail = null;
-        TriggerCriteria partialTriggerDetail = new TriggerCriteria(1, 15, 8, 7);
-        TriggerCriteria noTriggerDetail = new TriggerCriteria(1, 15, 8);
+        TriggerCriteria partialTriggerDetail = new TriggerCriteria(ScheduleType.ONCE, 15, 8, 7);
+        TriggerCriteria noTriggerDetail = new TriggerCriteria(ScheduleType.ONCE, 15, 8);
 
         assertNotNull(triggerBuilder);
         assertThrows(RuntimeException.class,
@@ -106,7 +107,7 @@ class CustomCronTriggerFactoryTest
         String expectedCronExpression = "0 8 15 7 12 ? 2023";
         String actualCronExpression = customCronTriggerFactory.getCronExpression(triggerCriteria);
         TriggerCriteria nullTriggerDetail = null;
-        TriggerCriteria partialDetails = new TriggerCriteria(1, 15, 8);
+        TriggerCriteria partialDetails = new TriggerCriteria(ScheduleType.ONCE, 15, 8);
 
         assertNotNull(triggerCriteria);
         assertNotNull(customCronTriggerFactory);

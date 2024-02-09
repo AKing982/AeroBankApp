@@ -22,5 +22,6 @@ public interface CalculationEngine
     BigDecimal calculateDepositWithCompoundInterest(BigDecimal amount, BigDecimal interest);
     BigDecimal calculateWithdrawalWithFee(BigDecimal amount, AccountDTO accountDTO, FeesDTO feesDTO);
     BigDecimal calculateWithdrawalWithInterest(BigDecimal amount, AccountDTO accountDTO, BigDecimal interest);
+    BigDecimal calculatePendingBalance(BigDecimal amount, BigDecimal currBalance);
 
 }

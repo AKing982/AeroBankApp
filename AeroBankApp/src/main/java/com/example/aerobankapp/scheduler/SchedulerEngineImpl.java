@@ -27,11 +27,6 @@ public class SchedulerEngineImpl implements SchedulerEngine
         this.scheduler = scheduler;
     }
 
-    public String getCronExpression()
-    {
-        return cronExpressionBuilder.getCronExpression();
-    }
-
     @Override
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public String scheduleJob(JobDetail jobDetail, Trigger trigger) throws SchedulerException {

@@ -10,5 +10,4 @@ public interface ScheduleParser
     int getParsedSecondSegment();
     int getParsedHourSegment();
     int getParsedMinuteSegment();
-    int getParsedInterval();
 }

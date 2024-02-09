@@ -34,7 +34,7 @@ class MonthlyCronBuilderFactoryTest
                 .day(12)
                 .month(5)
                 .year(2023)
-                .interval(1)
+                .interval(ScheduleType.ONCE)
                 .build();
 
         String expectedCron = "0 1 11 12 5 ? 2023";
@@ -56,7 +56,7 @@ class MonthlyCronBuilderFactoryTest
                 .day(0)
                 .month(0)
                 .year(0)
-                .interval(0)
+                .interval(ScheduleType.ONCE)
                 .build();
 
         String expectedCron = "0 0 0 0 0 ? 0";
@@ -88,7 +88,7 @@ class MonthlyCronBuilderFactoryTest
     public void testCreateCronScheduleForEvery5Months()
     {
         TriggerCriteria triggerCriteria1 = TriggerCriteria.builder()
-                .interval(5)
+                .interval(ScheduleType.MONTHLY)
                 .month(1)
                 .minute(10)
                 .hour(8)
@@ -111,7 +111,7 @@ class MonthlyCronBuilderFactoryTest
     public void testCreateCronScheduleForEvery3Months()
     {
         TriggerCriteria triggerCriteria1 = TriggerCriteria.builder()
-                .interval(3)
+                .interval(ScheduleType.MONTHLY)
                 .month(1)
                 .minute(10)
                 .hour(8)
@@ -141,7 +141,7 @@ class MonthlyCronBuilderFactoryTest
     public void testCreateCronScheduleEvery2Months()
     {
         TriggerCriteria triggerCriteria1 = TriggerCriteria.builder()
-                .interval(2)
+                .interval(ScheduleType.MONTHLY)
                 .month(1)
                 .minute(10)
                 .hour(8)
@@ -190,7 +190,7 @@ class MonthlyCronBuilderFactoryTest
                 .hour(8)
                 .minute(15)
                 .year(2023)
-                .interval(2)
+                .interval(ScheduleType.MONTHLY)
                 .day(12)
                 .build();
 
@@ -215,7 +215,7 @@ class MonthlyCronBuilderFactoryTest
                 .hour(8)
                 .minute(15)
                 .year(2023)
-                .interval(2)
+                .interval(ScheduleType.MONTHLY)
                 .day(12)
                 .build();
 
@@ -274,12 +274,12 @@ class MonthlyCronBuilderFactoryTest
                 .hour(8)
                 .minute(15)
                 .year(2023)
-                .interval(2)
+                .interval(ScheduleType.MONTHLY)
                 .day(12)
                 .build();
 
         monthlyCronBuilderFactory = new MonthlyCronBuilderFactory(triggerCriteria1);
-        String schedule = monthlyCronBuilderFactory.getMonthlyCronScheduleAdjustmentByYearRoleOver(2023, 5, 4);
+        String schedule = monthlyCronBuilderFactory.getMonthlyCronScheduleAdjustmentByYearRoleOver(2023, 5, ScheduleType.MONTHLY);
 
         assertEquals("0 30 10 15 5 ? 2023", schedule);
     }

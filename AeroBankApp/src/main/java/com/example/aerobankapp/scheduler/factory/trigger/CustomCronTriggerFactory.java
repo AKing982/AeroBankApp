@@ -2,10 +2,7 @@ package com.example.aerobankapp.scheduler.factory.trigger;
 
 import com.example.aerobankapp.exceptions.InvalidCronExpressionException;
 import com.example.aerobankapp.exceptions.NullTriggerCriteriaException;
-import com.example.aerobankapp.scheduler.CCronBuilderFactory;
-import com.example.aerobankapp.scheduler.CronBuilderFactory;
-import com.example.aerobankapp.scheduler.CustomCronBuilderFactory;
-import com.example.aerobankapp.scheduler.TriggerCriteria;
+import com.example.aerobankapp.scheduler.*;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
 import lombok.Getter;
 import org.quartz.CronScheduleBuilder;
@@ -59,7 +56,7 @@ public class CustomCronTriggerFactory extends AbstractTriggerBase implements Cro
     public String getCronExpression(TriggerCriteria triggerCriteria)
     {
         triggerCriteriaNullCheck(triggerCriteria);
-        int interval = triggerCriteria.getInterval();
+        ScheduleType interval = triggerCriteria.getInterval();
         int minute = triggerCriteria.getMinute();
         int hour = triggerCriteria.getHour();
         int day = triggerCriteria.getDay();

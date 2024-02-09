@@ -1,6 +1,7 @@
 package com.example.aerobankapp.scheduler.factory.trigger;
 
 import com.example.aerobankapp.exceptions.NullTriggerCriteriaException;
+import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.scheduler.TriggerCriteria;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,7 @@ class MonthlyTriggerFactoryTest
                 .minute(5)
                 .hour(12)
                 .second(0)
-                .interval(1)
+                .interval(ScheduleType.ONCE)
                 .repeat(0)
                 .build();
 
