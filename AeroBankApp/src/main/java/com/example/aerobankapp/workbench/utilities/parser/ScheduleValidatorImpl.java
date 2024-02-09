@@ -21,7 +21,7 @@ public class ScheduleValidatorImpl implements ScheduleValidator
     @Override
     public int validateDay(final int day)
     {
-       if(day > 31)
+       if(day > 30)
        {
            return ((day - 1) % 31) + 1;
        }

@@ -11,8 +11,14 @@ import java.util.List;
 public class PurchaseEngine extends Engine<Purchase>
 {
 
+
     @Override
-    protected void processTransaction(List<Purchase> transactions) {
+    protected void processBatchTransaction(List<Purchase> transactions) {
+
+    }
+
+    @Override
+    protected void processTransaction(Purchase transaction) {
 
     }
 
@@ -43,6 +49,16 @@ public class PurchaseEngine extends Engine<Purchase>
 
     @Override
     protected void storeTransaction(Purchase transaction) {
+
+    }
+
+    @Override
+    protected void createAuditTrail(Purchase transaction) {
+
+    }
+
+    @Override
+    protected void notifyAccountHolder(Purchase transaction) {
 
     }
 

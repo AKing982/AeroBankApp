@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -18,6 +19,7 @@ public class DepositQueue implements QueueModel<DepositDTO>
 {
     private final Queue<DepositDTO> queue = new ConcurrentLinkedQueue<>();
     private DepositQueueService depositQueueService;
+    private boolean isPersisting;
 
     @Autowired
     public DepositQueue(@Qualifier("depositQueueServiceImpl")DepositQueueService depositQueueService)
@@ -28,23 +30,38 @@ public class DepositQueue implements QueueModel<DepositDTO>
     @Override
     public void add(DepositDTO transaction)
     {
+        if(transaction == null)
+        {
+            throw new NullPointerException("Null Deposit Found in Queue.");
+        }
         queue.add(transaction);
-        saveToDatabase(transaction);
     }
 
     @Override
     public void addAll(List<DepositDTO> transactions)
     {
         queue.addAll(transactions);
-        saveBatchToDatabase(transactions);
+    }
+
+    @Override
+    public void addToDatabase(DepositDTO transaction) {
+
+    }
+
+    @Override
+    public void addAllToDatabase(List<DepositDTO> transactions) {
+
     }
 
     @Override
     public DepositDTO remove()
     {
-        DepositDTO depositDTO = queue.remove();
-        removeFromDatabase(depositDTO);
-        return depositDTO;
+       return queue.remove();
+    }
+
+    @Override
+    public DepositDTO removeFromDatabase() {
+        return null;
     }
 
     @Override
@@ -52,6 +69,7 @@ public class DepositQueue implements QueueModel<DepositDTO>
     {
         return queue.peek();
     }
+
 
     private void saveToDatabase(DepositDTO depositDTO)
     {
@@ -72,5 +90,42 @@ public class DepositQueue implements QueueModel<DepositDTO>
     public boolean isEmpty()
     {
         return queue.isEmpty();
+    }
+
+    @Override
+    public boolean isDuplicate(DepositDTO element)
+    {
+        for(DepositDTO depositDTO : queue)
+        {
+            if(depositDTO.equals(element))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public DepositDTO removeDuplicate(DepositDTO duplicate)
+    {
+        DepositDTO removed = null;
+        for(DepositDTO depositDTO : queue)
+        {
+            if(depositDTO.equals(duplicate))
+            {
+                removed = queue.remove();
+            }
+        }
+        return removed;
+    }
+
+    @Override
+    public DepositDTO poll() {
+        return queue.poll();
+    }
+
+    public int size()
+    {
+        return queue.size();
     }
 }

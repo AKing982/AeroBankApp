@@ -26,8 +26,14 @@ public class WithdrawEngine extends Engine<Withdraw>
         this.isSingleTransaction = withdraws.size() == 1;
     }
 
+
     @Override
-    protected void processTransaction(List<Withdraw> transactions) {
+    protected void processBatchTransaction(List<Withdraw> transactions) {
+
+    }
+
+    @Override
+    protected void processTransaction(Withdraw transaction) {
 
     }
 
@@ -58,6 +64,16 @@ public class WithdrawEngine extends Engine<Withdraw>
 
     @Override
     protected void storeTransaction(Withdraw transaction) {
+
+    }
+
+    @Override
+    protected void createAuditTrail(Withdraw transaction) {
+
+    }
+
+    @Override
+    protected void notifyAccountHolder(Withdraw transaction) {
 
     }
 

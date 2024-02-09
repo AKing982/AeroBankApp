@@ -12,7 +12,12 @@ public class TransferEngine extends Engine<TransferDTO>{
 
 
     @Override
-    protected void processTransaction(List<TransferDTO> transactions) {
+    protected void processBatchTransaction(List<TransferDTO> transactions) {
+
+    }
+
+    @Override
+    protected void processTransaction(TransferDTO transaction) {
 
     }
 
@@ -43,6 +48,16 @@ public class TransferEngine extends Engine<TransferDTO>{
 
     @Override
     protected void storeTransaction(TransferDTO transaction) {
+
+    }
+
+    @Override
+    protected void createAuditTrail(TransferDTO transaction) {
+
+    }
+
+    @Override
+    protected void notifyAccountHolder(TransferDTO transaction) {
 
     }
 }

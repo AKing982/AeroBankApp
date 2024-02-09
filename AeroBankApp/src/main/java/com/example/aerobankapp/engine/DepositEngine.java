@@ -5,6 +5,7 @@ import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.scheduler.SchedulerEngine;
 import com.example.aerobankapp.scheduler.SchedulerEngineImpl;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
+import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.TransactionSummary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,44 +21,64 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Service
 public class DepositEngine extends Engine<DepositDTO>
 {
-    private List<DepositDTO> depositList;
     private DepositQueue depositQueue;
-    private SchedulerCriteria schedulerCriteria;
-    private SchedulerEngine schedulerEngine;
+    private List<DepositDTO> deposits;
+    private List<DepositDTO> processedDeposits;
     private CalculationEngine calculationEngine;
+    private AccountService accountService;
 
     @Autowired
-    public DepositEngine(DepositQueue depositQueue, List<DepositDTO> deposits)
+    public DepositEngine(DepositQueue depositQueue, CalculationEngine calculationEngine)
     {
-        this.depositList = deposits;
         this.depositQueue = depositQueue;
-        initializeDepositQueue(deposits);
+        this.calculationEngine = calculationEngine;
+        initializeDepositQueue(depositQueue);
     }
 
-    public void initializeDepositQueue(List<DepositDTO> deposits)
+    private void handleProcessingError(DepositDTO depositDTO, Exception e)
     {
-        this.depositQueue.addAll(deposits);
+
     }
 
-    private SchedulerCriteria buildSchedulerCriteria(DepositDTO deposit)
+    public List<DepositDTO> processDepositsInQueue(DepositQueue depositQueue)
     {
-        return SchedulerCriteria.builder()
-                .scheduledTime(deposit.timeScheduled())
-                .scheduledDate(deposit.date())
-                .scheduleType(deposit.scheduleInterval())
-                .schedulerUserID(deposit.userID())
-                .priority(1)
-                .build();
+        return null;
+    }
+
+    public List<BigDecimal> getProcessedBalances(List<DepositDTO> processedDeposits)
+    {
+        return null;
+    }
+
+    public void updateProcessedDepositList(List<DepositDTO> deposits)
+    {
+
+    }
+
+    public void updateAccountBalance(BigDecimal balance)
+    {
+
+    }
+
+    public void initializeDepositQueue(DepositQueue queue)
+    {
+
+    }
+
+
+    @Override
+    protected void processBatchTransaction(List<DepositDTO> transactions) {
+
     }
 
     @Override
-    protected void processTransaction(List<DepositDTO> transactions)
-    {
-        initializeDepositQueue(transactions);
+    protected void processTransaction(DepositDTO transaction) {
+
     }
 
     @Override
-    protected BigDecimal calculateTransactionFee() {
+    protected BigDecimal calculateTransactionFee()
+    {
         return null;
     }
 
@@ -83,6 +104,16 @@ public class DepositEngine extends Engine<DepositDTO>
 
     @Override
     protected void storeTransaction(DepositDTO transaction) {
+
+    }
+
+    @Override
+    protected void createAuditTrail(DepositDTO transaction) {
+
+    }
+
+    @Override
+    protected void notifyAccountHolder(DepositDTO transaction) {
 
     }
 }
