@@ -32,7 +32,7 @@ public class CustomCronBuilderFactory implements CCronBuilderFactory
 
     public String getCronExpression(TriggerCriteria triggerCriteria)
     {
-        int interval = triggerCriteria.getInterval();
+        ScheduleType interval = triggerCriteria.getInterval();
         int min = triggerCriteria.getMinute();
         int hour = triggerCriteria.getHour();
         int day = triggerCriteria.getDay();
@@ -44,11 +44,11 @@ public class CustomCronBuilderFactory implements CCronBuilderFactory
 
 
     @Override
-    public String createCron(int interval, int min, int hour, int day, int month, int year)
+    public String createCron(ScheduleType interval, int min, int hour, int day, int month, int year)
     {
         StringBuilder cronExpression = new StringBuilder();
 
-        if(interval < 1 || min < 0 || hour < 0 || day < 0 || month < 0 || year < 0)
+        if(min < 0 || hour < 0 || day < 0 || month < 0 || year < 0)
         {
             throw new IllegalArgumentException();
         }

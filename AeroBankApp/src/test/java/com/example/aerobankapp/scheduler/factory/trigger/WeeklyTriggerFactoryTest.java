@@ -1,5 +1,6 @@
 package com.example.aerobankapp.scheduler.factory.trigger;
 
+import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.scheduler.TriggerCriteria;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +45,7 @@ class WeeklyTriggerFactoryTest {
                 .hour(8)
                 .day(5)
                 .minute(30)
-                .interval(1)
+                .interval(ScheduleType.ONCE)
                 .build();
 
         weeklyTriggerFactory = new WeeklyTriggerFactory(triggerCriteria);

@@ -65,4 +65,9 @@ public class CalculationEngineImpl implements CalculationEngine
     public BigDecimal calculateWithdrawalWithInterest(BigDecimal amount, AccountDTO accountDTO, BigDecimal interest) {
         return null;
     }
+
+    @Override
+    public BigDecimal calculatePendingBalance(BigDecimal amount, BigDecimal currBalance) {
+        return null;
+    }
 }
