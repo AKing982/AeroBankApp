@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-02-09T01:08:03.158Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36" etag="A7rEsuksPxVkAf8PRHec" version="22.1.21" type="github">
+<mxfile host="app.diagrams.net" modified="2024-02-09T01:12:22.105Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="prZPk47kSrB9OIp6PhQm" version="23.1.2" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="1614" dy="607" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="954" dy="569" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -99,12 +99,6 @@
         <mxCell id="y_lWkLaHVjZ2EOGm8Hay-10" value="Load Deposits from Deposit Queue" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="1370" y="730" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-11" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y_lWkLaHVjZ2EOGm8Hay-2" target="y_lWkLaHVjZ2EOGm8Hay-10" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="1290" y="840" as="sourcePoint" />
-            <mxPoint x="1340" y="790" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="y_lWkLaHVjZ2EOGm8Hay-13" value="Execute Deposit Engine" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="1710" y="580" width="120" height="60" as="geometry" />
         </mxCell>
@@ -168,7 +162,7 @@
             <mxPoint x="1595" y="910" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="zhOZXe3fPzr29_ATNVKf-5" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="zhOZXe3fPzr29_ATNVKf-5" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="1540" y="910" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
