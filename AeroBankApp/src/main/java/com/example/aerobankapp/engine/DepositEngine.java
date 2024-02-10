@@ -8,6 +8,7 @@ import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.TransactionSummary;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
+@Getter
 public class DepositEngine extends Engine<DepositDTO>
 {
     private DepositQueue depositQueue;
@@ -30,7 +32,7 @@ public class DepositEngine extends Engine<DepositDTO>
         this.depositQueue = depositQueue;
         this.calculationEngine = calculationEngine;
         this.processedDeposits = new ArrayList<>();
-
+        this.accountCodeToBalanceMap = new HashMap<>();
     }
 
     private void handleProcessingError(DepositDTO depositDTO, Exception e)
@@ -38,9 +40,10 @@ public class DepositEngine extends Engine<DepositDTO>
 
     }
 
-    public List<DepositDTO> processDepositsInQueue(DepositQueue depositQueue)
+
+    public List<DepositDTO> processDepositsInQueue()
     {
-        return new ArrayList<>(depositQueue.getAllElements());
+        return depositQueue.getAllElements();
     }
 
     public Map<String, BigDecimal> getProcessedBalances(List<DepositDTO> processedDeposits)
@@ -48,7 +51,7 @@ public class DepositEngine extends Engine<DepositDTO>
         return null;
     }
 
-    public void updateProcessedDepositList(List<DepositDTO> deposits)
+    private void updateProcessedDepositList(final List<DepositDTO> deposits)
     {
         processedDeposits.addAll(deposits);
     }
@@ -60,7 +63,20 @@ public class DepositEngine extends Engine<DepositDTO>
 
     public List<DepositDTO> processDeposits()
     {
+        List<DepositDTO> unProcessedDeposits = processDepositsInQueue();
+
         return null;
+    }
+
+    public List<DepositDTO> calculateDeposit(List<DepositDTO> deposits)
+    {
+        List<DepositDTO> calculatedDeposits = new ArrayList<>();
+        for(DepositDTO deposit : deposits)
+        {
+
+        }
+        return null;
+
     }
 
     @Override

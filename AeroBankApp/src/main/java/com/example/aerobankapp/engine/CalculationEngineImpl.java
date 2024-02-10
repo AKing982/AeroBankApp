@@ -12,9 +12,20 @@ import java.math.BigDecimal;
 public class CalculationEngineImpl implements CalculationEngine
 {
 
+    public CalculationEngineImpl()
+    {
+
+    }
+
     @Override
     @Transactional
-    public BigDecimal calculateDeposit(BigDecimal amount, AccountDTO accountDTO) {
+    public BigDecimal calculateDeposit(BigDecimal amount, AccountDTO accountDTO)
+    {
+        BigDecimal currentBalance = accountDTO.balance();
+        if(amount != null && currentBalance != null)
+        {
+            return currentBalance.add(amount);
+        }
         return null;
     }
 
