@@ -3,11 +3,13 @@ package com.example.aerobankapp.engine;
 import com.example.aerobankapp.DepositQueue;
 import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.scheduler.ScheduleType;
+import com.example.aerobankapp.services.DepositQueueService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -26,17 +28,24 @@ class DepositEngineTest {
 
     private DepositEngine depositEngine;
 
-    @Mock
+    @Autowired
     private CalculationEngine calculationEngine;
 
-    @Mock
+    @Autowired
+    private DepositQueueService depositQueueService;
+
     private DepositQueue depositQueue;
+
+    private DepositDTO depositDTO;
+
+    private DepositDTO depositDTO2;
+
 
     @BeforeEach
     void setUp()
     {
-        depositEngine = new DepositEngine(depositQueue, calculationEngine);
-        DepositDTO depositDTO = DepositDTO.builder()
+
+        depositDTO = DepositDTO.builder()
                 .depositID(1)
                 .amount(new BigDecimal("45.00"))
                 .timeScheduled(LocalDateTime.now())
@@ -47,30 +56,46 @@ class DepositEngineTest {
                 .scheduleInterval(ScheduleType.ONCE)
                 .build();
 
-        DepositDTO depositDTO1 = DepositDTO.builder()
+         depositDTO2 = DepositDTO.builder()
                 .depositID(2)
                 .description("Transfer 2")
                 .amount(new BigDecimal("1214"))
-                .timeScheduled(LocalDateTime.of(2024, 1130, 5, 3, 3))
+                .timeScheduled(LocalDateTime.of(2024, 8, 5, 3, 3))
                 .date(LocalDate.now())
                 .accountCode("A3")
                 .scheduleInterval(ScheduleType.ONCE)
                 .userID(1)
                 .build();
 
-        depositQueue = mock(DepositQueue.class);
+        depositQueue = new DepositQueue(depositQueueService);
 
-        List<DepositDTO> depositDTOS = new ArrayList<>();
-        depositDTOS.add(depositDTO1);
-        depositDTOS.add(depositDTO);
-        depositQueue.addAll(depositDTOS);
+        depositQueue.add(depositDTO);
+        depositQueue.add(depositDTO2);
+
+        depositEngine = new DepositEngine(depositQueue, calculationEngine);
     }
 
     @Test
     public void testProcessingDepositsInQueue()
     {
+       List<DepositDTO> actualDeposits = depositEngine.processDepositsInQueue(depositQueue);
 
+       assertEquals(2, actualDeposits.size());
+       assertTrue(actualDeposits.contains(depositDTO));
+       assertTrue(actualDeposits.contains(depositDTO2));
     }
+
+    @Test
+    public void testProcessDeposits()
+    {
+        List<DepositDTO> depositDTOList = depositEngine.processDeposits();
+
+        assertEquals(1, depositDTOList.size());
+        assertTrue(depositDTOList.contains(depositDTO));
+        assertTrue(depositDTOList.contains(depositDTO2));
+    }
+
+
 
     @AfterEach
     void tearDown() {

@@ -25,6 +25,12 @@ public class DepositQueueServiceImpl implements DepositQueueService
     }
 
     @Override
+    public void save(DepositQueueEntity transaction)
+    {
+        depositQueueRepository.save(transaction);
+    }
+
+    @Override
     public DepositQueueEntity enQueue(DepositQueueEntity transaction)
     {
         return null;

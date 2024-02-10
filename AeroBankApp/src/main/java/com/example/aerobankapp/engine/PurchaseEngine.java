@@ -13,16 +13,6 @@ public class PurchaseEngine extends Engine<Purchase>
 
 
     @Override
-    protected void processBatchTransaction(List<Purchase> transactions) {
-
-    }
-
-    @Override
-    protected void processTransaction(Purchase transaction) {
-
-    }
-
-    @Override
     protected BigDecimal calculateTransactionFee() {
         return null;
     }

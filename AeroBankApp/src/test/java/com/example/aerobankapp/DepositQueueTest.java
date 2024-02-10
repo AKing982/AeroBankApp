@@ -1,8 +1,11 @@
 package com.example.aerobankapp;
 
 import com.example.aerobankapp.dto.DepositDTO;
+import com.example.aerobankapp.entity.DepositQueueEntity;
+import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.services.DepositQueueService;
+import com.example.aerobankapp.workbench.utilities.QueueStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +17,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -31,7 +37,7 @@ class DepositQueueTest {
 
     private DepositQueue depositQueue;
 
-    @Autowired
+    @MockBean
     private DepositQueueService queueService;
 
     @Mock
@@ -169,12 +175,15 @@ class DepositQueueTest {
         depositQueue.add(depositDTO);
         depositQueue.add(depositDTO1);
         depositQueue.add(depositDTO1);
+        depositQueue.add(depositDTO2);
 
         boolean isDuplicate = depositQueue.isDuplicate(depositDTO);
         boolean isNextDuplicate = depositQueue.isDuplicate(depositDTO1);
+        boolean isNotDuplicate = depositQueue.isDuplicate(depositDTO2);
 
         assertTrue(isDuplicate);
         assertTrue(isNextDuplicate);
+        assertFalse(isNotDuplicate);
     }
 
     @Test
@@ -183,27 +192,52 @@ class DepositQueueTest {
         depositQueue.add(depositDTO);
         depositQueue.add(depositDTO);
 
+        assertTrue(depositQueue.isDuplicate(depositDTO));
         assertEquals(2, depositQueue.size());
     }
 
     @Test
-    public void testRemovingDuplicatesFromQueue()
+    public void testAddQueueToDatabase()
     {
-        depositQueue.add(depositDTO);
-        depositQueue.add(depositDTO);
-        depositQueue.add(depositDTO1);
-        depositQueue.add(depositDTO1);
+        DepositDTO dto = DepositDTO.builder()
+                        .depositID(1)
+                        .accountCode("A1")
+                        .userID(1)
+                        .description("Transfer1")
+                        .amount(new BigDecimal("1214"))
+                        .scheduleInterval(ScheduleType.ONCE)
+                        .date(LocalDate.now())
+                        .timeScheduled(LocalDateTime.now())
+                        .build();
+        depositQueue.addToDatabase(dto);
 
-        boolean isDuplicate = depositQueue.isDuplicate(depositDTO);
-        boolean isNextDuplicate = depositQueue.isDuplicate(depositDTO1);
-        DepositDTO removedDup1 = depositQueue.removeDuplicate(depositDTO);
-        DepositDTO removedDup2 = depositQueue.removeDuplicate(depositDTO1);
+        DepositsEntity depositQueueEntity = convertToDepositEntity(depositDTO);
+        DepositQueueEntity depositQueueEntity1 = convertToQueueEntity(depositQueueEntity);
 
-        assertTrue(isDuplicate);
-        assertTrue(isNextDuplicate);
-        assertEquals(removedDup1, depositQueue.removeDuplicate(depositDTO));
-        assertEquals(removedDup2, depositQueue.removeDuplicate(depositDTO1));
-        assertEquals(2, depositQueue.size());
+
+        verify(queueService).save(any(DepositQueueEntity.class));
+    }
+
+    private DepositsEntity convertToDepositEntity(DepositDTO depositDTO)
+    {
+        return DepositsEntity.builder()
+                .depositID(depositDTO.depositID())
+                .amount(depositDTO.amount())
+                .description(depositDTO.description())
+                .scheduledDate(depositDTO.date())
+                .scheduledTime(depositDTO.timeScheduled())
+                .posted(depositDTO.date())
+                .scheduleInterval(depositDTO.scheduleInterval())
+                .build();
+    }
+
+    private DepositQueueEntity convertToQueueEntity(DepositsEntity deposits)
+    {
+        return DepositQueueEntity.builder()
+                .deposit(deposits)
+                .queuedAt(Timestamp.from(Instant.now()))
+                .status(QueueStatus.PENDING)
+                .build();
     }
 
     @AfterEach

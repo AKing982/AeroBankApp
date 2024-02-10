@@ -9,8 +9,6 @@ import java.util.List;
 
 public abstract class Engine<T>
 {
-    protected abstract void processBatchTransaction(List<T> transactions);
-    protected abstract void processTransaction(T transaction);
     protected abstract BigDecimal calculateTransactionFee();
     protected abstract BigDecimal convertCurrency(BigDecimal amount, Currency fromCurrency, Currency toCurrency);
     protected abstract BigDecimal calculateInterest(BigDecimal amount, BigDecimal annualInterestRate);

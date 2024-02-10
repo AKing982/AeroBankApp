@@ -1,30 +1,47 @@
 package com.example.aerobankapp;
 
 import com.example.aerobankapp.dto.DepositDTO;
+import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.DepositQueueEntity;
+import com.example.aerobankapp.entity.DepositsEntity;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.services.DepositQueueService;
 import com.example.aerobankapp.services.DepositQueueServiceImpl;
 import com.example.aerobankapp.workbench.transactions.Deposit;
+import com.example.aerobankapp.workbench.utilities.QueueStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component
 public class DepositQueue implements QueueModel<DepositDTO>
 {
     private final Queue<DepositDTO> queue = new ConcurrentLinkedQueue<>();
+    private int queueSize;
+    private final int maxQueueSize = 150;
     private DepositQueueService depositQueueService;
     private boolean isPersisting;
+    private Logger LOGGER = LoggerFactory.getLogger(DepositQueue.class);
 
     @Autowired
     public DepositQueue(@Qualifier("depositQueueServiceImpl")DepositQueueService depositQueueService)
     {
         this.depositQueueService = depositQueueService;
+    }
+
+
+    @Override
+    public List<DepositDTO> getAllElements()
+    {
+        LOGGER.info("Queue Size: " + queue.size());
+        return new ArrayList<>(queue);
     }
 
     @Override
@@ -37,6 +54,31 @@ public class DepositQueue implements QueueModel<DepositDTO>
         queue.add(transaction);
     }
 
+    private DepositsEntity convertToDepositEntity(DepositDTO depositDTO)
+    {
+        return DepositsEntity.builder()
+                .depositID(depositDTO.depositID())
+                .amount(depositDTO.amount())
+                .description(depositDTO.description())
+                .scheduledDate(depositDTO.date())
+                .scheduledTime(depositDTO.timeScheduled())
+                .posted(depositDTO.date())
+                .scheduleInterval(depositDTO.scheduleInterval())
+                .user(UserEntity.builder().userID(1).build())
+                .account(AccountEntity.builder().accountCode(depositDTO.accountCode()).build())
+                .build();
+    }
+
+    private DepositQueueEntity convertToQueueEntity(DepositsEntity deposits)
+    {
+        return DepositQueueEntity.builder()
+                .deposit(deposits)
+                .queuedAt(Timestamp.from(Instant.now()))
+                .status(QueueStatus.PENDING)
+                .build();
+    }
+
+
     @Override
     public void addAll(List<DepositDTO> transactions)
     {
@@ -44,13 +86,22 @@ public class DepositQueue implements QueueModel<DepositDTO>
     }
 
     @Override
-    public void addToDatabase(DepositDTO transaction) {
-
+    public void addToDatabase(DepositDTO transaction)
+    {
+        DepositsEntity depositsEntity = convertToDepositEntity(transaction);
+        DepositQueueEntity depositQueueEntity = convertToQueueEntity(depositsEntity);
+        depositQueueService.save(depositQueueEntity);
     }
 
     @Override
-    public void addAllToDatabase(List<DepositDTO> transactions) {
-
+    public void addAllToDatabase(List<DepositDTO> transactions)
+    {
+        for(DepositDTO depositDTO : transactions)
+        {
+            DepositsEntity depositsEntity = convertToDepositEntity(depositDTO);
+            DepositQueueEntity depositQueueEntity = convertToQueueEntity(depositsEntity);
+            depositQueueService.save(depositQueueEntity);
+        }
     }
 
     @Override
@@ -70,20 +121,10 @@ public class DepositQueue implements QueueModel<DepositDTO>
         return queue.peek();
     }
 
-
-    private void saveToDatabase(DepositDTO depositDTO)
+    private DepositQueueEntity dequeueFromDatabase(DepositDTO depositDTO)
     {
-
-    }
-
-    private void saveBatchToDatabase(List<DepositDTO> depositDTOS)
-    {
-
-    }
-
-    private void removeFromDatabase(DepositDTO depositDTO)
-    {
-
+        Long depositID = (long) depositDTO.depositID();
+        return depositQueueService.deQueueTransaction(depositID);
     }
 
     @Override
@@ -95,28 +136,19 @@ public class DepositQueue implements QueueModel<DepositDTO>
     @Override
     public boolean isDuplicate(DepositDTO element)
     {
+        int count = 0;
         for(DepositDTO depositDTO : queue)
         {
             if(depositDTO.equals(element))
             {
-                return true;
+                count++;
+                if(count > 1)
+                {
+                    return true;
+                }
             }
         }
         return false;
-    }
-
-    @Override
-    public DepositDTO removeDuplicate(DepositDTO duplicate)
-    {
-        DepositDTO removed = null;
-        for(DepositDTO depositDTO : queue)
-        {
-            if(depositDTO.equals(duplicate))
-            {
-                removed = queue.remove();
-            }
-        }
-        return removed;
     }
 
     @Override

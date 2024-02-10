@@ -4,6 +4,9 @@ import java.util.List;
 
 public interface QueueService<T>
 {
+    void save(T transaction);
+
+
     /**
      * Adds a transaction to the queue.
      *

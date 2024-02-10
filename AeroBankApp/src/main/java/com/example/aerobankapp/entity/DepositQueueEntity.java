@@ -3,9 +3,7 @@ package com.example.aerobankapp.entity;
 import com.example.aerobankapp.workbench.utilities.QueueStatus;
 import com.example.aerobankapp.workbench.utilities.Status;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -13,6 +11,9 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @EqualsAndHashCode
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name="depositQueue")
 public class DepositQueueEntity
 
@@ -21,7 +22,7 @@ public class DepositQueueEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dQueueID;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name="depositID", nullable = false)
     private DepositsEntity deposit;
 

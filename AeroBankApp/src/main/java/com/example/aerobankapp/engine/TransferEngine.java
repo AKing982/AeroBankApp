@@ -12,16 +12,6 @@ public class TransferEngine extends Engine<TransferDTO>{
 
 
     @Override
-    protected void processBatchTransaction(List<TransferDTO> transactions) {
-
-    }
-
-    @Override
-    protected void processTransaction(TransferDTO transaction) {
-
-    }
-
-    @Override
     protected BigDecimal calculateTransactionFee() {
         return null;
     }

@@ -28,16 +28,6 @@ public class WithdrawEngine extends Engine<Withdraw>
 
 
     @Override
-    protected void processBatchTransaction(List<Withdraw> transactions) {
-
-    }
-
-    @Override
-    protected void processTransaction(Withdraw transaction) {
-
-    }
-
-    @Override
     protected BigDecimal calculateTransactionFee() {
         return null;
     }

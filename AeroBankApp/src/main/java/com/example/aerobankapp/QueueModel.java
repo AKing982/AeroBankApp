@@ -1,11 +1,14 @@
 package com.example.aerobankapp;
 
+import com.example.aerobankapp.dto.DepositDTO;
+
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public interface QueueModel<T>
 {
+    List<DepositDTO> getAllElements();
     void add(T transaction);
     void addAll(List<T> transactions);
     void addToDatabase(T transaction);
@@ -15,7 +18,6 @@ public interface QueueModel<T>
     T peek();
     boolean isEmpty();
     boolean isDuplicate(T element);
-    T removeDuplicate(T duplicate);
     T poll();
 
 }

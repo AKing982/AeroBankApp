@@ -7,6 +7,7 @@ import java.util.List;
 public interface DepositQueueService extends QueueService<DepositQueueEntity>
 {
 
+
     @Override
     DepositQueueEntity enQueue(DepositQueueEntity transaction);
 

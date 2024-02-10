@@ -12,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
@@ -25,14 +22,15 @@ public class DepositEngine extends Engine<DepositDTO>
     private List<DepositDTO> deposits;
     private List<DepositDTO> processedDeposits;
     private CalculationEngine calculationEngine;
-    private AccountService accountService;
+    private Map<String, BigDecimal> accountCodeToBalanceMap;
 
     @Autowired
     public DepositEngine(DepositQueue depositQueue, CalculationEngine calculationEngine)
     {
         this.depositQueue = depositQueue;
         this.calculationEngine = calculationEngine;
-        initializeDepositQueue(depositQueue);
+        this.processedDeposits = new ArrayList<>();
+
     }
 
     private void handleProcessingError(DepositDTO depositDTO, Exception e)
@@ -42,17 +40,17 @@ public class DepositEngine extends Engine<DepositDTO>
 
     public List<DepositDTO> processDepositsInQueue(DepositQueue depositQueue)
     {
-        return null;
+        return new ArrayList<>(depositQueue.getAllElements());
     }
 
-    public List<BigDecimal> getProcessedBalances(List<DepositDTO> processedDeposits)
+    public Map<String, BigDecimal> getProcessedBalances(List<DepositDTO> processedDeposits)
     {
         return null;
     }
 
     public void updateProcessedDepositList(List<DepositDTO> deposits)
     {
-
+        processedDeposits.addAll(deposits);
     }
 
     public void updateAccountBalance(BigDecimal balance)
@@ -60,20 +58,9 @@ public class DepositEngine extends Engine<DepositDTO>
 
     }
 
-    public void initializeDepositQueue(DepositQueue queue)
+    public List<DepositDTO> processDeposits()
     {
-
-    }
-
-
-    @Override
-    protected void processBatchTransaction(List<DepositDTO> transactions) {
-
-    }
-
-    @Override
-    protected void processTransaction(DepositDTO transaction) {
-
+        return null;
     }
 
     @Override
