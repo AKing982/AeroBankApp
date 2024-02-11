@@ -22,6 +22,11 @@ public abstract class Notifications
         this.priority = priority;
     }
 
+    public Notifications()
+    {
+
+    }
+
     public abstract void sendNotification();
 
     public void markAsRead()

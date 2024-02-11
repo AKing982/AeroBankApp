@@ -4,6 +4,7 @@ import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.repositories.AccountRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @Service
 @Getter
 @Setter
+@Transactional
 public class AccountServiceImpl implements AccountService
 {
     @PersistenceContext
@@ -80,18 +82,21 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
-    public BigDecimal getBalanceByAccountCode(String acctCode) {
-        TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery("SELECT e.balance FROM AccountEntity e WHERE e.accountCode=:acctCode", AccountEntity.class);
+    public BigDecimal getBalanceByAccountCodeUserID(String acctCode, int userID) {
+        TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery("SELECT e FROM AccountEntity e WHERE e.accountCode=:acctCode AND e.userID=:userID", AccountEntity.class);
         accountEntityTypedQuery.setParameter("acctCode", acctCode);
+        accountEntityTypedQuery.setParameter("userID", userID);
         accountEntityTypedQuery.setMaxResults(1);
         List<AccountEntity> results = accountEntityTypedQuery.getResultList();
-        if(!results.isEmpty())
+
+        BigDecimal balance = results.get(0).getBalance();
+        if(balance == null)
         {
-            return results.get(0).getBalance();
+            throw new IllegalArgumentException("Invalid Balance Found.");
         }
         else
         {
-            return null;
+            return balance;
         }
     }
 
@@ -152,5 +157,17 @@ public class AccountServiceImpl implements AccountService
             accountTypeMap.put(accountEntity.getAcctID(), accountEntity.getAccountType());
         }
         return accountTypeMap;
+    }
+
+    @Override
+    @Transactional
+    public void updateAccountBalanceByAcctID(BigDecimal balance, int acctID)
+    {
+        final String updateBalanceStatement = "UPDATE AccountEntity a SET a.balance =: balance WHERE a.acctID=: acctID";
+        Query accountEntityQuery = getEntityManager().createQuery(updateBalanceStatement);
+        accountEntityQuery.setParameter("balance", balance);
+        accountEntityQuery.setParameter("acctID", acctID);
+
+        accountEntityQuery.executeUpdate();
     }
 }

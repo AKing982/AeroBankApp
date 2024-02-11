@@ -3,6 +3,8 @@ package com.example.aerobankapp.engine;
 import com.example.aerobankapp.dto.AccountDTO;
 import com.example.aerobankapp.dto.BillDTO;
 import com.example.aerobankapp.fees.FeesDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,8 @@ import java.math.BigDecimal;
 public class CalculationEngineImpl implements CalculationEngine
 {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(CalculationEngineImpl.class);
+
     public CalculationEngineImpl()
     {
 
@@ -19,19 +23,21 @@ public class CalculationEngineImpl implements CalculationEngine
 
     @Override
     @Transactional
-    public BigDecimal calculateDeposit(BigDecimal amount, AccountDTO accountDTO)
+    public BigDecimal calculateDeposit(BigDecimal amount, BigDecimal balance)
     {
-        BigDecimal currentBalance = accountDTO.balance();
-        if(amount != null && currentBalance != null)
+        LOGGER.debug("Current Balance: " + balance);
+        if(amount != null && balance != null)
         {
-            return currentBalance.add(amount);
+            BigDecimal newBalance = balance.add(amount);
+            LOGGER.debug("Balance after Deposit: " + newBalance);
+            return newBalance;
         }
         return null;
     }
 
     @Override
     @Transactional
-    public BigDecimal calculateWithdrawal(BigDecimal amount, AccountDTO account) {
+    public BigDecimal calculateWithdrawal(BigDecimal amount, BigDecimal balance) {
         return null;
     }
 

@@ -2,81 +2,141 @@ package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.DepositQueue;
 import com.example.aerobankapp.dto.DepositDTO;
+import com.example.aerobankapp.dto.MessageNotificationDTO;
+import com.example.aerobankapp.dto.ProcessedDepositDTO;
+import com.example.aerobankapp.entity.NotificationEntity;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.scheduler.SchedulerEngine;
 import com.example.aerobankapp.scheduler.SchedulerEngineImpl;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 import com.example.aerobankapp.services.AccountService;
+import com.example.aerobankapp.services.NotificationService;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.TransactionSummary;
+import com.mchange.v2.collection.MapEntry;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 @Getter
-public class DepositEngine extends Engine<DepositDTO>
-{
-    private DepositQueue depositQueue;
+public class DepositEngine extends Engine<DepositDTO> {
+    private final DepositQueue depositQueue;
     private List<DepositDTO> deposits;
-    private List<DepositDTO> processedDeposits;
-    private CalculationEngine calculationEngine;
-    private Map<String, BigDecimal> accountCodeToBalanceMap;
+    private List<BigDecimal> processedBalances;
+    private final List<ProcessedDepositDTO> processedDeposits;
+    private final CalculationEngine calculationEngine;
+    private final Map<String, BigDecimal> accountCodeToBalanceMap;
+    private final AccountService accountService;
+    private final NotificationService notificationService;
+    private final Logger LOGGER = LoggerFactory.getLogger(DepositEngine.class);
 
     @Autowired
-    public DepositEngine(DepositQueue depositQueue, CalculationEngine calculationEngine)
-    {
+    public DepositEngine(DepositQueue depositQueue,
+                         CalculationEngine calculationEngine,
+                         AccountService accountService,
+                         NotificationService notificationService) {
         this.depositQueue = depositQueue;
         this.calculationEngine = calculationEngine;
+        this.accountService = accountService;
+        this.notificationService = notificationService;
         this.processedDeposits = new ArrayList<>();
+        this.processedBalances = new ArrayList<>();
         this.accountCodeToBalanceMap = new HashMap<>();
     }
 
-    private void handleProcessingError(DepositDTO depositDTO, Exception e)
-    {
-
-    }
-
-
-    public List<DepositDTO> processDepositsInQueue()
-    {
+    public List<DepositDTO> processDepositsInQueue() {
         return depositQueue.getAllElements();
     }
 
-    public Map<String, BigDecimal> getProcessedBalances(List<DepositDTO> processedDeposits)
+    public void updateAccountBalances(final Map<Integer, BigDecimal> processedDepositMap)
     {
-        return null;
+        for(Map.Entry<Integer, BigDecimal> entry : processedDepositMap.entrySet())
+        {
+            int accountID = entry.getKey();
+            BigDecimal balance = entry.getValue();
+            accountService.updateAccountBalanceByAcctID(balance, accountID);
+        }
     }
 
-    private void updateProcessedDepositList(final List<DepositDTO> deposits)
-    {
+    public Map<Integer, BigDecimal> getProcessedBalances(List<ProcessedDepositDTO> processedDeposits) {
+        Map<Integer, BigDecimal> accountBalances = new HashMap<>();
+        if (!processedDeposits.isEmpty())
+        {
+            for (ProcessedDepositDTO depositDTO : processedDeposits)
+            {
+                accountBalances.put(depositDTO.accountID(), depositDTO.newBalance());
+            }
+        }
+        return accountBalances;
+    }
+
+    private void updateProcessedDepositList(final List<ProcessedDepositDTO> deposits) {
         processedDeposits.addAll(deposits);
     }
 
-    public void updateAccountBalance(BigDecimal balance)
-    {
-
-    }
-
-    public List<DepositDTO> processDeposits()
-    {
+    @Async
+    public List<ProcessedDepositDTO> processDeposits() {
         List<DepositDTO> unProcessedDeposits = processDepositsInQueue();
+        List<ProcessedDepositDTO> processedDepositDTOS = new ArrayList<>();
+        for (DepositDTO depositDTO : unProcessedDeposits) {
+            // Validate the deposit
+            validateDeposit(depositDTO);
 
-        return null;
+            // Process the deposit
+            ProcessedDepositDTO processedDeposit = processDeposit(depositDTO);
+
+            // Add the deposit to the processed list
+            processedDepositDTOS.add(processedDeposit);
+
+            // Notify the Account Holder
+            notifyAccountHolder(depositDTO);
+        }
+
+        // Update the Processed DepositList
+        updateProcessedDepositList(processedDepositDTOS);
+
+        return processedDepositDTOS;
     }
 
-    public List<DepositDTO> calculateDeposit(List<DepositDTO> deposits)
+    private ProcessedDepositDTO processDeposit(DepositDTO depositDTO) {
+        String accountCode = depositDTO.accountCode();
+        int userID = depositDTO.userID();
+        BigDecimal amount = depositDTO.amount();
+
+        BigDecimal balance = accountService.getBalanceByAccountCodeUserID(accountCode, userID);
+        BigDecimal newBalance = calculationEngine.calculateDeposit(amount, balance);
+        processedBalances.add(newBalance);
+        return buildProcessedDepositDTO(depositDTO, newBalance);
+    }
+
+    private ProcessedDepositDTO buildProcessedDepositDTO(DepositDTO depositDTO, BigDecimal balance)
     {
-        List<DepositDTO> calculatedDeposits = new ArrayList<>();
-        for(DepositDTO deposit : deposits)
-        {
+        return ProcessedDepositDTO.builder()
+                .accountID(depositDTO.accountID())
+                .depositID(depositDTO.depositID())
+                .description(depositDTO.description())
+                .newBalance(balance)
+                .accountCode(depositDTO.accountCode())
+                .userID(depositDTO.userID())
+                .amount(depositDTO.amount())
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
 
-        }
-        return null;
-
+    private void validateDeposit(DepositDTO depositDTO)
+    {
+        Objects.requireNonNull(depositDTO.accountCode(), "Non Null AccountCode");
+        Objects.requireNonNull(depositDTO.amount(), "Non Null Amount Required");
     }
 
     @Override
@@ -101,22 +161,62 @@ public class DepositEngine extends Engine<DepositDTO>
     }
 
     @Override
-    protected TransactionSummary generateTransactionSummary(DepositDTO transaction) {
+    protected TransactionSummary generateTransactionSummary(DepositDTO transaction)
+    {
         return null;
     }
 
     @Override
-    protected void storeTransaction(DepositDTO transaction) {
+    protected void storeTransaction(DepositDTO transaction)
+    {
 
     }
 
     @Override
-    protected void createAuditTrail(DepositDTO transaction) {
+    protected void createAuditTrail(DepositDTO transaction)
+    {
 
     }
 
     @Override
     protected void notifyAccountHolder(DepositDTO transaction) {
+        sendNotification(transaction);
+    }
 
+    private NotificationEntity createNotification(DepositDTO depositDTO)
+    {
+
+        String message = "You're deposit of $" + depositDTO.amount() + " has been processed Successfully.";
+
+        return NotificationEntity.builder()
+                .message(message)
+                .userEntity(UserEntity.builder().userID(depositDTO.userID()).build())
+                .sent(LocalDateTime.now())
+                .hasBeenRead(false)
+                .priority(1)
+                .build();
+    }
+
+    private void sendNotificationToSystem(DepositDTO depositDTO)
+    {
+        NotificationEntity notification1 = createNotification(depositDTO);
+        notificationService.createNotification(notification1);
+    }
+
+    private void sendNotification(DepositDTO deposit)
+    {
+        String message = "You're deposit of $" + deposit.amount() + " has been processed Successfully.";
+
+        sendNotificationToSystem(deposit);
+
+        MessageNotificationDTO messageNotificationDTO = MessageNotificationDTO.builder()
+                        .message(message)
+                        .sender(null)
+                        .receiver(null)
+                        .title("Deposit Notification")
+                        .sent(LocalDateTime.now())
+                        .build();
+
+        notificationService.sendMessageNotification(messageNotificationDTO);
     }
 }

@@ -67,8 +67,7 @@ public class AccountManagerImpl implements AccountManager
 
     @Override
     public BigDecimal getBalanceByAccountCode(AccountCodeDTO code) {
-        String accountCode = code.getAccountCode();
-        return accountDAO.getBalanceByAccountCode(accountCode);
+        return null;
     }
 
 }

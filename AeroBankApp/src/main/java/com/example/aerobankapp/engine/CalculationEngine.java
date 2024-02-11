@@ -13,8 +13,8 @@ import java.math.BigDecimal;
 
 public interface CalculationEngine
 {
-    BigDecimal calculateDeposit(BigDecimal amount, AccountDTO accountDTO);
-    BigDecimal calculateWithdrawal(BigDecimal amount, AccountDTO account);
+    BigDecimal calculateDeposit(BigDecimal amount, BigDecimal balance);
+    BigDecimal calculateWithdrawal(BigDecimal amount, BigDecimal balance);
     BigDecimal calculateTransfer(BigDecimal amount, AccountDTO toAccount, AccountDTO fromAccount);
     BigDecimal calculatePurchase(BigDecimal amount, AccountDTO accountDTO);
     BigDecimal calculateBillPay(BigDecimal amount, AccountDTO accountDTO, BillDTO bill);

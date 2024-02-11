@@ -41,7 +41,8 @@ class CalculationEngineImplTest {
                 .build();
 
         BigDecimal expectedBalance = new BigDecimal("1560.00");
-        BigDecimal actualBalance = calculationEngine.calculateDeposit(amountToDeposit, accountDTO);
+        BigDecimal balance = new BigDecimal("1510.00");
+        BigDecimal actualBalance = calculationEngine.calculateDeposit(amountToDeposit, balance);
 
         assertNotNull(actualBalance);
         assertEquals(expectedBalance, actualBalance);

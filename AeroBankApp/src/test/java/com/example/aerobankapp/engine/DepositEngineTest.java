@@ -2,8 +2,13 @@ package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.DepositQueue;
 import com.example.aerobankapp.dto.DepositDTO;
+import com.example.aerobankapp.dto.ProcessedDepositDTO;
 import com.example.aerobankapp.scheduler.ScheduleType;
+import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.DepositQueueService;
+import com.example.aerobankapp.services.NotificationService;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import org.junit.internal.runners.JUnit38ClassRunner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,18 +17,22 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
+@RunWith(JUnit38ClassRunner.class)
+@Transactional
 class DepositEngineTest {
 
     private DepositEngine depositEngine;
@@ -33,6 +42,12 @@ class DepositEngineTest {
 
     @Autowired
     private DepositQueueService depositQueueService;
+
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     private DepositQueue depositQueue;
 
@@ -53,6 +68,7 @@ class DepositEngineTest {
                 .description("Transfer 1")
                 .accountCode("A1")
                 .userID(1)
+                .accountID(1)
                 .scheduleInterval(ScheduleType.ONCE)
                 .build();
 
@@ -62,9 +78,10 @@ class DepositEngineTest {
                 .amount(new BigDecimal("1214"))
                 .timeScheduled(LocalDateTime.of(2024, 8, 5, 3, 3))
                 .date(LocalDate.now())
-                .accountCode("A3")
+                .accountCode("A2")
                 .scheduleInterval(ScheduleType.ONCE)
                 .userID(1)
+                 .accountID(3)
                 .build();
 
         depositQueue = new DepositQueue(depositQueueService);
@@ -72,7 +89,7 @@ class DepositEngineTest {
         depositQueue.add(depositDTO);
         depositQueue.add(depositDTO2);
 
-        depositEngine = new DepositEngine(depositQueue, calculationEngine);
+        depositEngine = new DepositEngine(depositQueue, calculationEngine, accountService, notificationService);
     }
 
     @Test
@@ -88,14 +105,107 @@ class DepositEngineTest {
     @Test
     public void testProcessDeposits()
     {
-        List<DepositDTO> depositDTOList = depositEngine.processDeposits();
+        List<ProcessedDepositDTO> depositDTOList = depositEngine.processDeposits();
+        Map<Integer, BigDecimal> accountCodeBalanceMap = depositEngine.getProcessedBalances(depositDTOList);
+        ProcessedDepositDTO processedDepositDTO = ProcessedDepositDTO.builder()
+                .depositID(1)
+                .newBalance(new BigDecimal("1250.000"))
+                .createdAt(LocalDateTime.now())
+                .accountID(1)
+                .userID(1)
+                .description("Transfer 1")
+                .amount(new BigDecimal("45.00"))
+                .accountCode("A1")
+                .build();
 
-        assertEquals(1, depositDTOList.size());
-        assertTrue(depositDTOList.contains(depositDTO));
-        assertTrue(depositDTOList.contains(depositDTO2));
+        Map<Integer, BigDecimal> expectedMap = new HashMap<>();
+        expectedMap.put(1, new BigDecimal("1250.000"));
+        expectedMap.put(3, new BigDecimal("11014.000"));
+
+      //  assertEquals(2, depositDTOList.);
+        assertEquals(expectedMap, accountCodeBalanceMap);
+        assertEquals(expectedMap.size(), accountCodeBalanceMap.size());
+        assertEquals(processedDepositDTO.depositID(), depositDTOList.get(0).depositID());
+        assertTrue(depositDTOList.contains(processedDepositDTO));
+       // assertTrue(depositDTOList.contains(depositDTO2));
     }
 
+    @Test
+    public void testProcessingNullDeposits()
+    {
+        DepositDTO nullDeposit1 = null;
+        DepositDTO nullDeposit2 = null;
+        depositQueue.add(nullDeposit1);
+        depositQueue.add(nullDeposit2);
 
+        assertThrows(NullPointerException.class, () -> {
+            depositEngine.processDeposits();
+        });
+    }
+
+    @Test
+    public void testProcessingDepositWithNoAccountCode()
+    {
+        DepositDTO depositDTO4 = DepositDTO.builder()
+                .depositID(1)
+                .accountCode(null)
+                .timeScheduled(LocalDateTime.now())
+                .scheduleInterval(ScheduleType.ONCE)
+                .date(LocalDate.now())
+                .amount(new BigDecimal("45.00"))
+                .description("Transfer 1")
+                .userID(1)
+                .build();
+
+        depositQueue.add(depositDTO4);
+
+      assertThrows(NullPointerException.class,()-> {
+          depositEngine.processDeposits();
+      });
+
+    }
+
+    @Test
+    public void testNullAmountDepositProcessing()
+    {
+        DepositDTO depositDTO4 = DepositDTO.builder()
+                .depositID(1)
+                .accountCode("A1")
+                .timeScheduled(LocalDateTime.now())
+                .scheduleInterval(ScheduleType.ONCE)
+                .date(LocalDate.now())
+                .amount(null)
+                .description("Transfer 1")
+                .userID(1)
+                .accountID(1)
+                .build();
+
+        depositQueue.add(depositDTO4);
+
+        assertThrows(NullPointerException.class, () -> {
+            depositEngine.processDeposits();
+        });
+    }
+
+    @Test
+    public void testNotifyAccountHolder()
+    {
+
+    }
+
+    @Test
+    public void testGetProcessedBalances()
+    {
+        List<ProcessedDepositDTO> depositDTOList = depositEngine.processDeposits();
+        Map<Integer, BigDecimal> balanceEntryMap = depositEngine.getProcessedBalances(depositDTOList);
+
+        Map<Integer, BigDecimal> balanceMap = new HashMap<>();
+        balanceMap.put(1, new BigDecimal("1250.000"));
+        balanceMap.put(3, new BigDecimal("11014.000"));
+
+        assertEquals(balanceMap, balanceEntryMap);
+        assertEquals(balanceMap.size(), balanceEntryMap.size());
+    }
 
     @AfterEach
     void tearDown() {

@@ -2,6 +2,7 @@ package com.example.aerobankapp.workbench.utilities.notifications;
 
 import com.example.aerobankapp.email.Email;
 import com.example.aerobankapp.email.EmailService;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
