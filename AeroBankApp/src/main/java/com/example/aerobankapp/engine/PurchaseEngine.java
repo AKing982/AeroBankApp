@@ -33,11 +33,6 @@ public class PurchaseEngine extends Engine<Purchase>
     }
 
     @Override
-    protected TransactionSummary generateTransactionSummary(Purchase transaction) {
-        return null;
-    }
-
-    @Override
     protected void storeTransaction(Purchase transaction) {
 
     }

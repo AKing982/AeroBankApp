@@ -17,8 +17,8 @@ import java.time.LocalDate;
 public class TransactionSummary
 {
     private int transactionID;
-    private String accountID;
-    private AccountCodeDTO accountCodeDTO;
+    private int accountID;
+    private String accountCode;
     private BigDecimal transactionAmount;
     private LocalDate dateCreated;
     private LocalDate datePosted;

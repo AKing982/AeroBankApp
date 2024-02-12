@@ -31,10 +31,6 @@ public class TransferEngine extends Engine<TransferDTO>{
         return null;
     }
 
-    @Override
-    protected TransactionSummary generateTransactionSummary(TransferDTO transaction) {
-        return null;
-    }
 
     @Override
     protected void storeTransaction(TransferDTO transaction) {

@@ -47,10 +47,6 @@ public class WithdrawEngine extends Engine<Withdraw>
         return null;
     }
 
-    @Override
-    protected TransactionSummary generateTransactionSummary(Withdraw transaction) {
-        return null;
-    }
 
     @Override
     protected void storeTransaction(Withdraw transaction) {

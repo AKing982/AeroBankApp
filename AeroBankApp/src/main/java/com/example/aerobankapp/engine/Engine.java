@@ -13,7 +13,6 @@ public abstract class Engine<T>
     protected abstract BigDecimal convertCurrency(BigDecimal amount, Currency fromCurrency, Currency toCurrency);
     protected abstract BigDecimal calculateInterest(BigDecimal amount, BigDecimal annualInterestRate);
     protected abstract BigDecimal calculateTax(BigDecimal amount);
-    protected abstract TransactionSummary generateTransactionSummary(T transaction);
     protected abstract void storeTransaction(T transaction);
     protected abstract void createAuditTrail(T transaction);
     protected abstract void notifyAccountHolder(T transaction);

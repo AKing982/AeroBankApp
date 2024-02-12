@@ -10,14 +10,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig
 {
-    @Bean
+    @Bean(name="transactionQueue")
     Queue queue() {
-        return new Queue("depositQueue", false);
+        return new Queue("transactionQueue", false);
     }
+
 
     @Bean
     TopicExchange exchange() {
-        return new TopicExchange("depositExchange");
+        return new TopicExchange("transactionExchange");
     }
 
     @Bean

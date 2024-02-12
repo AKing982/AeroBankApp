@@ -25,13 +25,12 @@ import static com.example.aerobankapp.controllers.utils.DepositControllerUtil.*;
 public class DepositController {
 
     private final DepositService depositService;
-    private final DepositEngine depositEngine;
+
 
     @Autowired
-    public DepositController(@Qualifier("depositServiceImpl") DepositService depositService, DepositEngine depositEngine)
+    public DepositController(@Qualifier("depositServiceImpl") DepositService depositService)
     {
         this.depositService = depositService;
-        this.depositEngine = depositEngine;
     }
 
     @GetMapping("/data/{accountID}")
@@ -51,12 +50,8 @@ public class DepositController {
     public ResponseEntity<?> submitDeposit(@Valid @RequestBody DepositRequest request)
     {
         DepositResponse depositResponse = getDepositResponse(request);
-        System.out.println("AccountCode: " + request.getAccountCode());
-        System.out.println("Deposit Amount: " + request.getAmount());
-        System.out.println("Description: " + request.getDescription());
-        System.out.println("Scheduled Interval: " + request.getScheduleInterval());
-        System.out.println("Scheduled Time: " + request.getTimeScheduled());
-        System.out.println("Scheduled Date: " + request.getDate());
+        depositService.submit(request);
+
         return ResponseEntity.ok(depositResponse);
     }
 

@@ -1,5 +1,6 @@
 package com.example.aerobankapp.configuration;
 
+import com.example.aerobankapp.scheduler.CronExpressionBuilder;
 import com.example.aerobankapp.scheduler.factory.SpringJobFactory;
 import com.example.aerobankapp.scheduler.jobs.DepositJob;
 import org.quartz.*;
@@ -89,7 +90,6 @@ public class SchedulerConfig
         trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
         return trigger;
     }
-
 
     @Bean
     public JobDetailFactoryBean depositJobDetail()

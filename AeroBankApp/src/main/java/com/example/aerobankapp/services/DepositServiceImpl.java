@@ -3,6 +3,7 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.engine.DepositEngine;
 import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.repositories.DepositRepository;
+import com.example.aerobankapp.workbench.utilities.DepositRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -79,5 +80,11 @@ public class DepositServiceImpl implements DepositService
     @Override
     public List<DepositsEntity> getListOfDepositsByUserID_DESC(Long id) {
         return null;
+    }
+
+    @Override
+    public void submit(DepositRequest request)
+    {
+        System.out.println("Deposit has been recieved");
     }
 }

@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
+import com.example.aerobankapp.workbench.utilities.DepositRequest;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,5 +31,7 @@ public interface DepositService extends ServiceDAOModel<DepositsEntity>
 
     List<DepositsEntity> getListOfDepositsByUserIDASC(Long id);
     List<DepositsEntity> getListOfDepositsByUserID_DESC(Long id);
+
+    void submit(DepositRequest request);
 
 }

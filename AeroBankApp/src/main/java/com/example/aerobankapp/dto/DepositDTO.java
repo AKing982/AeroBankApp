@@ -18,7 +18,9 @@ public record DepositDTO(int depositID,
                          LocalDate date,
                          LocalDateTime timeScheduled,
                          ScheduleType scheduleInterval,
-                         String description)
+                         String description,
+
+                         boolean nonUSDCurrency)
 {
 
 }

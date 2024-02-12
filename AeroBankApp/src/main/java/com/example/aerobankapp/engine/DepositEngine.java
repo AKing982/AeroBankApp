@@ -13,6 +13,7 @@ import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.NotificationService;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.TransactionSummary;
+import com.example.aerobankapp.workbench.transactions.TransactionType;
 import com.mchange.v2.collection.MapEntry;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -64,17 +66,28 @@ public class DepositEngine extends Engine<DepositDTO> {
         {
             int accountID = entry.getKey();
             BigDecimal balance = entry.getValue();
-            accountService.updateAccountBalanceByAcctID(balance, accountID);
+            if(balance != null)
+            {
+                accountService.updateAccountBalanceByAcctID(balance, accountID);
+            }
         }
     }
 
-    public Map<Integer, BigDecimal> getProcessedBalances(List<ProcessedDepositDTO> processedDeposits) {
+    public Map<Integer, BigDecimal> getProcessedBalances(final List<ProcessedDepositDTO> processedDeposits)
+    {
         Map<Integer, BigDecimal> accountBalances = new HashMap<>();
         if (!processedDeposits.isEmpty())
         {
             for (ProcessedDepositDTO depositDTO : processedDeposits)
             {
-                accountBalances.put(depositDTO.accountID(), depositDTO.newBalance());
+                if(depositDTO.newBalance() != null || depositDTO.accountID() != 0)
+                {
+                    accountBalances.put(depositDTO.accountID(), depositDTO.newBalance());
+                }
+                else
+                {
+                    throw new IllegalArgumentException("Invalid AccountID and Balance found, unable to process deposits at this time.");
+                }
             }
         }
         return accountBalances;
@@ -84,7 +97,7 @@ public class DepositEngine extends Engine<DepositDTO> {
         processedDeposits.addAll(deposits);
     }
 
-    @Async
+
     public List<ProcessedDepositDTO> processDeposits() {
         List<DepositDTO> unProcessedDeposits = processDepositsInQueue();
         List<ProcessedDepositDTO> processedDepositDTOS = new ArrayList<>();
@@ -105,10 +118,16 @@ public class DepositEngine extends Engine<DepositDTO> {
         // Update the Processed DepositList
         updateProcessedDepositList(processedDepositDTOS);
 
+        // Retrieve the Account Balances from the processed deposits
+        Map<Integer, BigDecimal> accountBalanceMap = getProcessedBalances(processedDepositDTOS);
+
+        // Update the account Balances
+        updateAccountBalances(accountBalanceMap);
+
         return processedDepositDTOS;
     }
 
-    private ProcessedDepositDTO processDeposit(DepositDTO depositDTO) {
+    private ProcessedDepositDTO processDeposit(final DepositDTO depositDTO) {
         String accountCode = depositDTO.accountCode();
         int userID = depositDTO.userID();
         BigDecimal amount = depositDTO.amount();
@@ -119,7 +138,7 @@ public class DepositEngine extends Engine<DepositDTO> {
         return buildProcessedDepositDTO(depositDTO, newBalance);
     }
 
-    private ProcessedDepositDTO buildProcessedDepositDTO(DepositDTO depositDTO, BigDecimal balance)
+    private ProcessedDepositDTO buildProcessedDepositDTO(final DepositDTO depositDTO, final BigDecimal balance)
     {
         return ProcessedDepositDTO.builder()
                 .accountID(depositDTO.accountID())
@@ -146,12 +165,14 @@ public class DepositEngine extends Engine<DepositDTO> {
     }
 
     @Override
-    protected BigDecimal convertCurrency(BigDecimal amount, Currency fromCurrency, Currency toCurrency) {
+    protected BigDecimal convertCurrency(BigDecimal amount, Currency fromCurrency, Currency toCurrency)
+    {
         return null;
     }
 
     @Override
-    protected BigDecimal calculateInterest(BigDecimal amount, BigDecimal annualInterestRate) {
+    protected BigDecimal calculateInterest(BigDecimal amount, BigDecimal annualInterestRate)
+    {
         return null;
     }
 
@@ -160,10 +181,19 @@ public class DepositEngine extends Engine<DepositDTO> {
         return null;
     }
 
-    @Override
-    protected TransactionSummary generateTransactionSummary(DepositDTO transaction)
+
+    private TransactionSummary generateTransactionSummary(ProcessedDepositDTO processedDepositDTO)
     {
-        return null;
+        return TransactionSummary.builder()
+                .transactionID(processedDepositDTO.depositID())
+                .accountCode(processedDepositDTO.accountCode())
+                .balanceAfterTransaction(processedDepositDTO.newBalance())
+                .dateCreated(LocalDate.now())
+                .transactionType(TransactionType.DEPOSIT)
+                .accountID(processedDepositDTO.accountID())
+                .transactionAmount(processedDepositDTO.amount())
+                .description(processedDepositDTO.description())
+                .build();
     }
 
     @Override
