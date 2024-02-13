@@ -29,7 +29,4 @@ public abstract class TransactionBase
         this.transactionStatus = status;
 
     }
-
-    public abstract void executeTransaction();
-    public abstract boolean validateTransaction();
 }

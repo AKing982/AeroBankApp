@@ -103,7 +103,7 @@ class DepositQueueTest {
         depositQueue.addAll(depositDTOList);
 
         assertNotNull(depositQueue);
-        assertEquals(depositDTO.depositID(), depositQueue.peek().depositID());
+        assertEquals(depositDTO.getDepositID(), depositQueue.peek().getDepositID());
         assertEquals(3, depositQueue.size());
 
     }
@@ -221,13 +221,13 @@ class DepositQueueTest {
     private DepositsEntity convertToDepositEntity(DepositDTO depositDTO)
     {
         return DepositsEntity.builder()
-                .depositID(depositDTO.depositID())
-                .amount(depositDTO.amount())
-                .description(depositDTO.description())
-                .scheduledDate(depositDTO.date())
-                .scheduledTime(depositDTO.timeScheduled())
-                .posted(depositDTO.date())
-                .scheduleInterval(depositDTO.scheduleInterval())
+                .depositID(depositDTO.getDepositID())
+                .amount(depositDTO.getAmount())
+                .description(depositDTO.getDescription())
+                .scheduledDate(depositDTO.getDate())
+                .scheduledTime(depositDTO.getTimeScheduled())
+                .posted(depositDTO.getDate())
+                .scheduleInterval(depositDTO.getScheduleInterval())
                 .build();
     }
 

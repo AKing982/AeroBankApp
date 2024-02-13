@@ -129,7 +129,22 @@ public class SchedulerTriggerImpl implements SchedulerTriggerModel
     }
 
     @Override
-    public CronTrigger getMonthlyTrigger() {
-        return null;
+    public CronTrigger getMonthlyTrigger()
+    {
+        CronTrigger monthlyTrigger = null;
+        try
+        {
+            String monthlyCron = getCronExpressionBuilder().createCronExpression();
+
+            monthlyTrigger = TriggerBuilder.newTrigger()
+                    .withIdentity("MonthlyTrigger", "group1")
+                    .withSchedule(CronScheduleBuilder.cronSchedule(monthlyCron))
+                    .build();
+
+        }catch(Exception e)
+        {
+            LOGGER.error("An exception has occurred while creating the monthly trigger: ",e);
+        }
+        return monthlyTrigger;
     }
 }

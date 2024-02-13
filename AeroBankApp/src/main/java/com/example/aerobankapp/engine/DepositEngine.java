@@ -129,9 +129,9 @@ public class DepositEngine extends Engine<DepositDTO> implements Runnable
     }
 
     private ProcessedDepositDTO processDeposit(final DepositDTO depositDTO) {
-        String accountCode = depositDTO.accountCode();
-        int userID = depositDTO.userID();
-        BigDecimal amount = depositDTO.amount();
+        String accountCode = depositDTO.getAccountCode();
+        int userID = depositDTO.getUserID();
+        BigDecimal amount = depositDTO.getAmount();
 
         BigDecimal balance = accountService.getBalanceByAccountCodeUserID(accountCode, userID);
         BigDecimal newBalance = calculationEngine.calculateDeposit(amount, balance);
@@ -142,21 +142,21 @@ public class DepositEngine extends Engine<DepositDTO> implements Runnable
     private ProcessedDepositDTO buildProcessedDepositDTO(final DepositDTO depositDTO, final BigDecimal balance)
     {
         return ProcessedDepositDTO.builder()
-                .accountID(depositDTO.accountID())
-                .depositID(depositDTO.depositID())
-                .description(depositDTO.description())
+                .accountID(depositDTO.getAccountID())
+                .depositID(depositDTO.getDepositID())
+                .description(depositDTO.getDescription())
                 .newBalance(balance)
-                .accountCode(depositDTO.accountCode())
-                .userID(depositDTO.userID())
-                .amount(depositDTO.amount())
+                .accountCode(depositDTO.getAccountCode())
+                .userID(depositDTO.getUserID())
+                .amount(depositDTO.getAmount())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
     private void validateDeposit(DepositDTO depositDTO)
     {
-        Objects.requireNonNull(depositDTO.accountCode(), "Non Null AccountCode");
-        Objects.requireNonNull(depositDTO.amount(), "Non Null Amount Required");
+        Objects.requireNonNull(depositDTO.getAccountCode(), "Non Null AccountCode");
+        Objects.requireNonNull(depositDTO.getAmount(), "Non Null Amount Required");
     }
 
     @Override
@@ -217,11 +217,11 @@ public class DepositEngine extends Engine<DepositDTO> implements Runnable
     private NotificationEntity createNotification(DepositDTO depositDTO)
     {
 
-        String message = "You're deposit of $" + depositDTO.amount() + " has been processed Successfully.";
+        String message = "You're deposit of $" + depositDTO.getAmount() + " has been processed Successfully.";
 
         return NotificationEntity.builder()
                 .message(message)
-                .userEntity(UserEntity.builder().userID(depositDTO.userID()).build())
+                .userEntity(UserEntity.builder().userID(depositDTO.getUserID()).build())
                 .sent(LocalDateTime.now())
                 .hasBeenRead(false)
                 .priority(1)
@@ -236,7 +236,7 @@ public class DepositEngine extends Engine<DepositDTO> implements Runnable
 
     private void sendNotification(DepositDTO deposit)
     {
-        String message = "You're deposit of $" + deposit.amount() + " has been processed Successfully.";
+        String message = "You're deposit of $" + deposit.getAmount() + " has been processed Successfully.";
 
         sendNotificationToSystem(deposit);
 

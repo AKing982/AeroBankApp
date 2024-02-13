@@ -201,7 +201,42 @@ class SchedulerTriggerImplTest
        CronTrigger actualTrigger = schedulerTrigger1.getWeeklyTrigger();
 
        assertEquals(weeklyTrigger.getExpressionSummary(), actualTrigger.getExpressionSummary());
+   }
 
+   @Test
+   public void testGetMonthlyTrigger()
+   {
+       TriggerCriteria mockTriggerCriteria = TriggerCriteria.builder()
+               .day(5)
+               .minute(30)
+               .hour(7)
+               .month(2)
+               .year(2024)
+               .day(3)
+               .interval(ScheduleType.MONTHLY)
+               .second(0)
+               .build();
+
+       Random random = new Random();
+       int randomNumber = random.nextInt(Integer.MAX_VALUE) + 1;
+
+       CronExpressionBuilder cronExpressionBuilder1 = new CronExpressionBuilderImpl(mockTriggerCriteria);
+
+       String monthlyCron = cronExpressionBuilder1.createCronExpression();
+
+       SchedulerTriggerImpl schedulerTrigger1 = new SchedulerTriggerImpl(mockTriggerCriteria, cronExpressionBuilder1);
+
+       CronTrigger monthlyTrigger = TriggerBuilder.newTrigger()
+               .withIdentity("monthlyTrigger", "group1")
+               .withSchedule(CronScheduleBuilder.cronSchedule(monthlyCron))
+               .build();
+
+
+       CronTrigger actualTrigger = schedulerTrigger1.getMonthlyTrigger();
+
+       assertEquals(monthlyTrigger.getCronExpression(), actualTrigger.getCronExpression());
+       assertEquals(monthlyTrigger.getExpressionSummary(), actualTrigger.getExpressionSummary());
+       
 
    }
 

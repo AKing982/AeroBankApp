@@ -28,6 +28,22 @@ public class SchedulerEngineImpl implements SchedulerEngine
     }
 
     @Override
+    public void startScheduler() throws SchedulerException {
+        if(!scheduler.isStarted())
+        {
+            scheduler.start();
+        }
+    }
+
+    @Override
+    public void stopScheduler() throws SchedulerException {
+        if(!scheduler.isShutdown())
+        {
+            scheduler.shutdown();
+        }
+    }
+
+    @Override
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public String scheduleJob(JobDetail jobDetail, Trigger trigger) throws SchedulerException {
         scheduler.scheduleJob(jobDetail, trigger);
@@ -101,6 +117,7 @@ public class SchedulerEngineImpl implements SchedulerEngine
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public List<JobDetail> listJobs() throws SchedulerException {
         List<JobDetail> jobDetails = new ArrayList<>();
         for(String groupName : scheduler.getJobGroupNames())

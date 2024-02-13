@@ -1,8 +1,10 @@
 package com.example.aerobankapp.configuration;
 
+import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.scheduler.CronExpressionBuilder;
 import com.example.aerobankapp.scheduler.factory.SpringJobFactory;
 import com.example.aerobankapp.scheduler.jobs.DepositJob;
+import com.example.aerobankapp.workbench.transactions.Deposit;
 import org.quartz.*;
 import org.quartz.spi.JobFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Random;
 
 @Configuration
 public class SchedulerConfig
@@ -92,13 +95,22 @@ public class SchedulerConfig
     }
 
     @Bean
-    public JobDetailFactoryBean depositJobDetail()
+    public JobDetailFactoryBean depositJobDetail(Deposit deposit)
     {
         JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+
+        Random random = new Random();
+        int randomNumber = random.nextInt(Integer.MAX_VALUE) + 1;
+
         jobDetailFactory.setJobClass(DepositJob.class);
-        jobDetailFactory.setName("DepositJob");
-        jobDetailFactory.setGroup("BankingJobs");
+        jobDetailFactory.setName("DepositJob" + randomNumber);
+        jobDetailFactory.setGroup("BankingJobs" + randomNumber);
         jobDetailFactory.setDurability(true);
+
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put("DepositData", deposit);
+        jobDetailFactory.setJobDataMap(jobDataMap);
+
         return jobDetailFactory;
     }
 

@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface SchedulerEngine
 {
+    void startScheduler() throws SchedulerException;
+    void stopScheduler() throws SchedulerException;
     String scheduleJob(JobDetail jobDetail, Trigger trigger) throws SchedulerException;
     void updateJobSchedule(String jobName, String groupName, Trigger trigger);
     void pauseJob(String jobName, String groupName) throws SchedulerException;

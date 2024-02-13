@@ -25,15 +25,4 @@ public class Deposit extends TransactionBase
         super(userID, descr, acctID, amount, date, status);
     }
 
-    @Override
-    public void executeTransaction() {
-
-    }
-
-    @Override
-    public boolean validateTransaction() {
-        return false;
-    }
-
-
 }

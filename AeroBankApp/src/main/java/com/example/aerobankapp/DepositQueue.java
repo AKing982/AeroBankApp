@@ -57,15 +57,15 @@ public class DepositQueue implements QueueModel<DepositDTO>
     private DepositsEntity convertToDepositEntity(DepositDTO depositDTO)
     {
         return DepositsEntity.builder()
-                .depositID(depositDTO.depositID())
-                .amount(depositDTO.amount())
-                .description(depositDTO.description())
-                .scheduledDate(depositDTO.date())
-                .scheduledTime(depositDTO.timeScheduled())
-                .posted(depositDTO.date())
-                .scheduleInterval(depositDTO.scheduleInterval())
+                .depositID(depositDTO.getDepositID())
+                .amount(depositDTO.getAmount())
+                .description(depositDTO.getDescription())
+                .scheduledDate(depositDTO.getDate())
+                .scheduledTime(depositDTO.getTimeScheduled())
+                .posted(depositDTO.getDate())
+                .scheduleInterval(depositDTO.getScheduleInterval())
                 .user(UserEntity.builder().userID(1).build())
-                .account(AccountEntity.builder().accountCode(depositDTO.accountCode()).build())
+                .account(AccountEntity.builder().accountCode(depositDTO.getAccountCode()).build())
                 .build();
     }
 
@@ -123,7 +123,7 @@ public class DepositQueue implements QueueModel<DepositDTO>
 
     private DepositQueueEntity dequeueFromDatabase(DepositDTO depositDTO)
     {
-        Long depositID = (long) depositDTO.depositID();
+        Long depositID = (long) depositDTO.getDepositID();
         return depositQueueService.deQueueTransaction(depositID);
     }
 

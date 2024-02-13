@@ -32,13 +32,4 @@ public class Withdraw extends TransactionBase implements Serializable
         this.fromAccount = fromAccount;
     }
 
-    @Override
-    public void executeTransaction() {
-
-    }
-
-    @Override
-    public boolean validateTransaction() {
-        return false;
-    }
 }

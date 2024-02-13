@@ -32,14 +32,4 @@ public class Transfer<T extends AbstractAccountBase> extends TransactionBase imp
         this.toAccount = toAccount;
     }
 
-
-    @Override
-    public void executeTransaction() {
-
-    }
-
-    @Override
-    public boolean validateTransaction() {
-        return false;
-    }
 }

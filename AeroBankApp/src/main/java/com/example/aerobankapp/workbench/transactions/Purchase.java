@@ -27,13 +27,4 @@ public class Purchase extends TransactionBase implements Serializable
         this.category = purchaseCategory;
     }
 
-    @Override
-    public void executeTransaction() {
-
-    }
-
-    @Override
-    public boolean validateTransaction() {
-        return false;
-    }
 }
