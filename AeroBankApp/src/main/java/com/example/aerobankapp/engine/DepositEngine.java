@@ -31,7 +31,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 @Getter
-public class DepositEngine extends Engine<DepositDTO> {
+public class DepositEngine extends Engine<DepositDTO> implements Runnable
+{
     private final DepositQueue depositQueue;
     private List<DepositDTO> deposits;
     private List<BigDecimal> processedBalances;
@@ -56,7 +57,7 @@ public class DepositEngine extends Engine<DepositDTO> {
         this.accountCodeToBalanceMap = new HashMap<>();
     }
 
-    public List<DepositDTO> processDepositsInQueue() {
+    public List<DepositDTO> getDepositsFromQueue() {
         return depositQueue.getAllElements();
     }
 
@@ -99,7 +100,7 @@ public class DepositEngine extends Engine<DepositDTO> {
 
 
     public List<ProcessedDepositDTO> processDeposits() {
-        List<DepositDTO> unProcessedDeposits = processDepositsInQueue();
+        List<DepositDTO> unProcessedDeposits = getDepositsFromQueue();
         List<ProcessedDepositDTO> processedDepositDTOS = new ArrayList<>();
         for (DepositDTO depositDTO : unProcessedDeposits) {
             // Validate the deposit
@@ -248,5 +249,10 @@ public class DepositEngine extends Engine<DepositDTO> {
                         .build();
 
         notificationService.sendMessageNotification(messageNotificationDTO);
+    }
+
+    @Override
+    public void run() {
+
     }
 }

@@ -96,7 +96,7 @@ class DepositEngineTest {
     @Test
     public void testProcessingDepositsInQueue()
     {
-       List<DepositDTO> actualDeposits = depositEngine.processDepositsInQueue();
+       List<DepositDTO> actualDeposits = depositEngine.getDepositsFromQueue();
 
        assertEquals(2, actualDeposits.size());
        assertTrue(actualDeposits.contains(depositDTO));

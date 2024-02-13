@@ -168,6 +168,6 @@ public class AccountServiceImpl implements AccountService
         accountEntityQuery.setParameter("balance", balance);
         accountEntityQuery.setParameter("acctID", acctID);
 
-        accountEntityQuery.executeUpdate();
+        int updateCount = accountEntityQuery.executeUpdate();
     }
 }
