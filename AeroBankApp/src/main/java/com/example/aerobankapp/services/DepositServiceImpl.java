@@ -147,8 +147,8 @@ public class DepositServiceImpl implements DepositService
                 .amount(amount)
                 .timeScheduled(request.getTimeScheduled())
                 .date(request.getDate())
+                .userID(request.getUserID())
                 .nonUSDCurrency(false)
                 .build();
-
     }
 }

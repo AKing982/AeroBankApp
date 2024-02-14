@@ -192,7 +192,10 @@ export default function DepositView()
             return;
         }
 
+        const userID = sessionStorage.getItem('userID');
+
         const requestData = {
+            userID: userID,
             accountCode: selectedAccountCode,
             amount: amount,
             description: description,

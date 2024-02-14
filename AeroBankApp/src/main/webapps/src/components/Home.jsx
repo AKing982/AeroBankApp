@@ -46,14 +46,14 @@ export default function Home()
                     setTotalAccounts(response.data.totalAccounts);
                     setBalance(response.data.totalBalance);
                     setRole(response.data.role);
-                    setUserID(response.data.userID)
+                    console.log('Response UserID: ', response.data.userID);
+                    saveUserID(response.data.userID)
 
                     console.log('Role:', role);
                     console.log(response.data);
                     console.log(response.data.totalBalance);
                     console.log("AccountNumber: ", accountNumber);
-                    console.log('UserID: ', userID);
-                    saveUserID(userID);
+
                 })
 
                 .catch(error => {

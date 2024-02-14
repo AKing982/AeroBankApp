@@ -58,7 +58,7 @@ class DepositControllerTest {
     {
         LocalTime now = LocalTime.now();
         LocalDate today = LocalDate.now();
-        DepositRequest depositDTO = new DepositRequest("A1", "1414", today, now, "Once", "Transfer");
+        DepositRequest depositDTO = new DepositRequest(1, "A1", "1414", today, now, "Once", "Transfer");
 
 
         mockMvc.perform(post("/api/deposits/create")

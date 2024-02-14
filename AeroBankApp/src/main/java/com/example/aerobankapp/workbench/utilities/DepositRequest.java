@@ -16,6 +16,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class DepositRequest
 {
+    private int userID;
     private String accountCode;
     private String amount;
     private LocalDate date;

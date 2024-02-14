@@ -35,6 +35,8 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
 
     List<String> getListOfAccountCodes(String user);
 
+    int getAccountIDByAcctCodeAndUserID(int userID, String acctCode);
+
     Map<Integer, String> getAccountTypeMapByAccountId(String userName);
 
     void updateAccountBalanceByAcctID(BigDecimal balance, int accountID);

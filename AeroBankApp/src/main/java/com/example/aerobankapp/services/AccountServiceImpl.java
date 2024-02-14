@@ -139,6 +139,18 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    public int getAccountIDByAcctCodeAndUserID(int userID, String acctCode)
+    {
+        String accountIDQuery = "SELECT a.acctID " + 
+                                "FROM AccountEntity a " +
+                                "WHERE a.userID =:userID AND a.accountCode =:acctCode";
+        TypedQuery<Integer> accountID = getEntityManager().createQuery(accountIDQuery, Integer.class);
+        accountID.setParameter("userID", userID);
+        accountID.setParameter("acctCode", acctCode);
+        return accountID.getSingleResult();
+    }
+
+    @Override
     @Transactional
     public Map<Integer, String> getAccountTypeMapByAccountId(String userName)
     {

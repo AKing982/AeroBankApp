@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -197,6 +198,41 @@ class AccountDAOImplTest
 
         verify(accountEntityTypedQuery).setParameter(eq("userName"), eq(userName));
         verify(accountEntityTypedQuery).getResultList();
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetAccountIDByAcctCodeAndUserID_ValidUser()
+    {
+        int userID = 1;
+        String acctCode = "A1";
+        TypedQuery<Integer> mockedQuery = mock(TypedQuery.class);
+
+        when(entityManager.createQuery(anyString(), eq(Integer.class))).thenReturn(mockedQuery);
+        when(mockedQuery.setParameter("userID", userID)).thenReturn(mockedQuery);
+        when(mockedQuery.setParameter("acctCode", acctCode)).thenReturn(mockedQuery);
+        when(mockedQuery.getSingleResult()).thenReturn(1);
+
+        int actualAccountID = accountDAO.getAccountIDByAcctCodeAndUserID(userID, acctCode);
+
+        assertEquals(1, actualAccountID);
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetAccountIDByAcctCodeAndUserID_InvalidUserID()
+    {
+        int userID = 0;
+        String acctCode = "A1";
+        TypedQuery<Integer> mockedQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(anyString(), eq(Integer.class))).thenReturn(mockedQuery);
+        when(mockedQuery.setParameter("userID", userID)).thenReturn(mockedQuery);
+        when(mockedQuery.setParameter("acctCode", acctCode)).thenReturn(mockedQuery);
+
+        int actualAccountID = accountDAO.getAccountIDByAcctCodeAndUserID(userID, acctCode);
+        when(mockedQuery.getSingleResult()).thenReturn(actualAccountID);
+
+        assertEquals(1, actualAccountID);
     }
 
 
