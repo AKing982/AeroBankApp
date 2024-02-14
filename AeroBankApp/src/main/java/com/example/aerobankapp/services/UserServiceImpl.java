@@ -151,6 +151,18 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
+    public int getUserIDByUserName(String user)
+    {
+        TypedQuery<UserEntity> typedQuery = getEntityManager().createQuery("FROM UserEntity WHERE username=: user", UserEntity.class);
+        typedQuery.setParameter("user", user);
+        typedQuery.setMaxResults(1);
+
+        UserEntity userEntity = typedQuery.getSingleResult();
+
+        return userEntity.getUserID();
+    }
+
+    @Override
     public void addUserToAccount(UserEntity entity, AccountEntity accountEntity) {
         entity.addAccount(accountEntity);
         userRepository.save(entity);

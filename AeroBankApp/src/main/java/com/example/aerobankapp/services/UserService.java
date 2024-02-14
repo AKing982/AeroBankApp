@@ -43,6 +43,8 @@ public interface UserService extends ServiceDAOModel<UserEntity>
 
     List<String> getListOfUserNames();
 
+    int getUserIDByUserName(String user);
+
     void addUserToAccount(UserEntity entity, AccountEntity accountEntity);
 
     void removeUserFromAccount(UserEntity userEntity, AccountEntity accountEntity);

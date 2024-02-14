@@ -72,6 +72,7 @@ class UserProfileControllerTest {
                         .pinNumber(pin)
                         .password(password)
                         .email(email)
+                        .userID(1)
                         .username(username)
                         .role(role).build();
 

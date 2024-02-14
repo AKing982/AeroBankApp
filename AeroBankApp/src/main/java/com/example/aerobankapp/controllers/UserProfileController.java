@@ -33,9 +33,11 @@ public class UserProfileController {
         BigDecimal totalBalances = accountDAO.getTotalAccountBalances(username);
         String accountNumber = userDAO.getAccountNumberByUserName(username);
         Long numberOfAccounts = accountDAO.getNumberOfAccounts(username);
+        int userID = userDAO.getUserIDByUserName(username);
         Role role = userDAO.getUserRole(username);
+        System.out.println("UserID: " + userID);
 
-        return ResponseEntity.ok(new UserProfileResponse(username, accountNumber, totalBalances, numberOfAccounts, role));
+        return ResponseEntity.ok(new UserProfileResponse(userID, username, accountNumber, totalBalances, numberOfAccounts, role));
     }
 
 }

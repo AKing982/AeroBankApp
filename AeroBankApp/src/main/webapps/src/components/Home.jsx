@@ -21,6 +21,7 @@ export default function Home()
     const [balance, setBalance] = useState(0);
     const [accountNumber, setAccountNumber] = useState('');
     const [totalAccounts, setTotalAccounts] = useState(0);
+    const [userID, setUserID] = useState(0);
 
     const [data, setData] = useState({balance: 0, accountNumber: '', totalAccounts:0 })
 
@@ -40,14 +41,19 @@ export default function Home()
             setIsLoading(true);
             axios.get(`http://localhost:8080/AeroBankApp/api/profile/${username}`)
                 .then(response => {
+                    console.log('User Profile Response: ', response.data);
                     setAccountNumber(response.data.accountNumber);
                     setTotalAccounts(response.data.totalAccounts);
                     setBalance(response.data.totalBalance);
                     setRole(response.data.role);
+                    setUserID(response.data.userID)
+
                     console.log('Role:', role);
                     console.log(response.data);
                     console.log(response.data.totalBalance);
                     console.log("AccountNumber: ", accountNumber);
+                    console.log('UserID: ', userID);
+                    saveUserID(userID);
                 })
 
                 .catch(error => {
@@ -64,7 +70,9 @@ export default function Home()
 
     };
 
-
+    const saveUserID = (userID) => {
+        sessionStorage.setItem('userID', userID);
+    }
 
 
     const handleTabClick = (tab) => {

@@ -140,6 +140,18 @@ class UserServiceImplTest {
 
     }
 
+    @Test
+    public void testGetUserIDByUserName()
+    {
+        int userID = 1;
+
+        String testUser = "AKing94";
+        int foundID = userService.getUserIDByUserName(testUser);
+
+        assertEquals(userID, foundID);
+    }
+
+
 
     @AfterEach
     void tearDown() {

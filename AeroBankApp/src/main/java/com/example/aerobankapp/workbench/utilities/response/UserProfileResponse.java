@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @EqualsAndHashCode
 public class UserProfileResponse
 {
+    private int userID;
     private String username;
     private String accountNumber;
     private BigDecimal totalBalance;
@@ -23,6 +24,15 @@ public class UserProfileResponse
         this.username = user;
         this.accountNumber = accountNumber;
         this.totalBalance = totalBal;
+        this.totalAccounts = totalAccounts;
+        this.role = role;
+    }
+
+    public UserProfileResponse(int userID, String username, String accountNumber, BigDecimal totalBalance, Long totalAccounts, Role role) {
+        this.userID = userID;
+        this.username = username;
+        this.accountNumber = accountNumber;
+        this.totalBalance = totalBalance;
         this.totalAccounts = totalAccounts;
         this.role = role;
     }
