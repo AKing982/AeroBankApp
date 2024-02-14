@@ -1,8 +1,12 @@
 package com.example.aerobankapp.workbench.utilities.response;
 
+import com.example.aerobankapp.scheduler.ScheduleType;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -14,8 +18,6 @@ public class DepositResponse
     private String amount;
     private String description;
     private String interval;
-    private String selectedTime;
-    private String scheduledDate;
-
-
+    private LocalTime selectedTime;
+    private LocalDate scheduledDate;
 }

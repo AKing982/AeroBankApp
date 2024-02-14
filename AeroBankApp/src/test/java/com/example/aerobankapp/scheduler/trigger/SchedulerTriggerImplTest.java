@@ -29,7 +29,6 @@ class SchedulerTriggerImplTest
     @Mock
     private TriggerCriteria triggerCriteria;
 
-
     private CronExpressionBuilder cronExpressionBuilder;
 
     private TriggerCriteria mockTriggerCriteria;

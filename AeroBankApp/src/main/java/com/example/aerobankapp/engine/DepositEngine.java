@@ -16,6 +16,7 @@ import com.example.aerobankapp.workbench.transactions.TransactionSummary;
 import com.example.aerobankapp.workbench.transactions.TransactionType;
 import com.mchange.v2.collection.MapEntry;
 import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 @Getter
+@Setter
 public class DepositEngine extends Engine<DepositDTO> implements Runnable
 {
     private final DepositQueue depositQueue;
@@ -55,6 +57,11 @@ public class DepositEngine extends Engine<DepositDTO> implements Runnable
         this.processedDeposits = new ArrayList<>();
         this.processedBalances = new ArrayList<>();
         this.accountCodeToBalanceMap = new HashMap<>();
+    }
+
+    public void setDepositQueue(DepositDTO depositDTO)
+    {
+        this.depositQueue.add(depositDTO);
     }
 
     public List<DepositDTO> getDepositsFromQueue() {

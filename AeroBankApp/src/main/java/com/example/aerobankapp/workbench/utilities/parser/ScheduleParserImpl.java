@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 @Component
@@ -53,7 +54,7 @@ public class ScheduleParserImpl implements ScheduleParser
 
     @Override
     public int getParsedDaySegment() {
-        return getTime().getDayOfMonth();
+        return getDate().getDayOfMonth();
     }
 
     @Override
@@ -122,7 +123,7 @@ public class ScheduleParserImpl implements ScheduleParser
         return schedulerCriteria.getScheduledDate();
     }
 
-    private LocalDateTime getTime()
+    private LocalTime getTime()
     {
         return schedulerCriteria.getScheduledTime();
     }

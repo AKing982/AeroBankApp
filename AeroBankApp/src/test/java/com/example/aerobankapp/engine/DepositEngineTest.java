@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +65,7 @@ class DepositEngineTest {
         depositDTO = DepositDTO.builder()
                 .depositID(1)
                 .amount(new BigDecimal("45.00"))
-                .timeScheduled(LocalDateTime.now())
+                .timeScheduled(LocalTime.now())
                 .date(LocalDate.now())
                 .description("Transfer 1")
                 .accountCode("A1")
@@ -77,7 +78,7 @@ class DepositEngineTest {
                 .depositID(2)
                 .description("Transfer 2")
                 .amount(new BigDecimal("1214"))
-                .timeScheduled(LocalDateTime.of(2024, 8, 5, 3, 3))
+                .timeScheduled(LocalTime.of(8, 15))
                 .date(LocalDate.now())
                 .accountCode("A2")
                 .scheduleInterval(ScheduleType.ONCE)
@@ -150,7 +151,7 @@ class DepositEngineTest {
         DepositDTO depositDTO4 = DepositDTO.builder()
                 .depositID(1)
                 .accountCode(null)
-                .timeScheduled(LocalDateTime.now())
+                .timeScheduled(LocalTime.now())
                 .scheduleInterval(ScheduleType.ONCE)
                 .date(LocalDate.now())
                 .amount(new BigDecimal("45.00"))
@@ -172,7 +173,7 @@ class DepositEngineTest {
         DepositDTO depositDTO4 = DepositDTO.builder()
                 .depositID(1)
                 .accountCode("A1")
-                .timeScheduled(LocalDateTime.now())
+                .timeScheduled(LocalTime.now())
                 .scheduleInterval(ScheduleType.ONCE)
                 .date(LocalDate.now())
                 .amount(null)

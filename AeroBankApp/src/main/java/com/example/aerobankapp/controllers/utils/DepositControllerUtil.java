@@ -38,12 +38,12 @@ public class DepositControllerUtil
     {
         return DepositResponse.builder()
                 .userID(deposits.getUser().getUserID())
-                .interval(deposits.getScheduleInterval().toString())
-                .selectedTime(deposits.getScheduledTime().toString())
+                .interval(String.valueOf(deposits.getScheduleInterval()))
+                .selectedTime(deposits.getScheduledTime())
                 .amount(deposits.getAmount().toString())
                 .description(deposits.getDescription())
                 .accountCode(deposits.getAccount().getAccountCode())
-                .scheduledDate(deposits.getScheduledDate().toString())
+                .scheduledDate(deposits.getScheduledDate())
                 .build();
     }
 }

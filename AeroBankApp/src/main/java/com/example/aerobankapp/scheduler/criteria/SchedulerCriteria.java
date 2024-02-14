@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public final class SchedulerCriteria {
 
     private Long scheduleCriteriaID;
     private int schedulerUserID;
-    private LocalDateTime scheduledTime;
+    private LocalTime scheduledTime;
     private LocalDate scheduledDate;
     private ScheduleType scheduleType;
     private int priority;

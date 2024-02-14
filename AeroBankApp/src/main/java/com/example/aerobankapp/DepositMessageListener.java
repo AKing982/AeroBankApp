@@ -1,5 +1,6 @@
 package com.example.aerobankapp;
 
+import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.dto.ProcessedDepositDTO;
 import com.example.aerobankapp.engine.CalculationEngine;
 import com.example.aerobankapp.engine.DepositEngine;
@@ -17,32 +18,22 @@ import java.util.List;
 @Component
 public class DepositMessageListener
 {
-    @Autowired
     private DepositEngine depositEngine;
 
     @Autowired
-    private CalculationEngine calculationEngine;
-
-    @Autowired
-    private AccountService accountService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    public DepositMessageListener(DepositEngine depositEngine)
+    {
+        this.depositEngine = depositEngine;
+    }
 
     private final Logger LOGGER = LoggerFactory.getLogger(DepositMessageListener.class);
 
     @RabbitListener(queues = "depositQueue")
-    public void receive(String in) {
+    public void receive(DepositDTO depositDTO) {
 
         try
         {
-            DepositQueue depositQueue = objectMapper.readValue(in, DepositQueue.class);
-
-            // Process the deposit here
-            depositEngine = new DepositEngine(depositQueue, calculationEngine, accountService, notificationService);
+            depositEngine.setDepositQueue(depositDTO);
 
             List<ProcessedDepositDTO> processedDepositDTOList = depositEngine.processDeposits();
 

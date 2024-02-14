@@ -11,6 +11,12 @@ public enum ScheduleType
     DAILY("Daily"),
     CUSTOM("Custom"),
 
+    Once("Once"),
+
+    Daily("Daily"),
+    Weekly("Weekly"),
+    Monthly("Monthly"),
+
     ONCE("Once"),
 
     NONE("None"),

@@ -61,6 +61,13 @@ public class SchedulerConfig
         return factory;
     }
 
+
+    public Scheduler createScheduler(Trigger trigger, JobDetail jobDetail) throws SchedulerException, IOException {
+        Scheduler scheduler = schedulerFactoryBean().getScheduler();
+        scheduler.scheduleJob(jobDetail, trigger);
+        return scheduler;
+    }
+
     public Properties quartzProperties()
     {
         Properties quartzProperties = new Properties();

@@ -5,14 +5,18 @@ import com.example.aerobankapp.exceptions.InvalidScheduledIntervalException;
 import com.example.aerobankapp.exceptions.InvalidScheduledMinuteException;
 import com.example.aerobankapp.exceptions.InvalidScheduledYearException;
 import com.example.aerobankapp.scheduler.ScheduleType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
 public class ScheduleValidatorImpl implements ScheduleValidator
 {
+    private Logger LOGGER = LoggerFactory.getLogger(ScheduleValidatorImpl.class);
     public ScheduleValidatorImpl()
     {
         // Empty Constructor
@@ -21,6 +25,7 @@ public class ScheduleValidatorImpl implements ScheduleValidator
     @Override
     public int validateDay(final int day)
     {
+        LOGGER.info("Day Selected: " + day);
        if(day > 30)
        {
            return ((day - 1) % 31) + 1;
@@ -34,6 +39,7 @@ public class ScheduleValidatorImpl implements ScheduleValidator
 
     @Override
     public int validateMonth(final int month) {
+        LOGGER.info("Month Selected: " + month);
         if(month > 12)
         {
             return ((month - 1) % 12) + 1;
@@ -47,6 +53,7 @@ public class ScheduleValidatorImpl implements ScheduleValidator
 
     @Override
     public int validateYear(final int year) {
+        LOGGER.info("Year Selected: " + year);
         if(!getYearLengthFourBoolean(year))
         {
             throw new InvalidScheduledYearException("Invalid Year entered");
@@ -56,6 +63,7 @@ public class ScheduleValidatorImpl implements ScheduleValidator
 
     @Override
     public int validateMinute(final int minute) {
+        LOGGER.info("Minute Selected: " + minute);
         if(minute > 59)
         {
             return ((minute - 1) % 60) + 1;
@@ -70,6 +78,7 @@ public class ScheduleValidatorImpl implements ScheduleValidator
     @Override
     public int validateHour(final int hour)
     {
+        LOGGER.info("Hour Selected: " + hour);
         if(hour > 23)
         {
             return ((hour - 1) % 24) + 1;
@@ -89,6 +98,8 @@ public class ScheduleValidatorImpl implements ScheduleValidator
     @Override
     public ScheduleType validateInterval(final ScheduleType interval)
     {
+        LOGGER.info("Schedule Type selected: " + interval);
+
         List<ScheduleType> scheduleTypeList = createScheduleTypeList();
 
         if(!scheduleTypeList.contains(interval))
@@ -100,16 +111,6 @@ public class ScheduleValidatorImpl implements ScheduleValidator
 
     private List<ScheduleType> createScheduleTypeList()
     {
-        List<ScheduleType> scheduleTypeList = new ArrayList<>();
-        scheduleTypeList.add(ScheduleType.MONTHLY);
-        scheduleTypeList.add(ScheduleType.NONE);
-        scheduleTypeList.add(ScheduleType.DAILY);
-        scheduleTypeList.add(ScheduleType.WEEKLY);
-        scheduleTypeList.add(ScheduleType.BIDAILY);
-        scheduleTypeList.add(ScheduleType.BIWEEKLY);
-        scheduleTypeList.add(ScheduleType.CUSTOM);
-        scheduleTypeList.add(ScheduleType.ONCE);
-
-        return scheduleTypeList;
+        return Arrays.stream(ScheduleType.values()).toList();
     }
 }

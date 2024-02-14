@@ -4,6 +4,7 @@ import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.services.DepositServiceImpl;
 import com.example.aerobankapp.workbench.utilities.DepositRequest;
 import com.example.aerobankapp.workbench.utilities.Role;
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +56,10 @@ class DepositControllerTest {
     @Test
     public void whenDepositIsPosted_ThenReturnDepositResponse() throws Exception
     {
-        DepositRequest depositDTO = new DepositRequest("A1", "1414", "01-30-24", "11:50 AM", "Once", "Transfer");
+        LocalTime now = LocalTime.now();
+        LocalDate today = LocalDate.now();
+        DepositRequest depositDTO = new DepositRequest("A1", "1414", today, now, "Once", "Transfer");
+
 
         mockMvc.perform(post("/api/deposits/create")
                 .content(String.valueOf(depositDTO))
@@ -70,7 +75,7 @@ class DepositControllerTest {
     {
         int acctID = 1;
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalTime now = LocalTime.now();
         LocalDate today = LocalDate.now();
 
         UserEntity mockUser = UserEntity.builder()

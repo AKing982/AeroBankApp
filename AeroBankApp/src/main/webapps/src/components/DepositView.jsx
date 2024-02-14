@@ -39,6 +39,7 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DepositAccountCode from "./DepositAccountCode";
 import Dialog from "@mui/material/Dialog";
+import {format} from "date-fns";
 
 export default function DepositView()
 {
@@ -158,6 +159,7 @@ export default function DepositView()
 
     const handleDeposit = async() => {
 
+        const formattedDepositTime = format(depositTime, 'HH:mm:ss');
         if(!amount && !description && !selectedAccountCode && !scheduleInterval)
         {
             setOpenSnackbar(true);
@@ -195,7 +197,7 @@ export default function DepositView()
             amount: amount,
             description: description,
             scheduleInterval: scheduleInterval,
-            timeScheduled: depositTime,
+            timeScheduled: formattedDepositTime,
             date: depositDate,
         }
 
@@ -264,6 +266,8 @@ export default function DepositView()
     const handleAmountChange = (event) => {
         setDeposit(event.target.value);
     }
+
+
 
     const handleDateChange = (newValue) => {
         let stringDate = parseDateToString(newValue);

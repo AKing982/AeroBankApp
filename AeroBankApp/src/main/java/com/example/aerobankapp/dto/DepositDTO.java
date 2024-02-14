@@ -5,15 +5,17 @@ import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Builder(access = AccessLevel.PUBLIC)
 @Getter
 @Setter
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
-public final class DepositDTO
+public final class DepositDTO implements Serializable
 {
     private int depositID;
     private int userID;
@@ -21,8 +23,13 @@ public final class DepositDTO
     private String accountCode;
     private BigDecimal amount;
     private LocalDate date;
-    private LocalDateTime timeScheduled;
+    private LocalTime timeScheduled;
     private ScheduleType scheduleInterval;
     private String description;
     private boolean nonUSDCurrency;
+
+    public DepositDTO()
+    {
+
+    }
 }

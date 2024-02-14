@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,7 +27,7 @@ class ScheduleParserTest {
 
     private LocalDate today;
 
-    private LocalDateTime now;
+    private LocalTime now;
 
     @Mock
     private ScheduleValidator scheduleValidator;
@@ -35,7 +36,7 @@ class ScheduleParserTest {
     void setUp()
     {
         today = LocalDate.now();
-        now = LocalDateTime.now();
+        now = LocalTime.now();
         schedulerCriteria = SchedulerCriteria.builder()
                 .scheduledDate(today)
                 .scheduledTime(now)

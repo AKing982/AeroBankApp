@@ -17,69 +17,38 @@ import static org.quartz.DateBuilder.dateOf;
 
 @Service
 @Getter
-public class SchedulerTriggerImpl implements SchedulerTriggerModel
-{
+public class SchedulerTriggerImpl implements SchedulerTriggerModel {
     private final TriggerCriteria triggerCriteria;
     private final CronExpressionBuilder cronExpressionBuilder;
     private final Logger LOGGER = LoggerFactory.getLogger(SchedulerTriggerImpl.class);
 
     @Autowired
-    public SchedulerTriggerImpl(TriggerCriteria triggerCriteria, CronExpressionBuilder cronExpressionBuilder)
-    {
+    public SchedulerTriggerImpl(TriggerCriteria triggerCriteria, CronExpressionBuilder cronExpressionBuilder) {
         Objects.requireNonNull(triggerCriteria, "Non Null Trigger Criteria required");
         Objects.requireNonNull(cronExpressionBuilder, "Non Null CronExpression required");
         this.triggerCriteria = triggerCriteria;
         this.cronExpressionBuilder = cronExpressionBuilder;
     }
 
-    private int generateRandomNumber()
-    {
+    private int generateRandomNumber() {
         Random random = new Random();
         return random.nextInt(Integer.MAX_VALUE) + 1;
     }
 
     @Override
     public CronTrigger getRunOnceTrigger() {
-        CronTrigger onceTrigger = null;
-        try
-        {
-            String onceCronExpression = getCronExpressionBuilder().createCronExpression();
-
-            onceTrigger = TriggerBuilder.newTrigger()
-                    .withIdentity(TriggerKey.triggerKey(String.valueOf(generateRandomNumber()), String.valueOf(generateRandomNumber())))
-                    .withSchedule(CronScheduleBuilder.cronSchedule(onceCronExpression))
-                    .startAt(dateOf(getTriggerCriteria().getHour(), getTriggerCriteria().getMinute(), 0, getTriggerCriteria().getDay(), getTriggerCriteria().getMonth(), getTriggerCriteria().getYear()))
-                    .build();
-        }
-        catch (Exception e)
-        {
-            LOGGER.error("An exception has occurred building trigger: ", e);
-        }
-        return onceTrigger;
+        String onceCronExpression = getCronExpressionBuilder().createCronExpression();
+        return createCronTrigger(onceCronExpression, "RunOnceTrigger");
     }
 
     @Override
-    public CronTrigger getDailyTrigger()
-    {
-        CronTrigger dailyTrigger = null;
-        try
-        {
-            String dailyCron = getCronExpressionBuilder().createCronExpression();
-            dailyTrigger = TriggerBuilder.newTrigger()
-                    .withIdentity(TriggerKey.triggerKey(String.valueOf(generateRandomNumber()), String.valueOf(generateRandomNumber())))
-                    .withSchedule(CronScheduleBuilder.cronSchedule(dailyCron))
-                    .build();
-
-        }catch(Exception e)
-        {
-            LOGGER.error("An exception has occurred while creating the daily trigger: ", e);
-        }
-        return dailyTrigger;
+    public CronTrigger getDailyTrigger() {
+        String dailyCron = getCronExpressionBuilder().createCronExpression();
+        return createCronTrigger(dailyCron, "DailyTrigger");
     }
 
     @Override
-    public SimpleTrigger getDailyTwoDayTrigger()
-    {
+    public SimpleTrigger getDailyTwoDayTrigger() {
         Calendar startTime = Calendar.getInstance();
         startTime.set(Calendar.HOUR_OF_DAY, getTriggerCriteria().getHour());
         startTime.set(Calendar.MINUTE, getTriggerCriteria().getMinute());
@@ -90,18 +59,16 @@ public class SchedulerTriggerImpl implements SchedulerTriggerModel
         long intervalInHours = 48L;
 
         SimpleTrigger biDailyTrigger = null;
-        try
-        {
+        try {
             biDailyTrigger = TriggerBuilder.newTrigger()
                     .withIdentity(TriggerKey.triggerKey(String.valueOf(generateRandomNumber()), String.valueOf(generateRandomNumber())))
                     .startAt(startTime.getTime())
                     .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                            .withIntervalInHours((int)intervalInHours)
+                            .withIntervalInHours((int) intervalInHours)
                             .repeatForever())
                     .build();
 
-        }catch(Exception e)
-        {
+        } catch (Exception e) {
             LOGGER.error("An exception has occurred creating the bi-daily trigger: ", e);
         }
 
@@ -109,42 +76,30 @@ public class SchedulerTriggerImpl implements SchedulerTriggerModel
     }
 
     @Override
-    public CronTrigger getWeeklyTrigger()
-    {
-        CronTrigger weeklyTrigger = null;
-        try
-        {
-            String weeklyCron = getCronExpressionBuilder().createCronExpression();
-
-            weeklyTrigger = TriggerBuilder.newTrigger()
-                    .withIdentity("WeeklyTrigger", "group1")
-                    .withSchedule(CronScheduleBuilder.cronSchedule(weeklyCron))
-                    .build();
-
-        }catch(Exception e)
-        {
-
-        }
-        return weeklyTrigger;
+    public CronTrigger getWeeklyTrigger() {
+        String weeklyCron = getCronExpressionBuilder().createCronExpression();
+        return createCronTrigger(weeklyCron, "WeeklyTrigger");
     }
 
     @Override
-    public CronTrigger getMonthlyTrigger()
+    public CronTrigger getMonthlyTrigger() {
+        String monthlyCron = getCronExpressionBuilder().createCronExpression();
+        return createCronTrigger(monthlyCron, "MonthlyTrigger");
+    }
+
+    private CronTrigger createCronTrigger(String cronExpression, String triggerIdentity)
     {
-        CronTrigger monthlyTrigger = null;
         try
         {
-            String monthlyCron = getCronExpressionBuilder().createCronExpression();
-
-            monthlyTrigger = TriggerBuilder.newTrigger()
-                    .withIdentity("MonthlyTrigger", "group1")
-                    .withSchedule(CronScheduleBuilder.cronSchedule(monthlyCron))
+            return TriggerBuilder.newTrigger()
+                    .withIdentity(TriggerKey.triggerKey(triggerIdentity, String.valueOf(generateRandomNumber())))
+                    .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
                     .build();
 
         }catch(Exception e)
         {
-            LOGGER.error("An exception has occurred while creating the monthly trigger: ",e);
+            LOGGER.error("An exception has occurred building trigger: ", e);
+            return null;
         }
-        return monthlyTrigger;
     }
 }

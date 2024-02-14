@@ -8,6 +8,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name="deposits")
@@ -47,7 +48,7 @@ public class DepositsEntity
     private ScheduleType scheduleInterval;
 
     @Column(name="scheduledTime")
-    private LocalDateTime scheduledTime;
+    private LocalTime scheduledTime;
 
     @Column(name="scheduledDate")
     private LocalDate scheduledDate;

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Component
 @Getter
@@ -27,7 +28,7 @@ public class ScheduleCriteriaParser
         }
     }
 
-    public LocalDateTime getScheduledTime()
+    public LocalTime getScheduledTime()
     {
         return getScheduleCriteria().getScheduledTime();
     }

@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -207,7 +208,7 @@ class DepositQueueTest {
                         .amount(new BigDecimal("1214"))
                         .scheduleInterval(ScheduleType.ONCE)
                         .date(LocalDate.now())
-                        .timeScheduled(LocalDateTime.now())
+                        .timeScheduled(LocalTime.now())
                         .build();
         depositQueue.addToDatabase(dto);
 

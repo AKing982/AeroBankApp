@@ -19,7 +19,6 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-@EnableAsync
 public class AppConfig
 {
     private String queueName = "depositQueue";
