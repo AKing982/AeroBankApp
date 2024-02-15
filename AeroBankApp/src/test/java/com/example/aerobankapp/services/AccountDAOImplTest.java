@@ -3,8 +3,11 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.account.AccountType;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.repositories.AccountRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.junit.internal.runners.JUnit38ClassRunner;
 import org.junit.jupiter.api.AfterEach;
@@ -202,8 +205,7 @@ class AccountDAOImplTest
 
     @Test
     @WithMockUser
-    public void testGetAccountIDByAcctCodeAndUserID_ValidUser()
-    {
+    public void testGetAccountIDByAcctCodeAndUserID_ValidUser() throws AccountIDNotFoundException {
         int userID = 1;
         String acctCode = "A1";
         TypedQuery<Integer> mockedQuery = mock(TypedQuery.class);
@@ -225,16 +227,99 @@ class AccountDAOImplTest
         int userID = 0;
         String acctCode = "A1";
         TypedQuery<Integer> mockedQuery = mock(TypedQuery.class);
-        when(entityManager.createQuery(anyString(), eq(Integer.class))).thenReturn(mockedQuery);
-        when(mockedQuery.setParameter("userID", userID)).thenReturn(mockedQuery);
-        when(mockedQuery.setParameter("acctCode", acctCode)).thenReturn(mockedQuery);
+        TypedQuery<Long> longTypedQuery = mock(TypedQuery.class);
 
-        int actualAccountID = accountDAO.getAccountIDByAcctCodeAndUserID(userID, acctCode);
-        when(mockedQuery.getSingleResult()).thenReturn(actualAccountID);
+        when(entityManager.createQuery(eq("SELECT COUNT(a) FROM AccountEntity a WHERE a.accountCode =: acctCode"), eq(Long.class)))
+                .thenReturn(longTypedQuery);
+        when(longTypedQuery.setParameter(eq("acctCode"), anyString())).thenReturn(longTypedQuery);
+        when(longTypedQuery.getSingleResult()).thenReturn(1L); // Assuming the account code exists
 
-        assertEquals(1, actualAccountID);
+        lenient().when(entityManager.createQuery(anyString(), eq(Integer.class))).thenReturn(mockedQuery);
+        lenient().when(mockedQuery.setParameter("userID", userID)).thenReturn(mockedQuery);
+        lenient().when(mockedQuery.setParameter("acctCode", acctCode)).thenReturn(mockedQuery);
+        lenient().when(mockedQuery.getSingleResult()).thenThrow(IllegalArgumentException.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            accountDAO.getAccountIDByAcctCodeAndUserID(userID, acctCode);
+        });
     }
 
+    @Test
+    @WithMockUser
+    public void testGetAccountIDByAcctCodeAndUserID_InvalidAccountCode()
+    {
+        int userID = 1;
+        String acctCode = "A5";
+        TypedQuery<Integer> mockQuery = mock(TypedQuery.class);
+        TypedQuery<Long> longTypedQuery = mock(TypedQuery.class);
+
+        when(entityManager.createQuery(eq("SELECT COUNT(a) FROM AccountEntity a WHERE a.accountCode =: acctCode"), eq(Long.class)))
+                .thenReturn(longTypedQuery);
+        when(longTypedQuery.setParameter(eq("acctCode"), anyString())).thenReturn(longTypedQuery);
+        when(longTypedQuery.getSingleResult()).thenReturn(1L); // Assuming the account code exists
+
+        lenient().when(entityManager.createQuery(anyString(), eq(Integer.class))).thenReturn(mockQuery);
+        lenient().when(mockQuery.setParameter("userID", userID)).thenReturn(mockQuery);
+        lenient().when(mockQuery.setParameter("acctCode", acctCode)).thenReturn(mockQuery);
+        lenient().when(mockQuery.getSingleResult()).thenThrow(IllegalArgumentException.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            accountDAO.getAccountIDByAcctCodeAndUserID(userID, acctCode);
+        });
+
+    }
+
+    @Test
+    public void testUpdateAccountBalanceByAcctID_Success()
+    {
+        BigDecimal balance = new BigDecimal("100.00");
+        int acctID = 1;
+
+        Query query = mock(Query.class);
+        when(entityManager.createQuery(anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), any())).thenReturn(query);
+        when(query.executeUpdate()).thenReturn(1);
+
+        accountDAO.updateAccountBalanceByAcctID(balance, acctID);
+
+        verify(query).setParameter("balance", balance);
+        verify(query).setParameter("acctID", acctID);
+        verify(query).executeUpdate();
+    }
+
+    @Test
+    public void testUpdateAccountBalanceByAcctID_Exception() {
+        BigDecimal balance = new BigDecimal("100.00");
+        int acctID = 1;
+        Query query = mock(Query.class);
+
+        TypedQuery<Integer> longTypedQuery = mock(TypedQuery.class);
+
+        lenient().when(entityManager.createQuery(eq("SELECT COUNT(a) FROM AccountEntity a WHERE a.acctID =: acctID"), eq(Integer.class)))
+                .thenReturn(longTypedQuery);
+        lenient().when(query.setParameter(eq("acctID"), eq(acctID))).thenReturn(query);
+        lenient().when(longTypedQuery.getSingleResult()).thenReturn(1); // Assuming the account code exists
+
+        when(entityManager.createQuery(anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), any())).thenReturn(query);
+        when(query.executeUpdate()).thenThrow(new PersistenceException("Error updating"));
+
+        assertThrows(PersistenceException.class, () -> {
+            accountDAO.updateAccountBalanceByAcctID(balance, acctID);
+        });
+    }
+
+    @Test
+    public void testUpdateAccountBalanceByAcctID_InvalidParameters() {
+        // Assuming acctID should be positive
+        BigDecimal balance = new BigDecimal("100.00");
+        int invalidAcctID = -1;
+
+        // You can expect a specific exception or handle it accordingly
+        assertThrows(IllegalArgumentException.class, () -> {
+            accountDAO.updateAccountBalanceByAcctID(balance, invalidAcctID);
+        });
+    }
 
 
     @AfterEach

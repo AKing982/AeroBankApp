@@ -1,6 +1,7 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.repositories.AccountRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -42,12 +43,19 @@ public class AccountServiceImpl implements AccountService
 
     @Override
     public void save(AccountEntity obj) {
-        getAccountRepository().save(obj);
+        if(obj != null)
+        {
+            getAccountRepository().save(obj);
+        }
     }
 
     @Override
-    public void delete(AccountEntity obj) {
-        getAccountRepository().delete(obj);
+    public void delete(AccountEntity obj)
+    {
+        if(obj != null)
+        {
+            getAccountRepository().delete(obj);
+        }
     }
 
     @Override
@@ -141,10 +149,22 @@ public class AccountServiceImpl implements AccountService
     @Override
     public int getAccountIDByAcctCodeAndUserID(int userID, String acctCode)
     {
-        String accountIDQuery = "SELECT a.acctID " + 
+        if(!doesAccountCodeExist(acctCode))
+        {
+            throw new IllegalArgumentException("Account Code does not exist.");
+        }
+        if(!isValidUserID(userID))
+        {
+            throw new IllegalArgumentException("Invalid User ID");
+        }
+        final String accountIDQuery = "SELECT a.acctID " +
                                 "FROM AccountEntity a " +
                                 "WHERE a.userID =:userID AND a.accountCode =:acctCode";
         TypedQuery<Integer> accountID = getEntityManager().createQuery(accountIDQuery, Integer.class);
+        if(accountID.getSingleResult() == null)
+        {
+            throw new AccountIDNotFoundException("Account ID Not Found");
+        }
         accountID.setParameter("userID", userID);
         accountID.setParameter("acctCode", acctCode);
         return accountID.getSingleResult();
@@ -175,11 +195,45 @@ public class AccountServiceImpl implements AccountService
     @Transactional
     public void updateAccountBalanceByAcctID(BigDecimal balance, int acctID)
     {
+        if(!isValidAcctID(acctID))
+        {
+            throw new IllegalArgumentException("Invalid Account ID Found");
+        }
+        if(balance == null)
+        {
+            throw new IllegalArgumentException("Invalid Balance has been entered.");
+        }
         final String updateBalanceStatement = "UPDATE AccountEntity a SET a.balance =: balance WHERE a.acctID=: acctID";
         Query accountEntityQuery = getEntityManager().createQuery(updateBalanceStatement);
         accountEntityQuery.setParameter("balance", balance);
         accountEntityQuery.setParameter("acctID", acctID);
 
         int updateCount = accountEntityQuery.executeUpdate();
+    }
+
+    private boolean doesAccountCodeExist(String acctCode)
+    {
+        final String query = "SELECT COUNT(a) FROM AccountEntity a WHERE a.accountCode =: acctCode";
+        TypedQuery<Long> acctCodeQuery = getEntityManager().createQuery(query, Long.class);
+        acctCodeQuery.setParameter("acctCode", acctCode);
+        return acctCodeQuery.getSingleResult() > 0;
+    }
+
+    private boolean doesAccountIDExist(int acctID)
+    {
+        final String query = "SELECT COUNT(a) FROM AccountEntity a WHERE a.acctID =: acctID";
+        TypedQuery<Integer> acctCodeQuery = getEntityManager().createQuery(query, Integer.class);
+        acctCodeQuery.setParameter("acctID", acctID);
+        return acctCodeQuery.getSingleResult() > 0;
+    }
+
+    private boolean isValidUserID(int userID)
+    {
+        return userID > 0;
+    }
+
+    private boolean isValidAcctID(int acctID)
+    {
+        return acctID > 0 && doesAccountIDExist(acctID);
     }
 }
