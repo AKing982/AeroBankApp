@@ -6,7 +6,10 @@ import com.example.aerobankapp.workbench.utilities.response.AccountResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,6 +24,7 @@ import java.util.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.hamcrest.Matchers.is;
@@ -130,6 +134,49 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.2", is("Savings")));
     }
 
+    @Test
+    @WithMockUser
+    public void whenGetAccountIDByUserIDAndAccountCode_thenReturnAccountID_Valid() throws Exception {
+        int userID = 1;
+        String accountCode = "A1";
+        int expectedAccountID = 1;
+
+        given(accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode)).willReturn(1);
+
+        mockMvc.perform(get("/api/accounts/{userID}/{accountCode}", userID, accountCode)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.valueOf(expectedAccountID)));
+
+        Mockito.verify(accountDAO).getAccountIDByAcctCodeAndUserID(userID, accountCode);
+    }
+
+    @ParameterizedTest
+    @WithMockUser
+    @CsvSource({"1, A1, 1",
+                "1, A2, 2",
+                "2, B1, 4",
+                "1, A3, 3"})
+    public void testGetAccountIDByUserIDAndAccountCode_VariousInputs(int userID, String accountCode, int expectedAccountID) throws Exception {
+
+        when(accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode)).thenReturn(expectedAccountID);
+
+        mockMvc.perform(get("/api/accounts/{userID}/{accountCode}", userID, accountCode)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.valueOf(expectedAccountID)));
+    }
+
+    @ParameterizedTest
+    @WithMockUser
+    @CsvSource({"-1, A1",
+                "0, A5",
+                "1, A7"})
+    public void testGetAccountIDByUserIDAndAccountCode_IncorrectValues(String userID, String accountCode) throws Exception {
+        mockMvc.perform(get("/api/accounts/{userID}/{accountCode}", userID, accountCode)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()); // or any other expected status code
+    }
 
     @AfterEach
     void tearDown() {

@@ -51,7 +51,6 @@ export default function DepositView()
     const [interval, setInterval] = useState('');
     const [IsLoading, setIsLoading] = useState(false);
     const [deposit, setDeposit] = useState('');
-    const [accountID, setAccountID] = useState('');
 
     const [accountCodes, setAccountCodes] = useState([]);
 
@@ -73,6 +72,7 @@ export default function DepositView()
     const [selectedAccountID, setSelectedAccountID] = useState(null);
     const [isAccountCodeLoading, setIsAccountCodeLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [accountID, setAccountID] = useState(0)
 
     useEffect(() => {
         axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${user}/account-types`)
@@ -114,6 +114,7 @@ export default function DepositView()
         // Cleanup function to clear the timeout if the component unmounts before the timeout is completed
         return () => clearTimeout(timeoutId);
     }, [user]);
+
 
     const handleSelectedAccountCode = (event) => {
 
@@ -197,6 +198,7 @@ export default function DepositView()
         const requestData = {
             userID: userID,
             accountCode: selectedAccountCode,
+            accountID: selectedAccountID,
             amount: amount,
             description: description,
             scheduleInterval: scheduleInterval,

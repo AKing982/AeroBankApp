@@ -227,12 +227,12 @@ public class AccountServiceImpl implements AccountService
         return acctCodeQuery.getSingleResult() > 0;
     }
 
-    private boolean isValidUserID(int userID)
+    public boolean isValidUserID(int userID)
     {
-        return userID > 0;
+        return userID >= 0;
     }
 
-    private boolean isValidAcctID(int acctID)
+    public boolean isValidAcctID(int acctID)
     {
         return acctID > 0 && doesAccountIDExist(acctID);
     }

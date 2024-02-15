@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -64,6 +65,27 @@ public class AccountController {
         Map<Integer, String> accountTypeMap = accountDAO.getAccountTypeMapByAccountId(userName);
 
         return ResponseEntity.ok(accountTypeMap);
+    }
+
+    @GetMapping("/{userID}/{accountCode}")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public ResponseEntity<?> getAccountIDByUserIDAndAccountCode(@PathVariable int userID, @PathVariable String accountCode)
+    {
+        if(!accountDAO.isValidUserID(userID) || !isValidAccountCode(accountCode))
+        {
+            return ResponseEntity.badRequest().body("Invalid User ID or accountCode");
+        }
+
+        try
+        {
+            int receivedAccountID = accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode);
+            return ResponseEntity.ok(receivedAccountID);
+
+        }catch(Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing request");
+        }
     }
 
     @PostMapping("/create")
@@ -122,9 +144,10 @@ public class AccountController {
     }
 
 
-
-
-
+    private boolean isValidAccountCode(String accountCode)
+    {
+        return accountCode != null && accountCode.length() == 2;
+    }
 
 
 }
