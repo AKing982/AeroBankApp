@@ -147,27 +147,25 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
-    public int getAccountIDByAcctCodeAndUserID(int userID, String acctCode)
-    {
-        if(!doesAccountCodeExist(acctCode))
-        {
+    public int getAccountIDByAcctCodeAndUserID(int userID, String acctCode) {
+        if (!doesAccountCodeExist(acctCode)) {
             throw new IllegalArgumentException("Account Code does not exist.");
         }
-        if(!isValidUserID(userID))
-        {
+        if (isInvalidUserID(userID)) {
             throw new IllegalArgumentException("Invalid User ID");
         }
         final String accountIDQuery = "SELECT a.acctID " +
-                                "FROM AccountEntity a " +
-                                "WHERE a.userID =:userID AND a.accountCode =:acctCode";
+                "FROM AccountEntity a " +
+                "WHERE a.userID =:userID AND a.accountCode =:acctCode";
         TypedQuery<Integer> accountID = getEntityManager().createQuery(accountIDQuery, Integer.class);
-        if(accountID.getSingleResult() == null)
-        {
-            throw new AccountIDNotFoundException("Account ID Not Found");
-        }
         accountID.setParameter("userID", userID);
         accountID.setParameter("acctCode", acctCode);
-        return accountID.getSingleResult();
+        Integer result = accountID.getSingleResult();
+        if (result == null)
+        {
+            throw new AccountIDNotFoundException("AccountID Not Found");
+        }
+        return result;
     }
 
     @Override
@@ -227,9 +225,9 @@ public class AccountServiceImpl implements AccountService
         return acctCodeQuery.getSingleResult() > 0;
     }
 
-    public boolean isValidUserID(int userID)
+    public boolean isInvalidUserID(int userID)
     {
-        return userID >= 0;
+        return userID <= 0;
     }
 
     public boolean isValidAcctID(int acctID)

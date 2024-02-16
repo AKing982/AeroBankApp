@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
+import java.util.UUID;
 
 @Configuration
 public class SchedulerConfig
@@ -106,12 +107,11 @@ public class SchedulerConfig
     {
         JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
 
-        Random random = new Random();
-        int randomNumber = random.nextInt(Integer.MAX_VALUE) + 1;
+        String uniqueIdentifier = UUID.randomUUID().toString();
 
         jobDetailFactory.setJobClass(DepositJob.class);
-        jobDetailFactory.setName("DepositJob" + randomNumber);
-        jobDetailFactory.setGroup("BankingJobs" + randomNumber);
+        jobDetailFactory.setName("DepositJob" + uniqueIdentifier);
+        jobDetailFactory.setGroup("BankingJobs" + uniqueIdentifier);
         jobDetailFactory.setDurability(true);
 
         JobDataMap jobDataMap = new JobDataMap();

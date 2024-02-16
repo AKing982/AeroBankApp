@@ -16,6 +16,7 @@ public class DepositControllerUtil
         return DepositResponse.builder()
                 .amount(request.getAmount())
                 .description(request.getDescription())
+                .accountID(request.getAccountID())
                 .accountCode(request.getAccountCode())
                 .interval(request.getScheduleInterval())
                 .scheduledDate(request.getDate())
@@ -43,6 +44,7 @@ public class DepositControllerUtil
                 .amount(deposits.getAmount().toString())
                 .description(deposits.getDescription())
                 .accountCode(deposits.getAccount().getAccountCode())
+                .accountID(deposits.getAccount().getAcctID())
                 .scheduledDate(deposits.getScheduledDate())
                 .build();
     }

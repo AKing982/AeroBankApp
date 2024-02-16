@@ -27,9 +27,7 @@ public class DepositJob implements Job
 
 
         // Sending message to RabbitMQ
-
         rabbitTemplate.convertAndSend(exchange.getName(), "deposit.process", depositDetails);
-
     }
 
     @PostConstruct

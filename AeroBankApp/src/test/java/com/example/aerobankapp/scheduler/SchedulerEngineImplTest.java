@@ -4,6 +4,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.quartz.*;
@@ -17,6 +19,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -31,12 +34,18 @@ class SchedulerEngineImplTest
     @Mock
     private CronExpressionBuilder cronExpressionBuilder;
 
+    @Captor
+    private ArgumentCaptor<JobDetail> jobDetailCaptor;
+
+    @Captor
+    private ArgumentCaptor<Trigger> triggerCaptor;
+
 
 
     @BeforeEach
     void setUp()
     {
-        MockitoAnnotations.openMocks(this);
+        openMocks(this);
         schedulerEngine = new SchedulerEngineImpl(mockScheduler,cronExpressionBuilder);
     }
 
@@ -183,6 +192,8 @@ class SchedulerEngineImplTest
         // Assert
         assertTrue(isRunning);
     }
+
+
 
     @AfterEach
     void tearDown() {

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class SchedulerEngineImpl implements SchedulerEngine
@@ -46,8 +47,26 @@ public class SchedulerEngineImpl implements SchedulerEngine
     @Override
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public String scheduleJob(JobDetail jobDetail, Trigger trigger) throws SchedulerException {
-        scheduler.scheduleJob(jobDetail, trigger);
-        return trigger.getKey().toString();
+        if (scheduler.checkExists(jobDetail.getKey()))
+        {
+            // Append a UUID to the job name to make it unique
+            String uniqueName = jobDetail.getKey().getName() + "-" + UUID.randomUUID().toString();
+            JobKey uniqueJobKey = JobKey.jobKey(uniqueName, jobDetail.getKey().getGroup());
+
+            // Create a new JobDetail with the unique key
+            JobDetail uniqueJobDetail = JobBuilder.newJob(jobDetail.getJobClass())
+                    .withIdentity(uniqueJobKey)
+                    .build();
+
+            // Schedule the new job
+            scheduler.scheduleJob(uniqueJobDetail, trigger);
+            return trigger.getKey().toString();
+        }
+        else
+        {
+            scheduler.scheduleJob(jobDetail, trigger);
+            return trigger.getKey().toString();
+        }
     }
 
     @Override
@@ -154,4 +173,7 @@ public class SchedulerEngineImpl implements SchedulerEngine
         }
         return false;
     }
+
 }
+
+

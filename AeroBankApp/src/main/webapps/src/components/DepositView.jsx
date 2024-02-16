@@ -116,6 +116,8 @@ export default function DepositView()
     }, [user]);
 
 
+
+
     const handleSelectedAccountCode = (event) => {
 
         setAccountCodes(event.target.value);
@@ -156,7 +158,38 @@ export default function DepositView()
     // Sample data for account codes and deposit intervals
     const scheduleIntervals = ['Once', 'Daily', 'BiWeekly', 'Weekly', 'Monthly'];
 
+    async function prepareAndSendAccountIDRequest(accountCode)
+    {
+        const accountID = await fetchAccountID(accountCode);
 
+        if(!accountID)
+        {
+            console.error('Unable to retrieve accountID');
+            return;
+        }
+
+        return accountID;
+    }
+
+    const fetchAccountID = async (accountCode) => {
+        if (!accountCode) {
+            console.error('Account code is null or undefined.');
+            return;
+        }
+
+        let userID = sessionStorage.getItem('userID');
+
+        try {
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${userID}/${accountCode}`);
+            console.log('AccountID from Response: ', response.data);
+            setAccountID(response.data.accountID);
+            return response.data.accountID;
+        } catch (error) {
+            console.error('There has been a problem with your fetch operation: ', error);
+            // Handle specific error responses here if needed
+        }
+
+    }
 
     const handleDeposit = async() => {
 
@@ -193,12 +226,15 @@ export default function DepositView()
             return;
         }
 
+       const accountID = await prepareAndSendAccountIDRequest(selectedAccountCode);
+
         const userID = sessionStorage.getItem('userID');
+        console.log('UserID: ', userID);
 
         const requestData = {
             userID: userID,
             accountCode: selectedAccountCode,
-            accountID: selectedAccountID,
+            accountID: accountID,
             amount: amount,
             description: description,
             scheduleInterval: scheduleInterval,
@@ -232,8 +268,6 @@ export default function DepositView()
         console.log(deposit);
         console.log(interval);
         console.log(description);
-
-
 
       try{
           console.log("Request Data before POST",requestData);

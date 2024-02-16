@@ -4,6 +4,7 @@ import com.example.aerobankapp.dto.AccountDTO;
 import com.example.aerobankapp.dto.AccountDetailsDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.services.AccountServiceImpl;
+import com.example.aerobankapp.workbench.AccountIDResponse;
 import com.example.aerobankapp.workbench.utilities.AccountCreationRequest;
 import com.example.aerobankapp.workbench.utilities.BalanceRequest;
 import com.example.aerobankapp.workbench.utilities.response.AccountCodeResponse;
@@ -72,20 +73,17 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<?> getAccountIDByUserIDAndAccountCode(@PathVariable int userID, @PathVariable String accountCode)
     {
-        if(!accountDAO.isValidUserID(userID) || !isValidAccountCode(accountCode))
+        if(accountCode == null || accountDAO.isInvalidUserID(userID) || isInvalidAccountCode(accountCode))
         {
             return ResponseEntity.badRequest().body("Invalid User ID or accountCode");
         }
-
-        try
+        int receivedAccountID = accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode);
+        if(receivedAccountID <= 0)
         {
-            int receivedAccountID = accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode);
-            return ResponseEntity.ok(receivedAccountID);
-
-        }catch(Exception e)
-        {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing request");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid AccountID found.");
         }
+        logger.info("Received Account ID: " + receivedAccountID);
+        return ResponseEntity.ok(new AccountIDResponse(receivedAccountID));
     }
 
     @PostMapping("/create")
@@ -144,9 +142,9 @@ public class AccountController {
     }
 
 
-    private boolean isValidAccountCode(String accountCode)
+    private boolean isInvalidAccountCode(String accountCode)
     {
-        return accountCode != null && accountCode.length() == 2;
+        return accountCode == null || accountCode.length() != 2;
     }
 
 

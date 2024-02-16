@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -146,36 +147,49 @@ class AccountControllerTest {
         mockMvc.perform(get("/api/accounts/{userID}/{accountCode}", userID, accountCode)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(String.valueOf(expectedAccountID)));
+                .andExpect(content().json("{\"accountID\":" + expectedAccountID + "}"));
 
         Mockito.verify(accountDAO).getAccountIDByAcctCodeAndUserID(userID, accountCode);
     }
 
-    @ParameterizedTest
-    @WithMockUser
-    @CsvSource({"1, A1, 1",
-                "1, A2, 2",
-                "2, B1, 4",
-                "1, A3, 3"})
-    public void testGetAccountIDByUserIDAndAccountCode_VariousInputs(int userID, String accountCode, int expectedAccountID) throws Exception {
-
-        when(accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode)).thenReturn(expectedAccountID);
-
-        mockMvc.perform(get("/api/accounts/{userID}/{accountCode}", userID, accountCode)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(String.valueOf(expectedAccountID)));
-    }
 
     @ParameterizedTest
     @WithMockUser
-    @CsvSource({"-1, A1",
-                "0, A5",
-                "1, A7"})
+    @CsvSource({"-1, A123",
+                "0, A325",
+                "-1, A327"})
     public void testGetAccountIDByUserIDAndAccountCode_IncorrectValues(String userID, String accountCode) throws Exception {
         mockMvc.perform(get("/api/accounts/{userID}/{accountCode}", userID, accountCode)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest()); // or any other expected status code
+    }
+
+    @ParameterizedTest
+    @WithMockUser
+    @CsvSource({
+            "1, A1, 1",
+            "1, A2, 2",
+            "2, B1, 4",
+            "1, A3, 3",
+            "-1, A4, -1", // Assuming -1 indicates an error/invalid response
+            "1, , -1"
+    })
+    public void testGetAccountIDByUserIDAndAccountCode_VariousInputs(int userID, String accountCode, int expectedAccountID) throws Exception {
+        if (expectedAccountID != -1) {
+            when(accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode)).thenReturn(expectedAccountID);
+        }
+
+        ResultActions resultActions = mockMvc.perform(get("/api/accounts/{userID}/{accountCode}", userID, accountCode)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        if (expectedAccountID == -1) {
+            // Error case: Invalid inputs or server error
+            resultActions.andExpect(status().isNotFound()); // or isInternalServerError(), depending on your logic
+        } else {
+            // Success case: Valid account ID
+            resultActions.andExpect(status().isOk())
+                    .andExpect(content().json("{\"accountID\":" + expectedAccountID + "}"));
+        }
     }
 
     @AfterEach
