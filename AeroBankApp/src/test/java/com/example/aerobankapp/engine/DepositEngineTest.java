@@ -250,6 +250,45 @@ class DepositEngineTest {
         assertEquals(1, balanceMap.size());
     }
 
+    @Test
+    public void testIndividualDeposits_Success()
+    {
+        DepositDTO mockDeposit = DepositDTO.builder()
+                .depositID(1)
+                .scheduleInterval(ScheduleType.ONCE)
+                .date(LocalDate.now())
+                .accountID(1)
+                .accountCode("A1")
+                .amount(new BigDecimal("120.00"))
+                .description("Transfer")
+                .timeScheduled(LocalTime.now())
+                .userID(1)
+                .nonUSDCurrency(false)
+                .build();
+
+       ProcessedDepositDTO processedDepositDTO = buildProcessedDeposit(mockDeposit, new BigDecimal("4620.000"));
+       ProcessedDepositDTO actualProcessedDeposit = depositEngine.processIndividualDeposit(mockDeposit);
+
+       assertEquals(processedDepositDTO, actualProcessedDeposit);
+       assertEquals(processedDepositDTO.depositID(), actualProcessedDeposit.depositID());
+       assertNotNull(actualProcessedDeposit);
+
+    }
+
+    private ProcessedDepositDTO buildProcessedDeposit(DepositDTO depositDTO, BigDecimal balance)
+    {
+        return ProcessedDepositDTO.builder()
+                .accountID(depositDTO.getAccountID())
+                .depositID(depositDTO.getDepositID())
+                .description(depositDTO.getDescription())
+                .newBalance(balance)
+                .accountCode(depositDTO.getAccountCode())
+                .userID(depositDTO.getUserID())
+                .amount(depositDTO.getAmount())
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
     @AfterEach
     void tearDown() {
     }

@@ -101,6 +101,10 @@ export default function Home()
     }
 
     const formatAmount = (amount) => {
+        if(amount == null)
+        {
+            return 0.0;
+        }
         return amount.toLocaleString();
     }
 

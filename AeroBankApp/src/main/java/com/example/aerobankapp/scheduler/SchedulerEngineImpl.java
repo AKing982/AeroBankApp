@@ -1,5 +1,6 @@
 package com.example.aerobankapp.scheduler;
 
+import org.jetbrains.annotations.NotNull;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
@@ -50,13 +51,7 @@ public class SchedulerEngineImpl implements SchedulerEngine
         if (scheduler.checkExists(jobDetail.getKey()))
         {
             // Append a UUID to the job name to make it unique
-            String uniqueName = jobDetail.getKey().getName() + "-" + UUID.randomUUID().toString();
-            JobKey uniqueJobKey = JobKey.jobKey(uniqueName, jobDetail.getKey().getGroup());
-
-            // Create a new JobDetail with the unique key
-            JobDetail uniqueJobDetail = JobBuilder.newJob(jobDetail.getJobClass())
-                    .withIdentity(uniqueJobKey)
-                    .build();
+            JobDetail uniqueJobDetail = getUniqueJobDetail(jobDetail);
 
             // Schedule the new job
             scheduler.scheduleJob(uniqueJobDetail, trigger);
@@ -67,6 +62,30 @@ public class SchedulerEngineImpl implements SchedulerEngine
             scheduler.scheduleJob(jobDetail, trigger);
             return trigger.getKey().toString();
         }
+    }
+
+    private static JobDetail getUniqueJobDetail(JobDetail jobDetail) {
+        String uniqueName = generateUniqueName(jobDetail);
+        JobKey uniqueJobKey = getNewJobKey(jobDetail, uniqueName);
+
+        // Create a new JobDetail with the unique key
+        return getNewJobDetail(jobDetail, uniqueJobKey);
+    }
+
+    private static JobDetail getNewJobDetail(JobDetail jobDetail, JobKey uniqueJobKey) {
+        return JobBuilder.newJob(jobDetail.getJobClass())
+                .withIdentity(uniqueJobKey)
+                .build();
+    }
+
+    @NotNull
+    private static JobKey getNewJobKey(JobDetail jobDetail, String uniqueName) {
+        return JobKey.jobKey(uniqueName, jobDetail.getKey().getGroup());
+    }
+
+    @NotNull
+    private static String generateUniqueName(JobDetail jobDetail) {
+        return jobDetail.getKey().getName() + "-" + UUID.randomUUID().toString();
     }
 
     @Override
@@ -173,6 +192,7 @@ public class SchedulerEngineImpl implements SchedulerEngine
         }
         return false;
     }
+
 
 }
 

@@ -176,8 +176,6 @@ export default function LoginFormOLD()
                     const username = data.username;
                     saveJWTSession(token);
                     saveUserNameToSession(username);
-
-
                     navigateToHomePage();
                 }
                 else

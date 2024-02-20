@@ -14,6 +14,11 @@ function createData(date, description, debit, credit, balance) {
     return { date, description, debit, credit, balance };
 }
 
+function fetchTransactionData()
+{
+
+}
+
 const rows = [
     createData('February 4, 2024', 'PIN Purchase HARMONS - DIST 11453 S. PARKWAY South', '-$20.84', '', '$931.02'),
     createData('February 4, 2024', 'PIN Purchase WALMART', '-$15.84', '', '$915.02'),
