@@ -31,6 +31,7 @@ public class AsyncDepositService
     private CronExpressionBuilderImpl cronExpressionBuilder;
     private SchedulerTriggerImpl schedulerTrigger;
     private ScheduleRunner scheduleRunner;
+    private DepositQueueService depositQueueService;
     private Logger LOGGER = LoggerFactory.getLogger(AsyncDepositService.class);
 
     @Autowired
@@ -42,13 +43,15 @@ public class AsyncDepositService
                                SchedulerEngine schedulerEngine,
                                CronExpressionBuilderImpl cronExpressionBuilder,
                                SchedulerTriggerImpl schedulerTrigger,
-                               ScheduleRunner scheduleRunner)
+                               ScheduleRunner scheduleRunner,
+                               DepositQueueService depositQueueService)
     {
         this.depositJobDetail = jobDetail;
         this.schedulerEngine = schedulerEngine;
         this.cronExpressionBuilder = cronExpressionBuilder;
         this.schedulerTrigger = schedulerTrigger;
         this.scheduleRunner = scheduleRunner;
+        this.depositQueueService = depositQueueService;
     }
 
 
@@ -64,6 +67,7 @@ public class AsyncDepositService
         // Execute the callback with the result
         callback.accept(triggerCriteria);
     }
+
 
     @Async
     public void sendToRabbitMQ(DepositDTO depositDTO) {
