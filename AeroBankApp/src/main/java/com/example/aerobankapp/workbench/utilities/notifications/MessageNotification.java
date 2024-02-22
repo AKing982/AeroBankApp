@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MessageNotification extends Notifications
 {
+
     public MessageNotification(String message, String sender, int userID, LocalDateTime time, NotificationType type, boolean hasBeenRead, int priority) {
         super(message, userID, time, type, hasBeenRead, priority);
     }

@@ -1,13 +1,16 @@
 package com.example.aerobankapp.email;
 
+
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -25,20 +28,25 @@ public class EmailServiceImpl implements EmailService
     }
 
     @Override
-    public void sendEmail(String toEmail, String fromEmail, String body, String subject)
+    public boolean sendEmail(String toEmail, String fromEmail, String body, String subject)
     {
         try
         {
             Session session1 = createSession();
-            MimeMessage mimeMessage = createMessage(session1, toEmail, fromEmail, body, subject);
+            LOGGER.info("Sending to: {}", toEmail);
+            LOGGER.info("Sender Email: {}", fromEmail);
+            MimeMessage mimeMessage = createMessage(session1, toEmail.trim(), fromEmail.trim(), body, subject);
 
             Transport.send(mimeMessage);
 
             LOGGER.info("Email sent successfully to {}", toEmail);
+            return true;
 
         }catch(MessagingException mg)
         {
-            LOGGER.error("Error sending email: { } " + mg.getMessage());
+            LOGGER.error("Error sending email: {} ", mg.getMessage());
+            LOGGER.error(Arrays.toString(mg.getStackTrace()));
+            return false;
         }
     }
 

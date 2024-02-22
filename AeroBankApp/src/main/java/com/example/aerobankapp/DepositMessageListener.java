@@ -35,7 +35,7 @@ public class DepositMessageListener
         {
             depositEngine.setDepositQueue(depositDTO);
 
-            List<ProcessedDepositDTO> processedDepositDTOList = depositEngine.processDeposits();
+            List<ProcessedDepositDTO> processedDepositDTOList = depositEngine.process();
 
         }catch(Exception e)
         {

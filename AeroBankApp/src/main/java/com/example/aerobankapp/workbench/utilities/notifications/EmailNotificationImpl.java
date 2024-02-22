@@ -3,6 +3,7 @@ package com.example.aerobankapp.workbench.utilities.notifications;
 import com.example.aerobankapp.email.Email;
 import com.example.aerobankapp.email.EmailService;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
@@ -12,19 +13,20 @@ public class EmailNotificationImpl extends Notifications
     private Email email;
     private EmailService emailSender;
 
-    public EmailNotificationImpl(EmailService emailService, String message, String sender, String toEmail, int userID, LocalDateTime time, NotificationType type, boolean hasBeenRead, int priority) {
+    public EmailNotificationImpl(EmailService emailService, String subject, String message, String sender, String toEmail, int userID, LocalDateTime time, NotificationType type, boolean hasBeenRead, int priority) {
         super(message, userID, time, type, hasBeenRead, priority);
-        this.email = buildEmail(message, sender, toEmail, time);
+        this.email = buildEmail(subject, message, sender, toEmail, time);
         this.emailSender = emailService;
     }
 
-    private Email buildEmail(String subject, String sender, String toEmail, LocalDateTime time)
+    public Email buildEmail(String subject, String message, String sender, String toEmail, LocalDateTime time)
     {
         return Email.builder()
                 .senderEmail(sender)
                 .timeStamp(time)
                 .subject(subject)
                 .toEmail(toEmail)
+                .body(message)
                 .build();
     }
 

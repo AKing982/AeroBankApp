@@ -13,4 +13,7 @@ public interface NotificationService
     List<NotificationEntity> findByUserIdAndHasBeenRead(int userId, boolean hasBeenRead);
     void sendEmailNotification(EmailNotificationDTO emailNotification);
     void sendMessageNotification(MessageNotificationDTO messageNotification);
+    void markNotificationAsRead(Long notificationID);
+    void deleteNotification(Long notificationID);
+    int countUnreadNotifications(int userID);
 }

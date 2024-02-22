@@ -10,6 +10,7 @@ import BasicButton from "./BasicButton";
 import TestEmailField from "./TestEmailField";
 import TestEmailButton from "./TestEmailButton";
 import '../EmailSettings.css';
+import PasswordField from "./PasswordField";
 export default function EmailSettings()
 {
     const [outgoingMailServer, setOutGoingMailServer] = useState(null);
@@ -20,6 +21,8 @@ export default function EmailSettings()
     const [testEmail, setTestEmail] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [testButtonClicked, setTestButtonClicked] = useState(null);
+    const [fromEmail, setFromEmail] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
 
     const handlePortChange = (event) => {
@@ -33,6 +36,15 @@ export default function EmailSettings()
     const handleTestButtonClicked = (event) => {
         setTestButtonClicked(event.target.value);
     }
+
+    const handleFromEmailChange = (event) => {
+        setFromEmail(event.target.value);
+    }
+
+    const handleConfirmPasswordChange = (event) => {
+        setConfirmPassword(event.target.value);
+    }
+
 /*
     useEffect(() => {
         setIsLoading(true);
@@ -67,11 +79,17 @@ export default function EmailSettings()
                 <div className="email-password-field">
                     <DBPasswordField/>
                 </div>
+                <div className="confirm-password-field">
+                    <PasswordField value={confirmPassword} onChange={handleConfirmPasswordChange} label="Confirm Password"/>
+                </div>
+                <div className="test-connection-email">
+                    <TestEmailField value={fromEmail} label="From Email" onChange={handleFromEmailChange}/>
+                </div>
                 <div className="save-connection-button">
                     <BasicButton text="Save" />
                 </div>
-                <div className="test-connection-email">
-                    <TestEmailField value={testEmail} onChange={handleTestEmailChange}/>
+                <div className="test-email-field">
+                    <TestEmailField value={testEmail} label="Test Email" onChange={handleTestEmailChange}/>
                 </div>
                 <div className="test-connection-email-button">
                     <TestEmailButton value={testButtonClicked} onChange={handleTestButtonClicked}/>

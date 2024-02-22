@@ -16,7 +16,9 @@
 .outgoing-mail-server-port,
 .email-username-field,
 .email-password-field,
-.test-connection-email {
+.confirm-password-field,
+.test-connection-email,
+.test-email-field{
     display: flex;
     justify-content: space-between;
     align-items: center;

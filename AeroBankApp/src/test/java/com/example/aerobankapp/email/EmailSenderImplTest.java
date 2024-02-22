@@ -1,5 +1,6 @@
 package com.example.aerobankapp.email;
 
+import com.example.aerobankapp.configuration.EmailTestConfig;
 import org.junit.internal.runners.JUnit38ClassRunner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,28 +43,26 @@ class EmailSenderImplTest
     }
 
     @Test
-    public void testValidEmail()
-    {
-
-        when(emailConfig.getHost()).thenReturn("zimbra.xmission.com");
-        when(emailConfig.getPort()).thenReturn(587);
+    public void testValidEmail() {
+        // Create a real instance of EmailServiceImpl with mocked dependencies
+        EmailService emailService = new EmailTestConfig().configureEmailServiceForTesting();
 
         String toEmail = "massgamer1121@gmail.com";
         String fromEmail = "alex@utahkings.com";
         String subject = "Test Email";
         String text = "Hello from Email";
 
-        EmailConfig emailConfig = EmailConfig.builder()
-                .host("zimbra.xmission.com")
-                .password("aLEXfORGOT24!")
-                .useSSL(false)
-                .useTLS(false)
-                .port(587)
-                .username("alex@utahkings.com")
-                .build();
+        // Act
+        // Assuming sendEmail returns a boolean indicating success/failure
+        boolean result = emailService.sendEmail(toEmail.trim(), fromEmail.trim(), subject.trim(), text.trim());
 
-        emailService.sendEmail(toEmail, fromEmail, text, subject);
-        verify(emailConfig, times(1)).getHost();
+        // Assert
+        assertTrue(result); //
+    }
+
+    @Test
+    public void testInvalidEmail()
+    {
 
     }
 

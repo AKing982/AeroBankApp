@@ -91,6 +91,10 @@ public class AccountServiceImpl implements AccountService
 
     @Override
     public BigDecimal getBalanceByAccountCodeUserID(String acctCode, int userID) {
+        if(acctCode == null || userID <= 1)
+        {
+            throw new IllegalArgumentException("Invalid Account Code or UserID.");
+        }
         TypedQuery<AccountEntity> accountEntityTypedQuery = getEntityManager().createQuery("SELECT e FROM AccountEntity e WHERE e.accountCode=:acctCode AND e.userID=:userID", AccountEntity.class);
         accountEntityTypedQuery.setParameter("acctCode", acctCode);
         accountEntityTypedQuery.setParameter("userID", userID);
