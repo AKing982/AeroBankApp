@@ -1,5 +1,15 @@
 package com.example.aerobankapp.workbench.utilities;
 
+import io.swagger.annotations.ApiKeyAuthDefinition;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class EmailServerRequest
 {
     private String host;

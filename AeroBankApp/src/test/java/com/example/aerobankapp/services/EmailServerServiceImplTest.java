@@ -31,6 +31,9 @@ class EmailServerServiceImplTest
     @InjectMocks
     private EmailServerServiceImpl emailServerService;
 
+    @Mock
+    private TypedQuery<Long> typedQuery;
+
     @BeforeEach
     void setUp()
     {
@@ -77,6 +80,32 @@ class EmailServerServiceImplTest
         EmailServerEntity result = emailServerService.getEmailServerById(id).get(0);
 
         assertNull(result);
+    }
+
+    @Test
+    public void testEmailServerExists_WhenExists() {
+        // Arrange
+        when(entityManager.createQuery(anyString(), eq(Long.class))).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(1L); // Mock the count to be 1
+
+        // Act
+        boolean exists = emailServerService.emailServerExists("localhost", 1025);
+
+        // Assert
+        assertTrue(exists);
+    }
+
+    @Test
+    public void testEmailServerExists_WhenNotExists() {
+        // Arrange
+        when(entityManager.createQuery(anyString(), eq(Long.class))).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(0L); // Mock the count to be 0
+
+        // Act
+        boolean exists = emailServerService.emailServerExists("localhost", 1025);
+
+        // Assert
+        assertFalse(exists);
     }
 
     @AfterEach

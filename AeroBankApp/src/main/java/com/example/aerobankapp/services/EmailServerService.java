@@ -20,6 +20,5 @@ public interface EmailServerService
     Optional<EmailServerEntity> findAllById(Long id);
 
     List<EmailServerEntity> getEmailServerById(Long id);
-
-
+    boolean emailServerExists(String host, int port);
 }

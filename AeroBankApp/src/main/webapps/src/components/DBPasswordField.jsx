@@ -23,6 +23,8 @@ export default function DBPasswordField({value, onChange})
                     <OutlinedInput
                         id="outlined-adornment-password"
                         type={showPassword ? 'text' : 'password'}
+                        value={value}
+                        onChange={onChange}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
