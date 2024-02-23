@@ -3,7 +3,7 @@ import {FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput} from
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import {useState} from "react";
 
-export default function PinNumberField({value, onChange})
+export default function PinNumberField({value, onChange, label})
 {
     const [showPIN, setShowPIN] = useState(null);
 
@@ -15,12 +15,13 @@ export default function PinNumberField({value, onChange})
         setShowPIN((show) => !show);
     }
 
+    const boolLabel = value ? null : label;
 
     return (
         <div>
             <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
                 <FormControl sx={{ m: 1, width: '25ch'}} variant="outlined">
-                    <InputLabel htmlFor="outlined-adornment-password">PIN</InputLabel>
+                    <InputLabel htmlFor="outlined-adornment-password">{boolLabel}</InputLabel>
                     <OutlinedInput
                         id="outlined-adornment-password"
                         type={showPIN ? 'text' : 'password'}
@@ -38,7 +39,7 @@ export default function PinNumberField({value, onChange})
                                 </IconButton>
                             </InputAdornment>
                         }
-                        label="Password"
+                        label={boolLabel}
                         inputProps = {{
                             maxLength: 6
                         }}

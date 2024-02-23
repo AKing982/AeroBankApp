@@ -7,12 +7,14 @@ import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class EmailServiceImpl implements EmailService
@@ -28,7 +30,8 @@ public class EmailServiceImpl implements EmailService
     }
 
     @Override
-    public boolean sendEmail(String toEmail, String fromEmail, String body, String subject)
+    @Async
+    public CompletableFuture<Boolean> sendEmail(String toEmail, String fromEmail, String body, String subject)
     {
         try
         {
@@ -40,13 +43,13 @@ public class EmailServiceImpl implements EmailService
             Transport.send(mimeMessage);
 
             LOGGER.info("Email sent successfully to {}", toEmail);
-            return true;
+            return CompletableFuture.completedFuture(true);
 
         }catch(MessagingException mg)
         {
             LOGGER.error("Error sending email: {} ", mg.getMessage());
             LOGGER.error(Arrays.toString(mg.getStackTrace()));
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
     }
 

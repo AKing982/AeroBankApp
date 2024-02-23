@@ -1,8 +1,12 @@
 package com.example.aerobankapp.controllers;
 
+import com.example.aerobankapp.email.EmailConfig;
+import com.example.aerobankapp.email.EmailService;
+import com.example.aerobankapp.email.EmailServiceImpl;
 import com.example.aerobankapp.entity.EmailServerEntity;
 import com.example.aerobankapp.services.EmailServerService;
 import com.example.aerobankapp.workbench.utilities.EmailServerRequest;
+import com.example.aerobankapp.workbench.utilities.TestEmailRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value="/api/email")
@@ -66,16 +72,55 @@ public class EmailServerController {
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<EmailServerEntity> getEmailServerById(@PathVariable Long id)
+    public ResponseEntity<?> getEmailServerById(@PathVariable Long id)
+    {
+        List<EmailServerEntity> entity = emailService.getEmailServerById(id);
+        return ResponseEntity.ok(entity);
+    }
+
+    @GetMapping("/testVerify")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> verifyTestConnection()
     {
         return null;
     }
 
     @PostMapping("/testConnection")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Boolean> testConnection(@RequestBody EmailServerEntity emailServer)
+    public ResponseEntity<?> testConnection(@RequestBody TestEmailRequest request)
     {
-        return null;
+        final String recipient = request.getTestEmail();
+        final String sender = request.getFromEmail();
+
+        // Get the Mail Server Settings
+        List<EmailServerEntity> mailServerSettings = emailService.getEmailServerById(1L);
+
+        // Get the record from the list
+        EmailServerEntity emailServer = mailServerSettings.get(0);
+
+        // Build the Email Configuration
+        EmailConfig emailConfig = buildEmailConfig(emailServer.getHost(), emailServer.getPort(), emailServer.getUsername(), emailServer.getPassword());
+
+        // Get the Email Service implementation
+        EmailService emailService1 = new EmailServiceImpl(emailConfig);
+
+        // Create the Test Email
+        final String subject = "Test Email";
+        final String message = "Test Email Sent.";
+
+        emailService1.sendEmail(recipient, sender, message, subject);
+        return ResponseEntity.ok("Test Connection successful");
+    }
+
+    private EmailConfig buildEmailConfig(String host, int port, String username, String password)
+    {
+        return EmailConfig.builder()
+                .host(host)
+                .port(port)
+                .username(username)
+                .password(password)
+                .useTLS(false)
+                .build();
     }
 
     private EmailServerEntity buildEmailServerEntity(String host, int port, String username, String password)

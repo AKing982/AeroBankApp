@@ -26,6 +26,7 @@ public interface UserService extends ServiceDAOModel<UserEntity>
 
     @Override
     List<UserEntity> findByUserName(String user);
+    void update(UserEntity obj);
 
     Role getUserRole(String user) throws NoResultException;
 

@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+ import {useEffect, useState} from "react";
 import UserTextField from "./UserTextField";
 import DBPasswordField from "./DBPasswordField";
 import PinNumberField from "./PinNumberField";
@@ -12,6 +12,7 @@ import axios from "axios";
 import SaveUserDialog from "./SaveUserDialog";
 import NumberField from "./NumberField";
 import AccountTypeSelect from "./AccountTypeSelect";
+ import {Alert, Snackbar} from "@mui/material";
 
 export default function UserSetupSettings()
 {
@@ -20,6 +21,7 @@ export default function UserSetupSettings()
     const [username, setUserName] = useState(null);
     const [email, setEmail] = useState(null);
     const [pinNumber, setPinNumber] = useState(null);
+    const [accountNumber, setAccountNumber] = useState('');
     const [isAdmin, setIsAdmin] = useState(null);
     const [password, setPassword] = useState(null);
     const [confirmPassword, setConfirmPassword] = useState(null);
@@ -32,6 +34,10 @@ export default function UserSetupSettings()
     const [accountName, setAccountName] = useState(null);
     const [balance, setBalance] = useState(null);
     const [accountType, setAccountType] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [snackbarOpen, setSnackBarOpen] = useState(false);
+    const [snackBarSeverity, setSnackBarSeverity] = useState('error');
+    const [snackBarMessage, setSnackBarMessage] = useState('');
 
 
     const user = sessionStorage.getItem('username');
@@ -47,6 +53,13 @@ export default function UserSetupSettings()
     const handleUserNameChange = (event) => {
         setUserName(event.target.value);
     }
+
+    const handleUserSelection = (user) => {
+        setSelectedUser(user);
+        console.log('User Selected in UserList: ', user);
+
+        fetchUserDetails(user);
+    };
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -80,6 +93,47 @@ export default function UserSetupSettings()
         }
     }
 
+    const handleCloseSnackBar = (event, reason) => {
+        if(reason === 'clickaway')
+        {
+            return;
+        }
+        setSnackBarOpen(false);
+    }
+
+    function fetchUserAccountNumber(user)
+    {
+        return axios.get(`http://localhost:8080/AeroBankApp/api/users/account/${user}`)
+            .then(response => {
+                console.log('Fetching User Account Number : ', response.data.accountNumber);
+                return response.data.accountNumber;
+            })
+            .catch(error => {
+                console.error('Error fetching Account Number: ', error);
+                return null;
+            });
+
+    }
+
+    function fetchUserDetails(user)
+    {
+        return axios.get(`http://localhost:8080/AeroBankApp/api/users/${user}`)
+            .then(response => {
+                console.log('Response Object: ', response.data);
+                const firstItem = response.data[0];
+                setEmail(firstItem.email);
+                setRole(firstItem.role);
+                setUserName(firstItem.userName);
+                setPinNumber(firstItem.pinNumber);
+                setFirstName(firstItem.firstName);
+                setLastName(firstItem.lastName);
+            })
+            .catch(error => {
+                console.error('Error fetching User Details: ', error);
+            });
+
+    }
+
     useEffect(() => {
         axios.get(`http://localhost:8080/AeroBankApp/api/users/${user}`)
             .then(response => {
@@ -91,53 +145,47 @@ export default function UserSetupSettings()
             })
     }, []);
 
-    useEffect(() => {
-        if(saveClicked)
-        {
-            console.log('Request Data: ', newUserData);
-            axios.post('http://localhost:8080/AeroBankApp/api/users/save', newUserData,
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }})
-                .then(response => {
-                    console.log('Response: ', response.data);
-                })
-                .catch(error => {
-                    console.log('Error: ', error);
-                    if (error.response) {
-                        // The request was made and the server responded with a status code
-                        // that falls out of the range of 2xx
-                        console.log('Error data:', error.response.data);
-                        console.log('Error status:', error.response.status);
-                        console.log('Error headers:', error.response.headers);
-                    } else if (error.request) {
-                        // The request was made but no response was received
-                        console.log('Error request:', error.request);
-                    } else {
-                        // Something happened in setting up the request that triggered an Error
-                        console.log('Error message:', error.message);
-                    }
-                    console.log('Error config:', error.config)
-                })
-            setSaveClicked(false);
-        }
-
-    }, [saveClicked])
-
-
-
-
-    const newUserData = {
-        first_name: firstName,
-        last_name: lastName,
-        user: username,
-        email: email,
-        pin: 2222,
-        pass: password,
-        role: role,
-        accountNumber:'36-21-21'
+    function sendSavedUser(userDataRequest)
+    {
+        return axios.post(`http://localhost:8080/AeroBankApp/api/users/save`, userDataRequest)
+            .then(response => {
+                console.log('Saving user to database successfully.');
+                setSnackBarOpen(true);
+                setSnackBarSeverity('success');
+                setSnackBarMessage('Data was saved successfully.');
+            })
+            .catch(error => {
+                console.error('Error sending POST request...');
+                setSnackBarOpen(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('There was an issue saving the user to the database...');
+            });
     }
+
+    const handleSaveButtonClick = async () => {
+
+        // Fetch the accountNumber
+        let accountNumber = await fetchUserAccountNumber(user);
+
+        let userID = sessionStorage.getItem('userID');
+
+        const userData = {
+            userID: userID,
+            firstName: firstName,
+            lastName: lastName,
+            user: username,
+            email: email,
+            pin: pinNumber,
+            pass: password,
+            role: role,
+            accountNumber: accountNumber
+        };
+
+        console.log('User Data: ', userData);
+
+        sendSavedUser(userData);
+    }
+
 
     const parseRoleForPost = (role) => {
         let modifiedRole = null;
@@ -199,7 +247,7 @@ export default function UserSetupSettings()
                     </div>
                     <div className="user-setup-pinNumber">
                         <label htmlFor="user-setup-PIN" className="setup-PIN-label">PIN: </label>
-                        <PinNumberField value={pinNumber} onChange={handlePINChange} />
+                        <PinNumberField value={pinNumber} onChange={handlePINChange} label="PIN" />
                     </div>
                     <div className="user-setup-password">
                         <label htmlFor="setup-password" className="setup-password-label">Password: </label>
@@ -214,14 +262,19 @@ export default function UserSetupSettings()
                         <RoleSelectBox value={role} onChange={handleRoleChange}/>
                     </div>
                     <div className="user-setup-save-button">
-                        <BasicButton submit={handleDialogOpen} text="Save"/>
+                        <BasicButton submit={handleSaveButtonClick} text="Save"/>
                     </div>
                     <SaveUserDialog open={saveDialogOpen} handleClose={handleDialogClose} handleAccept={handleAccept} />
                 </div>
+                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar}>
+                    <Alert onClose={handleCloseSnackBar} variant="filled" severity={snackBarSeverity}>
+                        {snackBarMessage}
+                    </Alert>
+                </Snackbar>
                 <div className="user-setup-right">
                     <div className="user-setup-list">
                         <label htmlFor="Current Users" className="current-users-label">Current Users</label>
-                        <UserList />
+                        <UserList onUserSelect={handleUserSelection}/>
                     </div>
                 </div>
                 <div className="user-setup-footer">

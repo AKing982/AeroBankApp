@@ -125,8 +125,8 @@ class UserServiceControllerTest
         // Prepare a UserRequest object (assuming it's a simple POJO)
         UserRequest request = new UserRequest();
         request.setUser("Adam553");
-        request.setFirst_name("Adam");
-        request.setLast_name("West");
+        request.setFirstName("Adam");
+        request.setLastName("West");
         request.setRole("USER");
         request.setPin("2233");
         request.setEmail("adam@outlook.com");

@@ -12,6 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.BooleanSupplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -43,7 +46,7 @@ class EmailSenderImplTest
     }
 
     @Test
-    public void testValidEmail() {
+    public void testValidEmail() throws ExecutionException, InterruptedException {
         // Create a real instance of EmailServiceImpl with mocked dependencies
         EmailService emailService = new EmailTestConfig().configureEmailServiceForTesting();
 
@@ -54,10 +57,10 @@ class EmailSenderImplTest
 
         // Act
         // Assuming sendEmail returns a boolean indicating success/failure
-        boolean result = emailService.sendEmail(toEmail.trim(), fromEmail.trim(), subject.trim(), text.trim());
+        CompletableFuture<Boolean> result = emailService.sendEmail(toEmail.trim(), fromEmail.trim(), subject.trim(), text.trim());
 
         // Assert
-        assertTrue(result); //
+        assertTrue(result.get()); //
     }
 
     @Test

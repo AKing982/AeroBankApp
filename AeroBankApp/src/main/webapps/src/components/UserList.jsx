@@ -28,7 +28,7 @@ function renderRow({index, style, users, onUserClick})
     );
 }
 
-export default function UserList()
+export default function UserList({onUserSelect})
 {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -49,6 +49,10 @@ export default function UserList()
     const handleUserClick = (user) => {
         console.log('Selected User: ', user);
         setSelectedUser(user);
+        if(onUserSelect)
+        {
+            onUserSelect(user);
+        }
         saveSelectedUser(user);
     }
 

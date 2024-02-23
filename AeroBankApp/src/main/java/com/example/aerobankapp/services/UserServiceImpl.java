@@ -6,10 +6,7 @@ import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.Role;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +77,28 @@ public class UserServiceImpl implements UserService
         aeroLogger.debug("Found User: " + query.getResultList());
 
         return query.getResultList();
+    }
+
+    @Override
+    public void update(UserEntity obj)
+    {
+        if(obj == null || obj.getUserID() < 1)
+        {
+            throw new IllegalArgumentException("User Entity or its ID must not be null");
+        }
+
+        UserEntity existingUserEntity = getUserRepository().findById((long) obj.getUserID())
+                .orElseThrow(() -> new EntityNotFoundException("User Entity not found with id: " + obj.getUserID()));
+
+        existingUserEntity.setUsername(obj.getUsername());
+        existingUserEntity.setEmail(obj.getEmail());
+        existingUserEntity.setRole(obj.getRole());
+        existingUserEntity.setPassword(obj.getPassword());
+        existingUserEntity.setPinNumber(obj.getPinNumber());
+        existingUserEntity.setFirstName(obj.getFirstName());
+        existingUserEntity.setLastName(obj.getLastName());
+
+        getUserRepository().save(existingUserEntity);
     }
 
     @Override
@@ -176,10 +195,12 @@ public class UserServiceImpl implements UserService
 
     @Override
     public boolean userNameExists(String user) {
-        TypedQuery<UserEntity> typedQuery = getEntityManager().createQuery("FROM UserEntity u", UserEntity.class);
-        List<UserEntity> userEntities = typedQuery.getResultList();
-        String userName = userEntities.stream().map(UserEntity::getUsername).collect(Collectors.joining());
-        return userName.equals(user);
+        TypedQuery<Long> query = getEntityManager().createQuery(
+                "SELECT COUNT(u) FROM UserEntity u WHERE u.username = :username", Long.class);
+        query.setParameter("username", user);
+
+        long count = query.getSingleResult();
+        return count > 0;
     }
 
 }

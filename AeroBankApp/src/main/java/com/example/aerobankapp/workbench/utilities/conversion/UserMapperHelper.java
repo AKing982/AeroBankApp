@@ -13,6 +13,8 @@ public class UserMapperHelper
                 entity.getUsername(), entity.getEmail(),
                 entity.getPassword(), entity.getPinNumber(),
                 entity.getAccountNumber(),
+                entity.getFirstName(),
+                entity.getLastName(),
                 entity.isAdmin(), entity.isEnabled(), entity.getRole());
     }
 }

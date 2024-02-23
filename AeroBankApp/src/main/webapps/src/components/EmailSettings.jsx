@@ -12,9 +12,11 @@ import TestEmailButton from "./TestEmailButton";
 import '../EmailSettings.css';
 import PasswordField from "./PasswordField";
 import {Alert, Snackbar} from "@mui/material";
+import ResponsiveDialog from "./ResponsiveDialog";
+
 export default function EmailSettings() {
-    const [host, setHost] = useState(null);
-    const [port, setPort] = useState(null);
+    const [host, setHost] = useState('');
+    const [port, setPort] = useState(0);
     const [isTLSEnabled, setISTLSEnabled] = useState(false);
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -25,6 +27,8 @@ export default function EmailSettings() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [snackbarOpen, setSnackBarOpen] = useState(false);
     const [snackBarMessage, setSnackBarMessage] = useState('');
+    const [snackBarSeverity, setSnackBarSeverity] = useState('error');
+    const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
 
 
 
@@ -36,7 +40,68 @@ export default function EmailSettings() {
         setTestEmail(event.target.value);
     }
 
+    const handleDialogAgree = () => {
+        setIsTestDialogOpen(false); // Close the dialog and proceed with test email logic
+        // Add the logic to handle the "Agree" action here
+    };
+
+    const handleDialogClose = () => {
+        setIsTestDialogOpen(false); // Close the dialog without proceeding
+    };
+
+
+    const handleTestButtonClick = () => {
+        setIsTestDialogOpen(true);
+        if(!fromEmail)
+        {
+            setSnackBarOpen(true);
+            setSnackBarMessage('Please enter a from Email');
+            return;
+        }
+        if(!testEmail)
+        {
+            setSnackBarOpen(true);
+            setSnackBarMessage('Please Enter a Test Email');
+            return;
+        }
+
+        sendTestEmailRequest(fromEmail, testEmail)
+            .then(response => {
+                console.log('Test Email successful');
+                setSnackBarOpen(true);
+                setSnackBarSeverity('success');
+                setSnackBarMessage('Test Email Successfully sent to: ' + testEmail);
+            })
+            .catch(error => {
+                console.error('Error sending test Email.');
+                setSnackBarOpen(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Error Sending test email.');
+            });
+    }
+
+    function sendTestEmailRequest(fromEmail, toEmail)
+    {
+        console.log('From Email: ', fromEmail);
+        console.log('Test Email: ', toEmail);
+        const testRequest = {
+            fromEmail: fromEmail,
+            testEmail: toEmail
+        };
+
+        console.log('Test Request: ', testRequest);
+
+        return axios.post(`http://localhost:8080/AeroBankApp/api/email/testConnection`, testRequest)
+            .then(response => {
+                console.log('Test Connection request successfully sent.')
+            })
+            .catch(error => {
+                console.error('Error sending test connection: ', error);
+            });
+    }
+
     const handleTestButtonClicked = (event) => {
+
         setTestButtonClicked(event.target.value);
     }
 
@@ -68,32 +133,39 @@ export default function EmailSettings() {
         if (!password)
         {
             setSnackBarOpen(true);
+            setSnackBarSeverity('error');
             setSnackBarMessage("Password is empty... Please enter a password.");
             return;
         }
         if(!confirmPassword)
         {
             setSnackBarOpen(true);
+            setSnackBarSeverity('error');
             setSnackBarMessage("Confirm password is empty.... Please enter password.");
             return;
         }
         if (password !== confirmPassword) {
             setSnackBarOpen(true);
             setSnackBarMessage("Password's do not match.");
+            setSnackBarSeverity('error');
             console.error('Passwords do not match');
             return;
         }
 
-
-
         console.log('UserName: ', username);
 
-        sendEmailRequest(host, port, username, password)
+        sendMailServerRequest(host, port, username, password)
             .then(response => {
                 console.log('Request sent successfully: ', response);
+                setSnackBarOpen(true);
+                setSnackBarSeverity('success');
+                setSnackBarMessage('Saved Mail Server Changes Successful.');
             })
             .catch(error => {
                 console.error('An error has occurred with the request: ', error);
+                setSnackBarOpen(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Error saving details...');
             })
     };
 
@@ -105,12 +177,29 @@ export default function EmailSettings() {
         setSnackBarOpen(false);
     }
 
-    const fetchEmailServerData = async () => {
+    useEffect(() => {
+        setIsLoading(true);
+        axios.get(`http://localhost:8080/AeroBankApp/api/email/${1}`)
+            .then(response => {
+                // Simulate a delay
+                setTimeout(() => {
+                    if (response.data && response.data.length > 0) {
+                        const firstItem = response.data[0];
+                        console.log('Response Data: ', response.data);
+                        setPort(firstItem.port);
+                        setHost(firstItem.host);
+                        setUserName(firstItem.username);
+                    }
+                    setIsLoading(false);
+                }, 2000); // Delay of 2000 milliseconds (2 seconds)
+            })
+            .catch(error => {
+                console.error('Error Fetching Mail Server Data: ', error);
+                setIsLoading(false);
+            });
+    }, []);
 
-    }
-
-
-    function sendEmailRequest(host, port, username, password)
+    function sendMailServerRequest(host, port, username, password)
     {
         const request = {
             host: host,
@@ -140,14 +229,14 @@ export default function EmailSettings() {
                     <EmailRadioGroup />
                 </div>
                 <div className="outgoing-mail-server-port">
-                    <MailServerField value={host} onChange={handleHostChange}/>
-                    <PortField value={port} onChange={handlePortChange}/>
+                    <MailServerField value={host} onChange={handleHostChange} isLoading={isLoading}/>
+                    <PortField value={port} onChange={handlePortChange} isLoading={isLoading}/>
                 </div>
                 <div className="email-TLS-checkbox">
                     <TLSCheckBox />
                 </div>
                 <div className="email-username-field">
-                    <EmailUserField value={username} onChange={handleUserNameChange}/>
+                    <EmailUserField value={username} onChange={handleUserNameChange} isLoading={isLoading}/>
                 </div>
                 <div className="email-password-field">
                     <DBPasswordField value={password} onChange={handlePasswordChange}/>
@@ -165,11 +254,11 @@ export default function EmailSettings() {
                     <TestEmailField value={testEmail} label="Test Email" onChange={handleTestEmailChange}/>
                 </div>
                 <div className="test-connection-email-button">
-                    <TestEmailButton value={testButtonClicked} onChange={handleTestButtonClicked}/>
+                    <TestEmailButton onChange={handleTestButtonClick} />
                 </div>
             </div>
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar}>
-                <Alert onClose={handleCloseSnackBar} severity="error">
+                <Alert onClose={handleCloseSnackBar} variant="filled" severity={snackBarSeverity}>
                     {snackBarMessage}
                 </Alert>
             </Snackbar>

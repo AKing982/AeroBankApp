@@ -2,6 +2,7 @@ package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.workbench.utilities.Role;
 import com.example.aerobankapp.workbench.utilities.UserType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -25,6 +26,12 @@ public class UserEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userID;
+
+    @Column(name="firstName")
+    private String firstName;
+
+    @Column(name="lastName")
+    private String lastName;
 
     @Column(name="username")
     @NotNull
@@ -54,6 +61,7 @@ public class UserEntity
     @Column(name="isEnabled")
     private boolean isEnabled;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="account_users",
         joinColumns = @JoinColumn(name="userID"),

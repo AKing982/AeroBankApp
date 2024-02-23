@@ -1,6 +1,8 @@
 package com.example.aerobankapp.email;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface EmailService
 {
-    boolean sendEmail(String toEmail, String fromEmail, String body, String subject);
+    CompletableFuture<Boolean> sendEmail(String toEmail, String fromEmail, String body, String subject);
 }

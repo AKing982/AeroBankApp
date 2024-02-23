@@ -7,8 +7,9 @@ import lombok.Setter;
 @Setter
 public class UserRequest
 {
-    private String first_name;
-    private String last_name;
+    private int userID;
+    private String firstName;
+    private String lastName;
     private String user;
     private String email;
     private String pin;

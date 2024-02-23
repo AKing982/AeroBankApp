@@ -1,13 +1,19 @@
-import {TextField} from "@mui/material";
+import {CircularProgress, TextField} from "@mui/material";
+import {Skeleton} from "@mui/lab";
 
-export default function PortField({value, onChange, isError})
+export default function PortField({value, onChange, isError, isLoading})
 {
     const label = value ? null : "Port";
+
+    if (isLoading) {
+        return <Skeleton variant="rectangular" height={56} width="10%" />;
+    }
+
     return (
         <div>
             <TextField
                 type="number"
-                label={label}
+                label="Port"
                 value={value}
                 onChange={onChange}
                 error={isError}

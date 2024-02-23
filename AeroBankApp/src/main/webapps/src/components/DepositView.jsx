@@ -65,6 +65,7 @@ export default function DepositView()
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [deposits, setDeposits] = useState([]);
     const [snackbarmessage, setSnackbarMessage] = useState('');
+    const [snackBarSeverity, setSnackBarSeverity] = useState('error');
     const [depositData, setDepositData] = useState([]);
     const [accounts, setAccounts] = useState(null);
     const [accountData, setAccountData] = useState([]);
@@ -197,6 +198,7 @@ export default function DepositView()
         if(!amount && !description && !selectedAccountCode && !scheduleInterval)
         {
             setOpenSnackbar(true);
+            setSnackBarSeverity('error');
             setSnackbarMessage('Please Select an Amount, Description, AccountCode, and Schedule Interval.');
             return;
         }
@@ -204,24 +206,28 @@ export default function DepositView()
         if(!amount || amount <= 0)
         {
             setOpenSnackbar(true);
+            setSnackBarSeverity('error');
             setSnackbarMessage('Please enter a valid amount.');
             return;
         }
         if(!description || !isNaN(description))
         {
             setOpenSnackbar(true);
+            setSnackBarSeverity('error');
             setSnackbarMessage('Please enter a valid description.');
             return;
         }
         if(!selectedAccountCode)
         {
             setOpenSnackbar(true);
+            setSnackBarSeverity('error');
             setSnackbarMessage('Please select an AccountCode.');
             return;
         }
         if(!scheduleInterval)
         {
             setOpenSnackbar(true);
+            setSnackBarSeverity('error');
             setSnackbarMessage('Please Select a Schedule Interval.');
             return;
         }
@@ -251,6 +257,7 @@ export default function DepositView()
                 // API call to submit the deposit
                 const response = await axios.post('http://localhost:8080/AeroBankApp/api/deposits/submit', requestData);
                 setSnackbarMessage('Deposit scheduled successfully');
+                setSnackBarSeverity('success');
                 setOpenSnackbar(true);
                 // Handle successful deposit here
             } catch (error) {
@@ -258,6 +265,7 @@ export default function DepositView()
                 console.log('An error has occurred while submitting the deposit request: ', error);
                 setSnackbarMessage('Failed to schedule deposit. Please try again.');
                 setOpenSnackbar(true);
+                setSnackBarSeverity('error');
             } finally {
                 setIsLoading(false); // Hide loading indicator
             }
@@ -415,7 +423,7 @@ export default function DepositView()
                 onClose={handleCloseSnackbar}
                 message="Deposit scheduled"
             >
-                <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%'}}>
+                <Alert onClose={handleCloseSnackbar} severity={snackBarSeverity} variant="filled" sx={{ width: '100%'}}>
                     {snackbarmessage}
                 </Alert>
             </Snackbar>
