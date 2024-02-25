@@ -31,6 +31,16 @@
     /* Additional styles for UserList */
 }
 
+.user-setup-buttons{
+    display: flex;
+    justify-content: center; /* Or 'flex-start' to keep them close together */
+    align-items: center;
+}
+
+.user-setup-buttons button {
+    margin: 0 10px;
+}
+
 /* Style for Save button */
 .user-setup-save-button {
     display: flex;

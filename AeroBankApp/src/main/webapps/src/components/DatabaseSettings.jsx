@@ -8,6 +8,7 @@ import DBPasswordField from "./DBPasswordField";
 import BasicButton from "./BasicButton";
 import ConnectionGroup from "./ConnectionGroup";
 import axios from "axios";
+import {Alert, Snackbar} from "@mui/material";
 
 export default function DatabaseSettings()
 {
@@ -16,13 +17,12 @@ export default function DatabaseSettings()
     const [isValidPort, setIsValidPort] = useState(false);
     const [databaseName, setDatabaseName] = useState(null);
     const [username, setUserName] = useState(null);
-    const [password, setPassword] = useState(null);
+    const [password, setPassword] = useState('');
     const [dbType, setDBType] = useState(null);
     const [connectionData, setConnectionData] = useState([]);
-
-    useEffect(() => {
-
-    }, []);
+    const [snackbarOpen, setSnackBarOpen] = useState(false);
+    const [snackBarMessage, setSnackBarMessage] = useState('');
+    const [snackBarSeverity, setSnackBarSeverity] = useState('error');
 
     const validatePort = (port) => {
         if(port < 0 || port > 65535)
@@ -31,9 +31,108 @@ export default function DatabaseSettings()
         }
     }
 
+    function validateConnectionInput(server, port, name, user, pass, dbType)
+    {
+        if(!dbType)
+        {
+            setSnackBarOpen(true);
+            setSnackBarMessage('Please select a database type...');
+            setSnackBarSeverity('error');
+        }
+        if(!server)
+        {
+            setSnackBarOpen(true);
+            setSnackBarMessage('Please enter a valid server name...');
+            setSnackBarSeverity('error');
+        }
+        if(!port)
+        {
+            setSnackBarOpen(true);
+            setSnackBarMessage('Please enter a valid port...');
+            setSnackBarSeverity('error');
+        }
+
+        if(!name)
+        {
+            setSnackBarOpen(true);
+            setSnackBarMessage('Please enter a valid database name...');
+            setSnackBarSeverity('error');
+        }
+
+        if(!user)
+        {
+            setSnackBarOpen(true);
+            setSnackBarMessage('Please enter a valid username...');
+            setSnackBarSeverity('error');
+        }
+        if(!pass)
+        {
+            setSnackBarOpen(true);
+            setSnackBarMessage('Please enter a password...');
+            setSnackBarSeverity('error');
+        }
+
+        validatePort(port);
+    }
+
+    function sendTestConnectionRequest(server, port, name, user, password, dbType) {
+        const connectionRequest = {
+            dbServer: server,
+            dbPort: port,
+            dbName: name,
+            dbUser: user,
+            dbPass: password,
+            dbType: dbType
+        }
+
+        console.log('ConnectionRequest: ', connectionRequest);
+
+        return axios.post(`http://localhost:8080/AeroBankApp/api/connections/testConnection`, connectionRequest)
+            .then(response => {
+                console.log('Test Connection was successful.');
+                setSnackBarOpen(true);
+                setSnackBarMessage("Test Connection was successful");
+                setSnackBarSeverity('success');
+            })
+            .catch(error => {
+                console.error('Test Connection has failed...');
+                setSnackBarOpen(true);
+                setSnackBarMessage('There was issue connecting to the database..');
+                setSnackBarSeverity('error');
+            });
+    }
+
+    const handleTestConnectionButtonClick = () => {
+
+        let dbTypeToLowerCase = parseDatabaseTypeToLowerCase(dbType);
+        // First Validate the Connection Input
+        validateConnectionInput(server, port, databaseName, username, password, dbTypeToLowerCase);
+
+        sendTestConnectionRequest(server, port, databaseName, username, password, dbTypeToLowerCase)
+            .then(response => {
+                console.log('Test Connection sent successfully.')
+            })
+            .catch(error => {
+                console.error('Error sending test connection.');
+            });
+    }
+
+    const handleCloseSnackBar = (event, reason) => {
+        if(reason === 'clickaway')
+        {
+            return;
+        }
+        setSnackBarOpen(false);
+    }
+
     const handlePortChange = (event) => {
         setPort(event.target.value);
     }
+
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value);
+    }
+
 
     const handleServerChange = (event) => {
         setServer(event.target.value);
@@ -68,17 +167,17 @@ export default function DatabaseSettings()
 
     const parseDatabaseTypeToLowerCase = (type) => {
         let dbType = null;
-        if(type === 'MYSQL')
+        if(type === 'MYSQL' || type === 'mysql')
         {
-            dbType = 'mysql';
+            dbType = 'MySQL';
         }
-        else if(type === 'SQLSERVER' || type === 'SSQL')
+        else if(type === 'SQLSERVER' || type === 'SSQL' || type === 'ssql')
         {
-            dbType = 'ssql';
+            dbType = 'SSQL';
         }
-        else if(type === 'POSTGRESQL' || type === 'PSQL')
+        else if(type === 'POSTGRESQL' || type === 'PSQL' || type === 'psql')
         {
-            dbType = 'postgresql';
+            dbType = 'PSQL';
         }
         return dbType;
 
@@ -108,7 +207,7 @@ export default function DatabaseSettings()
             </header>
             <div className="database-settings-panel">
                 <div className="connection-type-radio-buttons">
-                    <ConnectionGroup value={parseDatabaseTypeToLowerCase(dbType)} onChange={handleRadioButtonChange}/>
+                    <ConnectionGroup value={dbType} onChange={handleRadioButtonChange}/>
                 </div>
                 <div className="server-port-field">
                     <ServerField value={server} onChange={handleServerChange}/>
@@ -119,14 +218,19 @@ export default function DatabaseSettings()
                 </div>
                 <div className="database-sql-credentials">
                     <DBUserField value={username} onChange={handleUserNameChange}/>
-                    <DBPasswordField />
+                    <DBPasswordField value={password} onChange={handlePasswordChange}/>
                 </div>
                 <div className="test-connection-button">
-                    <BasicButton text="Test Connection"/>
+                    <BasicButton text="Test Connection" submit={handleTestConnectionButtonClick}/>
                 </div>
                 <div className="connect-button">
                     <BasicButton text="Connect"/>
                 </div>
+                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar}>
+                    <Alert onClose={handleCloseSnackBar} variant="filled" severity={snackBarSeverity}>
+                        {snackBarMessage}
+                    </Alert>
+                </Snackbar>
             </div>
         </div>
     )

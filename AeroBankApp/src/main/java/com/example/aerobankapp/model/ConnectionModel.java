@@ -1,6 +1,7 @@
 package com.example.aerobankapp.model;
 
 import com.example.aerobankapp.entity.ConnectionsEntity;
+import com.example.aerobankapp.workbench.utilities.ConnectionRequest;
 
 public interface ConnectionModel
 {
@@ -14,5 +15,5 @@ public interface ConnectionModel
     int getPortById(Long id);
     String getUserNameById(Long id);
     void connectToDB(ConnectionsEntity connectionsEntity);
-    void testConnection(ConnectionsEntity connectionsEntity);
+    boolean testConnection(ConnectionRequest connectionRequest);
 }

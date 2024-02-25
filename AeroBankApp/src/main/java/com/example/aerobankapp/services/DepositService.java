@@ -1,5 +1,6 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 import com.example.aerobankapp.workbench.utilities.DepositRequest;
@@ -32,6 +33,6 @@ public interface DepositService extends ServiceDAOModel<DepositsEntity>
     List<DepositsEntity> getListOfDepositsByUserIDASC(Long id);
     List<DepositsEntity> getListOfDepositsByUserID_DESC(Long id);
 
-    void submit(DepositRequest request);
+    void submit(DepositDTO request);
 
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DepositControllerUtil
 {
-    public static DepositResponse getDepositResponse(final DepositRequest request)
+    public static DepositResponse getDepositResponse(final DepositDTO request)
     {
         return DepositResponse.builder()
                 .amount(request.getAmount())
@@ -39,9 +39,9 @@ public class DepositControllerUtil
     {
         return DepositResponse.builder()
                 .userID(deposits.getUser().getUserID())
-                .interval(String.valueOf(deposits.getScheduleInterval()))
+                .interval(deposits.getScheduleInterval())
                 .selectedTime(deposits.getScheduledTime())
-                .amount(deposits.getAmount().toString())
+                .amount(deposits.getAmount())
                 .description(deposits.getDescription())
                 .accountCode(deposits.getAccount().getAccountCode())
                 .accountID(deposits.getAccount().getAcctID())

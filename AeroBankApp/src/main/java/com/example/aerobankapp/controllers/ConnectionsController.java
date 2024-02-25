@@ -5,6 +5,7 @@ import com.example.aerobankapp.dto.ConnectionsDTO;
 import com.example.aerobankapp.entity.ConnectionsEntity;
 import com.example.aerobankapp.services.ConnectionsService;
 import com.example.aerobankapp.services.ConnectionsServiceImpl;
+import com.example.aerobankapp.workbench.utilities.ConnectionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class ConnectionsController {
     private final ConnectionsService connectionsService;
 
     @Autowired
-    public ConnectionsController(@Qualifier("connectionsServiceImpl")ConnectionsService connectionsService) {
+    public ConnectionsController(@Qualifier("connectionsServiceImpl") ConnectionsService connectionsService) {
         this.connectionsService = connectionsService;
     }
 
@@ -58,7 +59,24 @@ public class ConnectionsController {
 
     @PutMapping("/{connectionID}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateConnection(@PathVariable Long connectionID)
+    public ResponseEntity<?> updateConnection(@PathVariable Long connectionID) {
+        return null;
+    }
+
+    @PostMapping("/testConnection")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> testConnection(@RequestBody ConnectionRequest connectionRequest)
+    {
+        if (connectionsService.testConnection(connectionRequest)) {
+            return ResponseEntity.ok("Database connection is successful.");
+        } else {
+            return ResponseEntity.status(500).body("Failed to connect to the database.");
+        }
+    }
+
+    @PostMapping("/connect")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> connect(@RequestBody ConnectionRequest connectionRequest)
     {
         return null;
     }

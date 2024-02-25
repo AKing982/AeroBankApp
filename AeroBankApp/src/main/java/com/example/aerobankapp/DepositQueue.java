@@ -21,9 +21,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component
-public class DepositQueue implements QueueModel<DepositDTO>
+public class DepositQueue implements QueueModel<Deposit>
 {
-    private final Queue<DepositDTO> queue = new ConcurrentLinkedQueue<>();
+    private final Queue<Deposit> queue = new ConcurrentLinkedQueue<>();
     private int queueSize;
     private final int maxQueueSize = 150;
     private DepositQueueService depositQueueService;
@@ -38,14 +38,14 @@ public class DepositQueue implements QueueModel<DepositDTO>
 
 
     @Override
-    public List<DepositDTO> getAllElements()
+    public List<Deposit> getAllElements()
     {
         LOGGER.info("Queue Size: " + queue.size());
         return new ArrayList<>(queue);
     }
 
     @Override
-    public void add(DepositDTO transaction)
+    public void add(Deposit transaction)
     {
         if(transaction == null)
         {
@@ -54,18 +54,18 @@ public class DepositQueue implements QueueModel<DepositDTO>
         queue.add(transaction);
     }
 
-    private DepositsEntity convertToDepositEntity(DepositDTO depositDTO)
+    private DepositsEntity convertToDepositEntity(Deposit deposit)
     {
         return DepositsEntity.builder()
-                .depositID(depositDTO.getDepositID())
-                .amount(depositDTO.getAmount())
-                .description(depositDTO.getDescription())
-                .scheduledDate(depositDTO.getDate())
-                .scheduledTime(depositDTO.getTimeScheduled())
-                .posted(depositDTO.getDate())
-                .scheduleInterval(depositDTO.getScheduleInterval())
+                .depositID(deposit.getDepositID())
+                .amount(deposit.getAmount())
+                .description(deposit.getDescription())
+                .scheduledDate(deposit.getDateScheduled())
+                .scheduledTime(deposit.getTimeScheduled())
+                .posted(deposit.getDate_posted())
+                .scheduleInterval(deposit.getScheduleInterval())
                 .user(UserEntity.builder().userID(1).build())
-                .account(AccountEntity.builder().accountCode(depositDTO.getAccountCode()).build())
+                .account(AccountEntity.builder().accountCode(deposit.getAcctCode()).build())
                 .build();
     }
 
@@ -80,13 +80,13 @@ public class DepositQueue implements QueueModel<DepositDTO>
 
 
     @Override
-    public void addAll(List<DepositDTO> transactions)
+    public void addAll(List<Deposit> transactions)
     {
         queue.addAll(transactions);
     }
 
     @Override
-    public void addToDatabase(DepositDTO transaction)
+    public void addToDatabase(Deposit transaction)
     {
         DepositsEntity depositsEntity = convertToDepositEntity(transaction);
         DepositQueueEntity depositQueueEntity = convertToQueueEntity(depositsEntity);
@@ -94,9 +94,9 @@ public class DepositQueue implements QueueModel<DepositDTO>
     }
 
     @Override
-    public void addAllToDatabase(List<DepositDTO> transactions)
+    public void addAllToDatabase(List<Deposit> transactions)
     {
-        for(DepositDTO depositDTO : transactions)
+        for(Deposit depositDTO : transactions)
         {
             DepositsEntity depositsEntity = convertToDepositEntity(depositDTO);
             DepositQueueEntity depositQueueEntity = convertToQueueEntity(depositsEntity);
@@ -105,23 +105,23 @@ public class DepositQueue implements QueueModel<DepositDTO>
     }
 
     @Override
-    public DepositDTO remove()
+    public Deposit remove()
     {
        return queue.remove();
     }
 
     @Override
-    public DepositDTO removeFromDatabase() {
+    public Deposit removeFromDatabase() {
         return null;
     }
 
     @Override
-    public DepositDTO peek()
+    public Deposit peek()
     {
         return queue.peek();
     }
 
-    private DepositQueueEntity dequeueFromDatabase(DepositDTO depositDTO)
+    private DepositQueueEntity dequeueFromDatabase(Deposit depositDTO)
     {
         Long depositID = (long) depositDTO.getDepositID();
         return depositQueueService.deQueueTransaction(depositID);
@@ -134,12 +134,12 @@ public class DepositQueue implements QueueModel<DepositDTO>
     }
 
     @Override
-    public boolean isDuplicate(DepositDTO element)
+    public boolean isDuplicate(Deposit element)
     {
         int count = 0;
-        for(DepositDTO depositDTO : queue)
+        for(Deposit deposit : queue)
         {
-            if(depositDTO.equals(element))
+            if(deposit.equals(element))
             {
                 count++;
                 if(count > 1)
@@ -152,7 +152,7 @@ public class DepositQueue implements QueueModel<DepositDTO>
     }
 
     @Override
-    public DepositDTO poll() {
+    public Deposit poll() {
         return queue.poll();
     }
 

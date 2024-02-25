@@ -6,7 +6,9 @@ import com.example.aerobankapp.dto.ProcessedDepositDTO;
 import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.DepositQueueService;
+import com.example.aerobankapp.services.DepositService;
 import com.example.aerobankapp.services.NotificationService;
+import com.example.aerobankapp.workbench.transactions.Deposit;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.internal.runners.JUnit38ClassRunner;
 import org.junit.jupiter.api.AfterEach;
@@ -48,58 +50,59 @@ class DepositEngineTest {
     private AccountService accountService;
 
     @Autowired
+    private DepositService depositService;
+
+    @Autowired
     private NotificationService notificationService;
 
     @Mock
     private DepositQueue depositQueue;
 
-    private DepositDTO depositDTO;
+    private Deposit deposit;
 
-    private DepositDTO depositDTO2;
+    private Deposit deposit2;
 
 
     @BeforeEach
     void setUp() {
 
-        depositDTO = DepositDTO.builder()
-                .depositID(1)
-                .amount(new BigDecimal("45.00"))
-                .timeScheduled(LocalTime.now())
-                .date(LocalDate.now())
-                .description("Transfer 1")
-                .accountCode("A1")
-                .userID(1)
-                .accountID(1)
-                .scheduleInterval(ScheduleType.ONCE)
-                .build();
+        deposit = new Deposit();
+        deposit.setDepositID(1);
+        deposit.setUserID(1);
+        deposit.setAcctCode("A1");
+        deposit.setAccountID(1);
+        deposit.setTimeScheduled(LocalTime.now());
+        deposit.setAmount(new BigDecimal("45.00"));
+        deposit.setDescription("Transfer 1");
+        deposit.setScheduleInterval(ScheduleType.ONCE);
+        deposit.setDateScheduled(LocalDate.now());
 
-        depositDTO2 = DepositDTO.builder()
-                .depositID(2)
-                .description("Transfer 2")
-                .amount(new BigDecimal("1214"))
-                .timeScheduled(LocalTime.of(8, 15))
-                .date(LocalDate.now())
-                .accountCode("A2")
-                .scheduleInterval(ScheduleType.ONCE)
-                .userID(1)
-                .accountID(3)
-                .build();
+        deposit2 = new Deposit();
+        deposit2.setUserID(1);
+        deposit2.setDescription("Transfer 2");
+        deposit2.setDepositID(1);
+        deposit2.setAmount(new BigDecimal("1214"));
+        deposit2.setScheduleInterval(ScheduleType.ONCE);
+        deposit2.setDateScheduled(LocalDate.now());
+        deposit2.setAcctCode("A2");
+        deposit2.setTimeScheduled(LocalTime.of(8, 15));
+        deposit2.setAccountID(3);
 
         depositQueue = new DepositQueue(depositQueueService);
 
-        depositQueue.add(depositDTO);
-        depositQueue.add(depositDTO2);
+        depositQueue.add(deposit);
+        depositQueue.add(deposit2);
 
-        depositEngine = new DepositEngine(depositQueue, calculationEngine, accountService, notificationService);
+        depositEngine = new DepositEngine(depositQueue, calculationEngine, accountService, depositService, notificationService);
     }
 
     @Test
     public void testProcessingDepositsInQueue() {
-        List<DepositDTO> actualDeposits = depositEngine.getDepositsFromQueue();
+        List<Deposit> actualDeposits = depositEngine.getDepositsFromQueue();
 
         assertEquals(2, actualDeposits.size());
-        assertTrue(actualDeposits.contains(depositDTO));
-        assertTrue(actualDeposits.contains(depositDTO2));
+        assertTrue(actualDeposits.contains(deposit));
+        assertTrue(actualDeposits.contains(deposit2));
     }
 
     @Test
@@ -131,8 +134,8 @@ class DepositEngineTest {
 
     @Test
     public void testProcessingNullDeposits() {
-        DepositDTO nullDeposit1 = null;
-        DepositDTO nullDeposit2 = null;
+        Deposit nullDeposit1 = null;
+        Deposit nullDeposit2 = null;
         depositQueue.add(nullDeposit1);
         depositQueue.add(nullDeposit2);
 
@@ -143,16 +146,16 @@ class DepositEngineTest {
 
     @Test
     public void testProcessingDepositWithNoAccountCode() {
-        DepositDTO depositDTO4 = DepositDTO.builder()
-                .depositID(1)
-                .accountCode(null)
-                .timeScheduled(LocalTime.now())
-                .scheduleInterval(ScheduleType.ONCE)
-                .date(LocalDate.now())
-                .amount(new BigDecimal("45.00"))
-                .description("Transfer 1")
-                .userID(1)
-                .build();
+        Deposit depositDTO4 = new Deposit();
+        depositDTO4.setAccountID(1);
+        depositDTO4.setDepositID(1);
+        depositDTO4.setAcctCode(null);
+        depositDTO4.setAmount(new BigDecimal("45.00"));
+        depositDTO4.setTimeScheduled(LocalTime.now());
+        depositDTO4.setUserID(1);
+        depositDTO4.setDescription("Transfer 1");
+        depositDTO4.setScheduleInterval(ScheduleType.ONCE);
+        depositDTO4.setDateScheduled(LocalDate.now());
 
         depositQueue.add(depositDTO4);
 
@@ -164,17 +167,16 @@ class DepositEngineTest {
 
     @Test
     public void testNullAmountDepositProcessing() {
-        DepositDTO depositDTO4 = DepositDTO.builder()
-                .depositID(1)
-                .accountCode("A1")
-                .timeScheduled(LocalTime.now())
-                .scheduleInterval(ScheduleType.ONCE)
-                .date(LocalDate.now())
-                .amount(null)
-                .description("Transfer 1")
-                .userID(1)
-                .accountID(1)
-                .build();
+        Deposit depositDTO4 = new Deposit();
+        depositDTO4.setAccountID(1);
+        depositDTO4.setDepositID(1);
+        depositDTO4.setAcctCode("A1");
+        depositDTO4.setAmount(null);
+        depositDTO4.setTimeScheduled(LocalTime.now());
+        depositDTO4.setUserID(1);
+        depositDTO4.setDescription("Transfer 1");
+        depositDTO4.setScheduleInterval(ScheduleType.ONCE);
+        depositDTO4.setDateScheduled(LocalDate.now());
 
         depositQueue.add(depositDTO4);
 
@@ -241,21 +243,19 @@ class DepositEngineTest {
 
     @Test
     public void testIndividualDeposits_Success() {
-        DepositDTO mockDeposit = DepositDTO.builder()
-                .depositID(1)
-                .scheduleInterval(ScheduleType.ONCE)
-                .date(LocalDate.now())
-                .accountID(1)
-                .accountCode("A1")
-                .amount(new BigDecimal("120.00"))
-                .description("Transfer")
-                .timeScheduled(LocalTime.now())
-                .userID(1)
-                .nonUSDCurrency(false)
-                .build();
+        Deposit depositDTO4 = new Deposit();
+        depositDTO4.setAccountID(1);
+        depositDTO4.setDepositID(1);
+        depositDTO4.setAcctCode(null);
+        depositDTO4.setAmount(new BigDecimal("45.00"));
+        depositDTO4.setTimeScheduled(LocalTime.now());
+        depositDTO4.setUserID(1);
+        depositDTO4.setDescription("Transfer 1");
+        depositDTO4.setScheduleInterval(ScheduleType.ONCE);
+        depositDTO4.setDateScheduled(LocalDate.now());
 
-        ProcessedDepositDTO processedDepositDTO = buildProcessedDeposit(mockDeposit, new BigDecimal("4620.000"));
-        ProcessedDepositDTO actualProcessedDeposit = depositEngine.processIndividualDeposit(mockDeposit);
+        ProcessedDepositDTO processedDepositDTO = buildProcessedDeposit(depositDTO4, new BigDecimal("4620.000"));
+        ProcessedDepositDTO actualProcessedDeposit = depositEngine.processIndividualDeposit(deposit);
 
         assertEquals(processedDepositDTO, actualProcessedDeposit);
         assertEquals(processedDepositDTO.depositID(), actualProcessedDeposit.depositID());
@@ -265,7 +265,7 @@ class DepositEngineTest {
 
     @Test
     public void testGetProcessedDeposits_NullList() {
-        List<DepositDTO> depositDTOList = null;
+        List<Deposit> depositDTOList = null;
 
         assertThrows(NullPointerException.class, () -> {
             List<ProcessedDepositDTO> processedDepositDTOS = depositEngine.getProcessedDeposits(depositDTOList);
@@ -274,7 +274,7 @@ class DepositEngineTest {
 
     @Test
     public void testGetProcessedDeposits_EmptyList() {
-        List<DepositDTO> emptyDepositList = new ArrayList<>();
+        List<Deposit> emptyDepositList = new ArrayList<>();
         List<ProcessedDepositDTO> processedDepositDTOS = depositEngine.getProcessedDeposits(emptyDepositList);
 
         assertEquals(emptyDepositList, processedDepositDTOS);
@@ -283,14 +283,14 @@ class DepositEngineTest {
 
     @Test
     public void testGetProcessedDeposits() {
-        DepositDTO mockDeposit = createMockDeposit(1, 1, 1, "A1", new BigDecimal("120.00"), "Transfer 1");
-        DepositDTO mockDeposit2 = createMockDeposit(2, 1, 1, "A1", new BigDecimal("56.00"), "Transfer 2");
-        List<DepositDTO> depositDTOList = Arrays.asList(mockDeposit, mockDeposit2);
+        Deposit mockDeposit = createMockDeposit(1, 1, 1, "A1", new BigDecimal("120.00"), "Transfer 1");
+        Deposit mockDeposit2 = createMockDeposit(2, 1, 1, "A1", new BigDecimal("56.00"), "Transfer 2");
+        List<Deposit> depositDTOList = Arrays.asList(mockDeposit, mockDeposit2);
         List<ProcessedDepositDTO> processedDepositDTOS = depositEngine.getProcessedDeposits(depositDTOList);
 
         assertEquals(depositDTOList.size(), processedDepositDTOS.size());
         for (int i = 0; i < depositDTOList.size(); i++) {
-            DepositDTO original = depositDTOList.get(i);
+            Deposit original = depositDTOList.get(i);
             ProcessedDepositDTO processed = processedDepositDTOS.get(i);
 
             assertEquals(original.getDepositID(), processed.depositID());
@@ -311,7 +311,7 @@ class DepositEngineTest {
 
     @Test
     public void testProcessIndividualDeposit_NullAccountCode() {
-        DepositDTO mockDeposit = createMockDeposit(1, 1, 1, null, new BigDecimal("1215"), "Transfer");
+        Deposit mockDeposit = createMockDeposit(1, 1, 1, null, new BigDecimal("1215"), "Transfer");
         assertThrows(IllegalArgumentException.class, () -> {
             ProcessedDepositDTO processedDepositDTO = depositEngine.processIndividualDeposit(mockDeposit);
         });
@@ -319,7 +319,7 @@ class DepositEngineTest {
 
     @Test
     public void testProcessIndividualDeposit_InvalidUserID() {
-        DepositDTO mockDeposit = createMockDeposit(1, -1, 1, "A1", new BigDecimal("45.00"), "Transfer");
+        Deposit mockDeposit = createMockDeposit(1, -1, 1, "A1", new BigDecimal("45.00"), "Transfer");
         assertThrows(IllegalArgumentException.class, () -> {
             ProcessedDepositDTO processedDepositDTO = depositEngine.processIndividualDeposit(mockDeposit);
         });
@@ -327,7 +327,7 @@ class DepositEngineTest {
 
     @Test
     public void testProcessIndividualDeposit_InvalidAmount() {
-        DepositDTO mockDeposit = createMockDeposit(1, 1, 1, "A1", null, "Transfer");
+        Deposit mockDeposit = createMockDeposit(1, 1, 1, "A1", null, "Transfer");
         assertThrows(IllegalArgumentException.class, () -> {
             ProcessedDepositDTO processedDepositDTO = depositEngine.processIndividualDeposit(mockDeposit);
         });
@@ -335,7 +335,7 @@ class DepositEngineTest {
 
     @Test
     public void testProcessIndividualDeposit_InvalidCriteria() {
-        DepositDTO mockDeposit = createMockDeposit(1, -1, 1, null, null, "Transfer");;
+        Deposit mockDeposit = createMockDeposit(1, -1, 1, null, null, "Transfer");;
         assertThrows(IllegalArgumentException.class, () -> {
             ProcessedDepositDTO processedDepositDTO = depositEngine.processIndividualDeposit(mockDeposit);
         });
@@ -344,9 +344,9 @@ class DepositEngineTest {
     @Test
     public void testProcessAndUpdateDeposits_Normal() {
         // Arrange
-        DepositDTO mockDeposit1 = createMockDeposit(1, 1, 1, "A1", new BigDecimal("1215"), "Transfer 1");
-        DepositDTO mockDeposit2 = createMockDeposit(1, 1, 2, "A1", new BigDecimal("45.00"), "Transfer 2");
-        List<DepositDTO> depositDTOList = Arrays.asList(mockDeposit1, mockDeposit2);
+        Deposit mockDeposit1 = createMockDeposit(1, 1, 1, "A1", new BigDecimal("1215"), "Transfer 1");
+        Deposit mockDeposit2 = createMockDeposit(1, 1, 2, "A1", new BigDecimal("45.00"), "Transfer 2");
+        List<Deposit> depositDTOList = Arrays.asList(mockDeposit1, mockDeposit2);
         ProcessedDepositDTO mockProcessedDeposit = createMockProcessedDeposit(1, 1, 1, "A1", new BigDecimal("1150"), new BigDecimal("45.00"), "Transfer 1");
         ProcessedDepositDTO mockProcessedDeposit2 = createMockProcessedDeposit(1, 1, 2, "A1", new BigDecimal("1100"), new BigDecimal("50.00"), "Transfer 2");
         List<ProcessedDepositDTO> processedDepositDTOS = Arrays.asList(mockProcessedDeposit, mockProcessedDeposit2);
@@ -388,29 +388,30 @@ class DepositEngineTest {
                 .build();
     }
 
-    private DepositDTO createMockDeposit(int id, int userID, int acctID, String acctCode, BigDecimal amount, String description) {
-        return DepositDTO.builder()
-                .depositID(id)
-                .scheduleInterval(ScheduleType.ONCE)
-                .date(LocalDate.now())
-                .accountID(acctID)
-                .accountCode(acctCode)
-                .amount(amount)
-                .description(description)
-                .timeScheduled(LocalTime.now())
-                .userID(userID)
-                .nonUSDCurrency(false)
-                .build();
+    private Deposit createMockDeposit(int id, int userID, int acctID, String acctCode, BigDecimal amount, String description) {
+
+        Deposit depositDTO4 = new Deposit();
+        depositDTO4.setAccountID(acctID);
+        depositDTO4.setDepositID(id);
+        depositDTO4.setAcctCode(acctCode);
+        depositDTO4.setAmount(amount);
+        depositDTO4.setTimeScheduled(LocalTime.now());
+        depositDTO4.setUserID(userID);
+        depositDTO4.setDescription(description);
+        depositDTO4.setScheduleInterval(ScheduleType.ONCE);
+        depositDTO4.setDateScheduled(LocalDate.now());
+
+        return depositDTO4;
     }
 
-    private ProcessedDepositDTO buildProcessedDeposit(DepositDTO depositDTO, BigDecimal balance)
+    private ProcessedDepositDTO buildProcessedDeposit(Deposit depositDTO, BigDecimal balance)
     {
         return ProcessedDepositDTO.builder()
                 .accountID(depositDTO.getAccountID())
                 .depositID(depositDTO.getDepositID())
                 .description(depositDTO.getDescription())
                 .newBalance(balance)
-                .accountCode(depositDTO.getAccountCode())
+                .accountCode(depositDTO.getAcctCode())
                 .userID(depositDTO.getUserID())
                 .amount(depositDTO.getAmount())
                 .createdAt(LocalDateTime.now())

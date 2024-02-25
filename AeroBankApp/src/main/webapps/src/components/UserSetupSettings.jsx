@@ -162,28 +162,45 @@ export default function UserSetupSettings()
             });
     }
 
+    function validateInput(firstName, lastName, userName, email, pin, password, confirmPassword, role)
+    {
+        
+    }
+
     const handleSaveButtonClick = async () => {
 
+        console.log('Password Matches Confirm Password: ', password === confirmPassword);
+        if(password !== confirmPassword)
+        {
+            setSnackBarOpen(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage("Password's don't match.");
+        }
+        else
+        {
+            let accountNumber = await fetchUserAccountNumber(user);
+
+            let userID = sessionStorage.getItem('userID');
+
+            const userData = {
+                userID: userID,
+                firstName: firstName,
+                lastName: lastName,
+                user: username,
+                email: email,
+                pin: pinNumber,
+                pass: password,
+                role: role,
+                accountNumber: accountNumber
+            };
+
+            console.log('User Data: ', userData);
+
+            sendSavedUser(userData);
+        }
+
         // Fetch the accountNumber
-        let accountNumber = await fetchUserAccountNumber(user);
 
-        let userID = sessionStorage.getItem('userID');
-
-        const userData = {
-            userID: userID,
-            firstName: firstName,
-            lastName: lastName,
-            user: username,
-            email: email,
-            pin: pinNumber,
-            pass: password,
-            role: role,
-            accountNumber: accountNumber
-        };
-
-        console.log('User Data: ', userData);
-
-        sendSavedUser(userData);
     }
 
 
@@ -275,6 +292,12 @@ export default function UserSetupSettings()
                     <div className="user-setup-list">
                         <label htmlFor="Current Users" className="current-users-label">Current Users</label>
                         <UserList onUserSelect={handleUserSelection}/>
+                        <div className="user-setup-buttons">
+                            <BasicButton submit={handleSaveButtonClick} text="Add User"/>
+                            <BasicButton submit={handleSaveButtonClick} text="Delete User"/>
+                            <BasicButton submit={handleSaveButtonClick} text="Create Account Number"/>
+                        </div>
+
                     </div>
                 </div>
                 <div className="user-setup-footer">

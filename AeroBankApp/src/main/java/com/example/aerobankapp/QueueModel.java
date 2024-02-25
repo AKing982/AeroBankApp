@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public interface QueueModel<T>
 {
-    List<DepositDTO> getAllElements();
+    List<T> getAllElements();
     void add(T transaction);
     void addAll(List<T> transactions);
     void addToDatabase(T transaction);

@@ -142,4 +142,12 @@ public class UserServiceController {
         String accountNumber = userService.getAccountNumberByUserName(user);
         return ResponseEntity.ok(new AccountNumberResponse(accountNumber));
     }
+
+    @GetMapping("/generateAccountNumber/{username}")
+    @PreAuthorize("isAuthenticated() ")
+    public ResponseEntity<?> generateAccountNumber(@PathVariable String username)
+    {
+        String accountNumber = userService.generateAccountNumber(username);
+        return ResponseEntity.ok(accountNumber);
+    }
 }

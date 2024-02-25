@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Currency;
 
 @EqualsAndHashCode(callSuper = true)
@@ -32,8 +33,8 @@ public class Withdraw extends TransactionBase implements Serializable
         this.fromAccount = fromAccount;
     }
 
-    public Withdraw(int userID, String description, int accountID, BigDecimal amount, LocalDateTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, Currency currency, Long id, int fromAccountID, AbstractAccountBase fromAccount) {
-        super(userID, description, accountID, amount, timeScheduled, scheduleInterval, date_posted, currency);
+    public Withdraw(int userID, String description, int accountID, BigDecimal amount, LocalTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, LocalDate dateScheduled, Currency currency, Long id, int fromAccountID, AbstractAccountBase fromAccount) {
+        super(userID, description, accountID, amount, timeScheduled, scheduleInterval, date_posted, dateScheduled, currency);
         this.id = id;
         this.fromAccountID = fromAccountID;
         this.fromAccount = fromAccount;

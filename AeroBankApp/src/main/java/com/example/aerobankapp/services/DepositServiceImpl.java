@@ -6,6 +6,7 @@ import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.repositories.DepositRepository;
 import com.example.aerobankapp.scheduler.*;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
+import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.utilities.DepositRequest;
 import com.example.aerobankapp.workbench.utilities.parser.ScheduleParserImpl;
 import com.example.aerobankapp.workbench.utilities.parser.ScheduleValidator;
@@ -101,14 +102,14 @@ public class DepositServiceImpl implements DepositService
     }
 
     @Override
-    public void submit(DepositRequest request)
+    public void submit(DepositDTO request)
     {
         // Build the SchedulerCriteria
         SchedulerCriteria schedulerCriteria = buildCriteria(request);
 
         asyncDepositService.validateAndParse(schedulerCriteria, (triggerCriteria) -> {
             // Callback with the result of validation and parsing
-            DepositDTO depositDTO = buildDepositDTO(request);
+            Deposit depositDTO = buildDeposit(request);
 
             // Send the DepositDTO to RabbitMQ asynchronously
             asyncDepositService.sendToRabbitMQ(depositDTO);
@@ -123,32 +124,32 @@ public class DepositServiceImpl implements DepositService
         System.out.println("Deposit has been recieved");
     }
 
-    private SchedulerCriteria buildCriteria(DepositRequest request)
+    private SchedulerCriteria buildCriteria(DepositDTO request)
     {
         LOGGER.debug("Request Date: " + request.getDate());
         LOGGER.debug("Request Time: " + request.getTimeScheduled());
         return SchedulerCriteria.builder()
                 .scheduledDate(request.getDate())
                 .scheduledTime(request.getTimeScheduled())
-                .scheduleType(ScheduleType.valueOf(request.getScheduleInterval()))
+                .scheduleType(request.getScheduleInterval())
                 .priority(1)
                 .createdAt(LocalDate.now())
                 .build();
     }
 
-    private DepositDTO buildDepositDTO(DepositRequest request)
+    private Deposit buildDeposit(DepositDTO request)
     {
-
-        BigDecimal amount = new BigDecimal(request.getAmount());
-        return DepositDTO.builder()
-                .scheduleInterval(ScheduleType.valueOf(request.getScheduleInterval()))
-                .description(request.getDescription())
-                .accountCode(request.getAccountCode())
-                .amount(amount)
-                .timeScheduled(request.getTimeScheduled())
-                .date(request.getDate())
-                .userID(request.getUserID())
-                .nonUSDCurrency(false)
-                .build();
+        Deposit deposit = new Deposit();
+        deposit.setDepositID(request.getDepositID());
+        deposit.setAcctCode(request.getAccountCode());
+        deposit.setAmount(request.getAmount());
+        deposit.setDescription(request.getDescription());
+        deposit.setAccountID(request.getAccountID());
+        deposit.setDateScheduled(request.getDate());
+        deposit.setScheduleInterval(request.getScheduleInterval());
+        deposit.setTimeScheduled(request.getTimeScheduled());
+        deposit.setDate_posted(LocalDate.now());
+        deposit.setUserID(request.getUserID());
+        return deposit;
     }
 }

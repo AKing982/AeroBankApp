@@ -6,6 +6,7 @@ import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 
 import com.example.aerobankapp.scheduler.factory.TriggerFactoryImpl;
 import com.example.aerobankapp.scheduler.trigger.SchedulerTriggerImpl;
+import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.utilities.parser.ScheduleParserImpl;
 import com.example.aerobankapp.workbench.utilities.parser.ScheduleValidatorImpl;
 import org.quartz.JobDetail;
@@ -70,9 +71,9 @@ public class AsyncDepositService
 
 
     @Async
-    public void sendToRabbitMQ(DepositDTO depositDTO) {
+    public void sendToRabbitMQ(Deposit deposit) {
         LOGGER.info("Sending Deposit to Rabbit");
-        rabbitTemplate.convertAndSend("depositQueue", depositDTO);
+        rabbitTemplate.convertAndSend("depositQueue", deposit);
     }
 
     @Async

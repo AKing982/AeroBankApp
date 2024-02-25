@@ -51,4 +51,6 @@ public interface UserService extends ServiceDAOModel<UserEntity>
     void removeUserFromAccount(UserEntity userEntity, AccountEntity accountEntity);
 
     boolean userNameExists(String user);
+
+    String generateAccountNumber(String user);
 }

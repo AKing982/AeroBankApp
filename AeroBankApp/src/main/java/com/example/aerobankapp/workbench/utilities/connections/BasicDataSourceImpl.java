@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Data
+@Deprecated
 @NoArgsConstructor
 public class BasicDataSourceImpl implements BasicDataSource
 {

@@ -6,6 +6,7 @@ import com.example.aerobankapp.engine.CalculationEngine;
 import com.example.aerobankapp.engine.DepositEngine;
 import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.NotificationService;
+import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class DepositMessageListener
     private final Logger LOGGER = LoggerFactory.getLogger(DepositMessageListener.class);
 
     @RabbitListener(queues = "depositQueue")
-    public void receive(DepositDTO depositDTO) {
+    public void receive(Deposit depositDTO) {
 
         try
         {

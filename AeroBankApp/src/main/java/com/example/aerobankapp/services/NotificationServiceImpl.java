@@ -8,6 +8,7 @@ import com.example.aerobankapp.email.EmailService;
 import com.example.aerobankapp.email.EmailServiceImpl;
 import com.example.aerobankapp.entity.EmailServerEntity;
 import com.example.aerobankapp.entity.NotificationEntity;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.repositories.NotificationRepository;
 import com.example.aerobankapp.workbench.utilities.notifications.EmailNotificationImpl;
@@ -29,19 +30,14 @@ import java.util.List;
 @Getter
 public class NotificationServiceImpl implements NotificationService {
 
-    private MessageNotification messageNotification;
-
     @PersistenceContext
     private final EntityManager entityManager;
 
     private final NotificationRepository notificationRepository;
 
-    private EmailNotificationImpl emailNotification;
-
     private final EmailServerService emailServerService;
 
     private Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
-
 
     @Autowired
     public NotificationServiceImpl(EmailServerServiceImpl emailServer, NotificationRepository notificationRepository, EntityManager entityManager) {
@@ -133,7 +129,25 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendMessageNotification(MessageNotificationDTO messageNotification)
     {
+        if(messageNotification == null){
+            throw new IllegalArgumentException("MessageNotificationDTO cannot be null");
+        }
 
+        // Extract the Message content
+        final String message = messageNotification.message();
+        final int userID = messageNotification.userID();
+        final String title = messageNotification.title();
+
+        // Build the NotificationEntity
+        NotificationEntity notification = NotificationEntity.builder()
+                .message(message)
+                .userEntity(UserEntity.builder().userID(userID).build())
+                .sent(LocalDateTime.now())
+                .hasBeenRead(false)
+                .build();
+
+        // Save to the database.
+        getNotificationRepository().save(notification);
     }
 
     @Override
@@ -142,8 +156,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void deleteNotification(Long notificationID) {
-
+    public void deleteNotification(NotificationEntity notification) {
+        getNotificationRepository().delete(notification);
     }
 
     @Override

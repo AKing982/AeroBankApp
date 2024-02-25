@@ -16,13 +16,13 @@ public class DepositResponse
     private int userID;
     private String accountCode;
     private int accountID;
-    private String amount;
+    private BigDecimal amount;
     private String description;
-    private String interval;
+    private ScheduleType interval;
     private LocalTime selectedTime;
     private LocalDate scheduledDate;
 
-    public DepositResponse(int userID, String accountCode, String amount, String description, String interval, LocalTime selectedTime, LocalDate scheduledDate) {
+    public DepositResponse(int userID, String accountCode, BigDecimal amount, String description, ScheduleType interval, LocalTime selectedTime, LocalDate scheduledDate) {
         this.userID = userID;
         this.accountCode = accountCode;
         this.amount = amount;
@@ -32,7 +32,7 @@ public class DepositResponse
         this.scheduledDate = scheduledDate;
     }
 
-    public DepositResponse(int userID, String accountCode, int accountID, String amount, String description, String interval, LocalTime selectedTime, LocalDate scheduledDate) {
+    public DepositResponse(int userID, String accountCode, int accountID, BigDecimal amount, String description, ScheduleType interval, LocalTime selectedTime, LocalDate scheduledDate) {
         this.userID = userID;
         this.accountCode = accountCode;
         this.accountID = accountID;

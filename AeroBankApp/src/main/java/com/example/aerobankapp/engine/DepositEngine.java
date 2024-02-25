@@ -4,12 +4,15 @@ import com.example.aerobankapp.DepositQueue;
 import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.dto.MessageNotificationDTO;
 import com.example.aerobankapp.dto.ProcessedDepositDTO;
+import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.entity.NotificationEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.scheduler.SchedulerEngine;
 import com.example.aerobankapp.scheduler.SchedulerEngineImpl;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 import com.example.aerobankapp.services.AccountService;
+import com.example.aerobankapp.services.DepositService;
 import com.example.aerobankapp.services.NotificationService;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.TransactionSummary;
@@ -35,34 +38,38 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Setter
 public class DepositEngine {
     private final DepositQueue depositQueue;
-    private List<DepositDTO> deposits;
+    private List<Deposit> deposits;
     private List<BigDecimal> processedBalances;
     private final List<ProcessedDepositDTO> processedDeposits;
     private final CalculationEngine calculationEngine;
     private final Map<String, BigDecimal> accountCodeToBalanceMap;
     private final AccountService accountService;
     private final NotificationService notificationService;
+    private final DepositService depositService;
     private final Logger LOGGER = LoggerFactory.getLogger(DepositEngine.class);
 
     @Autowired
     public DepositEngine(DepositQueue depositQueue,
                          CalculationEngine calculationEngine,
                          AccountService accountService,
+                         DepositService depositService,
                          NotificationService notificationService) {
         this.depositQueue = depositQueue;
         this.calculationEngine = calculationEngine;
         this.accountService = accountService;
+        this.depositService = depositService;
         this.notificationService = notificationService;
         this.processedDeposits = new ArrayList<>();
         this.processedBalances = new ArrayList<>();
         this.accountCodeToBalanceMap = new HashMap<>();
     }
 
-    public void setDepositQueue(DepositDTO depositDTO) {
-        this.depositQueue.add(depositDTO);
+    public void setDepositQueue(Deposit deposit) {
+        this.depositQueue.add(deposit);
     }
 
-    public List<DepositDTO> getDepositsFromQueue() {
+    public List<Deposit> getDepositsFromQueue()
+    {
         return depositQueue.getAllElements();
     }
 
@@ -90,14 +97,15 @@ public class DepositEngine {
     }
 
     public List<ProcessedDepositDTO> process() {
-        List<DepositDTO> unProcessedDeposits = getDepositsFromQueue();
+        List<Deposit> unProcessedDeposits = getDepositsFromQueue();
         return getProcessedDeposits(unProcessedDeposits);
     }
 
     public void processAndUpdateDeposits()
     {
         // Step 1: Process the deposits
-        List<DepositDTO> deposits = getDepositsFromQueue();
+        List<Deposit> deposits = getDepositsFromQueue();
+
         List<ProcessedDepositDTO> processedDepositDTOS = getProcessedDeposits(deposits);
 
         // Step 2: Extract the processed balances
@@ -106,17 +114,22 @@ public class DepositEngine {
         // Step 3: Update the account balances
         updateAccountBalances(processedDepositMap);
 
-        // Step 4: Send notification to user
-
+        // Step 4: Update the Processed Deposit List
         updateProcessedDepositList(processedDepositDTOS);
+
+        // Step 5: Send notification to user
+        for(ProcessedDepositDTO processedDepositDTO : processedDeposits)
+        {
+            sendNotification(processedDepositDTO);
+        }
     }
 
 
-    public List<ProcessedDepositDTO> getProcessedDeposits(final List<DepositDTO> depositList)
+    public List<ProcessedDepositDTO> getProcessedDeposits(final List<Deposit> depositList)
     {
         List<ProcessedDepositDTO> processedDeposits = new ArrayList<>();
         if(depositList != null) {
-            for (DepositDTO depositDTO : depositList) {
+            for (Deposit depositDTO : depositList) {
                 ProcessedDepositDTO processedDeposit = processIndividualDeposit(depositDTO);
                 processedDeposits.add(processedDeposit);
             }
@@ -126,24 +139,45 @@ public class DepositEngine {
         return processedDeposits;
     }
 
-    public ProcessedDepositDTO processIndividualDeposit(final DepositDTO depositDTO) {
-        if(depositDTO != null)
+    public ProcessedDepositDTO processIndividualDeposit(final Deposit deposit) {
+        if(deposit != null)
         {
 
-            final String accountCode = depositDTO.getAccountCode();
-            final int userID = depositDTO.getUserID();
-            final BigDecimal amount = depositDTO.getAmount();
+            final String accountCode = deposit.getAcctCode();
+            final int userID = deposit.getUserID();
+            final BigDecimal amount = deposit.getAmount();
             if(accountCode == null || userID < 1 || amount == null)
             {
                 throw new IllegalArgumentException("Invalid Deposit Criteria.");
             }
 
+            // Build the DepositsEntity
+            DepositsEntity depositsEntity = createDepositEntity(deposit);
+
+            // Save the Deposit to the database.
+            depositService.save(depositsEntity);
+
             BigDecimal balance = getCurrentBalance(accountCode, userID);
             BigDecimal newBalance = getNewBalance(amount, balance);
             addBalanceToList(newBalance);
-            return buildProcessedDepositDTO(depositDTO, newBalance);
+            return buildProcessedDepositDTO(deposit, newBalance);
         }
         throw new IllegalArgumentException("Processing Invalid Deposit!");
+    }
+
+    private DepositsEntity createDepositEntity(final Deposit depositDTO)
+    {
+        return DepositsEntity.builder()
+                .scheduleInterval(depositDTO.getScheduleInterval())
+                .amount(depositDTO.getAmount())
+                .depositID(depositDTO.getDepositID())
+                .posted(LocalDate.now())
+                .scheduledDate(depositDTO.getDateScheduled())
+                .scheduledTime(depositDTO.getTimeScheduled())
+                .description(depositDTO.getDescription())
+                .user(UserEntity.builder().userID(depositDTO.getUserID()).build())
+                .account(AccountEntity.builder().accountCode(depositDTO.getAcctCode()).acctID(depositDTO.getAccountID()).build())
+                .build();
     }
 
     private void addBalanceToList(BigDecimal balance)
@@ -161,24 +195,24 @@ public class DepositEngine {
         return calculationEngine.calculateDeposit(amount, balance);
     }
 
-    private ProcessedDepositDTO buildProcessedDepositDTO(final DepositDTO depositDTO, final BigDecimal balance)
+    private ProcessedDepositDTO buildProcessedDepositDTO(final Deposit deposit, final BigDecimal balance)
     {
         return ProcessedDepositDTO.builder()
-                .accountID(depositDTO.getAccountID())
-                .depositID(depositDTO.getDepositID())
-                .description(depositDTO.getDescription())
+                .accountID(deposit.getAccountID())
+                .depositID(deposit.getDepositID())
+                .description(deposit.getDescription())
                 .newBalance(balance)
-                .accountCode(depositDTO.getAccountCode())
-                .userID(depositDTO.getUserID())
-                .amount(depositDTO.getAmount())
+                .accountCode(deposit.getAcctCode())
+                .userID(deposit.getUserID())
+                .amount(deposit.getAmount())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    private void validateDeposit(DepositDTO depositDTO)
+    private void validateDeposit(Deposit deposit)
     {
-        Objects.requireNonNull(depositDTO.getAccountCode(), "Non Null AccountCode");
-        Objects.requireNonNull(depositDTO.getAmount(), "Non Null Amount Required");
+        Objects.requireNonNull(deposit.getAcctCode(), "Non Null AccountCode");
+        Objects.requireNonNull(deposit.getAmount(), "Non Null Amount Required");
     }
 
     private TransactionSummary generateTransactionSummary(ProcessedDepositDTO processedDepositDTO)

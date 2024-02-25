@@ -6,6 +6,7 @@ import com.example.aerobankapp.workbench.transactions.Deposit;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Currency;
 import java.util.Random;
 import java.util.UUID;
@@ -16,19 +17,20 @@ public class DepositObjectCreator
         Random random = new Random();
 
         // Generate random values for each field
-        long depositID = random.nextLong();
+        int depositID = random.nextInt();
         int userID = 1; // example user ID
         String description = "Deposit - " + UUID.randomUUID().toString(); // random description
         String acctCode = "A1"; // example account code
         int accountID = 1; // example account ID
         BigDecimal amount = BigDecimal.valueOf(random.nextDouble() * 10000); // random amount
-        LocalDateTime timeScheduled = LocalDateTime.now().plusDays(random.nextInt(30)); // random future time
+        LocalTime timeScheduled = LocalTime.now(); // random future time
         ScheduleType scheduleInterval = ScheduleType.values()[random.nextInt(ScheduleType.values().length)]; // random schedule type
+        LocalDate dateScheduled = LocalDate.now();
         LocalDate datePosted = LocalDate.now().plusDays(random.nextInt(30)); // random future date
         Currency currency = Currency.getInstance("USD"); // assuming USD for simplicity
 
         // Create a new Deposit object with the random values
-        return new Deposit(userID, description, acctCode, accountID, amount, timeScheduled, scheduleInterval, datePosted, currency, depositID);
+        return new Deposit(userID, description, acctCode, accountID, amount, timeScheduled, scheduleInterval, datePosted, dateScheduled, currency, depositID);
     }
 
     // Example usage

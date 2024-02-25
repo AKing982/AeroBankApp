@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
     Table,
     TableBody,
@@ -9,15 +9,14 @@ import {
     Paper,
     Typography
 } from '@mui/material';
+import axios from "axios";
+
 
 function createData(date, description, debit, credit, balance) {
     return { date, description, debit, credit, balance };
 }
 
-function fetchTransactionData()
-{
 
-}
 
 const rows = [
     createData('February 4, 2024', 'PIN Purchase HARMONS - DIST 11453 S. PARKWAY South', '-$20.84', '', '$931.02'),
@@ -28,6 +27,35 @@ const rows = [
 ];
 
 export default function TransactionTable() {
+
+    const [transactionDate, setTransactionDate] = useState('');
+    const [description, setDescription] = useState('');
+    const [debitAmount, setDebitAmount] = useState(0);
+    const [creditAmount, setCreditAmount] = useState(0);
+    const [balance, setBalance] = useState(0);
+
+    function fetchTransactionData()
+    {
+        let userID = sessionStorage.getItem('userID');
+        return axios.get(`http://localhost:8080/AeroBankApp/api/transactions/${userID}`)
+            .then(response => {
+                if(Array.isArray(response.data) && response.data.length > 0) {
+                    const firstItem = response.data[0];
+                    setTransactionDate(firstItem.transactionDate);
+                    setDescription(firstItem.description);
+                    setDebitAmount(firstItem.debit);
+                    setCreditAmount(firstItem.credit);
+                    setBalance(firstItem.balance);
+                } else {
+                    console.log('No Transactions found for this user.');
+                }
+            })
+            .catch(error => {
+                console.error('There was an error fetching the transaction data: ', error);
+
+            });
+    }
+
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="transaction table">

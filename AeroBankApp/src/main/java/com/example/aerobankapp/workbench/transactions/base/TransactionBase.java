@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Currency;
 
 @Data
@@ -19,12 +20,13 @@ public abstract class TransactionBase
     protected String description;
     protected int accountID;
     protected BigDecimal amount;
-    protected LocalDateTime timeScheduled;
+    protected LocalTime timeScheduled;
     protected ScheduleType scheduleInterval;
     protected LocalDate date_posted;
+    protected LocalDate dateScheduled;
     protected Currency currency;
 
-    public TransactionBase(int userID, String description, int accountID, BigDecimal amount, LocalDateTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, Currency currency) {
+    public TransactionBase(int userID, String description, int accountID, BigDecimal amount, LocalTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, LocalDate dateScheduled, Currency currency) {
         this.userID = userID;
         this.description = description;
         this.accountID = accountID;
@@ -32,6 +34,7 @@ public abstract class TransactionBase
         this.timeScheduled = timeScheduled;
         this.scheduleInterval = scheduleInterval;
         this.date_posted = date_posted;
+        this.dateScheduled = dateScheduled;
         this.currency = currency;
     }
 }

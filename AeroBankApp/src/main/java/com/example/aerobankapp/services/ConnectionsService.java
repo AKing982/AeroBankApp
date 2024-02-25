@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.ConnectionsEntity;
 import com.example.aerobankapp.model.ConnectionModel;
+import com.example.aerobankapp.workbench.utilities.ConnectionRequest;
 
 import java.util.List;
 
@@ -31,5 +32,5 @@ public interface ConnectionsService extends ConnectionModel
     void connectToDB(ConnectionsEntity connectionsEntity);
 
     @Override
-    void testConnection(ConnectionsEntity connectionsEntity);
+    boolean testConnection(ConnectionRequest connectionRequest);
 }

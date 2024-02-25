@@ -26,7 +26,6 @@ public class DepositController {
 
     private final DepositService depositService;
 
-
     @Autowired
     public DepositController(@Qualifier("depositServiceImpl") DepositService depositService)
     {
@@ -47,7 +46,7 @@ public class DepositController {
     @PostMapping("/submit")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    public ResponseEntity<?> submitDeposit(@Valid @RequestBody DepositRequest request)
+    public ResponseEntity<?> submitDeposit(@Valid @RequestBody DepositDTO request)
     {
         DepositResponse depositResponse = getDepositResponse(request);
         depositService.submit(request);

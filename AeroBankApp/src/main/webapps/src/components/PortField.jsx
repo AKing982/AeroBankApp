@@ -13,7 +13,7 @@ export default function PortField({value, onChange, isError, isLoading})
         <div>
             <TextField
                 type="number"
-                label="Port"
+                label={label}
                 value={value}
                 onChange={onChange}
                 error={isError}

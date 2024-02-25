@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -201,6 +204,26 @@ public class UserServiceImpl implements UserService
 
         long count = query.getSingleResult();
         return count > 0;
+    }
+
+    @Override
+    public String generateAccountNumber(String user)
+    {
+        try {
+            // Use SHA-256 hashing
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(user.getBytes());
+            byte[] digest = md.digest();
+
+            // Convert the hash bytes to integers and format
+            int part1 = Math.abs(new BigInteger(1, new byte[]{digest[0], digest[1]}).intValue() % 100);
+            int part2 = Math.abs(new BigInteger(1, new byte[]{digest[2], digest[3]}).intValue() % 100);
+            int part3 = Math.abs(new BigInteger(1, new byte[]{digest[4], digest[5]}).intValue() % 100);
+
+            return String.format("%02d-%02d-%02d", part1, part2, part3);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error generating account number", e);
+        }
     }
 
 }

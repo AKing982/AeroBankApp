@@ -14,6 +14,6 @@ public interface NotificationService
     void sendEmailNotification(EmailNotificationDTO emailNotification);
     void sendMessageNotification(MessageNotificationDTO messageNotification);
     void markNotificationAsRead(Long notificationID);
-    void deleteNotification(Long notificationID);
+    void deleteNotification(NotificationEntity entity);
     int countUnreadNotifications(int userID);
 }

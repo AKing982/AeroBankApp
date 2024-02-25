@@ -5,6 +5,7 @@ import com.example.aerobankapp.entity.DepositQueueEntity;
 import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.services.DepositQueueService;
+import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.utilities.QueueStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,20 +43,20 @@ class DepositQueueTest {
     private DepositQueueService queueService;
 
     @Mock
-    private DepositDTO depositDTO;
+    private Deposit depositDTO;
 
     @Mock
-    private DepositDTO depositDTO1;
+    private Deposit depositDTO1;
 
     @Mock
-    private DepositDTO depositDTO2;
+    private Deposit depositDTO2;
 
     @BeforeEach
     void setUp()
     {
-        depositDTO = mock(DepositDTO.class);
-        depositDTO1 = mock(DepositDTO.class);
-        depositDTO2 = mock(DepositDTO.class);
+        depositDTO = mock(Deposit.class);
+        depositDTO1 = mock(Deposit.class);
+        depositDTO2 = mock(Deposit.class);
 
         depositQueue = new DepositQueue(queueService);
     }
@@ -96,7 +97,7 @@ class DepositQueueTest {
     @Test
     public void testAddingListOfDepositsToQueue()
     {
-        List<DepositDTO> depositDTOList = new ArrayList<>();
+        List<Deposit> depositDTOList = new ArrayList<>();
         depositDTOList.add(depositDTO);
         depositDTOList.add(depositDTO1);
         depositDTOList.add(depositDTO2);
@@ -112,7 +113,7 @@ class DepositQueueTest {
     @Test
     public void testAddingEmptyListToQueue()
     {
-        List<DepositDTO> emptyList = new ArrayList<>();
+        List<Deposit> emptyList = new ArrayList<>();
 
         depositQueue.addAll(emptyList);
 
@@ -135,7 +136,7 @@ class DepositQueueTest {
     @Test
     public void testOrderOfDepositsInQueue()
     {
-        List<DepositDTO> depositDTOList = Arrays.asList(depositDTO, depositDTO1, depositDTO2);
+        List<Deposit> depositDTOList = Arrays.asList(depositDTO, depositDTO1, depositDTO2);
 
         depositQueue.addAll(depositDTOList);
 
@@ -151,7 +152,7 @@ class DepositQueueTest {
         depositQueue.add(depositDTO);
         depositQueue.add(depositDTO1);
 
-        DepositDTO removed = depositQueue.remove();
+        Deposit removed = depositQueue.remove();
 
         assertEquals(depositDTO, removed);
         assertEquals(1, depositQueue.size());
@@ -200,16 +201,17 @@ class DepositQueueTest {
     @Test
     public void testAddQueueToDatabase()
     {
-        DepositDTO dto = DepositDTO.builder()
-                        .depositID(1)
-                        .accountCode("A1")
-                        .userID(1)
-                        .description("Transfer1")
-                        .amount(new BigDecimal("1214"))
-                        .scheduleInterval(ScheduleType.ONCE)
-                        .date(LocalDate.now())
-                        .timeScheduled(LocalTime.now())
-                        .build();
+        Deposit dto = new Deposit();
+        dto.setAccountID(1);
+        dto.setDepositID(1);
+        dto.setAcctCode(null);
+        dto.setAmount(new BigDecimal("45.00"));
+        dto.setTimeScheduled(LocalTime.now());
+        dto.setUserID(1);
+        dto.setDescription("Transfer 1");
+        dto.setScheduleInterval(ScheduleType.ONCE);
+        dto.setDateScheduled(LocalDate.now());
+
         depositQueue.addToDatabase(dto);
 
         DepositsEntity depositQueueEntity = convertToDepositEntity(depositDTO);
@@ -219,15 +221,15 @@ class DepositQueueTest {
         verify(queueService).save(any(DepositQueueEntity.class));
     }
 
-    private DepositsEntity convertToDepositEntity(DepositDTO depositDTO)
+    private DepositsEntity convertToDepositEntity(Deposit depositDTO)
     {
         return DepositsEntity.builder()
                 .depositID(depositDTO.getDepositID())
                 .amount(depositDTO.getAmount())
                 .description(depositDTO.getDescription())
-                .scheduledDate(depositDTO.getDate())
+                .scheduledDate(depositDTO.getDateScheduled())
                 .scheduledTime(depositDTO.getTimeScheduled())
-                .posted(depositDTO.getDate())
+                .posted(depositDTO.getDate_posted())
                 .scheduleInterval(depositDTO.getScheduleInterval())
                 .build();
     }
