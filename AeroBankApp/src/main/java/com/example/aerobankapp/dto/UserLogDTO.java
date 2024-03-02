@@ -6,7 +6,14 @@ import java.util.Date;
 
 public record UserLogDTO(int sessionID,
                          int userID,
-                         LocalDateTime lastLogin)
+                         String username,
+                         LocalDateTime lastLogin,
+                         LocalDateTime lastLogout,
+                         int sessionDuration,
+                         boolean loginSuccess,
+                         String ipAddress,
+
+                         String sessionToken)
 {
 
 }

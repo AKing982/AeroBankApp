@@ -1,6 +1,7 @@
 package com.example.aerobankapp.dto;
 
 import com.example.aerobankapp.scheduler.ScheduleType;
+import com.example.aerobankapp.workbench.utilities.notifications.NotificationType;
 import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ public final class DepositDTO implements Serializable
     private LocalTime timeScheduled;
     private ScheduleType scheduleInterval;
     private String description;
+    private NotificationType notificationType;
     private boolean nonUSDCurrency;
 
     public DepositDTO()

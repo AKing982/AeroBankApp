@@ -74,12 +74,9 @@ public class UserServiceImpl implements UserService
     @Transactional
     public List<UserEntity> findByUserName(String user) {
 
-        TypedQuery<UserEntity> query = getEntityManager().createQuery("SELECT e FROM UserEntity e where e.username=:user", UserEntity.class)
-                .setParameter("user", user)
-                .setMaxResults(10);
-        aeroLogger.debug("Found User: " + query.getResultList());
-
-        return query.getResultList();
+        List<UserEntity> userEntityList = userRepository.findByUserName(user);
+        aeroLogger.debug("Found User: " + userEntityList.get(0));
+        return userEntityList;
     }
 
     @Override
@@ -89,30 +86,13 @@ public class UserServiceImpl implements UserService
         {
             throw new IllegalArgumentException("User Entity or its ID must not be null");
         }
-
-        UserEntity existingUserEntity = getUserRepository().findById((long) obj.getUserID())
-                .orElseThrow(() -> new EntityNotFoundException("User Entity not found with id: " + obj.getUserID()));
-
-        existingUserEntity.setUsername(obj.getUsername());
-        existingUserEntity.setEmail(obj.getEmail());
-        existingUserEntity.setRole(obj.getRole());
-        existingUserEntity.setPassword(obj.getPassword());
-        existingUserEntity.setPinNumber(obj.getPinNumber());
-        existingUserEntity.setFirstName(obj.getFirstName());
-        existingUserEntity.setLastName(obj.getLastName());
-
-        getUserRepository().save(existingUserEntity);
+        userRepository.updateUser(obj.getUserID(), obj.getUsername(), obj.getEmail(), obj.getRole(), obj.getPassword(), obj.getPinNumber(), obj.getFirstName(), obj.getLastName());
     }
 
     @Override
     public Role getUserRole(String user) throws NoResultException
     {
-        TypedQuery<UserEntity> userRoleQuery = getEntityManager().createQuery("FROM UserEntity where username=:user", UserEntity.class)
-                .setParameter("user", user)
-                .setMaxResults(10);
-
-        UserEntity userEntity = userRoleQuery.getSingleResult();
-        return userEntity.getRole();
+       return userRepository.getUserRole(user);
     }
 
     @Override
@@ -132,15 +112,7 @@ public class UserServiceImpl implements UserService
     @Override
     @Transactional
     public String getAccountNumberByUserName(String user) {
-        TypedQuery<UserEntity> accountNumberQuery = getEntityManager().createQuery("FROM UserEntity WHERE username=:user", UserEntity.class);
-        accountNumberQuery.setParameter("user", user);
-        accountNumberQuery.setMaxResults(1);
-
-        List<UserEntity> userEntityList = accountNumberQuery.getResultList();
-
-        UserEntity userEntity = userEntityList.stream().findFirst().orElseThrow();
-
-        return userEntity.getAccountNumber();
+       return userRepository.getAccountNumberByUserName(user);
     }
 
     @Override
@@ -166,22 +138,13 @@ public class UserServiceImpl implements UserService
     @Override
     public List<String> getListOfUserNames()
     {
-       TypedQuery<UserEntity> typedQuery = getEntityManager().createQuery("FROM UserEntity u", UserEntity.class);
-       List<UserEntity> userEntities = typedQuery.getResultList();
-
-        return userEntities.stream().map(UserEntity::getUsername).toList();
+       return userRepository.getListOfUsers();
     }
 
     @Override
     public int getUserIDByUserName(String user)
     {
-        TypedQuery<UserEntity> typedQuery = getEntityManager().createQuery("FROM UserEntity WHERE username=: user", UserEntity.class);
-        typedQuery.setParameter("user", user);
-        typedQuery.setMaxResults(1);
-
-        UserEntity userEntity = typedQuery.getSingleResult();
-
-        return userEntity.getUserID();
+        return userRepository.getIDByUserName(user);
     }
 
     @Override
@@ -198,12 +161,7 @@ public class UserServiceImpl implements UserService
 
     @Override
     public boolean userNameExists(String user) {
-        TypedQuery<Long> query = getEntityManager().createQuery(
-                "SELECT COUNT(u) FROM UserEntity u WHERE u.username = :username", Long.class);
-        query.setParameter("username", user);
-
-        long count = query.getSingleResult();
-        return count > 0;
+      return userRepository.userExists(user);
     }
 
     @Override

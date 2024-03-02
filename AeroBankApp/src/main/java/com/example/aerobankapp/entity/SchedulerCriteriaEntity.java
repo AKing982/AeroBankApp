@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -24,7 +25,7 @@ public class SchedulerCriteriaEntity
     private UserEntity schedulerUserID;
 
     @Column(name="scheduledTime")
-    private String scheduledTime;
+    private LocalTime scheduledTime;
 
     @Column(name="scheduledDate")
     private LocalDate scheduledDate;

@@ -89,6 +89,7 @@ export default function DatabaseSettings()
 
         return axios.post(`http://localhost:8080/AeroBankApp/api/connections/testConnection`, connectionRequest)
             .then(response => {
+                if(response.data)
                 console.log('Test Connection was successful.');
                 setSnackBarOpen(true);
                 setSnackBarMessage("Test Connection was successful");

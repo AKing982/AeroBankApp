@@ -164,7 +164,7 @@ export default function UserSetupSettings()
 
     function validateInput(firstName, lastName, userName, email, pin, password, confirmPassword, role)
     {
-        
+
     }
 
     const handleSaveButtonClick = async () => {

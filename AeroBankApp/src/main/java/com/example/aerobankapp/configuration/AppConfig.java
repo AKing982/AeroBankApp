@@ -28,8 +28,8 @@ public class AppConfig
         return new DataSourceTransactionManager(dataSource);
     }
 
-    @Primary
     @Bean(name="aerobank")
+    @Primary
     public DataSource dataSource()
     {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();

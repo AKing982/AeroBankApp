@@ -26,7 +26,7 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
     @Override
     List<AccountEntity> findByUserName(String user);
 
-    BigDecimal getBalanceByAcctID(String acctID);
+    BigDecimal getBalanceByAcctID(int acctID);
 
     BigDecimal getBalanceByAccountCodeUserID(String acctCode, int userID);
 

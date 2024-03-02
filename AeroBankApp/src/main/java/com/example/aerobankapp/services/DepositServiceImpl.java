@@ -2,7 +2,9 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.engine.DepositEngine;
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.DepositsEntity;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.DepositRepository;
 import com.example.aerobankapp.scheduler.*;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
@@ -26,6 +28,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static com.example.aerobankapp.services.utilities.DepositServiceUtil.*;
 
 @Service
 @Getter
@@ -52,6 +56,14 @@ public class DepositServiceImpl implements DepositService
         this.asyncDepositService = asyncDepositService;
     }
 
+    private void nullCheck(DepositsEntity deposits)
+    {
+        if(deposits == null)
+        {
+            throw new IllegalArgumentException("Invalid Deposit Entered...");
+        }
+    }
+
     @Override
     public List<DepositsEntity> findAll() {
         return getDepositRepository().findAll();
@@ -59,11 +71,13 @@ public class DepositServiceImpl implements DepositService
 
     @Override
     public void save(DepositsEntity obj) {
+        nullCheck(obj);
         getDepositRepository().save(obj);
     }
 
     @Override
     public void delete(DepositsEntity obj) {
+        nullCheck(obj);
         getDepositRepository().delete(obj);
     }
 
@@ -74,82 +88,72 @@ public class DepositServiceImpl implements DepositService
 
     @Override
     public List<DepositsEntity> findByUserName(String user) {
-        return null;
+        if(user == null || user.isEmpty())
+        {
+            throw new IllegalArgumentException("Invalid user entered...");
+        }
+        return depositRepository.findDepositsByUserName(user);
     }
 
     @Override
-    public List<DepositsEntity> getDepositsByUserNameDesc(String user) {
-        return null;
+    public List<DepositsEntity> findByUserID(int userID) {
+        return depositRepository.findDepositsByUserID(userID);
+    }
+
+    @Override
+    public List<DepositsEntity> getDepositsByUserNameDesc(String user)
+    {
+       return depositRepository.getDepositsByUserNameDesc(user);
     }
 
     @Override
     public List<DepositsEntity> getDepositsByAcctID(int acctID) {
-        TypedQuery<DepositsEntity> depositsEntityTypedQuery = getEntityManager()
-                .createQuery("SELECT d FROM DepositsEntity d JOIN d.account a WHERE a.acctID = :acctID", DepositsEntity.class);
-        depositsEntityTypedQuery.setParameter("acctID", acctID);
-        depositsEntityTypedQuery.setMaxResults(30);
-        return depositsEntityTypedQuery.getResultList();
+        return depositRepository.getDepositsByAcctID(acctID);
     }
 
     @Override
-    public List<DepositsEntity> getListOfDepositsByUserIDASC(Long id) {
-        return null;
+    public List<DepositsEntity> getListOfDepositsByUserIDASC(int id) {
+       return depositRepository.getListOfDepositsByUserIDASC(id);
     }
 
     @Override
-    public List<DepositsEntity> getListOfDepositsByUserID_DESC(Long id) {
-        return null;
+    public List<DepositsEntity> getListOfDepositsByUserID_DESC(int id) {
+        return depositRepository.getListOfDepositsByUserID_DESC(id);
     }
 
     @Override
     public void submit(DepositDTO request)
     {
-        // Build the SchedulerCriteria
+        // Build the DepositsEntity
+        buildAndSaveDepositEntity(request);
+        SchedulerCriteria schedulerCriteria = buildAndProcessSchedulerCriteria(request);
+        logSchedulerCriteria(schedulerCriteria);
+        System.out.println("Deposit has been received");
+    }
+
+    private void buildAndSaveDepositEntity(DepositDTO request) {
+        DepositsEntity depositsEntity = buildDepositEntity(request);
+        getDepositRepository().save(depositsEntity);
+    }
+
+    private SchedulerCriteria buildAndProcessSchedulerCriteria(DepositDTO request) {
         SchedulerCriteria schedulerCriteria = buildCriteria(request);
+        processSchedulerCriteriaAsync(schedulerCriteria, request);
+        return schedulerCriteria;
+    }
 
-        asyncDepositService.validateAndParse(schedulerCriteria, (triggerCriteria) -> {
-            // Callback with the result of validation and parsing
+    private void processSchedulerCriteriaAsync(SchedulerCriteria schedulerCriteria, DepositDTO request) {
+        asyncDepositService.validateAndParse(schedulerCriteria, triggerCriteria -> {
             Deposit depositDTO = buildDeposit(request);
-
-            // Send the DepositDTO to RabbitMQ asynchronously
             asyncDepositService.sendToRabbitMQ(depositDTO);
-
-            // Start the Quartz Scheduler asynchronously
             asyncDepositService.startScheduler(triggerCriteria);
         });
-
-        System.out.println(schedulerCriteria.toString());
-        System.out.println(schedulerCriteria.getScheduledTime());
-        System.out.println(schedulerCriteria.getScheduledDate());
-        System.out.println("Deposit has been recieved");
     }
 
-    private SchedulerCriteria buildCriteria(DepositDTO request)
-    {
-        LOGGER.debug("Request Date: " + request.getDate());
-        LOGGER.debug("Request Time: " + request.getTimeScheduled());
-        return SchedulerCriteria.builder()
-                .scheduledDate(request.getDate())
-                .scheduledTime(request.getTimeScheduled())
-                .scheduleType(request.getScheduleInterval())
-                .priority(1)
-                .createdAt(LocalDate.now())
-                .build();
+    private void logSchedulerCriteria(SchedulerCriteria schedulerCriteria) {
+        LOGGER.info("ScheduleCriteria: " + schedulerCriteria);
+        LOGGER.info("Scheduled Time: " + schedulerCriteria.getScheduledTime());
+        LOGGER.info("scheduled Date: " + schedulerCriteria.getScheduledDate());
     }
 
-    private Deposit buildDeposit(DepositDTO request)
-    {
-        Deposit deposit = new Deposit();
-        deposit.setDepositID(request.getDepositID());
-        deposit.setAcctCode(request.getAccountCode());
-        deposit.setAmount(request.getAmount());
-        deposit.setDescription(request.getDescription());
-        deposit.setAccountID(request.getAccountID());
-        deposit.setDateScheduled(request.getDate());
-        deposit.setScheduleInterval(request.getScheduleInterval());
-        deposit.setTimeScheduled(request.getTimeScheduled());
-        deposit.setDate_posted(LocalDate.now());
-        deposit.setUserID(request.getUserID());
-        return deposit;
-    }
 }

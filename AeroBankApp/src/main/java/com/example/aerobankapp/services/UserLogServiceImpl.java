@@ -6,15 +6,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@PreAuthorize("isAuthenticated()")
 public class UserLogServiceImpl implements UserLogService
 {
-    private UserLogRepository userLogRepository;
+    private final UserLogRepository userLogRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -28,17 +30,27 @@ public class UserLogServiceImpl implements UserLogService
 
     @Override
     public List<UserLogEntity> findAll() {
-        return null;
+        return userLogRepository.findAll();
     }
 
     @Override
-    public void save(UserLogEntity obj) {
-
+    public void save(UserLogEntity obj)
+    {
+        if(obj == null)
+        {
+            throw new IllegalArgumentException("Unable to save Invalid UserLog...");
+        }
+        userLogRepository.save(obj);
     }
 
     @Override
-    public void delete(UserLogEntity obj) {
-
+    public void delete(UserLogEntity obj)
+    {
+        if(obj == null)
+        {
+            throw new IllegalArgumentException("Unable to delete the UserLog: " + obj);
+        }
+        userLogRepository.delete(obj);
     }
 
     @Override
@@ -48,6 +60,21 @@ public class UserLogServiceImpl implements UserLogService
 
     @Override
     public List<UserLogEntity> findByUserName(String user) {
+        return null;
+    }
+
+    @Override
+    public int updateUserLog(UserLogEntity userLogEntity) {
+        return 0;
+    }
+
+    @Override
+    public String getIPAddressById(int id) {
+        return null;
+    }
+
+    @Override
+    public String getSessionToken(int id) {
         return null;
     }
 }

@@ -1,19 +1,19 @@
 package com.example.aerobankapp.engine;
 
-import com.example.aerobankapp.account.AbstractAccountBase;
 import com.example.aerobankapp.dto.AccountDTO;
 import com.example.aerobankapp.dto.BalanceHistoryDTO;
-import com.example.aerobankapp.dto.DepositDTO;
+import com.example.aerobankapp.workbench.transactions.Deposit;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Queue;
 
-public class BalanceHistoryEngineImpl implements BalanceHistoryEngine
+public class DepositBalanceHistoryEngineImpl implements BalanceHistoryEngine<Deposit>
 {
 
     @Override
-    public Queue<BalanceHistoryDTO> getBalanceHistoryBatch(Queue transactionList) {
+    public Queue<BalanceHistoryDTO> getBalanceHistoryBatch(Queue<Deposit> transactionList)
+    {
         return null;
     }
 

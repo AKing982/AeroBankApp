@@ -56,12 +56,14 @@ export default function EmailSettings() {
         {
             setSnackBarOpen(true);
             setSnackBarMessage('Please enter a from Email');
+            setSnackBarSeverity('error');
             return;
         }
         if(!testEmail)
         {
             setSnackBarOpen(true);
             setSnackBarMessage('Please Enter a Test Email');
+            setSnackBarSeverity('error');
             return;
         }
 
@@ -96,6 +98,7 @@ export default function EmailSettings() {
                 console.log('Test Connection request successfully sent.')
             })
             .catch(error => {
+
                 console.error('Error sending test connection: ', error);
             });
     }

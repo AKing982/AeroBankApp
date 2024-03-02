@@ -21,6 +21,7 @@ import {
 import {Box} from "@mui/system";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import backgroundImage from '../background.jpg';
+import axios from "axios";
 
 export default function LoginFormOLD()
 {
@@ -152,6 +153,32 @@ export default function LoginFormOLD()
         color: 'blue', // Change the color of CircularProgress
         size: 90, // Increase the size to make it brighter
     };
+
+    function sendUserLogRequest()
+    {
+        const userLogData = {
+            userID: 0,
+            user: username,
+            lastLogin: '',
+            lastLogout: '',
+            sessionDuration: 0,
+            loginSuccess: false,
+            ipAddress: '',
+            sessionToken: ''
+        }
+
+        return axios.post(`http://localhost:8080/AeroBankApp/api/session/add`, userLogData)
+            .then(response => {
+                console.log('User Log Data Successfully posted...');
+            })
+            .catch(error => {
+                console.error('Unable to send the User Log POST due to the error: ', error);
+            });
+    }
+
+    const fetchUserID = {
+
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
