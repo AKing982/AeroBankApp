@@ -102,7 +102,7 @@ export default function DatabaseSettings()
 
         console.log('Connection Request: ', connectionRequest);
 
-
+        setBackDropOpen(true);
         setTimeout(() => {
             return axios.post(`http://localhost:8080/AeroBankApp/api/connections/connect`, connectionRequest)
                 .then(response => {
@@ -171,7 +171,7 @@ export default function DatabaseSettings()
         let dbTypeToLowerCase = parseDatabaseTypeToLowerCase(dbType);
         // First Validate the Connection Input
         validateConnectionInput(server, port, databaseName, username, password, dbTypeToLowerCase);
-        setBackDropOpen(true);
+
         sendTestConnectionRequest(server, port, databaseName, username, password, dbTypeToLowerCase)
             .then(response => {
                 console.log('Test Connection sent successfully.')

@@ -40,6 +40,7 @@ public class DatabaseRunner
     private JdbcTemplate jdbcTemplate = new JdbcTemplate();
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private ConnectionModel connectionModel;
+    private ConnectionBuilder connectionBuilder;
     private static final String resourceString = "classpath:conf/";
     private static final String createTableSQL = "CREATE TABLE";
     private static final String createDatabaseSQL = "CREATE DATABASE";
@@ -65,12 +66,23 @@ public class DatabaseRunner
         this.connectionModel.setDatabaseType(type);
     }
 
+    public void setJdbcTemplate(final DriverManagerDataSource dataSource)
+    {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
     public void createDataSource(final String server, final int port, final String dbName, final String user, final String password, final DBType type, boolean includeDBName)
     {
         final String url = includeDBName ? getDatabaseURL(type, server, port, dbName) : getServerURL(type, server, port);
-        DriverManagerDataSource dataSource = new DriverManagerDataSource(url, user, password);
+        DriverManagerDataSource dataSource = getDriverDataSource(url, user, password, type);
+        setJdbcTemplate(dataSource);
+    }
+
+    private DriverManagerDataSource getDriverDataSource(final String url, final String user, final String pass, final DBType type)
+    {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource(url, user, pass);
         dataSource.setDriverClassName(getDriverClassName(type));
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        return dataSource;
     }
 
     public void configureDataSourceForNewDatabase(final String dbName) {
@@ -88,11 +100,10 @@ public class DatabaseRunner
 
         // Include the dbName in the connection URL
         final String url = getDatabaseURL(type, server, port, dbName);
-        DriverManagerDataSource dataSource = new DriverManagerDataSource(url, user, password);
-        dataSource.setDriverClassName(getDriverClassName(type));
+        DriverManagerDataSource dataSource = getDriverDataSource(url, user, password, type);
 
         // Update jdbcTemplate and namedParameterJdbcTemplate to use the new DataSource
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        setJdbcTemplate(dataSource);
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
@@ -293,7 +304,7 @@ public class DatabaseRunner
         queryStatements.add(statement);
     }
 
-    private QueryStatement createQueryStatement(String query)
+    private QueryStatement createQueryStatement(final String query)
     {
         return new QueryStatement(query);
     }

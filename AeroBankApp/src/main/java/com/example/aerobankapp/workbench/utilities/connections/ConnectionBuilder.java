@@ -6,4 +6,5 @@ public interface ConnectionBuilder
    String getUserName();
    String getPassword();
    String getURL();
+   String getConfigFile();
 }

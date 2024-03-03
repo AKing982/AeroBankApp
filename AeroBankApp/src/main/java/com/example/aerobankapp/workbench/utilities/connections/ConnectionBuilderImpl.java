@@ -16,7 +16,7 @@ public class ConnectionBuilderImpl implements ConnectionBuilder
     @Autowired
     public ConnectionBuilderImpl(ConnectionRequest connectionRequest)
     {
-        this.connectionRequest = connectionRequest;
+       this.connectionRequest = connectionRequest;
     }
 
     public DBType getDBType()
@@ -77,9 +77,9 @@ public class ConnectionBuilderImpl implements ConnectionBuilder
 
     @Override
     public String getURL() {
-        String host = connectionRequest.getDbServer();
-        int port = connectionRequest.getDbPort();
-        String dbName = connectionRequest.getDbName();
+        String host = getConnectionRequest().getDbServer();
+        int port = getConnectionRequest().getDbPort();
+        String dbName = getConnectionRequest().getDbName();
         switch(getDBType()) {
             case PSQL:
             case MYSQL:
@@ -88,6 +88,23 @@ public class ConnectionBuilderImpl implements ConnectionBuilder
                 return String.format("%s://%s:%s;databaseName=%s", getDBProtocol(), host, port, dbName);
             default:
                 throw new InvalidDBTypeException("Invalid Database Type Found.");
+        }
+    }
+
+    @Override
+    public String getConfigFile() {
+        switch(getDBType())
+        {
+            case PSQL -> {
+                return "psqltables.conf";
+            }
+            case MYSQL -> {
+                return "mysqltables.conf";
+            }
+            case SSQL -> {
+                return "ssqltables.conf";
+            }
+            default -> throw new InvalidDBTypeException("Invalid Database Type...");
         }
     }
 }
