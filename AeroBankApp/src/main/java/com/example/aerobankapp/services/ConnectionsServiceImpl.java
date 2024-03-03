@@ -1,11 +1,15 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.DatabaseInitializer;
 import com.example.aerobankapp.entity.ConnectionsEntity;
 import com.example.aerobankapp.repositories.ConnectionRepository;
+import com.example.aerobankapp.workbench.runner.DatabaseRunner;
 import com.example.aerobankapp.workbench.utilities.ConnectionRequest;
 import com.example.aerobankapp.workbench.utilities.DataSourceProperties;
 import com.example.aerobankapp.workbench.utilities.connections.ConnectionBuilder;
 import com.example.aerobankapp.workbench.utilities.connections.ConnectionBuilderImpl;
+import com.example.aerobankapp.workbench.utilities.connections.ConnectionModel;
+import com.example.aerobankapp.workbench.utilities.db.DBType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
@@ -30,14 +34,20 @@ public class ConnectionsServiceImpl implements ConnectionsService
     @PersistenceContext
     private EntityManager entityManager;
     private final DataSourceProperties dataSourceProperties;
+    private final DatabaseRunner databaseRunner;
+    private final DatabaseInitializer databaseInitializer;
     private final Logger LOGGER = LoggerFactory.getLogger(ConnectionsServiceImpl.class);
 
     @Autowired
     public ConnectionsServiceImpl(DataSourceProperties dataSource,
+                                  DatabaseRunner databaseRunner,
+                                  DatabaseInitializer databaseInitializer,
                                   ConnectionRepository connectionRepository,
                                   EntityManager entityManager)
     {
         this.connectionRepository = connectionRepository;
+        this.databaseRunner = databaseRunner;
+        this.databaseInitializer = databaseInitializer;
         this.entityManager = entityManager;;
         this.dataSourceProperties = dataSource;
     }
@@ -66,29 +76,17 @@ public class ConnectionsServiceImpl implements ConnectionsService
 
     @Override
     public String getServerAddressById(Long id) {
-        TypedQuery<ConnectionsEntity> connectionsEntityTypedQuery = getEntityManager().createQuery("FROM ConnectionsEntity WHERE id=:id", ConnectionsEntity.class);
-        connectionsEntityTypedQuery.setParameter("id", id);
-        connectionsEntityTypedQuery.setMaxResults(2);
-        ConnectionsEntity connectionsEntity = connectionsEntityTypedQuery.getSingleResult();
-        return connectionsEntity.getDbServer();
+        return connectionRepository.getServerAddressById(id);
     }
 
     @Override
     public int getPortById(Long id) {
-        TypedQuery<ConnectionsEntity> connectionsEntityTypedQuery = getEntityManager().createQuery("FROM ConnectionsEntity WHERE id=:id", ConnectionsEntity.class);
-        connectionsEntityTypedQuery.setParameter("id", id);
-        connectionsEntityTypedQuery.setMaxResults(2);
-        ConnectionsEntity connectionsEntity = connectionsEntityTypedQuery.getSingleResult();
-        return connectionsEntity.getDbPort();
+        return connectionRepository.getPortById(id);
     }
 
     @Override
     public String getUserNameById(Long id) {
-        TypedQuery<ConnectionsEntity> connectionsEntityTypedQuery = getEntityManager().createQuery("FROM ConnectionsEntity WHERE id=:id", ConnectionsEntity.class);
-        connectionsEntityTypedQuery.setParameter("id", id);
-        connectionsEntityTypedQuery.setMaxResults(2);
-        ConnectionsEntity connectionsEntity = connectionsEntityTypedQuery.getSingleResult();
-        return connectionsEntity.getDbUser();
+        return connectionRepository.getUserNameById(id);
     }
 
     @Override
@@ -121,6 +119,34 @@ public class ConnectionsServiceImpl implements ConnectionsService
             LOGGER.error("Error testing database connection: " + e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public boolean createDatabase(ConnectionsEntity connectionsEntity)
+    {
+        // Create the Connection Model
+        ConnectionModel connectionModel = createConnectionModel(connectionsEntity);
+
+        // Set the connection model in the database runner
+        databaseRunner.setConnectionModel(connectionModel);
+
+        // Verify we can connect to the database
+        databaseRunner.setupAndInitializeDatabase(connectionModel.getDbServer(), connectionModel.getDbPort(), connectionModel.getDbName(), connectionModel.getDbUser(), connectionModel.getDbPass(), connectionModel.getDatabaseType());
+        return true;
+    }
+
+    private ConnectionModel createConnectionModel(ConnectionsEntity connectionsEntity)
+    {
+        ConnectionModel connection = new ConnectionModel();
+        connection.setDbServer(connectionsEntity.getDbServer());
+        connection.setDbPort(connectionsEntity.getDbPort());
+        connection.setDbName(connectionsEntity.getDbName());
+        connection.setDbUser(connectionsEntity.getDbUser());
+        connection.setDbPass(connectionsEntity.getDbPass());
+        connection.setDriver("com.mysql.cj.jdbc.Driver");
+        connection.setDbProtocol("jdbc:mysql");
+        connection.setDatabaseType(connectionsEntity.getDbType());
+        return connection;
     }
 
     private DataSource createDataSource(ConnectionRequest connectionRequest)

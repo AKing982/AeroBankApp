@@ -16,4 +16,5 @@ public interface ConnectionModel
     String getUserNameById(Long id);
     void connectToDB(ConnectionsEntity connectionsEntity);
     boolean testConnection(ConnectionRequest connectionRequest);
+    boolean createDatabase(ConnectionsEntity connectionsEntity);
 }

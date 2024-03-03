@@ -19,4 +19,5 @@ public class ConnectionModel
     private DBType databaseType;
     private String dbUser;
     private String dbPass;
+    private String driver;
 }

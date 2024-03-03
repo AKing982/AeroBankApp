@@ -1,10 +1,13 @@
 package com.example.aerobankapp.workbench.runner;
 
+import com.example.aerobankapp.services.DatabaseSchemaService;
+import com.example.aerobankapp.services.DatabaseSchemaServiceImpl;
 import com.example.aerobankapp.workbench.utilities.QueryStatement;
 import com.example.aerobankapp.workbench.utilities.connections.ConnectionBuilder;
 import com.example.aerobankapp.workbench.utilities.connections.ConnectionModel;
 import com.example.aerobankapp.workbench.utilities.db.DBType;
 import jakarta.annotation.PostConstruct;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -43,6 +46,8 @@ public class DatabaseRunner
     private static final String insertSQL = "INSERT INTO";
     private static final String SQLFILE = "mysqltables.conf";
     private Logger LOGGER = LoggerFactory.getLogger(DatabaseRunner.class);
+    private static long startTime;
+    private static long endTime;
 
     @Autowired
     public DatabaseRunner(ResourceLoader resourceLoader)
@@ -91,7 +96,28 @@ public class DatabaseRunner
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public void createNewDatabaseWithTables(String dbName) throws IOException {
+    private String getConfigFile(DBType type)
+    {
+        switch(type)
+        {
+            case SSQL -> {
+                return "ssqltables.conf";
+            }
+            case MYSQL -> {
+                return "mysqltables.conf";
+            }
+            case PSQL -> {
+                return "psqltables.conf";
+            }
+            default -> throw new IllegalArgumentException("Invalid Database Type...");
+        }
+    }
+
+    public void createNewDatabaseWithTables() throws IOException {
+
+        String dbName = getConnectionModel().getDbName();
+        DBType type = getConnectionModel().getDatabaseType();
+        String configFile = getConfigFile(type);
 
         // Check if the database already exists
         boolean databaseExists = validateDatabaseNameExists(dbName);
@@ -102,7 +128,7 @@ public class DatabaseRunner
         }
 
         // Get the CREATE Table statements
-        String tableStatements = readSQLStatements(SQLFILE);
+        String tableStatements = readSQLStatements(configFile);
 
         // Parse Raw SQL Statement
         List<QueryStatement> queryStatements = parseRawSQLToQueryStatementList(tableStatements);
@@ -162,6 +188,42 @@ public class DatabaseRunner
             }
             default -> throw new IllegalArgumentException("Invalid Database type found...");
         }
+    }
+
+    public void connectToDatabase()
+    {
+        try
+        {
+            DriverManagerDataSource driverManagerDataSource = buildDriverDataSource(getConnectionModel());
+            // Set the JDBC template
+            this.jdbcTemplate = new JdbcTemplate(driverManagerDataSource);
+            LOGGER.info("Successfully connected to database: " + getConnectionModel().getDbName());
+
+        }catch(Exception e)
+        {
+            LOGGER.error("Connection Failed: " + e.getMessage());
+        }
+    }
+
+    private DriverManagerDataSource buildDriverDataSource(final ConnectionModel connectionModel)
+    {
+        final String server = getConnectionModel().getDbServer();
+        final int port = getConnectionModel().getDbPort();
+        final String dbName = getConnectionModel().getDbName();
+        final String dbPass = getConnectionModel().getDbPass();
+        final String dbUser = getConnectionModel().getDbUser();
+        final DBType type = getConnectionModel().getDatabaseType();
+        final String driver = getConnectionModel().getDriver();
+
+        // Create the URL
+        final String url = getDatabaseURL(type, server, port, dbName);
+
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driver);
+        dataSource.setUsername(dbUser);
+        dataSource.setPassword(dbPass);
+        dataSource.setUrl(url);
+        return dataSource;
     }
 
     public String readSQLStatements(String fileName) throws IOException {
@@ -244,15 +306,28 @@ public class DatabaseRunner
     public void executeSQLStatements(final List<QueryStatement> statements)
     {
         // Initialize the JdbcTemplate if its not already initialized
-
+        startTime = System.nanoTime();
+        int queryCount = 0;
         if(!statements.isEmpty())
         {
             for(QueryStatement statement : statements)
             {
                 String query = statement.getQuery();
+                if(query.isEmpty())
+                {
+                    // Skip the empty query
+                    continue;
+                }
+                LOGGER.info("Executing Query: " + query);
+                queryCount++;
                 getJdbcTemplate().execute(query);
             }
         }
+
+        endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1_000_000;
+        LOGGER.info("Total Time Executed: " + duration + " ms");
+        LOGGER.info("Total Queries Executed: " + queryCount);
     }
 
     private void setJdbcDataSource(DataSource dataSource)
@@ -260,19 +335,25 @@ public class DatabaseRunner
         jdbcTemplate.setDataSource(dataSource);
     }
 
+    public void updateExistingDatabaseTables()
+    {
+        // Get the Database Name
+        String dbName = getConnectionModel().getDbName();
+
+        // Does the existing database exist?
+        if(validateDatabaseNameExists(dbName))
+        {
+            // Connect to the database
+            connectToDatabase();
+        }
+    }
+
     public boolean validateDatabaseNameExists(final String dbName)
     {
         LOGGER.info("Database: " + dbName);
-        String sql = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?";
-
-        try {
-            String result = getJdbcTemplate().queryForObject(sql, new Object[]{dbName}, String.class);
-            LOGGER.info("Database in Schema: " + result);
-            return dbName.equals(result);
-        } catch (Exception e) {
-            // Handle exception or return false if the database does not exist
-            return false;
-        }
+        DatabaseSchemaService databaseSchemaService = new DatabaseSchemaServiceImpl(getJdbcTemplate());
+        LOGGER.info("Database is Valid: " + databaseSchemaService.validateDatabaseNameExists(dbName));
+        return databaseSchemaService.validateDatabaseNameExists(dbName);
     }
 
     public static void main(String[] args)
@@ -283,10 +364,12 @@ public class DatabaseRunner
 
         final String server = "localhost";
         final int port = 3306; // Example for MySQL
-        final String dbName = "testdb";
+        final String dbName = "testDB";
         final String user = "root";
         final String password = "Halflifer94!";
         final DBType type = DBType.MYSQL;
+        final String configFile = "mysqltables.conf";
+        final String driver = "com.mysql.cj.jdbc.Driver";
 
         ConnectionModel connectionModel = new ConnectionModel();
         connectionModel.setDbProtocol("jdbc:mysql");
@@ -296,34 +379,30 @@ public class DatabaseRunner
         connectionModel.setDbPass(password);
         connectionModel.setDatabaseType(type);
         connectionModel.setDbServer(server);
+        connectionModel.setDriver(driver);
 
-       runner.setConnectionModel(connectionModel);
+        runner.setConnectionModel(connectionModel);
 
         // Setup DataSource and initialize database and tables
         // Now it's safe to proceed with database and tables creation
+        runner.setupAndInitializeDatabase(server, port, dbName, user, password, type);
 
-        try {
-            if (!runner.validateDatabaseNameExists(dbName)) {
-                runner.createDatabase(dbName);
-                // Reconfigure DataSource to point to the newly created database
-                runner.createDataSource(server, port, dbName, user, password, type, true);
-            }
-            runner.createNewDatabaseWithTables(dbName);
-        } catch (IOException e) {
-            runner.LOGGER.error("Failed to create the database and tables.", e);
-        }
         context.close();
     }
 
     // Additional helper method to encapsulate DataSource setup and database/table initialization
     public void setupAndInitializeDatabase(String server, int port, String dbName, String user, String password, DBType type) {
-        // Setup DataSource
-      //  createDataSource(server, port, dbName, user, password, type);
-
-        // Initialize database and tables
+        LOGGER.info("Initializing Database Creation");
         try {
-            createNewDatabaseWithTables(dbName);
-            LOGGER.info("Database and tables have been successfully created.");
+            if (!validateDatabaseNameExists(dbName)) {
+                LOGGER.info("Create Data Source");
+                createDataSource(server, port, "", user, password, type, false);
+                createDatabase(dbName);
+                // Reconfigure DataSource to point to the newly created database
+            }
+            createDataSource(server, port, dbName, user, password, type, true);
+            createNewDatabaseWithTables();
+
         } catch (IOException e) {
             LOGGER.error("Failed to create the database and tables.", e);
         }

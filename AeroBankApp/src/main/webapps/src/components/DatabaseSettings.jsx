@@ -1,5 +1,5 @@
 import ServerField from "./ServerField";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import PortField from "./PortField";
 import '../DatabaseSettings.css';
 import DatabaseNameField from "./DatabaseNameField";
@@ -8,7 +8,8 @@ import DBPasswordField from "./DBPasswordField";
 import BasicButton from "./BasicButton";
 import ConnectionGroup from "./ConnectionGroup";
 import axios from "axios";
-import {Alert, Snackbar} from "@mui/material";
+import {Alert, Backdrop, CircularProgress, Snackbar} from "@mui/material";
+import ErrorDialog from "./ErrorDialog";
 
 export default function DatabaseSettings()
 {
@@ -23,6 +24,13 @@ export default function DatabaseSettings()
     const [snackbarOpen, setSnackBarOpen] = useState(false);
     const [snackBarMessage, setSnackBarMessage] = useState('');
     const [snackBarSeverity, setSnackBarSeverity] = useState('error');
+    const [backDropOpen, setBackDropOpen] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [errorTitle, setErrorTitle] = useState('');
+    const [errorHeader, setErrorHeader] = useState('');
+    const [errorContent, setErrorContent] = useState('');
+    const [errorException, setErrorException] = useState('');
 
     const validatePort = (port) => {
         if(port < 0 || port > 65535)
@@ -30,6 +38,12 @@ export default function DatabaseSettings()
             setIsValidPort(true);
         }
     }
+
+    const handleError = () => {
+        setErrorMessage('Detailed error message goes here...');
+        setIsDialogOpen(true);
+    }
+
 
     function validateConnectionInput(server, port, name, user, pass, dbType)
     {
@@ -75,6 +89,47 @@ export default function DatabaseSettings()
         validatePort(port);
     }
 
+    function sendConnectionRequest(server, port, name, user, password, dbType)
+    {
+        const connectionRequest = {
+            dbServer: server,
+            dbPort: port,
+            dbName: name,
+            dbUser: user,
+            dbPass: password,
+            dbType: dbType
+        }
+
+        console.log('Connection Request: ', connectionRequest);
+
+
+        setTimeout(() => {
+            return axios.post(`http://localhost:8080/AeroBankApp/api/connections/connect`, connectionRequest)
+                .then(response => {
+                    console.log('Connection to the database was successful');
+                    setSnackBarSeverity('success');
+                    setSnackBarMessage('Connection to the database was successful');
+                    setSnackBarOpen(true);
+                })
+                .catch(error => {
+                    console.error('There was an error connecting to the database: ', error);
+                    setSnackBarOpen(true);
+                    setIsDialogOpen(true);
+                    setErrorHeader('Database Error Dialog');
+                    setErrorContent('Unable to Connect to the Database');
+                    setErrorException("Unable to connect");
+                    setErrorTitle('Database Connection Error');
+                    setErrorMessage("There was an error connecting to the database");
+                    setSnackBarSeverity('error');
+                    setSnackBarMessage('There was an error connecting to the database.');
+                })
+                .finally(() => {
+                    setBackDropOpen(false);
+                });
+        }, 6000);
+
+    }
+
     function sendTestConnectionRequest(server, port, name, user, password, dbType) {
         const connectionRequest = {
             dbServer: server,
@@ -103,12 +158,20 @@ export default function DatabaseSettings()
             });
     }
 
+    const handleConnectionButtonClick = () => {
+        let dbTypeToLower = parseDatabaseTypeToLowerCase(dbType);
+
+        validateConnectionInput(server, port, databaseName, username, password, dbTypeToLower);
+
+        sendConnectionRequest(server, port, databaseName, username, password, dbTypeToLower);
+    }
+
     const handleTestConnectionButtonClick = () => {
 
         let dbTypeToLowerCase = parseDatabaseTypeToLowerCase(dbType);
         // First Validate the Connection Input
         validateConnectionInput(server, port, databaseName, username, password, dbTypeToLowerCase);
-
+        setBackDropOpen(true);
         sendTestConnectionRequest(server, port, databaseName, username, password, dbTypeToLowerCase)
             .then(response => {
                 console.log('Test Connection sent successfully.')
@@ -168,9 +231,9 @@ export default function DatabaseSettings()
 
     const parseDatabaseTypeToLowerCase = (type) => {
         let dbType = null;
-        if(type === 'MYSQL' || type === 'mysql')
+        if(type === 'mysql')
         {
-            dbType = 'MySQL';
+            dbType = 'MYSQL';
         }
         else if(type === 'SQLSERVER' || type === 'SSQL' || type === 'ssql')
         {
@@ -225,13 +288,31 @@ export default function DatabaseSettings()
                     <BasicButton text="Test Connection" submit={handleTestConnectionButtonClick}/>
                 </div>
                 <div className="connect-button">
-                    <BasicButton text="Connect"/>
+                    <BasicButton text="Connect" submit={handleConnectionButtonClick}/>
                 </div>
+                <ErrorDialog
+                    open={isDialogOpen}
+                    onClose={() => setIsDialogOpen(false)}
+                    errorMessage={errorMessage}
+                    headerText={errorHeader}
+                    contentText={errorContent}
+                    exceptionText={errorException}
+                    title={errorTitle}
+                />
                 <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar}>
                     <Alert onClose={handleCloseSnackBar} variant="filled" severity={snackBarSeverity}>
                         {snackBarMessage}
                     </Alert>
                 </Snackbar>
+                <Backdrop
+                    sx={{
+                        zIndex: (theme) => theme.zIndex.drawer + 1,
+                        color: '#fff',
+                    }}
+                    open={backDropOpen} // Show the backdrop conditionally
+                >
+                    <CircularProgress color="inherit" />
+                </Backdrop>
             </div>
         </div>
     )

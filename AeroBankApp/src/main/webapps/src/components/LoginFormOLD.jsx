@@ -159,7 +159,7 @@ export default function LoginFormOLD()
         const userLogData = {
             userID: 0,
             user: username,
-            lastLogin: '',
+            lastLogin: new Date().getDate(),
             lastLogout: '',
             sessionDuration: 0,
             loginSuccess: false,

@@ -1,6 +1,8 @@
 package com.example.aerobankapp.workbench.runner;
 
 import com.example.aerobankapp.workbench.utilities.QueryStatement;
+import com.example.aerobankapp.workbench.utilities.connections.ConnectionModel;
+import com.example.aerobankapp.workbench.utilities.db.DBType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -145,6 +147,39 @@ class DatabaseRunnerTest
 
         // Verify that jdbcTemplate.execute was called twice, once for each statement
         verify(jdbcTemplate, times(3)).execute(anyString());
+    }
+
+    @Test
+    public void testConnectToDatabase_Success()
+    {
+        try
+        {
+            databaseRunner.setConnectionModel(mockConnectionModel(DBType.MYSQL, "localhost", 3306, "testDB", "testUser", "testPass", "com.mysql.cj.jdbc.Driver"));
+            databaseRunner.connectToDatabase();
+            assertNotNull(databaseRunner.getJdbcTemplate(), "JDBC Template should not be null after successful connection");
+
+        }catch(Exception e)
+        {
+            fail("Connection should be successful with correct details");
+        }
+    }
+
+    @Test
+    public void testUpdatingExistingDatabaseTables()
+    {
+
+    }
+
+    private ConnectionModel mockConnectionModel(DBType dbType, String server, int port, String dbName, String user, String pass, String driver) {
+        ConnectionModel model = mock(ConnectionModel.class);
+        when(model.getDatabaseType()).thenReturn(dbType);
+        when(model.getDbServer()).thenReturn(server);
+        when(model.getDbPort()).thenReturn(port);
+        when(model.getDbName()).thenReturn(dbName);
+        when(model.getDbUser()).thenReturn(user);
+        when(model.getDbPass()).thenReturn(pass);
+        when(model.getDriver()).thenReturn(driver);
+        return model;
     }
 
     @Test

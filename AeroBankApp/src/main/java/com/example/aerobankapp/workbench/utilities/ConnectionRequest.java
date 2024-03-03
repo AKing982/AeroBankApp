@@ -1,5 +1,6 @@
 package com.example.aerobankapp.workbench.utilities;
 
+import com.example.aerobankapp.workbench.utilities.db.DBType;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
