@@ -4,9 +4,7 @@ import {Accordion, AccordionDetails, AccordionSummary, Button, TextareaAutosize,
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import CancelIcon from '@mui/icons-material/Cancel';
 import {useState} from "react";
-
 
 
 export default function ErrorDialog({ open, onClose, title, headerText, contentText, exceptionText })
@@ -21,12 +19,9 @@ export default function ErrorDialog({ open, onClose, title, headerText, contentT
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent dividers>
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-                    <CancelIcon style={{ color: 'red', marginRight: '8px', fontSize: '40px' }} /> {/* Big red X icon */}
-                    <Typography variant="h5" component="h2">{headerText}</Typography>
-                </div>
+                <Typography gutterBottom>{headerText}</Typography>
                 <Typography gutterBottom>{contentText}</Typography>
-                <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)}>
+                <Accordion expanded={expanded} onChange={handleExpandClick}>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography>The exception stacktrace was:</Typography>
                     </AccordionSummary>
