@@ -34,5 +34,6 @@ public interface ConnectionsService extends ConnectionModel
     @Override
     boolean testConnection(ConnectionRequest connectionRequest);
 
-
+    @Override
+    boolean databaseNameExists(ConnectionRequest connectionRequest);
 }

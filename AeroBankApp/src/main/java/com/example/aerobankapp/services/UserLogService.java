@@ -24,9 +24,5 @@ public interface UserLogService extends ServiceDAOModel<UserLogEntity>
     @Override
     List<UserLogEntity> findByUserName(String user);
 
-    int updateUserLog(UserLogEntity userLogEntity);
-
-    String getIPAddressById(int id);
-
     String getSessionToken(int id);
 }

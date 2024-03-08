@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Service
 @Getter
 @Setter
+@PreAuthorize("isAuthenticated()")
 public class DepositEngine {
     private final DepositQueue depositQueue;
     private List<Deposit> deposits;
@@ -142,7 +144,6 @@ public class DepositEngine {
     public ProcessedDepositDTO processIndividualDeposit(final Deposit deposit) {
         if(deposit != null)
         {
-
             final String accountCode = deposit.getAcctCode();
             final int userID = deposit.getUserID();
             final BigDecimal amount = deposit.getAmount();
@@ -207,12 +208,6 @@ public class DepositEngine {
                 .amount(deposit.getAmount())
                 .createdAt(LocalDateTime.now())
                 .build();
-    }
-
-    private void validateDeposit(Deposit deposit)
-    {
-        Objects.requireNonNull(deposit.getAcctCode(), "Non Null AccountCode");
-        Objects.requireNonNull(deposit.getAmount(), "Non Null Amount Required");
     }
 
     private TransactionSummary generateTransactionSummary(ProcessedDepositDTO processedDepositDTO)

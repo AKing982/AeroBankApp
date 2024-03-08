@@ -25,11 +25,6 @@ public class UserLogEntity
     @JoinColumn(name="userID")
     private UserEntity userEntity;
 
-    @Column(name="username")
-    @Size(min=10, max=25, message="Username requires atleast 10 characters")
-    @NotNull
-    private String username;
-
     @NotNull
     @Column(name="lastLogin")
     private LocalDateTime lastLogin;
@@ -45,13 +40,9 @@ public class UserLogEntity
     @Column(name="loginSuccess")
     private boolean loginSuccess;
 
-    @Column(name="ipAddress")
-    @Size(max=45)
-    @NotNull
-    private String ipAddress;
+    @Column(name="loginAttempts")
+    private int loginAttempts;
 
     @Column(name="sessionToken")
     private String sessionToken;
-
-
 }

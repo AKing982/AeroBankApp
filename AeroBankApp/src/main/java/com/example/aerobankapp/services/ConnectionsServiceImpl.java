@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.DatabaseInitializer;
 import com.example.aerobankapp.entity.ConnectionsEntity;
+import com.example.aerobankapp.exceptions.InvalidDatabaseNameException;
 import com.example.aerobankapp.repositories.ConnectionRepository;
 import com.example.aerobankapp.workbench.runner.DatabaseRunner;
 import com.example.aerobankapp.workbench.utilities.ConnectionRequest;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -110,19 +112,33 @@ public class ConnectionsServiceImpl implements ConnectionsService
     @Override
     public boolean testConnection(ConnectionRequest connectionRequest)
     {
-        try {
             DataSource dataSource = createDataSource(connectionRequest);
             JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
             jdbcTemplate.queryForObject("SELECT 1", Integer.class);
             return true;
-        } catch (Exception e) {
-            LOGGER.error("Error testing database connection: " + e.getMessage());
-            return false;
-        }
     }
 
     @Override
-    public boolean createDatabase(ConnectionsEntity connectionsEntity)
+    public boolean databaseNameExists(ConnectionRequest request) {
+        if(request.getDbName() == null || request.getDbName().isEmpty())
+        {
+            throw new InvalidDatabaseNameException("Invalid Database Name!");
+        }
+        LOGGER.info("Database Name From CService: " + request.getDbName());
+        // Create the dataSource from the request
+        DataSource dataSource = createDataSource(request);
+
+        // Create an instance of the JdbcTemplate
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        DatabaseSchemaService databaseSchemaService = new DatabaseSchemaServiceImpl(jdbcTemplate);
+
+        final String dbNamedTrimmed = request.getDbName().trim();
+
+        return databaseSchemaService.validateDatabaseNameExists(dbNamedTrimmed);
+    }
+
+    @Override
+    public void createDatabase(ConnectionsEntity connectionsEntity)
     {
         // Create the Connection Model
         ConnectionModel connectionModel = createConnectionModel(connectionsEntity);
@@ -132,7 +148,6 @@ public class ConnectionsServiceImpl implements ConnectionsService
 
         // Verify we can connect to the database
         databaseRunner.setupAndInitializeDatabase(connectionModel.getDbServer(), connectionModel.getDbPort(), connectionModel.getDbName(), connectionModel.getDbUser(), connectionModel.getDbPass(), connectionModel.getDatabaseType());
-        return true;
     }
 
     private ConnectionModel createConnectionModel(ConnectionsEntity connectionsEntity)

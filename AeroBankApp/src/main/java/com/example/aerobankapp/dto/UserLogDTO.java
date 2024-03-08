@@ -11,8 +11,7 @@ public record UserLogDTO(int sessionID,
                          LocalDateTime lastLogout,
                          int sessionDuration,
                          boolean loginSuccess,
-                         String ipAddress,
-
+                         int loginAttempts,
                          String sessionToken)
 {
 

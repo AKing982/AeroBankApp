@@ -10,11 +10,11 @@ public interface ConnectionModel
     void saveConnection(ConnectionsEntity connectionsEntity);
 
     void deleteConnection(ConnectionsEntity connectionsEntity);
-
     String getServerAddressById(Long id);
     int getPortById(Long id);
     String getUserNameById(Long id);
     void connectToDB(ConnectionsEntity connectionsEntity);
     boolean testConnection(ConnectionRequest connectionRequest);
-    boolean createDatabase(ConnectionsEntity connectionsEntity);
+    void createDatabase(ConnectionsEntity connectionsEntity);
+    boolean databaseNameExists(ConnectionRequest connectionRequest);
 }

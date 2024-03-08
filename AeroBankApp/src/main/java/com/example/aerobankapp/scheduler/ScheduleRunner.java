@@ -1,5 +1,7 @@
 package com.example.aerobankapp.scheduler;
 
+import com.example.aerobankapp.entity.TriggerCriteriaEntity;
+import com.example.aerobankapp.services.TriggerCriteriaService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.quartz.JobDetail;
@@ -11,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
+@Deprecated
 public class ScheduleRunner implements Runnable
 {
     private final SchedulerEngine schedulerEngine;

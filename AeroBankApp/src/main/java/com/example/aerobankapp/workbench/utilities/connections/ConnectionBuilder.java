@@ -1,5 +1,7 @@
 package com.example.aerobankapp.workbench.utilities.connections;
 
+import javax.sql.DataSource;
+
 public interface ConnectionBuilder
 {
    String getDriverClassName();
@@ -7,4 +9,5 @@ public interface ConnectionBuilder
    String getPassword();
    String getURL();
    String getConfigFile();
+   DataSource buildDataSource();
 }

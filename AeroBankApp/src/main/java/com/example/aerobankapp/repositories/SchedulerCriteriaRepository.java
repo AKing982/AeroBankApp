@@ -16,8 +16,8 @@ import java.util.List;
 @Repository
 public interface SchedulerCriteriaRepository extends JpaRepository<SchedulerCriteriaEntity, Long>
 {
-    @Query("SELECT p FROM SchedulerCriteriaEntity p WHERE p.schedulerUserID = ?1")
-    List<SchedulerCriteriaEntity> findByUserID(int userID);
+    @Query("SELECT p FROM SchedulerCriteriaEntity p WHERE p.schedulerUser.userID =:userID")
+    List<SchedulerCriteriaEntity> findByUserID(@Param("userID") int userID);
 
     @Query("SELECT p FROM SchedulerCriteriaEntity p WHERE p.schedulerCriteriaID = ?1")
     List<SchedulerCriteriaEntity> findById(int id);

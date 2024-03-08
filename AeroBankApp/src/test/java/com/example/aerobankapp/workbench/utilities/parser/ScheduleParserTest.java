@@ -44,7 +44,7 @@ class ScheduleParserTest {
                 .schedulerUserID(1)
                 .build();
 
-        scheduleParser = new ScheduleParserImpl(schedulerCriteria, scheduleValidator);
+     //   scheduleParser = new ScheduleParserImpl(schedulerCriteria, scheduleValidator);
 
     }
 
@@ -52,7 +52,7 @@ class ScheduleParserTest {
     public void testNullConstructor()
     {
         assertThrows(NullPointerException.class, () ->{
-            scheduleParser = new ScheduleParserImpl(null, null);
+          //  scheduleParser = new ScheduleParserImpl(null, null);
         });
     }
 
@@ -120,16 +120,8 @@ class ScheduleParserTest {
     @Test
     public void testNullTimeAndDate()
     {
-        SchedulerCriteria schedulerCriteria1 = SchedulerCriteria.builder()
-                .scheduledDate(null)
-                .scheduledTime(null)
-                .schedulerUserID(1)
-                .scheduleType(null)
-                .priority(1)
-                .build();
-
         assertThrows(NullPointerException.class, () -> {
-            ScheduleParserImpl scheduleParser = new ScheduleParserImpl(schedulerCriteria1, scheduleValidator);
+            ScheduleParserImpl scheduleParser = new ScheduleParserImpl(scheduleValidator);
         });
     }
 

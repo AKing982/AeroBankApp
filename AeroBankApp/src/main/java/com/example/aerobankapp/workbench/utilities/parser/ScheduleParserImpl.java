@@ -1,37 +1,42 @@
 package com.example.aerobankapp.workbench.utilities.parser;
 
+import com.example.aerobankapp.entity.SchedulerCriteriaEntity;
 import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.scheduler.TriggerCriteria;
 import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
+import static com.example.aerobankapp.workbench.utilities.SysBuilderUtils.buildTriggerCriteria;
 
 @Component
 @Getter
-public class ScheduleParserImpl implements ScheduleParser
+@Setter
+public class ScheduleParserImpl
 {
-    private final SchedulerCriteria schedulerCriteria;
-    private final ScheduleValidator scheduleValidator;
+    private List<SchedulerCriteria> schedulerCriteriaList;
+    private ScheduleValidator scheduleValidator;
+    private List<TriggerCriteria> triggerCriteriaList;
 
     @Autowired
-    public ScheduleParserImpl(SchedulerCriteria schedulerCriteria, ScheduleValidator scheduleValidator)
+    public ScheduleParserImpl(ScheduleValidator scheduleValidator)
     {
-        initializeCriteria(schedulerCriteria, scheduleValidator);
-        this.schedulerCriteria = schedulerCriteria;
         this.scheduleValidator = scheduleValidator;
+        this.triggerCriteriaList = new ArrayList<>();
     }
 
-    private void initializeCriteria(SchedulerCriteria criteria, ScheduleValidator scheduleValidator)
+    public ScheduleParserImpl()
     {
-    //    Objects.requireNonNull(criteria, "Non Null ScheduleCriteria required");
-      //  Objects.requireNonNull(scheduleValidator, "Non Null ScheduleValidator required");
-     //   criteriaNullCheck(criteria);
+        // Empty constructor
     }
 
     private void criteriaNullCheck(SchedulerCriteria schedulerCriteria)
@@ -42,50 +47,32 @@ public class ScheduleParserImpl implements ScheduleParser
         }
     }
 
-    @Override
-    public int getParsedYearSegment() {
-         return getDate().getYear();
-    }
-
-    @Override
-    public int getParsedMonthSegment() {
-        return getDate().getMonthValue();
-    }
-
-    @Override
-    public int getParsedDaySegment() {
-        return getDate().getDayOfMonth();
-    }
-
-    @Override
-    public int getParsedSecondSegment()
+    public List<TriggerCriteria> getTriggerCriteriaList(final List<SchedulerCriteria> schedulerCriteriaList)
     {
-        return getTime().getSecond();
+        if(!schedulerCriteriaList.isEmpty())
+        {
+            for(SchedulerCriteria schedulerCriteria : schedulerCriteriaList)
+            {
+                ScheduleType interval = getValidatedInterval(schedulerCriteria.getScheduleType());
+                LocalDate date = schedulerCriteria.getScheduledDate();
+                LocalTime time = schedulerCriteria.getScheduledTime();
+
+                TriggerCriteria triggerCriteria = buildTriggerCriteria(interval,
+                        getValidatedDate(date.getDayOfMonth()),
+                        getValidatedMonth(date.getMonthValue()),
+                        getValidatedYear(date.getYear()),
+                        getValidatedMinute(time.getMinute()),
+                        getValidatedHour(time.getHour()), 0);
+
+               addTriggerCriteriaToList(triggerCriteria);
+            }
+        }
+        return triggerCriteriaList;
     }
 
-    @Override
-    public int getParsedHourSegment() {
-        return getTime().getHour();
-    }
-
-    @Override
-    public int getParsedMinuteSegment()
+    private void addTriggerCriteriaToList(TriggerCriteria triggerCriteria)
     {
-        return getTime().getMinute();
-    }
-
-    public TriggerCriteria buildTriggerCriteria()
-    {
-        ScheduleType interval = getValidatedInterval(schedulerCriteria.getScheduleType());
-
-        int day = getValidatedDate(getParsedDaySegment());
-        int month = getValidatedMonth(getParsedMonthSegment());
-        int hour = getValidatedHour(getParsedHourSegment());
-        int second = getParsedSecondSegment();
-        int year = getValidatedYear(getParsedYearSegment());
-        int minute = getValidatedMinute(getParsedMinuteSegment());
-
-        return new TriggerCriteria(interval, minute, hour, day, month, year);
+        this.triggerCriteriaList.add(triggerCriteria);
     }
 
     private ScheduleType getValidatedInterval(ScheduleType interval)
@@ -118,14 +105,5 @@ public class ScheduleParserImpl implements ScheduleParser
         return scheduleValidator.validateMinute(minute);
     }
 
-    private LocalDate getDate()
-    {
-        return schedulerCriteria.getScheduledDate();
-    }
-
-    private LocalTime getTime()
-    {
-        return schedulerCriteria.getScheduledTime();
-    }
 
 }

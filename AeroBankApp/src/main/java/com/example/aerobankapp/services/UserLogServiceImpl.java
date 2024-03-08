@@ -18,14 +18,10 @@ public class UserLogServiceImpl implements UserLogService
 {
     private final UserLogRepository userLogRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Autowired
-    public UserLogServiceImpl(UserLogRepository userLogRepository, EntityManager entityManager)
+    public UserLogServiceImpl(UserLogRepository userLogRepository)
     {
         this.userLogRepository = userLogRepository;
-        this.entityManager = entityManager;
     }
 
     @Override
@@ -60,21 +56,13 @@ public class UserLogServiceImpl implements UserLogService
 
     @Override
     public List<UserLogEntity> findByUserName(String user) {
+        // Not Used
         return null;
     }
 
-    @Override
-    public int updateUserLog(UserLogEntity userLogEntity) {
-        return 0;
-    }
-
-    @Override
-    public String getIPAddressById(int id) {
-        return null;
-    }
 
     @Override
     public String getSessionToken(int id) {
-        return null;
+        return userLogRepository.getSessionToken(id);
     }
 }

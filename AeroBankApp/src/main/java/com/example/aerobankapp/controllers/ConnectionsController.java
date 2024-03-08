@@ -5,6 +5,8 @@ import com.example.aerobankapp.dto.ConnectionsDTO;
 import com.example.aerobankapp.entity.ConnectionsEntity;
 import com.example.aerobankapp.services.ConnectionsService;
 import com.example.aerobankapp.services.ConnectionsServiceImpl;
+import com.example.aerobankapp.services.DatabaseSchemaService;
+import com.example.aerobankapp.services.DatabaseSchemaServiceImpl;
 import com.example.aerobankapp.workbench.runner.DatabaseRunner;
 import com.example.aerobankapp.workbench.utilities.ConnectionRequest;
 import com.example.aerobankapp.workbench.utilities.db.DBType;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.aerobankapp.controllers.utils.ConnectionsControllerUtil.getListOfConnectionDTO;
 
@@ -88,22 +91,53 @@ public class ConnectionsController {
 
     @PostMapping("/connect")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> connect(@RequestBody @Valid ConnectionRequest connectionRequest)
+    public ResponseEntity<?> connect(@RequestBody ConnectionRequest connectionRequest)
     {
-        LOGGER.info("Server: " + connectionRequest.getDbServer());
-        LOGGER.info("Port: " + connectionRequest.getDbPort());
-        LOGGER.info("DBUser: " + connectionRequest.getDbUser());
-        LOGGER.info("DBPassword: " + connectionRequest.getDbPass());
-        LOGGER.info("DBType: " + connectionRequest.getDbType());
-        ConnectionsEntity connectionsEntity = createConnectionEntity(connectionRequest);
-        if(connectionsService.createDatabase(connectionsEntity))
+        // Validate the Connection Request
+        LOGGER.info("DatabaseName: " + connectionRequest.getDbName());
+        validateConnectionRequest(connectionRequest);
+
+        // Does the database name in the request already exist?
+        LOGGER.info("Database: " + connectionRequest.getDbName() + " Exists: " + connectionsService.databaseNameExists(connectionRequest));
+        if(connectionsService.databaseNameExists(connectionRequest))
         {
-            return ResponseEntity.ok("Database Was created successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database Creation was unsuccessful");
+            // If the database already exists, connect to the database
+            connectionsService.connectToDB(createConnectionEntity(connectionRequest));
+
+            return ResponseEntity.ok("Successfully Connected to Database: " + connectionRequest.getDbName());
+        }
+        // Else if the database name doesn't exist, create a new database with that name
+        else {
+            // Create the Database
+            connectionsService.createDatabase(createConnectionEntity(connectionRequest));
+
+            // Connect to the database
+            connectionsService.connectToDB(createConnectionEntity(connectionRequest));
+
+            return ResponseEntity.ok("Successfully Created Database: " + connectionRequest.getDbName() + " on " + connectionRequest.getDbServer());
         }
     }
 
+    @PostMapping("/database/validateName")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> checkDatabaseNameExists(@RequestBody @Valid ConnectionRequest connectionRequest)
+    {
+        if(connectionsService.databaseNameExists(connectionRequest))
+        {
+            return ResponseEntity.ok("Database: " + connectionRequest.getDbName() + " Exists");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Database: " + connectionRequest.getDbName() + " Not Found.");
+
+    }
+
+    private void validateConnectionRequest(ConnectionRequest connectionRequest)
+    {
+        Objects.requireNonNull(connectionRequest.getDbName(), "Database Name must not be null.");
+        Objects.requireNonNull(connectionRequest.getDbUser(), "Database User must not be null.");
+        Objects.requireNonNull(connectionRequest.getDbServer(), "Database Server must not be null.");
+        Objects.requireNonNull(connectionRequest.getDbPass(), "Database Password must not be null.");
+        Objects.requireNonNull(connectionRequest.getDbType(), "Database Type must not be null.");
+    }
 
     private ConnectionsEntity createConnectionEntity(ConnectionRequest connectionsDTO)
     {

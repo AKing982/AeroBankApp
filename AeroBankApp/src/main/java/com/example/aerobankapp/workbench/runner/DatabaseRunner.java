@@ -346,6 +346,7 @@ public class DatabaseRunner
         jdbcTemplate.setDataSource(dataSource);
     }
 
+    //TODO: Add Implementation
     public void updateExistingDatabaseTables()
     {
         // Get the Database Name
@@ -359,12 +360,39 @@ public class DatabaseRunner
         }
     }
 
+    public void addNewTablesToDatabase()
+    {
+
+    }
+
+
     public boolean validateDatabaseNameExists(final String dbName)
     {
+        // Check if the DataSource is null, otherwise connect the dataSource to localhost
+        DataSource dataSource = getJdbcTemplate().getDataSource();
+        if(dataSource == null)
+        {
+            LOGGER.info("Data Source is NULL");
+
+            // Set the DataSource to use the default localhost
+            setDefaultDataSource(getJdbcTemplate(), dbName);
+        }
         LOGGER.info("Database: " + dbName);
         DatabaseSchemaService databaseSchemaService = new DatabaseSchemaServiceImpl(getJdbcTemplate());
         LOGGER.info("Database is Valid: " + databaseSchemaService.validateDatabaseNameExists(dbName));
         return databaseSchemaService.validateDatabaseNameExists(dbName);
+    }
+
+    private void setDefaultDataSource(JdbcTemplate jdbcTemplate, String dbName)
+    {
+        final String url = "jdbc:mysql://localhost:3306/" + dbName.trim();
+        DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+        driverManagerDataSource.setPassword("Halflifer94!");
+        driverManagerDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        driverManagerDataSource.setUsername("root");
+        driverManagerDataSource.setUrl(url);
+
+        getJdbcTemplate().setDataSource(driverManagerDataSource);
     }
 
     public static void main(String[] args)

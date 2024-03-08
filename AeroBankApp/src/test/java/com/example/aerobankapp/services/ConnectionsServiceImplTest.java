@@ -2,8 +2,10 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.DatabaseInitializer;
 import com.example.aerobankapp.entity.ConnectionsEntity;
+import com.example.aerobankapp.exceptions.InvalidDatabaseNameException;
 import com.example.aerobankapp.repositories.ConnectionRepository;
 import com.example.aerobankapp.workbench.runner.DatabaseRunner;
+import com.example.aerobankapp.workbench.utilities.ConnectionRequest;
 import com.example.aerobankapp.workbench.utilities.DataSourceProperties;
 import com.example.aerobankapp.workbench.utilities.connections.ConnectionModel;
 import com.example.aerobankapp.workbench.utilities.db.DBType;
@@ -179,6 +181,61 @@ class ConnectionsServiceImplTest
         // Verify that initialize was called with the expected arguments
         verify(databaseInitializer, times(1)).initialize(any(String[].class));
     }
+
+    @Test
+    public void testDatabaseNameExists_ValidDatabase()
+    {
+        final String expectedDBName = "aerobank ";
+
+        ConnectionRequest request = new ConnectionRequest();
+        request.setDbName("aerobank ");
+        request.setDbUser("root");
+        request.setDbPort(3306);
+        request.setDbServer("localhost");
+        request.setDbType("MYSQL");
+        request.setDbPass("Halflifer94!");
+
+        boolean databaseExists = connectionsService.databaseNameExists(request);
+
+        assertNotNull(request);
+        assertTrue(databaseExists);
+    }
+
+    @Test
+    public void testDatabaseNameExists_InvalidDatabase()
+    {
+        final String dbName = "AeroBank2";
+        ConnectionRequest request = new ConnectionRequest();
+        request.setDbName(dbName);
+        request.setDbUser("root");
+        request.setDbPort(3306);
+        request.setDbServer("localhost");
+        request.setDbType("MYSQL");
+        request.setDbPass("Halflifer94!");
+
+        boolean databaseExists = connectionsService.databaseNameExists(request);
+
+        assertNotNull(request);
+        assertFalse(databaseExists);
+    }
+
+    @Test
+    public void testDatabaseNameExists_InvalidDatabaseName_Null()
+    {
+        ConnectionRequest request = new ConnectionRequest();
+        request.setDbName(null);
+        request.setDbUser("root");
+        request.setDbPort(3306);
+        request.setDbServer("localhost");
+        request.setDbType("MYSQL");
+        request.setDbPass("Halflifer94!");
+
+        assertNotNull(request);
+        assertThrows(InvalidDatabaseNameException.class, () -> {
+            connectionsService.databaseNameExists(request);
+        });
+    }
+
 
     @AfterEach
     void tearDown() {

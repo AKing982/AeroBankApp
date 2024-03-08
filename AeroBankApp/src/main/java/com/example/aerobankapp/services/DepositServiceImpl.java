@@ -17,6 +17,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.Getter;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -146,7 +147,12 @@ public class DepositServiceImpl implements DepositService
         asyncDepositService.validateAndParse(schedulerCriteria, triggerCriteria -> {
             Deposit depositDTO = buildDeposit(request);
             asyncDepositService.sendToRabbitMQ(depositDTO);
-            asyncDepositService.startScheduler(triggerCriteria);
+            try {
+                asyncDepositService.startScheduler(triggerCriteria);
+
+            } catch (SchedulerException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 

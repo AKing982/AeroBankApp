@@ -22,7 +22,8 @@ public class SchedulerCriteriaEntity
     private int schedulerCriteriaID;
 
     @ManyToOne
-    private UserEntity schedulerUserID;
+    @JoinColumn(name="schedulerUserID")
+    private UserEntity schedulerUser;
 
     @Column(name="scheduledTime")
     private LocalTime scheduledTime;

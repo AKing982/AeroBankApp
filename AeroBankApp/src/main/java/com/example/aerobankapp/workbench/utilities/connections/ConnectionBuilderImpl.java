@@ -7,6 +7,8 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
+
 @Component
 @Getter
 public class ConnectionBuilderImpl implements ConnectionBuilder
@@ -24,7 +26,7 @@ public class ConnectionBuilderImpl implements ConnectionBuilder
         String dbType = getConnectionRequest().getDbType();
         switch(dbType)
         {
-            case "MySQL":
+            case "MYSQL":
                 return DBType.MYSQL;
             case "SSQL":
                 return DBType.SSQL;
@@ -54,11 +56,11 @@ public class ConnectionBuilderImpl implements ConnectionBuilder
         switch(getDBType())
         {
             case MYSQL:
-                return "com.mysql.cj.jdbc.Driver";
+                return ConnectionParameters.MYSQL_DRIVER;
             case SSQL:
-                return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+                return ConnectionParameters.SSQL_DRIVER;
             case PSQL:
-                return "org.postgresql.Driver";
+                return ConnectionParameters.PSQL_DRIVER;
             default:
                 throw new InvalidDBTypeException("Invalid Database Type Found.");
         }
@@ -96,15 +98,20 @@ public class ConnectionBuilderImpl implements ConnectionBuilder
         switch(getDBType())
         {
             case PSQL -> {
-                return "psqltables.conf";
+                return ConnectionParameters.PSQL_CONF;
             }
             case MYSQL -> {
-                return "mysqltables.conf";
+                return ConnectionParameters.MYSQL_CONF;
             }
             case SSQL -> {
-                return "ssqltables.conf";
+                return ConnectionParameters.SSQL_CONF;
             }
             default -> throw new InvalidDBTypeException("Invalid Database Type...");
         }
+    }
+
+    @Override
+    public DataSource buildDataSource() {
+        return null;
     }
 }

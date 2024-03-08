@@ -7,7 +7,9 @@ import com.example.aerobankapp.scheduler.criteria.SchedulerCriteria;
 import com.example.aerobankapp.scheduler.factory.TriggerFactoryImpl;
 import com.example.aerobankapp.scheduler.trigger.SchedulerTriggerImpl;
 import com.example.aerobankapp.workbench.transactions.Deposit;
+import com.example.aerobankapp.workbench.utilities.parser.ScheduleParser;
 import com.example.aerobankapp.workbench.utilities.parser.ScheduleParserImpl;
+import com.example.aerobankapp.workbench.utilities.parser.ScheduleValidator;
 import com.example.aerobankapp.workbench.utilities.parser.ScheduleValidatorImpl;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -26,33 +28,26 @@ import java.util.function.Consumer;
 @Service
 public class AsyncDepositService
 {
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
     private SchedulerEngine schedulerEngine;
-    private CronExpressionBuilderImpl cronExpressionBuilder;
-    private SchedulerTriggerImpl schedulerTrigger;
-    private ScheduleRunner scheduleRunner;
-    private DepositQueueService depositQueueService;
+    private ScheduleParserImpl scheduleParser;
+    private ScheduleValidator scheduleValidator;
+    private TriggerCriteriaService triggerCriteriaService;
     private Logger LOGGER = LoggerFactory.getLogger(AsyncDepositService.class);
-
-    @Autowired
-    @Qualifier("scheduler")
     private Scheduler scheduler;
     private final JobDetail depositJobDetail;
 
-    public AsyncDepositService(@Qualifier("depositJobDetail") JobDetail jobDetail,
+    public AsyncDepositService(Scheduler scheduler, @Qualifier("depositJobDetail") JobDetail jobDetail,
                                SchedulerEngine schedulerEngine,
-                               CronExpressionBuilderImpl cronExpressionBuilder,
-                               SchedulerTriggerImpl schedulerTrigger,
-                               ScheduleRunner scheduleRunner,
-                               DepositQueueService depositQueueService)
+                               ScheduleParserImpl scheduleParser,
+                               ScheduleValidator scheduleValidator,
+                               TriggerCriteriaService triggerCriteriaService)
     {
+        this.scheduler = scheduler;
         this.depositJobDetail = jobDetail;
         this.schedulerEngine = schedulerEngine;
-        this.cronExpressionBuilder = cronExpressionBuilder;
-        this.schedulerTrigger = schedulerTrigger;
-        this.scheduleRunner = scheduleRunner;
-        this.depositQueueService = depositQueueService;
+        this.scheduleParser = scheduleParser;
+        this.scheduleValidator = scheduleValidator;
+        this.triggerCriteriaService = triggerCriteriaService;
     }
 
 
@@ -61,31 +56,30 @@ public class AsyncDepositService
     {
         LOGGER.info("Scheduled Date: " + schedulerCriteria.getScheduledDate());
         LOGGER.info("Scheduled Time: " + schedulerCriteria.getScheduledTime());
-        ScheduleValidatorImpl scheduleValidator = new ScheduleValidatorImpl();
-        ScheduleParserImpl scheduleParser = new ScheduleParserImpl(schedulerCriteria, scheduleValidator);
-        TriggerCriteria triggerCriteria = scheduleParser.buildTriggerCriteria();
+
+        //ScheduleParserImpl scheduleParser = new ScheduleParserImpl(schedulerCriteria, scheduleValidator);
+        //TriggerCriteria triggerCriteria = scheduleParser.buildTriggerCriteria();
 
         // Execute the callback with the result
-        callback.accept(triggerCriteria);
+        //callback.accept(triggerCriteria);
     }
 
 
     @Async
     public void sendToRabbitMQ(Deposit deposit) {
         LOGGER.info("Sending Deposit to Rabbit");
-        rabbitTemplate.convertAndSend("depositQueue", deposit);
+        //rabbitTemplate.convertAndSend("depositQueue", deposit);
     }
 
     @Async
-    public void startScheduler(TriggerCriteria triggerCriteria)
-    {
+    public void startScheduler(TriggerCriteria triggerCriteria) throws SchedulerException {
         LOGGER.info("Starting the Scheduler");
         // Assume TriggerFactory is a Spring @Component
-        TriggerFactoryImpl triggerFactory = new TriggerFactoryImpl(triggerCriteria);
-        Trigger trigger = triggerFactory.getTriggerInstance();
+       // TriggerFactoryImpl triggerFactory = new TriggerFactoryImpl(triggerCriteria);
+      //  Trigger trigger = triggerFactory.getTriggerInstance();
 
         // Assume ScheduleRunner is a Spring @Component
-        scheduleRunner.startScheduler();
-        scheduleRunner.scheduleJob(depositJobDetail, trigger);
+    //    schedulerEngine.startScheduler();
+     //   schedulerEngine.scheduleJob(depositJobDetail, trigger);
     }
 }
