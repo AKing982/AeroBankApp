@@ -1,12 +1,8 @@
 package com.example.aerobankapp.engine;
 
-import com.example.aerobankapp.account.Account;
 import com.example.aerobankapp.dto.AccountDTO;
-import com.example.aerobankapp.dto.AccountDetailsDTO;
 import com.example.aerobankapp.dto.BillDTO;
 import com.example.aerobankapp.fees.FeesDTO;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
@@ -23,5 +19,6 @@ public interface CalculationEngine
     BigDecimal calculateWithdrawalWithFee(BigDecimal amount, AccountDTO accountDTO, FeesDTO feesDTO);
     BigDecimal calculateWithdrawalWithInterest(BigDecimal amount, AccountDTO accountDTO, BigDecimal interest);
     BigDecimal calculatePendingBalance(BigDecimal amount, BigDecimal currBalance);
+    BigDecimal getAdjustedAmount(BigDecimal currBalance, BigDecimal newBalance);
 
 }

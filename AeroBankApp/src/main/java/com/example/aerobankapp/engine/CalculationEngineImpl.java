@@ -87,4 +87,9 @@ public class CalculationEngineImpl implements CalculationEngine
     public BigDecimal calculatePendingBalance(BigDecimal amount, BigDecimal currBalance) {
         return null;
     }
+
+    @Override
+    public BigDecimal getAdjustedAmount(BigDecimal currBalance, BigDecimal newBalance) {
+        return null;
+    }
 }

@@ -19,5 +19,4 @@ public class TransactionDetail
     private int transactionID;
     private BigDecimal balance;
 
-    private
 }

@@ -29,7 +29,7 @@ public class TransactionDetailEntity
     private AccountEntity accountEntity;
 
     @ManyToOne
-    @JoinColumn(name="acctID")
+    @JoinColumn(name="relatedAcctID")
     private AccountEntity relatedAcctEntity;
 
     @ManyToOne

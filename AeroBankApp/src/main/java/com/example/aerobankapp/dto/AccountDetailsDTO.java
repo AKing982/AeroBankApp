@@ -1,4 +1,11 @@
 package com.example.aerobankapp.dto;
 
-public record AccountDetailsDTO() {
+import java.math.BigDecimal;
+
+public record AccountDetailsDTO(int acctID,
+                                String acctCode,
+                                String accountName,
+                                BigDecimal balance,
+                                BigDecimal pending,
+                                BigDecimal available) {
 }
