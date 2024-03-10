@@ -6,10 +6,11 @@ import com.example.aerobankapp.workbench.utilities.db.DBType;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 
-@Component
+@Service
 @Getter
 public class ConnectionBuilderImpl implements ConnectionBuilder
 {

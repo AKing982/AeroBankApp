@@ -1,6 +1,7 @@
 package com.example.aerobankapp.workbench.runner;
 
 import com.example.aerobankapp.workbench.utilities.QueryStatement;
+import com.example.aerobankapp.workbench.utilities.connections.ConnectionBuilder;
 import com.example.aerobankapp.workbench.utilities.connections.ConnectionModel;
 import com.example.aerobankapp.workbench.utilities.db.DBType;
 import org.junit.jupiter.api.AfterEach;
@@ -37,6 +38,9 @@ class DatabaseRunnerTest
 
     @Mock
     private ResourceLoader resourceLoader;
+
+    @Mock
+    private ConnectionBuilder connectionBuilder;
 
 
     private DriverManagerDataSource dataSource;
@@ -229,8 +233,25 @@ class DatabaseRunnerTest
         assertEquals(0, countNone, "Should return 0 when no CREATE TABLE statements are present.");
     }
 
+    @Test
+    public void testValidateDatabaseNameExists_ValidDatabase()
+    {
+        final String dbName = "aerobank";
 
+        boolean exists = databaseRunner.validateDatabaseNameExists(dbName);
 
+        assertTrue(exists);
+    }
+
+    @Test
+    public void testValidateDatabaseNameExists_InvalidDatabase()
+    {
+        final String dbName = "testDB";
+
+        boolean exists = databaseRunner.validateDatabaseNameExists(dbName);
+
+        assertTrue(exists);
+    }
 
 
     @AfterEach

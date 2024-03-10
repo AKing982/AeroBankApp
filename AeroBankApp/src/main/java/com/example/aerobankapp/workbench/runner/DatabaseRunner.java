@@ -4,6 +4,7 @@ import com.example.aerobankapp.services.DatabaseSchemaService;
 import com.example.aerobankapp.services.DatabaseSchemaServiceImpl;
 import com.example.aerobankapp.workbench.utilities.QueryStatement;
 import com.example.aerobankapp.workbench.utilities.connections.ConnectionBuilder;
+import com.example.aerobankapp.workbench.utilities.connections.ConnectionBuilderImpl;
 import com.example.aerobankapp.workbench.utilities.connections.ConnectionModel;
 import com.example.aerobankapp.workbench.utilities.db.DBType;
 import jakarta.annotation.PostConstruct;
@@ -13,6 +14,7 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.Resource;
@@ -29,6 +31,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 @Component
@@ -40,7 +43,7 @@ public class DatabaseRunner
     private JdbcTemplate jdbcTemplate = new JdbcTemplate();
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private ConnectionModel connectionModel;
-    private ConnectionBuilder connectionBuilder;
+    private ConnectionBuilderImpl connectionBuilder;
     private static final String resourceString = "classpath:conf/";
     private static final String createTableSQL = "CREATE TABLE";
     private static final String createDatabaseSQL = "CREATE DATABASE";
@@ -370,15 +373,13 @@ public class DatabaseRunner
     {
         // Check if the DataSource is null, otherwise connect the dataSource to localhost
         DataSource dataSource = getJdbcTemplate().getDataSource();
-        if(dataSource == null)
+        if(jdbcTemplate.getDataSource() == null)
         {
-            LOGGER.info("Data Source is NULL");
-
-            // Set the DataSource to use the default localhost
-            setDefaultDataSource(getJdbcTemplate(), dbName);
+            LOGGER.error("Data Source is NULL");
+            return false;
         }
         LOGGER.info("Database: " + dbName);
-        DatabaseSchemaService databaseSchemaService = new DatabaseSchemaServiceImpl(getJdbcTemplate());
+        DatabaseSchemaService databaseSchemaService = new DatabaseSchemaServiceImpl(jdbcTemplate);
         LOGGER.info("Database is Valid: " + databaseSchemaService.validateDatabaseNameExists(dbName));
         return databaseSchemaService.validateDatabaseNameExists(dbName);
     }
@@ -400,13 +401,27 @@ public class DatabaseRunner
         ConfigurableApplicationContext context = SpringApplication.run(DatabaseRunner.class, args);
 
         DatabaseRunner runner = context.getBean(DatabaseRunner.class);
+        Scanner scanner = new Scanner(System.in);
 
-        final String server = "localhost";
-        final int port = 3306; // Example for MySQL
-        final String dbName = "testDB";
-        final String user = "root";
-        final String password = "Halflifer94!";
-        final DBType type = DBType.MYSQL;
+        System.out.println("Enter a Server Address: ");
+        final String server = scanner.nextLine().trim();
+
+        System.out.println("Enter a port number: ");
+        final int port = Integer.parseInt(scanner.nextLine().trim());
+
+        System.out.println("Enter a database name: ");
+        final String dbName = scanner.nextLine().trim();
+
+        System.out.println("Enter a database User: ");
+        final String user = scanner.nextLine().trim();
+
+        System.out.println("Enter a database Password: ");
+        final String password = scanner.nextLine().trim();
+
+        System.out.println("Enter a database type (MYSQL, PSQL, SSQL): ");
+        final DBType type = DBType.valueOf(scanner.nextLine().trim().toUpperCase());
+
+
         final String configFile = "mysqltables.conf";
         final String driver = "com.mysql.cj.jdbc.Driver";
 
@@ -427,6 +442,7 @@ public class DatabaseRunner
         runner.setupAndInitializeDatabase(server, port, dbName, user, password, type);
 
         context.close();
+        scanner.close();
     }
 
     // Additional helper method to encapsulate DataSource setup and database/table initialization

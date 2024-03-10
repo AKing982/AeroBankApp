@@ -11,6 +11,8 @@ import javax.sql.DataSource;
 import javax.xml.crypto.Data;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
 
 
 public class DatabaseSchemaServiceImpl implements DatabaseSchemaService
@@ -25,12 +27,17 @@ public class DatabaseSchemaServiceImpl implements DatabaseSchemaService
 
     @Override
     public boolean validateDatabaseNameExists(String dbName) {
-        String sql = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?";
+        String sql = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?";
 
-            String result = jdbcTemplate.queryForObject(sql, new Object[]{dbName}, String.class);
-            LOGGER.info("DatabaseName: " + result);
-            LOGGER.info("DatabaseName == " + dbName + ": " + dbName.equals(result));
-            return dbName.equals(result);
+
+        // Query for an integer count of database names matching the input name
+        Integer count = jdbcTemplate.queryForObject(sql, new Object[]{dbName}, Integer.class);
+
+        boolean exists = count != null && count > 0;
+
+        LOGGER.info("Database: " + dbName + (exists ? " exists." : " does not exist."));
+
+        return exists;
     }
 
     /**

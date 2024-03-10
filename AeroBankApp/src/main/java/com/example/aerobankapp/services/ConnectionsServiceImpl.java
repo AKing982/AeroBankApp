@@ -126,15 +126,11 @@ public class ConnectionsServiceImpl implements ConnectionsService
         }
         LOGGER.info("Database Name From CService: " + request.getDbName());
         // Create the dataSource from the request
-        DataSource dataSource = createDataSource(request);
 
-        // Create an instance of the JdbcTemplate
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        DatabaseSchemaService databaseSchemaService = new DatabaseSchemaServiceImpl(jdbcTemplate);
+        // Get the JDBCTemplate
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
 
-        final String dbNamedTrimmed = request.getDbName().trim();
-
-        return databaseSchemaService.validateDatabaseNameExists(dbNamedTrimmed);
+        return databaseRunner.validateDatabaseNameExists(request.getDbName().trim());
     }
 
     @Override
@@ -163,6 +159,7 @@ public class ConnectionsServiceImpl implements ConnectionsService
         connection.setDatabaseType(connectionsEntity.getDbType());
         return connection;
     }
+
 
     private DataSource createDataSource(ConnectionRequest connectionRequest)
     {

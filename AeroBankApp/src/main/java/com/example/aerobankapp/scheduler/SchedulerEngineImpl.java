@@ -1,6 +1,7 @@
 package com.example.aerobankapp.scheduler;
 
-import org.jetbrains.annotations.NotNull;
+
+import jakarta.validation.constraints.NotNull;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
