@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class TransactionDetailEntityServiceImpl implements TransactionDetailEntityService
+public class TransactionDetailEntityServiceImpl implements TransactionDetailService
 {
     private final TransactionDetailRepository transactionDetailRepository;
 

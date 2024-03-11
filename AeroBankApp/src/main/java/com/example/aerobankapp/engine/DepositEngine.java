@@ -36,6 +36,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 @Getter
+@Deprecated
 @Setter
 @PreAuthorize("isAuthenticated()")
 public class DepositEngine {

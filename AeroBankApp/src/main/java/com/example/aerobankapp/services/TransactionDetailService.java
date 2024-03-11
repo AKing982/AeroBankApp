@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-public interface TransactionDetailEntityService extends ServiceDAOModel<TransactionDetailEntity>
+public interface TransactionDetailService extends ServiceDAOModel<TransactionDetailEntity>
 {
     List<TransactionDetailEntity> findTransactionDetailsByTransactionID(Long transactionID);
     List<TransactionDetailEntity> findTransactionDetailByUserID(int userID);

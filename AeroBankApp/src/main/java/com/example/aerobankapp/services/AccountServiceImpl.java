@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
+import com.example.aerobankapp.exceptions.ZeroBalanceException;
 import com.example.aerobankapp.repositories.AccountRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -24,7 +25,6 @@ import java.util.Optional;
 @Service
 @Getter
 @Setter
-@Transactional
 public class AccountServiceImpl implements AccountService
 {
     @PersistenceContext
@@ -72,8 +72,17 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    @Transactional
     public BigDecimal getBalanceByAcctID(int acctID)
     {
+        LOGGER.info("AcctID: " + acctID);
+        if(getAccountRepository() == null){
+            LOGGER.error("Null Account Repository");
+        }
+        BigDecimal balance = getAccountRepository().getBalanceByAcctID(acctID);
+        if(balance == null){
+            throw new IllegalArgumentException("Obtained Illegal Balance for AcctID: " + acctID);
+        }
         return accountRepository.getBalanceByAcctID(acctID);
     }
 

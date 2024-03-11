@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class AccountDAOImplTest
 {
@@ -46,8 +47,11 @@ class AccountDAOImplTest
     @Mock
     private TypedQuery<AccountEntity> accountEntityTypedQuery;
 
-    @Mock
+    @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     private AccountEntity accountEntity;
 
@@ -68,6 +72,8 @@ class AccountDAOImplTest
                 .userID(1)
                 .hasMortgage(false)
                 .build();
+
+        accountDAO = new AccountServiceImpl(entityManager,accountRepository);
     }
 
     @Test
@@ -319,6 +325,16 @@ class AccountDAOImplTest
         assertThrows(IllegalArgumentException.class, () -> {
             accountDAO.updateAccountBalanceByAcctID(balance, invalidAcctID);
         });
+    }
+
+    @Test
+    public void testGetBalanceByAcctID_ValidAcctID(){
+        final int acctID = 1;
+
+        BigDecimal expectedBalance = new BigDecimal("4500.000");
+        BigDecimal actualBalance = accountDAO.getBalanceByAcctID(acctID);
+
+        assertEquals(expectedBalance, actualBalance);
     }
 
 
