@@ -75,7 +75,21 @@ public class DepositProcessorImpl implements DepositProcessor
     }
 
     @Override
-    public Map<Integer, BigDecimal> getAccountBalanceMapCalculation(List<Deposit> deposits) {
+    public Map<Integer, BigDecimal> getCalculatedAccountBalanceMap(final List<Deposit> deposits)
+    {
+        Map<Integer, BigDecimal> accountBalanceMap = new HashMap<>();
+
+        // Get the Set of AccountID's
+        Set<Integer> accountIDs = retrieveDepositAccountIDsSet(deposits);
+
+        // Retrieve the current account balances
+        Map<Integer, BigDecimal> currentAccountBalances = retrieveCurrentAccountBalancesByAcctID(accountIDs);
+
+        // Calculate the new Account Balances
+        for(Map.Entry<Integer, BigDecimal> entry : currentAccountBalances.entrySet()){
+
+        }
+
         return null;
     }
 
@@ -89,7 +103,7 @@ public class DepositProcessorImpl implements DepositProcessor
 
     }
 
-    private Set<Integer> retrieveDepositAccountIDsSet(final List<Deposit> deposits){
+    public Set<Integer> retrieveDepositAccountIDsSet(final List<Deposit> deposits){
         Set<Integer> accountIDSet = new HashSet<>();
         for(Deposit deposit : deposits){
             int acctID = deposit.getAccountID();
@@ -98,11 +112,6 @@ public class DepositProcessorImpl implements DepositProcessor
         return accountIDSet;
     }
 
-    @Override
-    public Map<Integer, BigDecimal> retrieveNewBalancesByAcctIDMap(final Map<Integer, BigDecimal> calculatedBalances){
-        Map<Integer, BigDecimal> newAccountBalancesMapByAcctID = new HashMap<>();
-        return null;
-    }
 
     @Override
     public Map<Integer, BigDecimal> retrieveCurrentAccountBalancesByAcctID(final Set<Integer> acctIDs)
@@ -116,7 +125,7 @@ public class DepositProcessorImpl implements DepositProcessor
             for(Integer acctID : acctIDs){
 
                 // If the accountID is less than zero or (invalid)
-                if(acctID < 0){
+                if(acctID <= 0){
                     throw new IllegalArgumentException("Illegal AccountID Found.");
                 }
                 LOGGER.info("Found AcctID: " + acctID);
@@ -125,7 +134,8 @@ public class DepositProcessorImpl implements DepositProcessor
                 BigDecimal balance = getAccountService().getBalanceByAcctID(acctID);
 
                 // Is the balance greater than the minimum balance requirement?
-                boolean isLessThanMinimumBalance = balance.compareTo(BigDecimal.ZERO) > 0 && balance.compareTo(new BigDecimal("100")) < 0;
+                BigDecimal minimumBalanceRequirement = accountSecurityService.getMinimumBalanceRequirementsByAcctID(acctID);
+                boolean isLessThanMinimumBalance = balance.compareTo(BigDecimal.ZERO) > 0 && balance.compareTo(minimumBalanceRequirement) < 0;
                 if(balance.equals(BigDecimal.ZERO)){
                     throw new ZeroBalanceException("AccountID: " + acctID + " found with zero balance.");
                 }
@@ -145,7 +155,7 @@ public class DepositProcessorImpl implements DepositProcessor
         }
     }
 
-    private BigDecimal getDepositCalculation(BigDecimal amount, BigDecimal balance)
+    public BigDecimal getDepositCalculation(BigDecimal amount, BigDecimal balance)
     {
         if(amount == null || balance == null){
             throw new IllegalArgumentException("Unable to calculate deposit from null amount or balance");

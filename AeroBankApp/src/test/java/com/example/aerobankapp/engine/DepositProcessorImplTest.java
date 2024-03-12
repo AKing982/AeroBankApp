@@ -5,6 +5,7 @@ import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.scheduler.ScheduleType;
+import com.example.aerobankapp.services.AccountSecurityService;
 import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.DepositService;
 import com.example.aerobankapp.services.NotificationService;
@@ -43,6 +44,9 @@ class DepositProcessorImplTest
     private AccountService accountService;
 
     @Autowired
+    private AccountSecurityService accountSecurityService;
+
+    @Autowired
     private NotificationService notificationService;
 
     @Autowired
@@ -53,7 +57,7 @@ class DepositProcessorImplTest
     void setUp()
     {
         MockitoAnnotations.openMocks(this);
-        depositProcessor = new DepositProcessorImpl(depositService, accountService, notificationService, calculationEngine);
+        depositProcessor = new DepositProcessorImpl(depositService, accountService, accountSecurityService, notificationService, calculationEngine);
     }
 
     @Test
@@ -107,7 +111,7 @@ class DepositProcessorImplTest
     public void testGetAccountBalanceMapCalculation_EmptyList(){
         List<Deposit> depositListEmpty = new ArrayList<>();
 
-        Map<Integer, BigDecimal> accountBalances = depositProcessor.getAccountBalanceMapCalculation(depositListEmpty);
+        Map<Integer, BigDecimal> accountBalances = depositProcessor.getCalculatedAccountBalanceMap(depositListEmpty);
 
         assertEquals(depositListEmpty.size(), accountBalances.size());
     }
@@ -154,6 +158,25 @@ class DepositProcessorImplTest
         });
     }
 
+
+    @Test
+    public void testGetCalculationAccountBalanceMap(){
+        Deposit deposit = createDeposit(1, 1, "A1", new BigDecimal("1215"), "Transfer 1", ScheduleType.DAILY, LocalDate.now(), LocalTime.now());
+        Deposit deposit1 = createDeposit(1, 2, "A2", new BigDecimal("4500"), "Savings Money", ScheduleType.ONCE, LocalDate.now(), LocalTime.now());
+
+        List<Deposit> depositList = List.of(deposit1, deposit);
+        Map<Integer, BigDecimal> expectedCalculatedBalances = new HashMap<>();
+        expectedCalculatedBalances.put(1, new BigDecimal((5715)));
+        expectedCalculatedBalances.put(2, new BigDecimal(12300));
+
+        Map<Integer, BigDecimal> actualCalculatedBalances = depositProcessor.getCalculatedAccountBalanceMap(depositList);
+
+        assertEquals(expectedCalculatedBalances.size(), actualCalculatedBalances.size());
+        for(int i = 0; i < expectedCalculatedBalances.size(); i++){
+            assertEquals(expectedCalculatedBalances.get(i), actualCalculatedBalances.get(i));
+        }
+    }
+
     private DepositsEntity createDepositsEntity(ScheduleType scheduleType, String description, String acctCode, int acctID, int userID,
                                                 BigDecimal amount, LocalDate scheduledDate, LocalTime timeScheduled){
         DepositsEntity depositsEntity = new DepositsEntity();
@@ -167,6 +190,20 @@ class DepositProcessorImplTest
         depositsEntity.setScheduleInterval(scheduleType);
         depositsEntity.setScheduledDate(scheduledDate);
         return depositsEntity;
+    }
+
+    private Deposit createDeposit(int userID, int acctID, String acctCode, BigDecimal amount, String description, ScheduleType interval, LocalDate date, LocalTime time){
+        Deposit deposit = new Deposit();
+        deposit.setDepositID(1);
+        deposit.setAmount(amount);
+        deposit.setDescription(description);
+        deposit.setUserID(userID);
+        deposit.setAccountID(acctID);
+        deposit.setAcctCode(acctCode);
+        deposit.setScheduleInterval(interval);
+        deposit.setDateScheduled(date);
+        deposit.setTimeScheduled(time);
+        return deposit;
     }
 
     private Deposit convertDepositEntityToDeposit(final DepositsEntity depositsEntity){

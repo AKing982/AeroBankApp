@@ -19,11 +19,9 @@ public interface DepositProcessor
 
    void updateAccountBalances(Map<Integer, BigDecimal> accountBalanceByAcctIDMap);
 
-   Map<Integer, BigDecimal> getAccountBalanceMapCalculation(List<Deposit> deposits);
+   Map<Integer, BigDecimal> getCalculatedAccountBalanceMap(List<Deposit> deposits);
 
    Map<Integer, BigDecimal> retrieveCurrentAccountBalancesByAcctID(Set<Integer> acctIDs);
-
-   Map<Integer, BigDecimal> retrieveNewBalancesByAcctIDMap(Map<Integer, BigDecimal> calculatedBalances);
 
    List<TransactionDetail> convertDepositsToTransactionDetail(List<Deposit> depositList);
 

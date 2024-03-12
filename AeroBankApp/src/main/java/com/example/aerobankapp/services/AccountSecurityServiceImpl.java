@@ -5,6 +5,7 @@ import com.example.aerobankapp.repositories.AccountSecurityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +41,11 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
 
     @Override
     public List<AccountSecurityEntity> findByUserName(String user) {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getMinimumBalanceRequirementsByAcctID(int acctID) {
         return null;
     }
 }
