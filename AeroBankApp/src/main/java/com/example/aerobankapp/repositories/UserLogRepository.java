@@ -8,14 +8,41 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserLogRepository extends JpaRepository<UserLogEntity, Long>
 {
+    @Query("SELECT e FROM UserLogEntity e JOIN e.userEntity u WHERE u.username=:user")
+    List<UserLogEntity> findByUserName(@Param("user") String user);
 
-    @Query("SELECT e.sessionToken FROM UserLogEntity e WHERE e.id=:id")
-    String getSessionToken(@Param("id") int id);
+    @Query("SELECT e FROM UserLogEntity e WHERE e.isActive=:isActive AND e.userEntity.userID=:userID")
+    Optional<UserLogEntity> findUserLogEntriesByActiveStateAndUserID(@Param("isActive") boolean isActive, @Param("userID") int userID);
+
+    @Query("SELECT e FROM UserLogEntity e WHERE e.id=:id AND e.lastLogin=:lastLogin")
+    List<UserLogEntity> getUserLogsByLastLogin(@Param("id") Long id, @Param("lastLogin")LocalDateTime time);
+
+    @Query("UPDATE UserLogEntity e SET e.lastLogout=:logout WHERE e.id=:id")
+    @Modifying
+    void updateLastLogout(@Param("logout") LocalDateTime time, @Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE UserLogEntity e SET e.lastLogin=:lastLogin WHERE e.id=:id")
+    void updateLastLogin(@Param("lastLogin") LocalDateTime lastLogin, @Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE UserLogEntity e SET e.sessionDuration=:duration WHERE e.id=:id")
+    void updateSessionDuration(@Param("duration") int duration, @Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE UserLogEntity e SET e.isActive=:isActive WHERE e.id=:id")
+    void updateIsActiveState(@Param("isActive") boolean isActive, @Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE UserLogEntity e SET e.loginAttempts=:attempts WHERE e.id=:id")
+    void updateLoginAttempts(@Param("attempts") int attempts, @Param("id") Long id);
 
 
 }

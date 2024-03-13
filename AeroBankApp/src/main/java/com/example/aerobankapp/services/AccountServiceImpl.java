@@ -13,6 +13,7 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -163,7 +164,8 @@ public class AccountServiceImpl implements AccountService
     @Transactional
     public void updateAccountBalanceByAcctID(BigDecimal balance, int acctID)
     {
-        if(!isValidAcctID(acctID))
+        LOGGER.info("Updating Balance for AcctID: " + acctID);
+        if(isValidAcctID(acctID))
         {
             throw new IllegalArgumentException("Invalid Account ID Found");
         }
@@ -182,7 +184,8 @@ public class AccountServiceImpl implements AccountService
 
     private boolean doesAccountIDExist(int acctID)
     {
-       return accountRepository.doesAccountIDExist(acctID);
+        int accountCount = accountRepository.doesAccountIDExist(acctID);
+        return accountCount > 1;
     }
 
     public boolean isInvalidUserID(int userID)

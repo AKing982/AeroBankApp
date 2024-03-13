@@ -20,7 +20,7 @@ public interface BalanceHistoryEngine
 {
 
     TransactionDetailService getTransactionDetailService();
-    List<TransactionDetail> getTransactionDetails();
+    List<TransactionDetail> getTransactionDetailsByUserID(int userID);
     BalanceHistory getBalanceHistory(int acctID);
     BigDecimal getCurrentBalance(int acctID);
     Map<Long, List<BalanceHistory>> getBalanceHistoriesByAcctIDs(List<Integer> acctIDs);

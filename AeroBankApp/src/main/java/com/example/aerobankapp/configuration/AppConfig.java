@@ -23,11 +23,6 @@ public class AppConfig
 {
     private String queueName = "depositQueue";
 
-    @Bean
-    public DataSourceTransactionManager transactionManager(@Qualifier("aerobank") DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
-
     @Bean(name="aerobank")
     @Primary
     public DataSource dataSource()

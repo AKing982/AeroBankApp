@@ -2,9 +2,11 @@ package com.example.aerobankapp.repositories;
 
 import com.example.aerobankapp.entity.AccountEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,6 +38,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("SELECT a.acctID FROM AccountEntity a WHERE a.userID =:userID AND a.accountCode =:acctCode")
     Integer getAccountIDByAcctCodeAndUserID(@Param("userID") int userID, @Param("acctCode") String acctCode);
 
+    @Modifying
     @Query("UPDATE AccountEntity a SET a.balance =:balance WHERE a.acctID =:acctID")
     void updateAccountBalanceByAcctID(@Param("balance") BigDecimal balance, @Param("acctID") int acctID);
 
@@ -43,5 +46,5 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     boolean doesAccountCodeExist(@Param("acctCode") String acctCode);
 
     @Query("SELECT COUNT(a) FROM AccountEntity a WHERE a.acctID =:acctID")
-    boolean doesAccountIDExist(@Param("acctID") int acctID);
+    int doesAccountIDExist(@Param("acctID") int acctID);
 }

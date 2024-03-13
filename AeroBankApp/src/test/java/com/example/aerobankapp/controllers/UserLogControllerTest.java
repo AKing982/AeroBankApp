@@ -51,7 +51,6 @@ class UserLogControllerTest
         userLogEntity.setLoginAttempts(1);
         userLogEntity.setLastLogout(LocalDateTime.of(2024, 3, 4, 5, 2));
         userLogEntity.setLastLogin(LocalDateTime.of(2024, 3, 4, 5, 2));
-        userLogEntity.setSessionToken("ajajajsdfasdf");
         userLogEntity.setSessionDuration(6049);
 
         when(userLogService.findAllById(1L)).thenReturn(Optional.of(userLogEntity));

@@ -26,7 +26,7 @@ public class BalanceHistoryEngineImpl implements BalanceHistoryEngine
     }
 
     @Override
-    public List<TransactionDetail> getTransactionDetails() {
+    public List<TransactionDetail> getTransactionDetailsByUserID(int userID) {
         return null;
     }
 

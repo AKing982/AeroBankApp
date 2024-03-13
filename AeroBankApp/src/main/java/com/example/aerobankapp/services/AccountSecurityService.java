@@ -25,5 +25,24 @@ public interface AccountSecurityService extends ServiceDAOModel<AccountSecurityE
     List<AccountSecurityEntity> findByUserName(String user);
 
     BigDecimal getMinimumBalanceRequirementsByAcctID(int acctID);
+    int getTransactionVelocityLimitByAcctID(int acctID);
+    boolean IsWithdrawEnabledByAcctID(int acctID);
+    boolean IsDepositEnabledByAcctID(int acctID);
+    boolean IsTransferEnabledByAcctID(int acctID);
+    boolean IsPurchaseEnabledByAcctID(int acctID);
+    boolean IsAccountLockedByAcctID(int acctID);
+    boolean IsAutoPayEnabledByAcctID(int acctID);
+    boolean AreFeesEnabledByAcctID(int acctID);
+    boolean InterestEnabledByAcctID(int acctID);
+    int getTransactionVelocityLimitByID(int ID);
+    boolean IsWithdrawEnabledByID(int ID);
+    boolean IsDepositEnabledByID(int ID);
+    boolean IsTransferEnabledByID(int ID);
+    boolean IsPurchaseEnabledByID(int ID);
+    boolean IsAccountLockedByID(int ID);
+    boolean IsAutoPayEnabledByID(int ID);
+    boolean AreFeesEnabledByID(int ID);
+    boolean IsInterestEnabledByID(int ID);
+    void updateAccountSecurity(AccountSecurityEntity accountSecurityEntity);
 
 }

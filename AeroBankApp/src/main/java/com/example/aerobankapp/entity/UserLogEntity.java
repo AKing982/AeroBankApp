@@ -43,6 +43,6 @@ public class UserLogEntity
     @Column(name="loginAttempts")
     private int loginAttempts;
 
-    @Column(name="sessionToken")
-    private String sessionToken;
+    @Column(name="isActive")
+    private boolean isActive;
 }

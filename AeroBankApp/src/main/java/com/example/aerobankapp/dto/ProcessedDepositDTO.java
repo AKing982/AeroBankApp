@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
+@Deprecated
 public record ProcessedDepositDTO(int depositID,
                                 int userID,
                                 int accountID,
