@@ -1,6 +1,9 @@
 package com.example.aerobankapp.engine;
 
+import com.example.aerobankapp.entity.BalanceHistoryEntity;
+import com.example.aerobankapp.model.BalanceHistory;
 import com.example.aerobankapp.model.DepositBalanceSummary;
+import com.example.aerobankapp.model.Transaction;
 import com.example.aerobankapp.model.TransactionDetail;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 
@@ -25,7 +28,9 @@ public interface DepositProcessor
 
    Map<Integer, List<DepositBalanceSummary>> generateDepositBalanceSummaryMap(List<Deposit> deposits, Map<Integer, BigDecimal> accountBalances);
 
-   List<TransactionDetail> convertDepositSummaryToTransactionDetail(List<DepositBalanceSummary> depositList);
+   BalanceHistoryEntity createBalanceHistoryEntity(DepositBalanceSummary balanceSummary, BigDecimal currentBalance, BigDecimal adjustedAmount);
+
+   List<BalanceHistoryEntity> convertDepositSummaryToBalanceHistoryEntities(List<DepositBalanceSummary> depositList);
 
 
 }

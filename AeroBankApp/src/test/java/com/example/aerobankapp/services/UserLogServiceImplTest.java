@@ -1,5 +1,7 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.repositories.UserLogRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +11,10 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,8 +33,90 @@ class UserLogServiceImplTest {
         userLogService = new UserLogServiceImpl(userLogRepository);
     }
 
+    @Test
+    public void testFindByUserName_EmptyUserString(){
+        String emptyUserStr = "";
+
+        UserLogEntity userLogEntity = buildUserLogEntity(1, "AKing94", 5000, 1, true, true, LocalDateTime.now(), LocalDateTime.now());
+        List<UserLogEntity> userLogEntities = List.of(userLogEntity);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            List<UserLogEntity> foundUserLog = userLogService.findByUserName(emptyUserStr);
+        });
+    }
+
+    @Test
+    public void testFindByUserName_ValidUser(){
+        String validUser = "AKing94";
+        UserLogEntity userLogEntity = buildUserLogEntity(1, "AKing94", 5000, 1, true, true, LocalDateTime.now(), LocalDateTime.now());
+        List<UserLogEntity> userLogEntities = List.of(userLogEntity);
+
+        userLogService.save(userLogEntity);
+        List<UserLogEntity> foundUserLogs = userLogService.findByUserName(validUser);
+
+        assertEquals(userLogEntities.size(), foundUserLogs.size());
+        assertEquals(userLogEntities.get(0).getId(), foundUserLogs.get(0).getId());
+    }
+
+    @Test
+    public void testGetUserLogByNumberOfLoginAttempts_InvalidUserID_InvalidAttempts(){
+        final int invalidAttempts = -1;
+        final int invalidUserID = -1;
+        UserLogEntity userLogEntity = buildUserLogEntity(1, "AKing94", 5000, 1, true, true, LocalDateTime.now(), LocalDateTime.now());
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            UserLogEntity foundUserLog = userLogService.getUserLogByNumberOfLoginAttempts(invalidAttempts, invalidUserID);
+        });
+    }
+
+    @Test
+    public void testGetUserLogByNumberOfLoginAttempts_ValidUser(){
+        final int attempts = 1;
+        final int userID = 1;
+        UserLogEntity userLogEntity = buildUserLogEntity(1, "AKing94", 5000, 1, true, true, LocalDateTime.now(), LocalDateTime.now());
+
+        UserLogEntity foundUserLog = userLogService.getUserLogByNumberOfLoginAttempts(attempts, userID);
+
+        assertNotNull(foundUserLog);
+        assertNotEquals(userLogEntity, foundUserLog);
+        assertEquals(userLogEntity.getId(), foundUserLog.getId());
+    }
+
+    @Test
+    public void testGetCurrentLoggedOnUserID(){
+        final Long id = 1L;
+        final int userID = 1;
+
+        int actualFoundUserID = userLogService.getCurrentLoggedOnUserID(id);
+
+        assertEquals(userID, actualFoundUserID);
+    }
+
+
+
+    private UserLogEntity buildUserLogEntity(int userID, String user,
+                                             int sessionDuration,
+                                             int loginAttempts,
+                                             boolean loginSuccess,
+                                             boolean isActive,
+
+                                             LocalDateTime lastLogin,
+                                             LocalDateTime lastLogout){
+        UserLogEntity userLogEntity = new UserLogEntity();
+        userLogEntity.setUserEntity(UserEntity.builder().userID(userID).username(user).build());
+        userLogEntity.setId(1);
+        userLogEntity.setSessionDuration(sessionDuration);
+        userLogEntity.setLastLogin(lastLogin);
+        userLogEntity.setLoginAttempts(loginAttempts);
+        userLogEntity.setLastLogout(lastLogout);
+        userLogEntity.setLoginSuccess(loginSuccess);
+        userLogEntity.setActive(isActive);
+        return userLogEntity;
+    }
 
     @AfterEach
-    void tearDown() {
+    void tearDown()
+    {
+
     }
 }

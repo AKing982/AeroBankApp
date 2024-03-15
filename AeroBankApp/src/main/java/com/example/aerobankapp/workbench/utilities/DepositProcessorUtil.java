@@ -12,8 +12,8 @@ public class DepositProcessorUtil
 {
     public static DepositBalanceSummary buildDepositBalanceSummary(final Deposit deposit, final BigDecimal balanceAfterDeposit){
         DepositBalanceSummary depositBalanceSummary = new DepositBalanceSummary();
-        depositBalanceSummary.setDeposit(deposit);
-        depositBalanceSummary.setBalanceAfterDeposit(balanceAfterDeposit);
+        depositBalanceSummary.setTransaction(deposit);
+        depositBalanceSummary.setPostBalance(balanceAfterDeposit);
         depositBalanceSummary.setDateProcessed(LocalDate.now());
         return depositBalanceSummary;
     }

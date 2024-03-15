@@ -1,6 +1,7 @@
 package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.BalanceHistoryEntity;
 import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidBalanceException;
@@ -33,6 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Stream;
@@ -72,13 +74,16 @@ class DepositProcessorImplTest
     @Autowired
     private EncryptionService encryptionService;
 
+    @Autowired
+    private BalanceHistoryService balanceHistoryService;
+
 
     @BeforeEach
     void setUp()
     {
         MockitoAnnotations.openMocks(this);
         accountSecurityService = new AccountSecurityServiceImpl(accountSecurityRepository);
-        depositProcessor = new DepositProcessorImpl(depositService, accountService, accountSecurityService, notificationService, calculationEngine, userLogService, encryptionService);
+        depositProcessor = new DepositProcessorImpl(depositService, accountService, accountSecurityService, notificationService, calculationEngine, userLogService,balanceHistoryService, encryptionService);
     }
 
     @Test
@@ -338,7 +343,7 @@ class DepositProcessorImplTest
        // List<TransactionDetail> transactionDetails = depositProcessor.convertDepositSummaryToTransactionDetail(emptyBalanceSummary);
 
         assertThrows(NonEmptyListRequiredException.class, () -> {
-            depositProcessor.convertDepositSummaryToTransactionDetail(emptyBalanceSummary);
+            depositProcessor.convertDepositSummaryToBalanceHistoryEntities(emptyBalanceSummary);
         });
     }
 
@@ -348,12 +353,12 @@ class DepositProcessorImplTest
         DepositBalanceSummary depositBalanceSummary = buildDepositBalanceSummary(deposit1, new BigDecimal("4600.000"));
         List<DepositBalanceSummary> depositBalanceSummaries = List.of(depositBalanceSummary);
 
-        TransactionDetail transactionDetail = buildTransactionDetail(1, "A1", 1, new BigDecimal("1600"));
-        List<TransactionDetail> transactionDetailList = List.of(transactionDetail);
+      //  TransactionDetail transactionDetail = buildTransactionDetail(1, "A1", 1, new BigDecimal("1600"));
+      //  List<TransactionDetail> transactionDetailList = List.of(transactionDetail);
 
-        List<TransactionDetail> actualTransactionDetails = depositProcessor.convertDepositSummaryToTransactionDetail(depositBalanceSummaries);
+        //List<TransactionDetail> actualTransactionDetails = depositProcessor.convertDepositSummaryToTransactionDetail(depositBalanceSummaries);
 
-        assertEquals(transactionDetailList.size(), actualTransactionDetails.size());
+       // assertEquals(transactionDetailList.size(), actualTransactionDetails.size());
     }
 
     @Test
@@ -361,14 +366,31 @@ class DepositProcessorImplTest
         DepositBalanceSummary depositBalanceSummary = buildDepositBalanceSummary(null, new BigDecimal("4600.00"));
         List<DepositBalanceSummary> depositBalanceSummaries = List.of(depositBalanceSummary);
 
-        TransactionDetail transactionDetail = buildTransactionDetail(1, "A1", 1, new BigDecimal("1600"));
-        List<TransactionDetail> transactionDetailList = List.of(transactionDetail);
-
-        //List<TransactionDetail> actualTransactionDetails = depositProcessor.convertDepositSummaryToTransactionDetail(depositBalanceSummaries);
+        List<BalanceHistoryEntity> balanceHistoryEntities = new ArrayList<>();
+        BalanceHistoryEntity balanceHistoryEntity = createBalanceHistoryEntity(1, new BigDecimal("1215"), new BigDecimal("1300"), new BigDecimal("85"), LocalDateTime.now());
+        balanceHistoryEntities.add(balanceHistoryEntity);
 
         assertThrows(InvalidDepositException.class, () -> {
-            depositProcessor.convertDepositSummaryToTransactionDetail(depositBalanceSummaries);
+            depositProcessor.convertDepositSummaryToBalanceHistoryEntities(depositBalanceSummaries);
         });
+    }
+
+    @Test
+    public void testConvertDepositSummaryToBalanceHistoryEntity_ValidDeposit(){
+        Deposit deposit1 = createDeposit(1, 1, "A1", new BigDecimal("100"), "Transfer", ScheduleType.ONCE, LocalDate.now(), LocalTime.now());
+
+        DepositBalanceSummary depositBalanceSummary = buildDepositBalanceSummary(deposit1, new BigDecimal("4600.00"));
+        List<DepositBalanceSummary> depositBalanceSummaries = List.of(depositBalanceSummary);
+
+        List<BalanceHistoryEntity> balanceHistoryEntities = new ArrayList<>();
+        BalanceHistoryEntity balanceHistoryEntity = createBalanceHistoryEntity(1, new BigDecimal("1215"), new BigDecimal("1300"), new BigDecimal("85"), LocalDateTime.now());
+        balanceHistoryEntities.add(balanceHistoryEntity);
+
+        List<BalanceHistoryEntity> actualBalanceHistories = depositProcessor.convertDepositSummaryToBalanceHistoryEntities(depositBalanceSummaries);
+
+
+        assertEquals(balanceHistoryEntities.size(), actualBalanceHistories.size());
+
     }
 
     @Test
@@ -377,13 +399,9 @@ class DepositProcessorImplTest
         DepositBalanceSummary depositBalanceSummary = buildDepositBalanceSummary(deposit1, null);
         List<DepositBalanceSummary> depositBalanceSummaries = List.of(depositBalanceSummary);
 
-        TransactionDetail transactionDetail = buildTransactionDetail(1, "A1", 1, new BigDecimal("1600"));
-        List<TransactionDetail> transactionDetailList = List.of(transactionDetail);
-
-        //List<TransactionDetail> actualTransactionDetails = depositProcessor.convertDepositSummaryToTransactionDetail(depositBalanceSummaries);
 
         assertThrows(InvalidBalanceException.class, () -> {
-            depositProcessor.convertDepositSummaryToTransactionDetail(depositBalanceSummaries);
+            depositProcessor.convertDepositSummaryToBalanceHistoryEntities(depositBalanceSummaries);
         });
     }
 
@@ -392,13 +410,13 @@ class DepositProcessorImplTest
         DepositBalanceSummary depositBalanceSummary = buildDepositBalanceSummary(null, null);
         List<DepositBalanceSummary> depositBalanceSummaries = List.of(depositBalanceSummary);
 
-        TransactionDetail transactionDetail = buildTransactionDetail(1, "A1", 1, new BigDecimal("1600"));
-        List<TransactionDetail> transactionDetailList = List.of(transactionDetail);
+      //  TransactionDetail transactionDetail = buildTransactionDetail(1, "A1", 1, new BigDecimal("1600"));
+      //  List<TransactionDetail> transactionDetailList = List.of(transactionDetail);
 
         //List<TransactionDetail> actualTransactionDetails = depositProcessor.convertDepositSummaryToTransactionDetail(depositBalanceSummaries);
 
         assertThrows(InvalidDepositException.class, () -> {
-            depositProcessor.convertDepositSummaryToTransactionDetail(depositBalanceSummaries);
+            depositProcessor.convertDepositSummaryToBalanceHistoryEntities(depositBalanceSummaries);
         });
     }
 
@@ -416,19 +434,25 @@ class DepositProcessorImplTest
 
     }
 
-    private TransactionDetail buildTransactionDetail(int userID, String acctCode, int acctID, BigDecimal balance){
-        TransactionDetail transactionDetail = new TransactionDetail();
-        transactionDetail.setAccountCode(acctCode);
-        transactionDetail.setBalance(balance);
-        transactionDetail.setUserID(userID);
-        transactionDetail.setAccountID(acctID);
-        return transactionDetail;
+    private BalanceHistoryEntity createBalanceHistoryEntity(int acctID, BigDecimal currentBalance, BigDecimal newBalance, BigDecimal adjusted, LocalDateTime createdAt){
+        BalanceHistoryEntity balanceHistoryEntity = new BalanceHistoryEntity();
+        balanceHistoryEntity.setPostBalance(newBalance);
+        balanceHistoryEntity.setPreviousBalance(currentBalance);
+        balanceHistoryEntity.setAdjusted(adjusted);
+        balanceHistoryEntity.setAccount(AccountEntity.builder().acctID(acctID).build());
+        balanceHistoryEntity.setPosted(LocalDate.now());
+        balanceHistoryEntity.setCreatedAt(createdAt);
+        balanceHistoryEntity.setCreatedBy("user");
+        balanceHistoryEntity.setTransactionType("deposit");
+        return balanceHistoryEntity;
     }
+
+
 
     private static DepositBalanceSummary buildDepositBalanceSummary(final Deposit deposit, final BigDecimal balanceAfterDeposit){
         DepositBalanceSummary depositBalanceSummary = new DepositBalanceSummary();
-        depositBalanceSummary.setDeposit(deposit);
-        depositBalanceSummary.setBalanceAfterDeposit(balanceAfterDeposit);
+        depositBalanceSummary.setTransaction(deposit);
+        depositBalanceSummary.setPostBalance(balanceAfterDeposit);
         depositBalanceSummary.setDateProcessed(LocalDate.now());
         return depositBalanceSummary;
     }

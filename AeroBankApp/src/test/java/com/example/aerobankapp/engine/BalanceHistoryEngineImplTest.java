@@ -28,18 +28,10 @@ class BalanceHistoryEngineImplTest
     @BeforeEach
     void setUp()
     {
+
     }
 
-    @Test
-    public void testConstructor(){
-        TransactionDetailService mockTransactionDetailService = mock(TransactionDetailService.class);
 
-        balanceHistoryEngine = new BalanceHistoryEngineImpl(mockTransactionDetailService);
-
-        TransactionDetailService transactionDetailService1 = balanceHistoryEngine.getTransactionDetailService();
-
-        assertNotNull(transactionDetailService1);
-    }
 
     @Test
     public void testGetTransactionDetails(){

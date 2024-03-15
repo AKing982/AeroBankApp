@@ -24,22 +24,14 @@ public class BalanceHistoryEntity
     @JoinColumn(name="acctID")
     private AccountEntity account;
 
-    @ManyToOne
-    @JoinColumn(name="transactionID")
-    private TransactionEntity transaction;
-
-    @ManyToOne
-    @JoinColumn(name="accountDetailsID")
-    private AccountDetailsEntity accountDetails;
-
-    @Column(name="balance")
-    private BigDecimal balance;
+    @Column(name="postBalance")
+    private BigDecimal postBalance;
 
     @Column(name="adjusted")
     private BigDecimal adjusted;
 
-    @Column(name="lastBalance")
-    private BigDecimal lastBalance;
+    @Column(name="previousBalance")
+    private BigDecimal previousBalance;
 
     @Column(name="transactionType")
     private String transactionType;
@@ -50,12 +42,21 @@ public class BalanceHistoryEntity
     @Column(name="createdAt")
     private LocalDateTime createdAt;
 
-    @Column(name="updatedBy")
-    private String updatedBy;
-
-    @Column(name="currency")
-    private String currency;
-
     @Column(name="posted")
     private LocalDate posted;
+
+    @Override
+    public String toString() {
+        return "BalanceHistoryEntity{" +
+                "historyID=" + historyID +
+                ", account=" + account +
+                ", postBalance=" + postBalance +
+                ", adjusted=" + adjusted +
+                ", previousBalance=" + previousBalance +
+                ", transactionType='" + transactionType + '\'' +
+                ", createdBy='" + createdBy + '\'' +
+                ", createdAt=" + createdAt +
+                ", posted=" + posted +
+                '}';
+    }
 }

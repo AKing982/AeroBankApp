@@ -21,9 +21,6 @@ public class AccountDetailsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountDetailsID;
 
-    @OneToMany(mappedBy="accountDetails",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<BalanceHistoryEntity> balanceHistories;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="acctID")
     private AccountEntity account;

@@ -1,5 +1,6 @@
 package com.example.aerobankapp.repositories;
 
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.UserLogEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,7 +26,7 @@ public interface UserLogRepository extends JpaRepository<UserLogEntity, Long>
     List<UserLogEntity> getUserLogsByLastLogin(@Param("id") Long id, @Param("lastLogin")LocalDateTime time);
 
     @Query("UPDATE UserLogEntity e SET e.lastLogout=:logout WHERE e.id=:id")
-    @Modifying
+    @Modifying(clearAutomatically = true)
     void updateLastLogout(@Param("logout") LocalDateTime time, @Param("id") Long id);
 
     @Modifying
@@ -44,5 +45,17 @@ public interface UserLogRepository extends JpaRepository<UserLogEntity, Long>
     @Query("UPDATE UserLogEntity e SET e.loginAttempts=:attempts WHERE e.id=:id")
     void updateLoginAttempts(@Param("attempts") int attempts, @Param("id") Long id);
 
+    @Modifying
+    @Query("UPDATE UserLogEntity e SET e.userEntity=:user WHERE e.id=:id")
+    void updateUser(@Param("user")UserEntity userEntity, @Param("id") Long id);
+
+    @Query("SELECT e.userEntity.userID FROM UserLogEntity e WHERE e.id=:id AND e.isActive=true")
+    int getCurrentLoggedOnUser(@Param("id") Long id);
+
+    @Query("SELECT e.isActive FROM UserLogEntity e WHERE e.userEntity.userID=:userID")
+    boolean isUserCurrentlyLoggedIn(@Param("userID") int userID);
+
+    @Query("SELECT e FROM UserLogEntity e WHERE e.loginAttempts=:attempts AND e.userEntity.userID=:userID")
+    UserLogEntity getUserLogByLoginAttemptsAndUserID(@Param("attempts") int attempts, @Param("userID") int userID);
 
 }

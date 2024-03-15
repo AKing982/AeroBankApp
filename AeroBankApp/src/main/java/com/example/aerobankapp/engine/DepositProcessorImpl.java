@@ -1,11 +1,14 @@
 package com.example.aerobankapp.engine;
 
+import com.example.aerobankapp.entity.BalanceHistoryEntity;
 import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.exceptions.*;
+import com.example.aerobankapp.model.BalanceHistory;
 import com.example.aerobankapp.model.DepositBalanceSummary;
-import com.example.aerobankapp.model.TransactionDetail;
+import com.example.aerobankapp.model.Transaction;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.transactions.Deposit;
+import com.example.aerobankapp.workbench.utilities.BalanceHistoryUtil;
 import com.example.aerobankapp.workbench.utilities.DepositProcessorUtil;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -14,11 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.*;
 
 import static com.example.aerobankapp.workbench.utilities.DepositProcessorUtil.buildDepositBalanceSummary;
-import static com.example.aerobankapp.workbench.utilities.DepositProcessorUtil.convertToTransactionDetail;
 
 @Service
 @Getter
@@ -30,6 +31,7 @@ public class DepositProcessorImpl implements DepositProcessor, Runnable
     private final NotificationService notificationService;
     private final CalculationEngine calculationEngine;
     private final UserLogService userLogService;
+    private final BalanceHistoryService balanceHistoryService;
 
     // Need a class that encrypts/decrypts the deposit data
     private final EncryptionService encryptionService;
@@ -43,6 +45,7 @@ public class DepositProcessorImpl implements DepositProcessor, Runnable
                                 NotificationService notificationService,
                                 CalculationEngine calculationEngine,
                                 UserLogService userLogService,
+                                BalanceHistoryService balanceHistoryService,
                                 EncryptionService encryptionService)
     {
         this.depositService = depositService;
@@ -51,11 +54,16 @@ public class DepositProcessorImpl implements DepositProcessor, Runnable
         this.notificationService = notificationService;
         this.calculationEngine = calculationEngine;
         this.userLogService = userLogService;
+        this.balanceHistoryService = balanceHistoryService;
         this.encryptionService = encryptionService;
     }
 
-    public int getCurrentLoggedInUserID(){
-        return 0;
+
+    public List<Deposit> fetchAllDeposits(){
+        List<DepositsEntity> allDeposits = depositService.findAll();
+        return allDeposits.stream()
+                .map(DepositProcessorUtil::convertDepositEntityToDeposit)
+                .toList();
     }
 
     @Override
@@ -82,7 +90,9 @@ public class DepositProcessorImpl implements DepositProcessor, Runnable
 
     @Override
     public void sendDepositNotification(List<DepositBalanceSummary> transactionDetails) {
-
+        if(transactionDetails.isEmpty()){
+            throw new NonEmptyListRequiredException("Error sending deposit notification due to empty list.");
+        }
     }
 
     @Override
@@ -143,9 +153,30 @@ public class DepositProcessorImpl implements DepositProcessor, Runnable
         return accountBalanceMap;
     }
 
+
+    private BigDecimal getCurrentBalanceByAcctID(int acctID){
+        return getAccountService().getBalanceByAcctID(acctID);
+    }
+
+    private void saveBalanceHistory(BalanceHistoryEntity balanceHistory){
+        if(balanceHistory == null){
+            throw new IllegalArgumentException("Saving Invalid Balance History.");
+        }
+        LOGGER.info("Saving BalanceHistory: " + balanceHistory.toString());
+        getBalanceHistoryService().save(balanceHistory);
+    }
+
+    private BigDecimal getMinimumBalanceRequirements(final int acctID){
+        return getAccountSecurityService().getMinimumBalanceRequirementsByAcctID(acctID);
+    }
+
+    private BigDecimal getAdjustedAmount(BigDecimal currentBalance, BigDecimal newBalance){
+        return getCalculationEngine().getAdjustedAmount(currentBalance, newBalance);
+    }
+
     public BigDecimal getMinimumBalanceRequirementsByAcctID(final int acctID){
         LOGGER.info("Getting Minimum Balance for AcctID " + acctID);
-        BigDecimal minimumBalance = getAccountSecurityService().getMinimumBalanceRequirementsByAcctID(acctID);
+        BigDecimal minimumBalance = getMinimumBalanceRequirements(acctID);
         LOGGER.info("Minimum Balance for AcctID " + acctID + ": $" + minimumBalance);
         if(minimumBalance == null){
             throw new RuntimeException("Minimum Balance not found.");
@@ -192,27 +223,61 @@ public class DepositProcessorImpl implements DepositProcessor, Runnable
         return depositBalanceSummaries;
     }
 
+
     @Override
-    public List<TransactionDetail> convertDepositSummaryToTransactionDetail(List<DepositBalanceSummary> depositSummaries){
-        List<TransactionDetail> transactionDetailList = new ArrayList<>();
+    public BalanceHistoryEntity createBalanceHistoryEntity(DepositBalanceSummary depositBalanceSummary, BigDecimal currentBalance, BigDecimal adjustedAmount){
+      if(depositBalanceSummary == null){
+          throw new InvalidDepositException("Invalid Deposit Balance Summary.");
+      }
+      if(currentBalance == null || adjustedAmount == null){
+          throw new IllegalArgumentException("Illegal Balance or Amount found.");
+      }
+
+      BalanceHistory balanceHistory = BalanceHistoryUtil.convertBalanceSummaryToBalanceHistoryModel(depositBalanceSummary, currentBalance, adjustedAmount);
+      return BalanceHistoryUtil.convertBalanceHistoryToEntity(balanceHistory);
+    }
+
+
+    //TODO: This method will need to incorporate creating the balance history and building a transactions object to store in the transactions table
+    @Override
+    public List<BalanceHistoryEntity> convertDepositSummaryToBalanceHistoryEntities(List<DepositBalanceSummary> depositSummaries){
+        List<BalanceHistoryEntity> balanceHistoryEntities = new ArrayList<>();
         if(depositSummaries.isEmpty()){
             throw new NonEmptyListRequiredException("DepositBalance Summary list cannot be empty.");
         }
         for(DepositBalanceSummary depositBalanceSummary : depositSummaries){
             // Extract the Deposit
-            Deposit deposit = depositBalanceSummary.getDeposit();
-            BigDecimal balanceAfterDeposit = depositBalanceSummary.getBalanceAfterDeposit();
+            Deposit deposit = depositBalanceSummary.getTransaction();
             if(deposit == null) {
                 throw new InvalidDepositException("No Deposits have been retrieved from the balance summary.");
             }
+            BigDecimal originalBalance = getCurrentBalanceByAcctID(deposit.getAccountID());
+            if(originalBalance == null){
+                throw new InvalidBalanceException("Could not find Starting balance.");
+            }
+            LOGGER.info("Balance before deposit: $" + originalBalance);
+            BigDecimal balanceAfterDeposit = depositBalanceSummary.getPostBalance();
+            LOGGER.info("Balance After Deposit: $" + balanceAfterDeposit);
+            BigDecimal adjustedAmount = getAdjustedAmount(originalBalance, balanceAfterDeposit);
+            LOGGER.info("Adjusted Amount: " + adjustedAmount);
+
+            BalanceHistoryEntity balanceHistoryEntity = createBalanceHistoryEntity(depositBalanceSummary, originalBalance, adjustedAmount);
+            balanceHistoryEntities.add(balanceHistoryEntity);
+
             if(balanceAfterDeposit == null){
                 throw new InvalidBalanceException("Retrieving Invalid Balance from Balance Summary...");
             }
-            TransactionDetail transactionDetail = convertToTransactionDetail(deposit, balanceAfterDeposit);
-            transactionDetailList.add(transactionDetail);
         }
+        return balanceHistoryEntities;
+    }
 
-        return transactionDetailList;
+    public void addBalanceHistoriesToDatabase(List<BalanceHistoryEntity> balanceHistoryEntities){
+        if(balanceHistoryEntities.isEmpty()){
+            throw new NonEmptyListRequiredException("Unable to add balance histories to the database due to empty list.");
+        }
+        for(BalanceHistoryEntity balanceHistoryEntity : balanceHistoryEntities){
+            saveBalanceHistory(balanceHistoryEntity);
+        }
     }
 
     public Set<Integer> retrieveDepositAccountIDsSet(final List<Deposit> deposits){
@@ -294,15 +359,34 @@ public class DepositProcessorImpl implements DepositProcessor, Runnable
     @Override
     public void run()
     {
-        try
-        {
-            // Retrieve the list of deposits for the user
-         //   List<Deposit> deposits = retrieveUserDeposits()
+        try {
+            // Step 1: Fetch all deposits
+            List<Deposit> allDeposits = fetchAllDeposits();
+            if(allDeposits.isEmpty()){
+                LOGGER.info("No deposits to process.");
+                return;
+            }
+            // Step 2: Get calculated account balances based on the deposits
+            Map<Integer, BigDecimal> calculatedAccountBalances = getCalculatedAccountBalanceMap(allDeposits);
 
-        }catch(Exception e)
-        {
+            // Step 3: Generate deposit balance summaries for notification or further processing
+            Map<Integer, List<DepositBalanceSummary>> depositBalanceSummaryMap = generateDepositBalanceSummaryMap(allDeposits, calculatedAccountBalances);
 
+            // Step 4: Convert deposit summaries to balance history entities
+            List<BalanceHistoryEntity> balanceHistoryEntities = new ArrayList<>();
+            depositBalanceSummaryMap.forEach((acctID, depositBalanceSummaries) ->
+                    balanceHistoryEntities.addAll(convertDepositSummaryToBalanceHistoryEntities(depositBalanceSummaries)));
+
+            // Step 5: Add balance histories to the database
+            addBalanceHistoriesToDatabase(balanceHistoryEntities);
+
+            // Step 6: Optionally, send notifications about the deposits
+            // This step depends on your application's requirements.
+            depositBalanceSummaryMap.values().forEach(this::sendDepositNotification);
+
+            LOGGER.info("Deposit processing completed successfully.");
+        } catch(Exception e) {
+            LOGGER.error("Error occurred during deposit processing: " + e.getMessage(), e);
         }
-
     }
 }

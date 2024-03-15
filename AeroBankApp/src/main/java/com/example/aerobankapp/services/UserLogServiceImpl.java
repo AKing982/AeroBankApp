@@ -2,13 +2,17 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.UserLogEntity;
+import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.repositories.UserLogRepository;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +23,8 @@ import java.util.Optional;
 public class UserLogServiceImpl implements UserLogService
 {
     private final UserLogRepository userLogRepository;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(UserLogServiceImpl.class);
 
     @Autowired
     public UserLogServiceImpl(UserLogRepository userLogRepository)
@@ -58,63 +64,87 @@ public class UserLogServiceImpl implements UserLogService
 
     @Override
     public List<UserLogEntity> findByUserName(String user) {
-
-        return null;
+        if(user.isEmpty()){
+            throw new IllegalArgumentException("UserName cannot be empty.");
+        }
+        return userLogRepository.findByUserName(user);
     }
 
     @Override
     public UserLogEntity getUserLogByNumberOfLoginAttempts(int attempts, int userID) {
-        return null;
+        if(attempts < 0 || userID < 1){
+            throw new IllegalArgumentException("Invalid Login Attempts or UserID found.");
+        }
+
+        UserLogEntity userLogEntity = userLogRepository.getUserLogByLoginAttemptsAndUserID(attempts, userID);
+        if(userLogEntity == null){
+            throw new IllegalArgumentException("No UserLogs found in the database.");
+        }
+        return userLogEntity;
     }
 
     @Override
     public Optional<UserLogEntity> findUserLogEntriesByActiveStateAndUserID(boolean isActive, int userID) {
-        return null;
+        if(userID < 1){
+            throw new InvalidUserIDException("Invalid UserID Found.");
+        }
+        return userLogRepository.findUserLogEntriesByActiveStateAndUserID(isActive, userID);
     }
 
     @Override
     public List<UserLogEntity> getUserLogsByLastLogin(Long id, LocalDateTime lastLogin) {
-        return null;
+        if(id < 1 || lastLogin == null){
+            throw new IllegalArgumentException("Illegal Parameters.");
+        }
+        return userLogRepository.getUserLogsByLastLogin(id, lastLogin);
     }
 
     @Override
+    @Transactional
     public void updateLastLogout(Long id, LocalDateTime time) {
-
+        LOGGER.info("Last Logout: " + time);
+        userLogRepository.updateLastLogout(time, id);
     }
 
     @Override
     public void updateLastLogin(Long id, LocalDateTime time) {
-
+        userLogRepository.updateLastLogin(time, id);
     }
 
     @Override
     public void updateSessionDuration(Long id, int duration) {
-
+        userLogRepository.updateSessionDuration(duration, id);
     }
 
     @Override
     public void updateIsActiveState(Long id, boolean isActive) {
-
+        userLogRepository.updateIsActiveState(isActive, id);
     }
 
     @Override
     public void updateLoginAttempts(Long id, int attempts) {
-
+        userLogRepository.updateLoginAttempts(attempts, id);
     }
 
     @Override
     public void updateUser(Long id, UserEntity userEntity) {
-
+        userLogRepository.updateUser(userEntity, id);
     }
 
     @Override
     public int getCurrentLoggedOnUserID(Long id) {
-        return 0;
+        if(id < 1){
+            throw new IllegalArgumentException("Invalid User Log id found.");
+        }
+        return userLogRepository.getCurrentLoggedOnUser(id);
     }
 
     @Override
     public boolean isUserCurrentlyLoggedIn(int userID) {
-        return false;
+        if(userID < 1){
+            throw new InvalidUserIDException("Invalid UserID Found.");
+        }
+        return userLogRepository.isUserCurrentlyLoggedIn(userID);
     }
 
 }

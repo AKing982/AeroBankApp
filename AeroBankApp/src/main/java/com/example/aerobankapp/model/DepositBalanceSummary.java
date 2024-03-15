@@ -9,20 +9,16 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class DepositBalanceSummary
+public class DepositBalanceSummary extends TransactionBalanceSummary<Deposit>
 {
-    private Deposit deposit;
-    private BigDecimal balanceAfterDeposit;
-    private LocalDate dateProcessed;
 
     public DepositBalanceSummary(Deposit deposit, BigDecimal balanceAfterDeposit, LocalDate dateProcessed) {
-        this.deposit = deposit;
-        this.balanceAfterDeposit = balanceAfterDeposit;
-        this.dateProcessed = dateProcessed;
+      super(deposit, balanceAfterDeposit, dateProcessed);
+
     }
 
     public DepositBalanceSummary(){
-        // Nothing here to see
+        super();
     }
 
 }

@@ -1,12 +1,15 @@
 package com.example.aerobankapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -15,7 +18,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="userLog")
-public class UserLogEntity
+public class UserLogEntity implements Serializable
 {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -45,4 +48,17 @@ public class UserLogEntity
 
     @Column(name="isActive")
     private boolean isActive;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserLogEntity that = (UserLogEntity) o;
+        return id == that.id && sessionDuration == that.sessionDuration && loginSuccess == that.loginSuccess && loginAttempts == that.loginAttempts && isActive == that.isActive && Objects.equals(userEntity, that.userEntity) && Objects.equals(lastLogin, that.lastLogin) && Objects.equals(lastLogout, that.lastLogout);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userEntity, lastLogin, lastLogout, sessionDuration, loginSuccess, loginAttempts, isActive);
+    }
 }

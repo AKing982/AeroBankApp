@@ -19,10 +19,8 @@ import java.util.Queue;
 public interface BalanceHistoryEngine
 {
 
-    TransactionDetailService getTransactionDetailService();
-    List<TransactionDetail> getTransactionDetailsByUserID(int userID);
     BalanceHistory getBalanceHistory(int acctID);
-    BigDecimal getCurrentBalance(int acctID);
+    BigDecimal getBalanceBefore(int acctID);
     Map<Long, List<BalanceHistory>> getBalanceHistoriesByAcctIDs(List<Integer> acctIDs);
     List<BalanceHistory> getBalanceHistoriesByAcctID(int acctID);
     void recordBalanceHistory(Account account, BigDecimal currentBalance, BigDecimal adjusted, BigDecimal lastBalance);

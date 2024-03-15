@@ -38,15 +38,13 @@ public class TransactionEntity
     @JoinColumn(name="acctID")
     private AccountEntity account;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="historyID")
+    private BalanceHistoryEntity balanceHistory;
+
     @Column(name="amount")
     @NotNull
     private BigDecimal amount;
-
-    @Column(name="debit")
-    private BigDecimal debit;
-
-    @Column(name="credit")
-    private BigDecimal credit;
 
     @Column(name="description")
     @NotNull

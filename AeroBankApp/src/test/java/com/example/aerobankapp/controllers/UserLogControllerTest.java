@@ -3,38 +3,56 @@ package com.example.aerobankapp.controllers;
 import com.example.aerobankapp.dao.UserLogService;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.UserLogEntity;
+import com.example.aerobankapp.services.UserLogServiceImpl;
+import com.example.aerobankapp.workbench.utilities.LogoutRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
-@WebMvcTest(value= UserLogControllerTest.class)
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+@WebMvcTest(value= UserLogControllerTest.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@RunWith(SpringRunner.class)
 class UserLogControllerTest
 {
     @MockBean
     private UserLogController userLogController;
 
     @MockBean
-    private UserLogService userLogService;
+    private UserLogServiceImpl userLogService;
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+
 
     @BeforeEach
     void setUp() {
@@ -68,9 +86,151 @@ class UserLogControllerTest
                 .andExpect(jsonPath("$.lastLogin").value("2024-03-04T05:02:00"))
                 .andExpect(jsonPath("$.sessionToken").value("ajajajsdfasdf"))
                 .andExpect(jsonPath("$.sessionDuration").value(6049));
+    }
 
+    @Test
+    public void getUserLogByNumberOfLoginAttempts_InitialTest_Failure() throws Exception {
+        int attempts = -2; // Invalid number of attempts
+        int userID = -2; // Invalid userID
+
+        given(userLogService.getUserLogByNumberOfLoginAttempts(attempts, userID)).willReturn(null);
+
+        String attemptsStr = String.valueOf(attempts);
+        String userIDStr = String.valueOf(userID);
+        System.out.println("Attempts: " + attemptsStr);
+        System.out.println("UserID:  " + userIDStr);
+        mockMvc.perform(get("/api/session/byAttempts")
+                .param("attempts", attemptsStr)
+                        .param("userID", userIDStr)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest()); // Expecting a 400 Bad Request due to invalid parameters
+    }
+
+
+    @Test
+    public void findUserLogEntriesByActiveStateAndUserID_InvalidUserID() throws Exception {
+        final int userID = -1;
+        final boolean isActive = true;
+
+        given(userLogService.findUserLogEntriesByActiveStateAndUserID(isActive, userID)).willReturn(null);
+
+        mockMvc.perform(get("/api/session/byActiveState")
+                .param("IsActive", String.valueOf(isActive))
+                .param("UserID", String.valueOf(userID))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+        //verify(userLogService).findUserLogEntriesByActiveStateAndUserID(isActive, userID);
+    }
+
+    @Test
+    public void findUserLogEntriesByActiveStateAndUserID_ValidUserID_returnNotFound() throws Exception {
+        final int userID = 2;
+        final boolean isActive = true;
+
+        given(userLogService.findUserLogEntriesByActiveStateAndUserID(isActive, userID)).willReturn(null);
+
+        mockMvc.perform(get("/api/session/byActiveState")
+                .param("IsActive", String.valueOf(isActive))
+                .param("UserID", String.valueOf(userID))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void test_getUserLogsByLastLogin_InvalidID_ValidLastLogin_return_NotFound() throws Exception {
+        final Long id = -1L;
+        final String date = "2024-03-15 12:56:21";
+        final LocalDateTime dateTime = LocalDateTime.of(2024, 3, 15, 12, 56, 21);
+
+        given(userLogService.getUserLogsByLastLogin(id, dateTime)).willReturn(null);
+
+        mockMvc.perform(get("/api/session/byLastLogin")
+                .param("Id", String.valueOf(id))
+                .param("LastLogin", String.valueOf(dateTime))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void test_getUserLogsByLastLogin_ValidUserID_ValidDate_return_UserLog() throws Exception {
+        final Long id = 2L;
+        final String date = "2024-03-15 12:56:21";
+        final LocalDateTime dateTime = LocalDateTime.of(2024, 3, 15, 12, 56, 21);
+        UserLogEntity userLogEntity = new UserLogEntity();
+        userLogEntity.setUserEntity(UserEntity.builder().userID(1).username("AKing94").build());
+        userLogEntity.setId(1);
+        userLogEntity.setLoginSuccess(true);
+        userLogEntity.setLoginAttempts(1);
+        userLogEntity.setLastLogout(LocalDateTime.of(2024, 3, 15, 12, 56, 21));
+        userLogEntity.setLastLogin(LocalDateTime.of(2024, 3, 15, 12, 56, 21));
+        userLogEntity.setSessionDuration(5000);
+
+        final String dateTimeStr = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+        given(userLogService.getUserLogsByLastLogin(id, dateTime)).willReturn(List.of(userLogEntity));
+
+        mockMvc.perform(get("/api/session/byLastLogin")
+                .param("id", String.valueOf(id))
+                .param("LastLogin", String.valueOf(dateTime))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    @WithMockUser // Ensures the test runs with a mock user, simulating a user being authenticated
+    public void updateLastLogout_ValidIdAndTime_ReturnsOk() throws Exception {
+        final Long id = 2L;
+        final LocalDateTime time = LocalDateTime.of(2024, 3, 15, 4, 45, 21);
+        final String timeAsString = time.format(DateTimeFormatter.ISO_DATE_TIME);
+
+        LogoutRequest logoutRequest = new LogoutRequest(time);
+
+        // Assuming the service method called by the controller is something like userService.updateLastLogout(id, time);
+        // Simulate the service not returning any significant value, just acknowledging execution
+        doNothing().when(userLogService).updateLastLogout(id, time);
+
+        // Perform the PUT request
+        mockMvc.perform(put("/api/session/updateLastLogout/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        // Serialize the logoutRequest object to JSON
+                        .content(objectMapper.writeValueAsString(logoutRequest)))
+                .andExpect(status().isOk()); // Verify that the response status is OK
 
     }
+
+
+    @Test
+    public void findUserLogEntriesByActiveStateAndUserID_ValidUserID() throws Exception {
+        final int userID = 1;
+        final boolean isActive = true;
+        UserLogEntity userLogEntity = new UserLogEntity();
+        userLogEntity.setUserEntity(UserEntity.builder().userID(1).username("AKing94").build());
+        userLogEntity.setId(1);
+        userLogEntity.setLoginSuccess(true);
+        userLogEntity.setLoginAttempts(1);
+        userLogEntity.setLastLogout(LocalDateTime.of(2024, 3, 4, 5, 2));
+        userLogEntity.setLastLogin(LocalDateTime.of(2024, 3, 15, 12, 56, 21));
+        userLogEntity.setSessionDuration(6049);
+
+
+        given(userLogService.findUserLogEntriesByActiveStateAndUserID(isActive, userID)).willReturn(Optional.of(userLogEntity));
+
+        mockMvc.perform(get("/api/session/byActiveState")
+                .param("isActive", String.valueOf(isActive))
+                .param("userID", String.valueOf(userID))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+
+
 
     @AfterEach
     void tearDown() {

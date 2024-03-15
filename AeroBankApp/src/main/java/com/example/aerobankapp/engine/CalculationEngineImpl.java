@@ -90,6 +90,9 @@ public class CalculationEngineImpl implements CalculationEngine
 
     @Override
     public BigDecimal getAdjustedAmount(BigDecimal currBalance, BigDecimal newBalance) {
-        return null;
+        if(currBalance == null || newBalance == null){
+            throw new IllegalArgumentException("Invalid Balances have been retrieved.");
+        }
+        return newBalance.subtract(currBalance);
     }
 }
