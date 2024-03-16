@@ -35,6 +35,7 @@ export default function LoginFormOLD()
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [showBackdrop, setShowBackdrop] = useState(false);
+    const [loginAttempts, setLoginAttempts] = useState(0);
 
     const overlayStyle = {
         position: 'absolute',
@@ -184,6 +185,8 @@ export default function LoginFormOLD()
         event.preventDefault();
         setLoading(true);
         setShowBackdrop(true);
+        const loginTime = new Date().getTime().toString();
+        sessionStorage.setItem('loginTime', loginTime);
 
         try{
 
@@ -204,6 +207,8 @@ export default function LoginFormOLD()
                     saveJWTSession(token);
                     saveUserNameToSession(username);
                     navigateToHomePage();
+
+                    setLoginAttempts(1);
                 }
                 else
                 {
@@ -211,6 +216,8 @@ export default function LoginFormOLD()
                     setDialogMessage(`Incorrect Username or Password`);
                     setIsDialogOpen(true);
                     setError('Incorrect Username or Password');
+
+                    setLoginAttempts((prevAttempts) => prevAttempts + 1);
                 }
 
                 setLoading(false);

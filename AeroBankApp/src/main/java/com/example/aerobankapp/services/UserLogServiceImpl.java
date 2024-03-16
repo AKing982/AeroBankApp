@@ -132,6 +132,12 @@ public class UserLogServiceImpl implements UserLogService
     }
 
     @Override
+    @Transactional
+    public void updateUserLog(Long id, boolean isActive, LocalDateTime lastLogin, LocalDateTime lastLogout, int attempts, boolean isSuccess, int duration) {
+        userLogRepository.updateUserLog(isActive, lastLogin, lastLogout, attempts, isSuccess, duration, id);
+    }
+
+    @Override
     public int getCurrentLoggedOnUserID(Long id) {
         if(id < 1){
             throw new IllegalArgumentException("Invalid User Log id found.");

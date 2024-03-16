@@ -1,11 +1,13 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.dao.UserLogService;
+import com.example.aerobankapp.dto.UserLogDTO;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.services.UserLogServiceImpl;
 import com.example.aerobankapp.workbench.utilities.LogoutRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -203,6 +205,31 @@ class UserLogControllerTest
                 .andExpect(status().isOk()); // Verify that the response status is OK
 
     }
+
+    @Test
+    public void testUpdateUserLog() throws Exception{
+        Long id = 1L;
+        LocalDateTime lastLogin = LocalDateTime.of(2024, 3, 15, 12, 56, 21);
+        LocalDateTime lastLogout = LocalDateTime.of(2024, 3, 15, 16, 30, 12);
+
+        UserLogDTO userLogDTO = new UserLogDTO(1L,1, false, lastLogin, lastLogout, 1, false, 5);
+
+     //   doNothing().when(userLogService).updateUserLog(id, false, lastLogin, lastLogout, 5, false, 1);
+
+        ObjectMapper objectMapper1 = new ObjectMapper();
+        objectMapper1.registerModule(new JavaTimeModule());
+        String userLogDTOJson = objectMapper1.writeValueAsString(userLogDTO);
+
+        mockMvc.perform(put("/api/session/updateUserLog/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userLogDTOJson))
+                .andExpect(status().isOk());
+
+        //verify(userLogService).updateUserLog(id, true, lastLogin, lastLogout, 1, true, 5000);
+
+    }
+
+
 
 
     @Test

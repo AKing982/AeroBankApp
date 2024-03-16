@@ -49,6 +49,10 @@ public interface UserLogRepository extends JpaRepository<UserLogEntity, Long>
     @Query("UPDATE UserLogEntity e SET e.userEntity=:user WHERE e.id=:id")
     void updateUser(@Param("user")UserEntity userEntity, @Param("id") Long id);
 
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE UserLogEntity e SET e.isActive=:isActive, e.lastLogin=:lastLogin, e.lastLogout=:lastLogout, e.loginAttempts=:attempts, e.loginSuccess=:isSuccess, e.sessionDuration=:duration WHERE e.id=:id")
+    void updateUserLog(@Param("isActive") boolean isActive, @Param("lastLogin") LocalDateTime lastLogin, @Param("lastLogout") LocalDateTime lastLogout, @Param("attempts") int attempts, @Param("isSuccess") boolean isSuccess, @Param("duration") int duration, @Param("id") Long id);
+
     @Query("SELECT e.userEntity.userID FROM UserLogEntity e WHERE e.id=:id AND e.isActive=true")
     int getCurrentLoggedOnUser(@Param("id") Long id);
 

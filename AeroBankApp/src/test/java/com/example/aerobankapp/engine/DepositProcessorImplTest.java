@@ -15,7 +15,6 @@ import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.AccountIDResponse;
 import com.example.aerobankapp.workbench.transactions.Deposit;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -327,7 +326,7 @@ class DepositProcessorImplTest
 
     @ParameterizedTest
     @MethodSource("depositBalanceSummaryDataProvider")
-    void testGenerateDepositBalanceSummaryMap(List<Deposit> deposits, Map<Integer, BigDecimal> accountBalances, @NotNull Map<Integer, List<DepositBalanceSummary>> expected) {
+    void testGenerateDepositBalanceSummaryMap(List<Deposit> deposits, Map<Integer, BigDecimal> accountBalances, Map<Integer, List<DepositBalanceSummary>> expected) {
         Map<Integer, List<DepositBalanceSummary>> actual = depositProcessor.generateDepositBalanceSummaryMap(deposits, accountBalances);
 
         assertEquals(expected.size(), actual.size(), "Map sizes differ");

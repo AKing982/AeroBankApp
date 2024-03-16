@@ -4,15 +4,14 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 
-public record UserLogDTO(int sessionID,
+public record UserLogDTO(Long id,
                          int userID,
-                         String username,
+                         boolean isActive,
                          LocalDateTime lastLogin,
                          LocalDateTime lastLogout,
                          int sessionDuration,
                          boolean loginSuccess,
-                         int loginAttempts,
-                         String sessionToken)
+                         int loginAttempts)
 {
 
 }

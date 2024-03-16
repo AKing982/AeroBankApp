@@ -106,39 +106,44 @@ public class UserLogController
             return ResponseEntity.ok(userLogEntities);
     }
 
-    @PutMapping("/updateLastLogout/{id}")
+    @PostMapping("/addUserLog")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateLastLogout(@PathVariable Long id, @RequestBody LogoutRequest logoutRequest){
-        userLogService.updateLastLogout(id, logoutRequest.getTime());
-        return ResponseEntity.ok("Updated Last Logout");
+    public ResponseEntity<?> createUserLog(@RequestBody UserLogDTO userLogDTO) {
+        Long foundID = userLogDTO.id();
+        try
+        {
+           UserLogEntity userLogEntity = createUserLogEntity(userLogDTO);
+
+            userLogService.save(userLogEntity);
+            return ResponseEntity.ok("User Log Was successfully created.");
+
+        }catch(Exception e)
+        {
+            return ResponseEntity.badRequest().body("There was an error saving UserLog with id: " + foundID + " due to error: " + e.getMessage());
+        }
     }
 
-    @PutMapping("/updateLastLogin/{id}")
+    @PutMapping("/updateUserLog/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateLastLogin(@PathVariable Long id, @RequestBody @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime time) {
-        userLogService.updateLastLogin(id, time);
-        return ResponseEntity.ok().build();
-    }
+    public ResponseEntity<?> updateUserLog(@PathVariable Long id, @RequestBody UserLogDTO userLogDTO){
+        Long foundID = userLogDTO.id();
+        boolean isActive = userLogDTO.isActive();
+        LocalDateTime lastLogin = userLogDTO.lastLogin();
+        LocalDateTime lastLogout = userLogDTO.lastLogout();
+        int duration = userLogDTO.sessionDuration();
+        boolean success = userLogDTO.loginSuccess();
+        int attempts = userLogDTO.loginAttempts();
 
-    @PutMapping("/updateSessionDuration/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateSessionDuration(@PathVariable Long id, @RequestParam int duration) {
-        userLogService.updateSessionDuration(id, duration);
-        return ResponseEntity.ok().build();
-    }
+        try
+        {
+            userLogService.updateUserLog(foundID, isActive, lastLogin, lastLogout, attempts, success, duration);
+            return ResponseEntity.ok("Updating the User Log with id: " + foundID + " was successful");
 
-    @PutMapping("/updateIsActiveState/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateIsActiveState(@PathVariable Long id, @RequestParam boolean isActive) {
-        userLogService.updateIsActiveState(id, isActive);
-        return ResponseEntity.ok().build();
-    }
+        }catch(Exception e)
+        {
+            return ResponseEntity.badRequest().body("There was an error Updating the User Log: " + e.getMessage());
+        }
 
-    @PutMapping("/updateLoginAttempts/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateLoginAttempts(@PathVariable Long id, @RequestParam int attempts) {
-        userLogService.updateLoginAttempts(id, attempts);
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/updateUser/{id}")
@@ -179,10 +184,17 @@ public class UserLogController
         return null;
     }
 
-    @PostMapping("/add")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> addUserLog(@Valid @RequestBody UserLogDTO userLogDTO)
-    {
-        return null;
+
+    private UserLogEntity createUserLogEntity(UserLogDTO userLogDTO){
+        UserLogEntity userLogEntity = new UserLogEntity();
+        userLogEntity.setId(userLogEntity.getId());
+        userLogEntity.setActive(userLogDTO.isActive());
+        userLogEntity.setLastLogout(userLogDTO.lastLogout());
+        userLogEntity.setLastLogin(userLogDTO.lastLogin());
+        userLogEntity.setLoginAttempts(userLogDTO.loginAttempts());
+        userLogEntity.setLoginSuccess(userLogDTO.loginSuccess());
+        userLogEntity.setSessionDuration(userLogDTO.sessionDuration());
+        userLogEntity.setUserEntity(UserEntity.builder().userID(userLogDTO.userID()).build());
+        return userLogEntity;
     }
 }
