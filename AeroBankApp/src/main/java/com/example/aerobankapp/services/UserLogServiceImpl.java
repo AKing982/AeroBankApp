@@ -6,6 +6,7 @@ import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.repositories.UserLogRepository;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,33 +101,6 @@ public class UserLogServiceImpl implements UserLogService
     }
 
     @Override
-    @Transactional
-    public void updateLastLogout(Long id, LocalDateTime time) {
-        LOGGER.info("Last Logout: " + time);
-        userLogRepository.updateLastLogout(time, id);
-    }
-
-    @Override
-    public void updateLastLogin(Long id, LocalDateTime time) {
-        userLogRepository.updateLastLogin(time, id);
-    }
-
-    @Override
-    public void updateSessionDuration(Long id, int duration) {
-        userLogRepository.updateSessionDuration(duration, id);
-    }
-
-    @Override
-    public void updateIsActiveState(Long id, boolean isActive) {
-        userLogRepository.updateIsActiveState(isActive, id);
-    }
-
-    @Override
-    public void updateLoginAttempts(Long id, int attempts) {
-        userLogRepository.updateLoginAttempts(attempts, id);
-    }
-
-    @Override
     public void updateUser(Long id, UserEntity userEntity) {
         userLogRepository.updateUser(userEntity, id);
     }
@@ -138,11 +112,19 @@ public class UserLogServiceImpl implements UserLogService
     }
 
     @Override
-    public int getCurrentLoggedOnUserID(Long id) {
+    public int getCurrentLoggedOnUserID(final Long id) {
         if(id < 1){
             throw new IllegalArgumentException("Invalid User Log id found.");
         }
         return userLogRepository.getCurrentLoggedOnUser(id);
+    }
+
+    @Override
+    public Long getCurrentUserLogSessionID(final int userID) {
+        if(userID >= 1){
+            return userLogRepository.getCurrentUserLogSessionID(userID);
+        }
+        return null;
     }
 
     @Override
@@ -151,6 +133,18 @@ public class UserLogServiceImpl implements UserLogService
             throw new InvalidUserIDException("Invalid UserID Found.");
         }
         return userLogRepository.isUserCurrentlyLoggedIn(userID);
+    }
+
+    @Override
+    public Optional<UserLogEntity> findActiveUserLogSessionByUserID(int userID) {
+        if(userID < 1){
+            throw new InvalidUserIDException("Invalid UserID has been found.");
+        }
+        Optional<UserLogEntity> userLogEntity = userLogRepository.findActiveUserLogSessionByUserID(userID);
+        if(userLogEntity.isEmpty()){
+            throw new EntityNotFoundException("Unable to retrieve UserLog for userID: " + userID + " from the database.");
+        }
+        return userLogRepository.findActiveUserLogSessionByUserID(userID);
     }
 
 }

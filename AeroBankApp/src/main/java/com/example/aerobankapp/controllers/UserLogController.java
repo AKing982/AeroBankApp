@@ -110,6 +110,7 @@ public class UserLogController
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createUserLog(@RequestBody UserLogDTO userLogDTO) {
         Long foundID = userLogDTO.id();
+       LOGGER.info("Saving UserLog: " + userLogDTO.toString());
         try
         {
            UserLogEntity userLogEntity = createUserLogEntity(userLogDTO);
@@ -121,6 +122,14 @@ public class UserLogController
         {
             return ResponseEntity.badRequest().body("There was an error saving UserLog with id: " + foundID + " due to error: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/current/{userID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getCurrentUserLogID(@PathVariable int userID){
+        Long currentSessionID = userLogService.getCurrentUserLogSessionID(userID);
+
+        return ResponseEntity.ok(new com.example.aerobankapp.workbench.utilities.UserLogResponse(currentSessionID));
     }
 
     @PutMapping("/updateUserLog/{id}")
@@ -176,6 +185,22 @@ public class UserLogController
         return null;
     }
 
+
+    @GetMapping("/currentSession/{userID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> findCurrentUserLogSessionByUserID(@PathVariable int userID){
+        if(userID < 1){
+            return ResponseEntity.badRequest().body("Unable to retrieve UserLog from invalid userID: " + userID);
+        }
+        else{
+            Optional<UserLogEntity> userLogEntity = userLogService.findActiveUserLogSessionByUserID(userID);
+            if(userLogEntity == null){
+                return ResponseEntity.notFound().build();
+            }
+            UserLogEntity userLog = userLogEntity.get();
+            return ResponseEntity.ok(userLog);
+        }
+    }
 
     @GetMapping("/all")
     @PreAuthorize("isAuthenticated()")

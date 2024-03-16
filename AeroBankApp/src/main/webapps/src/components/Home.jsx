@@ -30,6 +30,10 @@ export default function Home()
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('Transactions');
     const [role, setRole] = useState(null);
+    const [userIsActive, setUserIsActive] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const [currentUserLog, setCurrentUserLog] = useState({});
+
     const navigate = useNavigate();
 
     const route = '/';
@@ -80,9 +84,67 @@ export default function Home()
         setActiveTab(tab);
     }
 
+    function fetchCurrentUserLogID(){
+        const userID = sessionStorage.getItem('userID');
+        console.log('UserID: ', userID);
+        return axios.get(`http://localhost:8080/AeroBankApp/api/session/current/${userID}`)
+            .then(response => {
+                if(response.data.ok){
+                    console.log('Successfully fetched user log id');
+                    return response.data.id;
+                }
+            })
+            .catch(error => {
+                console.error('There was an error fetching the current user log id: ', error);
+            });
+    }
+
+    async function updateUserLogRequest(userID, duration, isActive, lastLogout)
+    {
+        const userLogData = {
+            userID: userID,
+            lastLogin: new Date(),
+            lastLogout: lastLogout,
+            sessionDuration: duration,
+            isActive: isActive
+        }
+
+        console.log('UserLog Sign Out Request: ', userLogData);
+
+        const sessionID = await fetchCurrentUserLogID();
+
+        return axios.put(`http://localhost:8080/AeroBankApp/api/session/updateUserLog/${sessionID}`, userLogData)
+            .then(response => {
+                if(response.data.ok)
+                {
+                    console.log('User Log Data Successfully posted...');
+                }
+                else{
+                    console.log('There was an error updating the User Log');
+                }
+
+            })
+            .catch(error => {
+                console.error('Unable to send the User Log POST due to the error: ', error);
+            });
+    }
+
+
     const handleLogout = () => {
 
+        const logoutTime = new Date().getTime();
+        const loginTime = sessionStorage.getItem('loginTime');
+        const duration = logoutTime - loginTime;
+        console.log('Duration Logged In: ', duration);
+        const duration_in_seconds = Math.floor(duration/1000);
+        setDuration(duration_in_seconds);
+
+        setUserIsActive(0);
+
+        updateUserLogRequest(1, duration_in_seconds, 0, new Date());
+        sessionStorage.removeItem('loginTime');
         sessionStorage.clear();
+
         navigate('/');
     }
 

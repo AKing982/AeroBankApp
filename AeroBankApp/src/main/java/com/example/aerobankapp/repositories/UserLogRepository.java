@@ -62,4 +62,9 @@ public interface UserLogRepository extends JpaRepository<UserLogEntity, Long>
     @Query("SELECT e FROM UserLogEntity e WHERE e.loginAttempts=:attempts AND e.userEntity.userID=:userID")
     UserLogEntity getUserLogByLoginAttemptsAndUserID(@Param("attempts") int attempts, @Param("userID") int userID);
 
+    @Query("SELECT MAX(e.id) FROM UserLogEntity e WHERE e.userEntity.userID=:userID AND e.isActive=true")
+    Long getCurrentUserLogSessionID(@Param("userID") int userID);
+
+    @Query("SELECT ul FROM UserLogEntity ul WHERE ul.id = (SELECT MAX(ul2.id) FROM UserLogEntity ul2 WHERE ul2.userEntity.userID = :userID AND ul2.isActive = true)")
+    Optional<UserLogEntity> findActiveUserLogSessionByUserID(@Param("userID") int userID);
 }

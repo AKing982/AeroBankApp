@@ -185,28 +185,6 @@ class UserLogControllerTest
 
 
     @Test
-    @WithMockUser // Ensures the test runs with a mock user, simulating a user being authenticated
-    public void updateLastLogout_ValidIdAndTime_ReturnsOk() throws Exception {
-        final Long id = 2L;
-        final LocalDateTime time = LocalDateTime.of(2024, 3, 15, 4, 45, 21);
-        final String timeAsString = time.format(DateTimeFormatter.ISO_DATE_TIME);
-
-        LogoutRequest logoutRequest = new LogoutRequest(time);
-
-        // Assuming the service method called by the controller is something like userService.updateLastLogout(id, time);
-        // Simulate the service not returning any significant value, just acknowledging execution
-        doNothing().when(userLogService).updateLastLogout(id, time);
-
-        // Perform the PUT request
-        mockMvc.perform(put("/api/session/updateLastLogout/{id}", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        // Serialize the logoutRequest object to JSON
-                        .content(objectMapper.writeValueAsString(logoutRequest)))
-                .andExpect(status().isOk()); // Verify that the response status is OK
-
-    }
-
-    @Test
     public void testUpdateUserLog() throws Exception{
         Long id = 1L;
         LocalDateTime lastLogin = LocalDateTime.of(2024, 3, 15, 12, 56, 21);
@@ -254,6 +232,29 @@ class UserLogControllerTest
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testFindCurrentUserLogSessionByUserID_InvalidUserID() throws Exception {
+        final int userID = -1;
+        UserLogEntity userLogEntity = new UserLogEntity();
+        userLogEntity.setUserEntity(UserEntity.builder().userID(1).username("AKing94").build());
+        userLogEntity.setId(1);
+        userLogEntity.setLoginSuccess(true);
+        userLogEntity.setLoginAttempts(1);
+        userLogEntity.setLastLogout(LocalDateTime.of(2024, 3, 4, 5, 2));
+        userLogEntity.setLastLogin(LocalDateTime.of(2024, 3, 15, 12, 56, 21));
+        userLogEntity.setSessionDuration(6049);
+
+        Optional<UserLogEntity> optionalUserLogEntity = Optional.of(userLogEntity);
+
+        given(userLogService.findActiveUserLogSessionByUserID(userID)).willReturn(optionalUserLogEntity);
+
+        mockMvc.perform(get("/api/session/currentSession/{userID}", userID)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+
     }
 
 

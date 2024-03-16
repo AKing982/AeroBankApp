@@ -25,6 +25,7 @@ import axios from "axios";
 
 export default function LoginFormOLD()
 {
+    const [userID, setUserID] = useState(0);
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,6 +37,8 @@ export default function LoginFormOLD()
     const [showPassword, setShowPassword] = useState(false);
     const [showBackdrop, setShowBackdrop] = useState(false);
     const [loginAttempts, setLoginAttempts] = useState(0);
+    const [loginSuccess, setLoginSuccess] = useState(0);
+    const [userIsActive, setUserIsActive] = useState(0);
 
     const overlayStyle = {
         position: 'absolute',
@@ -47,8 +50,6 @@ export default function LoginFormOLD()
         display: loading ? 'block' : 'none',
         zIndex: 1, // Ensure it's above other elements
     };
-
-
 
     const isValidCsrfToken = (csrfToken) => {
         if(typeof csrfToken === 'string' && csrfToken.trim() !== '' || csrfToken instanceof Promise)
@@ -128,13 +129,6 @@ export default function LoginFormOLD()
 
 
     const authenticationResponse = async () => {
-      /**  if(!token)
-        {
-            console.error("CSRF Token is missing");
-            return;
-        }
-          **/
-
 
         return await fetch(`http://localhost:8080/AeroBankApp/api/auth/login`, {
             method: 'POST',
@@ -155,20 +149,21 @@ export default function LoginFormOLD()
         size: 90, // Increase the size to make it brighter
     };
 
-    function sendUserLogRequest()
+    function sendUserLogRequest(userID, loginSuccess, isActive)
     {
         const userLogData = {
-            userID: 0,
-            user: username,
-            lastLogin: new Date().getDate(),
+            userID: userID,
+            lastLogin: new Date(),
             lastLogout: '',
             sessionDuration: 0,
-            loginSuccess: false,
-            ipAddress: '',
-            sessionToken: ''
+            loginSuccess: loginSuccess,
+            loginAttempts: loginAttempts,
+            isActive: isActive
         }
 
-        return axios.post(`http://localhost:8080/AeroBankApp/api/session/add`, userLogData)
+        console.log('UserLog Request: ', userLogData);
+
+        return axios.post(`http://localhost:8080/AeroBankApp/api/session/addUserLog`, userLogData)
             .then(response => {
                 console.log('User Log Data Successfully posted...');
             })
@@ -209,6 +204,9 @@ export default function LoginFormOLD()
                     navigateToHomePage();
 
                     setLoginAttempts(1);
+
+                    // Create a User Log instance
+                    sendUserLogRequest(1, 1, 1);
                 }
                 else
                 {
