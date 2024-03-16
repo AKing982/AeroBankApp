@@ -38,8 +38,6 @@ export default function Home()
 
     const route = '/';
 
-
-
     const username = sessionStorage.getItem('username');
 
     useEffect(() => {
@@ -84,15 +82,16 @@ export default function Home()
         setActiveTab(tab);
     }
 
-    function fetchCurrentUserLogID(){
+    async function fetchCurrentUserLogSession(){
         const userID = sessionStorage.getItem('userID');
         console.log('UserID: ', userID);
-        return axios.get(`http://localhost:8080/AeroBankApp/api/session/current/${userID}`)
+        return axios.get(`http://localhost:8080/AeroBankApp/api/session/currentSession/${userID}`)
             .then(response => {
-                if(response.data.ok){
+                const userLogSession= response.data;
                     console.log('Successfully fetched user log id');
-                    return response.data.id;
-                }
+                    setCurrentUserLog(userLogSession);
+                    console.log('User Log session: ', response.data);
+                    return userLogSession;
             })
             .catch(error => {
                 console.error('There was an error fetching the current user log id: ', error);
@@ -103,7 +102,7 @@ export default function Home()
     {
         const userLogData = {
             userID: userID,
-            lastLogin: new Date(),
+            lastLogin: new Date().toISOString(),
             lastLogout: lastLogout,
             sessionDuration: duration,
             isActive: isActive
@@ -111,23 +110,34 @@ export default function Home()
 
         console.log('UserLog Sign Out Request: ', userLogData);
 
-        const sessionID = await fetchCurrentUserLogID();
-        console.log("Type of SessionID: ", typeof sessionID);
+        try {
+            const session = await fetchCurrentUserLogSession();
+            if (!session || !session.id) {
+                console.error('Failed to fetch current user log session or session ID not found.');
+                return; // Exit function if no session or session ID is found
+            }
 
-        return axios.put(`http://localhost:8080/AeroBankApp/api/session/updateUserLog/${sessionID}`, userLogData)
-            .then(response => {
-                if(response.data.ok)
-                {
-                    console.log('User Log Data Successfully posted...');
-                }
-                else{
-                    console.log('There was an error updating the User Log');
-                }
+            const sessionID = session.id;
+            console.log('sessionID: ', sessionID);
+            console.log('Session: ', session);
+            console.log("Type of SessionID: ", typeof sessionID);
 
-            })
-            .catch(error => {
-                console.error('Unable to send the User Log POST due to the error: ', error);
-            });
+            const response = await axios.put(`http://localhost:8080/AeroBankApp/api/session/updateUserLog/${sessionID}`, userLogData);
+            console.log('Response Status was ok: ', response.data.ok);
+            if (response.status === 200) {
+                console.log('User Log Data Successfully posted...', response.data);
+            } else {
+                console.log(`There was an error updating the User Log: Status ${response.status}`, response.data);
+            }
+        } catch (error) {
+            if(error.response){
+                console.error(`Server responded with status ${error.response.status}: `, error.response.data);
+            }else if(error.request){
+                console.error('No Response received for the update request.', error.request);
+            }else{
+                console.error('Error setting up the update request: ', error.message);
+            }
+        }
     }
 
 

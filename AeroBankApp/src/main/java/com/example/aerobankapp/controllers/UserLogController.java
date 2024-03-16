@@ -142,7 +142,6 @@ public class UserLogController
         int duration = userLogDTO.sessionDuration();
         boolean success = userLogDTO.loginSuccess();
         int attempts = userLogDTO.loginAttempts();
-
         try
         {
             userLogService.updateUserLog(foundID, isActive, lastLogin, lastLogout, attempts, success, duration);
