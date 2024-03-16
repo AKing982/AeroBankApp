@@ -39,6 +39,7 @@ export default function LoginFormOLD()
     const [loginAttempts, setLoginAttempts] = useState(0);
     const [loginSuccess, setLoginSuccess] = useState(0);
     const [userIsActive, setUserIsActive] = useState(0);
+    const [currentLoginTime, setCurrentLoginTime] = useState('');
 
     const overlayStyle = {
         position: 'absolute',
@@ -172,8 +173,33 @@ export default function LoginFormOLD()
             });
     }
 
-    const fetchUserID = {
+    const fetchUserID = async (username) => {
 
+        try
+        {
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/users/id/${username}`);
+
+            if(response.status === 200){
+                const userID = response.data;
+                console.log('Found UserID: ', userID);
+                return userID;
+
+            }else{
+                console.log(`Request completed with status: ${response.status}`);
+                return null;
+            }
+
+        }catch(error)
+        {
+            if(error.response){
+                console.error(`Server responded with status ${error.response.status}: `, error.response.data);
+            }else if(error.request){
+                console.error('No response received for the request: ', error.request);
+            }else{
+                console.error('Error', error.message);
+            }
+            return null;
+        }
     }
 
     const handleSubmit = async (event) => {
@@ -181,12 +207,17 @@ export default function LoginFormOLD()
         setLoading(true);
         setShowBackdrop(true);
         const loginTime = new Date().getTime().toString();
+        const loginISOTime = new Date().toISOString();
+        sessionStorage.setItem('loginISOTime', loginISOTime);
         sessionStorage.setItem('loginTime', loginTime);
+
+        const userID = await fetchUserID(username);
 
         try{
 
          //   const csrfToken = await fetchCsrfToken();
             setTimeout(async () => {
+
                 const response = await authenticationResponse();
 
                 // Store the JWT Token in the sessionStorage
@@ -206,7 +237,8 @@ export default function LoginFormOLD()
                     setLoginAttempts(1);
 
                     // Create a User Log instance
-                    sendUserLogRequest(1, 1, 1);
+                    console.log('Creating User Log for userID: ', userID);
+                    sendUserLogRequest(userID, 1, 1);
                 }
                 else
                 {

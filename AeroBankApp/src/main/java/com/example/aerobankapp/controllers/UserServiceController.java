@@ -74,6 +74,13 @@ public class UserServiceController {
         return ResponseEntity.ok(userDTOS);
     }
 
+    @GetMapping("/id/{userName}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getUserIDByUserName(@PathVariable String userName){
+        int userID = userService.getUserIDByUserName(userName);
+        return ResponseEntity.ok(userID);
+    }
+
     private UserDTO convertToUserDTO(UserEntity userEntity)
     {
         return UserDTO.builder()

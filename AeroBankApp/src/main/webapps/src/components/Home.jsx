@@ -87,7 +87,7 @@ export default function Home()
         console.log('UserID: ', userID);
         return axios.get(`http://localhost:8080/AeroBankApp/api/session/currentSession/${userID}`)
             .then(response => {
-                const userLogSession= response.data;
+                const userLogSession = response.data;
                     console.log('Successfully fetched user log id');
                     setCurrentUserLog(userLogSession);
                     console.log('User Log session: ', response.data);
@@ -98,17 +98,8 @@ export default function Home()
             });
     }
 
-    async function updateUserLogRequest(userID, duration, isActive, lastLogout)
+    async function updateUserLogRequest(userID, duration, isActive, loginTime, lastLogout)
     {
-        const userLogData = {
-            userID: userID,
-            lastLogin: new Date().toISOString(),
-            lastLogout: lastLogout,
-            sessionDuration: duration,
-            isActive: isActive
-        }
-
-        console.log('UserLog Sign Out Request: ', userLogData);
 
         try {
             const session = await fetchCurrentUserLogSession();
@@ -118,9 +109,22 @@ export default function Home()
             }
 
             const sessionID = session.id;
+
+
             console.log('sessionID: ', sessionID);
             console.log('Session: ', session);
             console.log("Type of SessionID: ", typeof sessionID);
+
+            const userLogData = {
+                id: sessionID,
+                userID: userID,
+                lastLogin: loginTime,
+                lastLogout: lastLogout,
+                sessionDuration: duration,
+                isActive: isActive
+        }
+
+            console.log('UserLog Sign Out Request: ', userLogData);
 
             const response = await axios.put(`http://localhost:8080/AeroBankApp/api/session/updateUserLog/${sessionID}`, userLogData);
             console.log('Response Status was ok: ', response.data.ok);
@@ -145,14 +149,16 @@ export default function Home()
 
         const logoutTime = new Date().getTime();
         const loginTime = sessionStorage.getItem('loginTime');
+        const loginISO = sessionStorage.getItem('loginISOTime');
         const duration = logoutTime - loginTime;
         console.log('Duration Logged In: ', duration);
         const duration_in_seconds = Math.floor(duration/1000);
         setDuration(duration_in_seconds);
+        const userID = sessionStorage.getItem('userID');
 
         setUserIsActive(0);
 
-        updateUserLogRequest(1, duration_in_seconds, 0, new Date());
+        updateUserLogRequest(userID, duration_in_seconds, 0, loginISO, new Date().toISOString());
         sessionStorage.removeItem('loginTime');
         sessionStorage.clear();
 
