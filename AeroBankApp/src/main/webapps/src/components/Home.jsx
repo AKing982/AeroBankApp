@@ -112,6 +112,7 @@ export default function Home()
         console.log('UserLog Sign Out Request: ', userLogData);
 
         const sessionID = await fetchCurrentUserLogID();
+        console.log("Type of SessionID: ", typeof sessionID);
 
         return axios.put(`http://localhost:8080/AeroBankApp/api/session/updateUserLog/${sessionID}`, userLogData)
             .then(response => {
