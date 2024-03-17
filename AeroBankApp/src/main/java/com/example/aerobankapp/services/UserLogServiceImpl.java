@@ -107,7 +107,7 @@ public class UserLogServiceImpl implements UserLogService
 
     @Override
     @Transactional
-    public void updateUserLog(Long id, boolean isActive, LocalDateTime lastLogin, LocalDateTime lastLogout, int attempts, boolean isSuccess, int duration) {
+    public void updateUserLog(Long id, boolean isActive, String lastLogin, String lastLogout, int attempts, boolean isSuccess, int duration) {
         userLogRepository.updateUserLog(isActive, lastLogin, lastLogout, attempts, isSuccess, duration, id);
     }
 

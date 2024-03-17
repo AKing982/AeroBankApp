@@ -5,7 +5,6 @@ import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.BalanceHistory;
 import com.example.aerobankapp.model.DepositBalanceSummary;
-import com.example.aerobankapp.model.Transaction;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.utilities.BalanceHistoryUtil;

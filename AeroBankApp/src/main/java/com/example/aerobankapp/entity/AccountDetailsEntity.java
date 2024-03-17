@@ -25,6 +25,10 @@ public class AccountDetailsEntity {
     @JoinColumn(name="acctID")
     private AccountEntity account;
 
+    @OneToOne
+    @JoinColumn(name="pendingID")
+    private PendingTransactionEntity pendingTransaction;
+
     @Column(name="balance", nullable = false)
     @NotNull
     @DecimalMin("0.0")

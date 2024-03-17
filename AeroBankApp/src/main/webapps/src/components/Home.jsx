@@ -148,17 +148,18 @@ export default function Home()
     const handleLogout = () => {
 
         const logoutTime = new Date().getTime();
+        const lastLoginTime = sessionStorage.getItem('currentLoginTime');
         const loginTime = sessionStorage.getItem('loginTime');
         const loginISO = sessionStorage.getItem('loginISOTime');
         const duration = logoutTime - loginTime;
+        const duration_in_seconds = Math.floor(duration / 1000);
         console.log('Duration Logged In: ', duration);
-        const duration_in_seconds = Math.floor(duration/1000);
         setDuration(duration_in_seconds);
         const userID = sessionStorage.getItem('userID');
-
+        const currentTime = new Date();
         setUserIsActive(0);
 
-        updateUserLogRequest(userID, duration_in_seconds, 0, loginISO, new Date().toISOString());
+        updateUserLogRequest(userID, duration_in_seconds, 0, lastLoginTime, currentTime.toLocaleTimeString());
         sessionStorage.removeItem('loginTime');
         sessionStorage.clear();
 

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
+@Deprecated
 public class DepositStatementBuilderImpl extends AbstractTransactionStatementBuilder<Deposit>
 {
     @Autowired

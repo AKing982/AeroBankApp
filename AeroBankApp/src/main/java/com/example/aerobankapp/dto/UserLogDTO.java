@@ -7,8 +7,8 @@ import java.util.Date;
 public record UserLogDTO(Long id,
                          int userID,
                          boolean isActive,
-                         LocalDateTime lastLogin,
-                         LocalDateTime lastLogout,
+                         String lastLogin,
+                         String lastLogout,
                          int sessionDuration,
                          boolean loginSuccess,
                          int loginAttempts)

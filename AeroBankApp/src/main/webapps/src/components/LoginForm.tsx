@@ -1,47 +1,50 @@
-import React, {useState} from 'react';
+// @ts-ignore
+import React, { useState } from "react";
 import {useNavigate} from "react-router-dom";
-import Header from "./Header";
-import '../LoginForm.css';
-import AlertDialog from "./CustomAlert";
-import '../CustomAlert.css';
-import {Spinner} from "./Spinner";
-import LoginAlert from "./LoginAlert";
-import BasicButton from "./BasicButton";
+import axios from "axios";
+import {Box} from "@mui/system";
+
 import {
-    Alert, Backdrop,
-    Button,
+    Alert,
+    Backdrop, Button,
     Card,
     CardContent,
-    CircularProgress,
-    IconButton,
+    CircularProgress, IconButton,
     InputAdornment,
     TextField,
     Typography
 } from "@mui/material";
-import {Box} from "@mui/system";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
-import backgroundImage from '../background.jpg';
-import axios from "axios";
 
-export default function LoginFormOLD()
-{
-    const [userID, setUserID] = useState(0);
-    const [username, setUserName] = useState('');
-    const [password, setPassword] = useState('');
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const isLoginButtonEnabled = !username && !password;
-    const [dialogMessage, setDialogMessage] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+interface UserLogData {
+    userID: number;
+    lastLogin: Date;
+    lastLogout: string;
+    sessionDuration: number;
+    loginSuccess: number;
+    loginAttempts: number;
+    isActive: number;
+}
+
+export default function LoginForm(){
     const navigate = useNavigate();
-    const [showPassword, setShowPassword] = useState(false);
-    const [showBackdrop, setShowBackdrop] = useState(false);
-    const [loginAttempts, setLoginAttempts] = useState(0);
-    const [loginSuccess, setLoginSuccess] = useState(0);
-    const [userIsActive, setUserIsActive] = useState(0);
-    const [currentLoginTime, setCurrentLoginTime] = useState('');
 
-    const overlayStyle = {
+    // State definitions with TypeScript type annotations
+    const [userID, setUserID] = useState<number>(0);
+    const [username, setUserName] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [dialogMessage, setDialogMessage] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [showBackdrop, setShowBackdrop] = useState<boolean>(false);
+    const [loginAttempts, setLoginAttempts] = useState<number>(0);
+    const [loginSuccess, setLoginSuccess] = useState<number>(0);
+    const [userIsActive, setUserIsActive] = useState<number>(0);
+    const [currentLoginTime, setCurrentLoginTime] = useState<string>('');
+
+    const overlayStyle: React.CSSProperties = {
         position: 'absolute',
         top: 0,
         left: 0,
@@ -52,44 +55,8 @@ export default function LoginFormOLD()
         zIndex: 1, // Ensure it's above other elements
     };
 
-    const isValidCsrfToken = (csrfToken) => {
-        if(typeof csrfToken === 'string' && csrfToken.trim() !== '' || csrfToken instanceof Promise)
-        {
-            console.error("CSRF Token is a Promise, not a resolved value");
-        }
-    }
-
     const saveUserNameToSession = (username) => {
         sessionStorage.setItem('username', username);
-    }
-
-    const makeRequestWithCsrf = async (url, method, body) => {
-        let csrfToken = sessionStorage.getItem('csrfToken');
-
-        if(!csrfToken)
-        {
-            csrfToken = await fetchCsrfToken();
-            if(!csrfToken)
-            {
-                console.error("Unable to fetch CSRF Token");
-                return;
-            }
-        }
-
-        try
-        {
-            return await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                body: JSON.stringify(body)
-            });
-        }catch(error)
-        {
-            console.error("Error making request: ", error);
-        }
     }
 
     const fetchCsrfToken = async () => {
@@ -136,7 +103,7 @@ export default function LoginFormOLD()
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-              //  'X-CSRF-TOKEN': token
+                //  'X-CSRF-TOKEN': token
             },
             body: JSON.stringify({
                 username: username,
@@ -145,51 +112,39 @@ export default function LoginFormOLD()
         });
     }
 
-    const circularProgressStyle = {
-        color: 'blue', // Change the color of CircularProgress
-        size: 90, // Increase the size to make it brighter
-    };
 
-    function sendUserLogRequest(userID, loginSuccess, isActive)
-    {
-        const currentTime = new Date();
-        const userLogData = {
-            userID: userID,
-            lastLogin: currentTime.toLocaleTimeString(),
+        const sendUserLogRequest = (userID: number, loginSuccess: number, isActive: number) => {
+        const userLogData: UserLogData = {
+            userID,
+            lastLogin: new Date(),
             lastLogout: '',
             sessionDuration: 0,
-            loginSuccess: loginSuccess,
-            loginAttempts: loginAttempts,
-            isActive: isActive
-        }
-
+            loginSuccess,
+            loginAttempts,
+            isActive
+        };
         console.log('UserLog Request: ', userLogData);
-
-        return axios.post(`http://localhost:8080/AeroBankApp/api/session/addUserLog`, userLogData)
-            .then(response => {
+        return axios
+            .post(`http://localhost:8080/AeroBankApp/api/session/addUserLog`, userLogData)
+            .then((response) => {
                 console.log('User Log Data Successfully posted...');
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Unable to send the User Log POST due to the error: ', error);
             });
-    }
-
-    const fetchUserID = async (username) => {
-
+    };
+    const fetchUserID = async (username: string) => {
         try
         {
-            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/users/id/${username}`);
-
+            const response  = await axios.get(`http://localhost:8080/AeroBankApp/api/users/id/${username}`);
             if(response.status === 200){
                 const userID = response.data;
                 console.log('Found UserID: ', userID);
                 return userID;
-
             }else{
                 console.log(`Request completed with status: ${response.status}`);
                 return null;
             }
-
         }catch(error)
         {
             if(error.response){
@@ -202,27 +157,20 @@ export default function LoginFormOLD()
             return null;
         }
     }
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
         setShowBackdrop(true);
         const loginTime = new Date().getTime().toString();
         const loginISOTime = new Date().toISOString();
-        const currentLoginTime = new Date().toLocaleTimeString();
         sessionStorage.setItem('loginISOTime', loginISOTime);
         sessionStorage.setItem('loginTime', loginTime);
-        sessionStorage.setItem('currentLoginTime', currentLoginTime);
 
         const userID = await fetchUserID(username);
-
         try{
-
-         //   const csrfToken = await fetchCsrfToken();
+            //   const csrfToken = await fetchCsrfToken();
             setTimeout(async () => {
-
                 const response = await authenticationResponse();
-
                 // Store the JWT Token in the sessionStorage
 
                 if(response.ok)
@@ -260,31 +208,19 @@ export default function LoginFormOLD()
 
         }catch(error)
         {
-             console.error("Network Error: ", error);
-             setError('A network error occurred, please try again later.');
-             setLoading(false);
-             setShowBackdrop(false);
+            console.error("Network Error: ", error);
+            setError('A network error occurred, please try again later.');
+            setLoading(false);
+            setShowBackdrop(false);
         }finally {
             setTimeout(() => setLoading(false), 2000);
         }
-
     };
-
     const navigateToHomePage = () => {
         navigate('/home')
     }
-
-    const handleForgotPassword = () => {
-        navigate("/forgot-password");
-    }
-
     const navigateToRegister = () => {
         navigate('/registration')
-    }
-
-    const handleRegister = (event) => {
-        event.preventDefault();
-
     }
 
     const handleClickShowPassword = () => {
@@ -294,9 +230,7 @@ export default function LoginFormOLD()
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-
-
-
+    const backgroundImage = require('../background.jpg');
     return (
         <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', p: 2, backgroundImage:`url(${backgroundImage})` }}>
             <div style={overlayStyle}></div>
@@ -405,5 +339,8 @@ export default function LoginFormOLD()
             </Card>
         </Box>
     );
+
+
+
 
 }

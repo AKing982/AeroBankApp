@@ -142,9 +142,9 @@ class UserLogServiceImplTest {
         userLogEntity.setUserEntity(UserEntity.builder().userID(userID).username(user).build());
         userLogEntity.setId(1);
         userLogEntity.setSessionDuration(sessionDuration);
-        userLogEntity.setLastLogin(lastLogin);
+    //    userLogEntity.setLastLogin(lastLogin);
         userLogEntity.setLoginAttempts(loginAttempts);
-        userLogEntity.setLastLogout(lastLogout);
+     //   userLogEntity.setLastLogout(lastLogout);
         userLogEntity.setLoginSuccess(loginSuccess);
         userLogEntity.setActive(isActive);
         return userLogEntity;

@@ -30,11 +30,11 @@ public class UserLogEntity implements Serializable
 
     @NotNull
     @Column(name="lastLogin")
-    private LocalDateTime lastLogin;
+    private String lastLogin;
 
     @NotNull
     @Column(name="lastLogout")
-    private LocalDateTime lastLogout;
+    private String lastLogout;
 
     @NotNull
     @Column(name="sessionDuration")

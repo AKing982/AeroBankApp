@@ -64,8 +64,8 @@ public class UserLogController
         int foundUserID = userLogEntityOptional.getUserEntity().getUserID();
         int sessionID = userLogEntityOptional.getId();
         String userName = userLogEntityOptional.getUserEntity().getUsername();
-        LocalDateTime lastLogout = userLogEntityOptional.getLastLogout();
-        LocalDateTime lastLogin = userLogEntityOptional.getLastLogin();
+        String lastLogout = userLogEntityOptional.getLastLogout();
+        String lastLogin = userLogEntityOptional.getLastLogin();
         int sessionDuration = userLogEntityOptional.getSessionDuration();
         boolean loginSuccess = userLogEntityOptional.isLoginSuccess();
         int loginAttempts = userLogEntityOptional.getLoginAttempts();
@@ -137,8 +137,8 @@ public class UserLogController
     public ResponseEntity<?> updateUserLog(@PathVariable Long id, @RequestBody UserLogDTO userLogDTO){
         Long foundID = userLogDTO.id();
         boolean isActive = userLogDTO.isActive();
-        LocalDateTime lastLogin = userLogDTO.lastLogin();
-        LocalDateTime lastLogout = userLogDTO.lastLogout();
+        String lastLogin = userLogDTO.lastLogin();
+        String lastLogout = userLogDTO.lastLogout();
         int duration = userLogDTO.sessionDuration();
         boolean success = userLogDTO.loginSuccess();
         int attempts = userLogDTO.loginAttempts();

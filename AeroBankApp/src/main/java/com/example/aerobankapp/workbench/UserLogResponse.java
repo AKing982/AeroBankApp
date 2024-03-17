@@ -15,8 +15,8 @@ public class UserLogResponse implements Serializable {
     private int sessionID;
     private int userID;
     private String username;
-    private LocalDateTime lastLogout;
-    private LocalDateTime lastLogin;
+    private String lastLogout;
+    private String lastLogin;
     private int sessionDuration;
     private boolean loginSuccess;
     private int loginAttempts;

@@ -28,7 +28,7 @@ public interface UserLogService extends ServiceDAOModel<UserLogEntity>
     List<UserLogEntity> getUserLogsByLastLogin(Long id, LocalDateTime lastLogin);
     UserLogEntity getUserLogByNumberOfLoginAttempts(int attempts, int userID);
     void updateUser(Long id, UserEntity userEntity);
-    void updateUserLog(Long id, boolean isActive, LocalDateTime lastLogin, LocalDateTime lastLogout, int attempts, boolean isSuccess, int duration);
+    void updateUserLog(Long id, boolean isActive, String lastLogin, String lastLogout, int attempts, boolean isSuccess, int duration);
     int getCurrentLoggedOnUserID(Long id);
     Long getCurrentUserLogSessionID(int userID);
     boolean isUserCurrentlyLoggedIn(int userID);
