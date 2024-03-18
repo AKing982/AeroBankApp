@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="transactionStatements")
+@Table(name="transactionStatement")
 @Getter
 @Setter
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
@@ -31,6 +31,6 @@ public class TransactionStatementEntity {
     private String balance;
 
     @Column(name="transactionDate")
-    private LocalDate transactionDate;
+    private String transactionDate;
 
 }

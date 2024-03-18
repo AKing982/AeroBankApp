@@ -20,7 +20,7 @@ const TransactionStatementTable: React.FC = () => {
 
     const fetchTransactionStatements = () => {
         let userID = sessionStorage.getItem('userID');
-        axios.get<TransactionStatement[]>(`http://localhost:8080/AeroBankApp/api/statements/${userID}`)
+        axios.get<TransactionStatement[]>(`http://localhost:8080/AeroBankApp/api/transactionStatements/${userID}`)
             .then(response => {
                 if(Array.isArray(response.data) && response.data.length > 0){
                     setTransactionStatements(response.data);
