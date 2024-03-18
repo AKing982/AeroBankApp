@@ -21,6 +21,9 @@ public class TransactionStatementEntity {
     @JoinColumn(name="acctID")
     private AccountEntity accountEntity;
 
+    @Column(name="description")
+    private String description;
+
     @Column(name="debit")
     private String debit;
 
