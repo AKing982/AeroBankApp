@@ -9,7 +9,6 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import TransactionTable from "./TransactionTable";
 import PendingTransactionsTable from "./PendingTransactionsTable";
-import TransactionStatementTable from "./TransactionStatementTable";
 
 
 export default function TransactionView()
