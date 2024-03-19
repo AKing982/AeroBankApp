@@ -36,7 +36,6 @@ export default function TransactionTable({accountID}) {
             setIsLoading(true);
             const userID = sessionStorage.getItem('userID');
             let acctID = sessionStorage.getItem('accountID');
-
             if (!acctID) {
                 try {
                     const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/rand/${userID}`);
@@ -49,7 +48,6 @@ export default function TransactionTable({accountID}) {
                     return;
                 }
             }
-
             try {
                 const response = await axios.get(`http://localhost:8080/AeroBankApp/api/transactionStatements/${acctID}`);
                 if (response.data.length > 0) {

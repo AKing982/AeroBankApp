@@ -43,4 +43,5 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
     void updateAccountBalanceByAcctID(BigDecimal balance, int accountID);
 
     int getRandomAccountIDByUserID(int userID);
+
 }

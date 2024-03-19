@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
+import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.exceptions.ZeroBalanceException;
 import com.example.aerobankapp.repositories.AccountRepository;
 import jakarta.persistence.EntityManager;
@@ -118,7 +119,7 @@ public class AccountServiceImpl implements AccountService
         List<String> accountCodesList = accountRepository.findAccountCodesByUserName(user);
         if(accountCodesList.isEmpty())
         {
-
+            throw new NonEmptyListRequiredException("Account Codes List must not be empty.");
         }
         return accountRepository.findAccountCodesByUserName(user);
     }

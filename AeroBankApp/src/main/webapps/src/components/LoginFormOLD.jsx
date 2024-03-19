@@ -209,10 +209,10 @@ export default function LoginFormOLD()
         setShowBackdrop(true);
         const loginTime = new Date().getTime().toString();
         const loginISOTime = new Date().toISOString();
-        const currentLoginTime = new Date().toLocaleString();
+        const currentLoginTime = new Date();
         sessionStorage.setItem('loginISOTime', loginISOTime);
         sessionStorage.setItem('loginTime', loginTime);
-        sessionStorage.setItem('currentLoginTime', currentLoginTime);
+        sessionStorage.setItem('currentLoginTime', currentLoginTime.toLocaleString());
 
         const userID = await fetchUserID(username);
 

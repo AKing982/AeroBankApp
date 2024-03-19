@@ -25,6 +25,4 @@ public interface TransactionStatementService extends ServiceDAOModel<Transaction
 
     List<TransactionStatementEntity> getTransactionStatementsByAcctID(int acctID);
 
-
-
 }
