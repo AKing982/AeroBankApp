@@ -2,11 +2,17 @@ import {Button, CircularProgress, Paper, TextField, Typography} from "@mui/mater
 import {Container} from "@mui/system";
 import {useState} from "react";
 import axios from "axios";
+import backgroundImage from '../background.jpg';
 
 export default function TwoFactorAuthPage(){
+    const [contact, setContact] = useState('');
     const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    const handleContactChange = (event) => {
+        setContact(event.target.value);
+    };
 
     const handleCodeChange = (event) => {
         setCode(event.target.value);
@@ -16,11 +22,11 @@ export default function TwoFactorAuthPage(){
         setLoading(true);
         setError('');
         try {
-            // Adjust the URL and data structure as needed for your backend
-            const response = await axios.post('/api/verify-2fa', { code });
+            // Replace '/api/verify-2fa' with your actual verification endpoint
+            // Ensure your backend expects and handles the 'contact' field appropriately
+            const response = await axios.post('/api/verify-2fa', { contact, code });
             console.log(response.data);
             // Redirect or update UI upon successful verification
-            // For example, redirect to the dashboard page
             window.location.href = '/dashboard';
         } catch (error) {
             console.error('Verification error:', error);
@@ -31,14 +37,24 @@ export default function TwoFactorAuthPage(){
     };
 
     return (
-        <Container component="main" maxWidth="xs">
-            <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
+        <Container component="main" maxWidth="auto" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', height: '100vh', overflow: 'auto' }}>
+            <Paper elevation={3} style={{ padding: '20px', marginTop: '20px', backgroundColor: 'rgba(255,255,255,0.8)' }}>
                 <Typography component="h1" variant="h5">
                     Two-Factor Authentication
                 </Typography>
-                <Typography variant="body1" color="textSecondary" style={{ marginTop: '10px' }}>
-                    Please enter the verification code sent to your device.
-                </Typography>
+                <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="contact"
+                    label="Email or Phone Number"
+                    name="contact"
+                    autoComplete="contact"
+                    autoFocus
+                    value={contact}
+                    onChange={handleContactChange}
+                />
                 <TextField
                     variant="outlined"
                     margin="normal"
@@ -48,7 +64,6 @@ export default function TwoFactorAuthPage(){
                     label="Verification Code"
                     name="code"
                     autoComplete="code"
-                    autoFocus
                     value={code}
                     onChange={handleCodeChange}
                     error={!!error}

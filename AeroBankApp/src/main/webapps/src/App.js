@@ -8,6 +8,7 @@ import Home from "./components/Home";
 import LoginForm from "./components/LoginForm";
 import ForgotPasswordForm from "./components/ForgotPasswordForm";
 import MFAuthenticate from "./components/MFAuthenticate";
+import TwoFactorAuthPage from "./components/TwoFactorAuthPage";
 
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
                   <Route path="/registration" element={<RegistrationForm />}/>
                   <Route path="/home" element={<Home />}/>
                   <Route path="/forgot-password" element={<ForgotPasswordForm />}/>
-                  <Route path="/mfa/authenticate" element={<MFAuthenticate />}/>
+                  <Route path="/mfa/authenticate" element={<TwoFactorAuthPage />}/>
               </Routes>
           </Router>
       </div>

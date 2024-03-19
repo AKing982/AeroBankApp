@@ -235,7 +235,7 @@ export default function LoginFormOLD()
                     const username = data.username;
                     saveJWTSession(token);
                     saveUserNameToSession(username);
-                    navigateToHomePage();
+                    navigateToAuthPage();
 
                     setLoginAttempts(1);
 
@@ -269,6 +269,10 @@ export default function LoginFormOLD()
         }
 
     };
+
+    const navigateToAuthPage = () => {
+        navigate('/mfa/authenticate');
+    }
 
     const navigateToHomePage = () => {
         navigate('/home')
