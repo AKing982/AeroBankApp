@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Getter
@@ -177,9 +174,18 @@ public class AccountServiceImpl implements AccountService
         accountRepository.updateAccountBalanceByAcctID(balance, acctID);
     }
 
+    @Override
+    public int getRandomAccountIDByUserID(int userID) {
+        List<Integer> accountIDList = accountRepository.getListOfAccountIDsByUserID(userID);
+        Random random = new Random();
+        int randomAcctID = random.nextInt(accountIDList.size());
+        return accountIDList.get(randomAcctID);
+    }
+
     private boolean doesAccountCodeExist(String acctCode)
     {
-        return accountRepository.doesAccountCodeExist(acctCode);
+        int count = accountRepository.doesAccountCodeExist(acctCode);
+        return count == 1;
     }
 
     private boolean doesAccountIDExist(int acctID)

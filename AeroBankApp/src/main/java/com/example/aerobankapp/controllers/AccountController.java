@@ -99,6 +99,13 @@ public class AccountController {
         return null;
     }
 
+    @GetMapping("/rand/{userID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getRandomAccountIDByUserID(@PathVariable int userID){
+        int acctID = accountDAO.getRandomAccountIDByUserID(userID);
+        return ResponseEntity.ok(acctID);
+    }
+
     @PostMapping("/{accountID}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateAccount(@PathVariable Long accountID)

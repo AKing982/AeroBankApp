@@ -13,25 +13,14 @@ import PendingTransactionsTable from "./PendingTransactionsTable";
 
 export default function TransactionView()
 {
-    const data = [
-        {id: 1, description: 'Groceries', balance: '1450', debit: '67', credit: null, date: '2024-01-26'},
-        {id: 2, description: 'Gas', balance: '1400', debit: null, credit: '50', date: '2024-01-26'}
-    ]
-
-    const [transactionData, setTransactionData] = useState([]);
-
-    const pending = [
-
-    ]
-
-
+    const [accountID, setAccountID] = useState(0);
 
     return (
         <div className="transaction-view-container">
 
             <div className="account-list-body">
               <ListView items={<AccountBox accountCode={"A1"} available={4500} balance={5600} pending={15} color="red"/>
-              }/>
+              } updateAccountID={setAccountID}/>
                 <Divider orientation="vertical" variant="fullWidth"/>
             </div>
 

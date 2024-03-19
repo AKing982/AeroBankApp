@@ -28,6 +28,9 @@ public class TransactionStatementController
     public ResponseEntity<?> getTransactionStatementsByAcctID(@PathVariable @Valid int acctID)
     {
         List<TransactionStatementEntity> transactionStatementEntityList = transactionStatementService.getTransactionStatementsByAcctID(acctID);
+        if(transactionStatementEntityList.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(transactionStatementEntityList);
     }
 

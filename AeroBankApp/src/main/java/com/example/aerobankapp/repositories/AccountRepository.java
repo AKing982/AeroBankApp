@@ -43,8 +43,11 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     void updateAccountBalanceByAcctID(@Param("balance") BigDecimal balance, @Param("acctID") int acctID);
 
     @Query("SELECT COUNT(a) FROM AccountEntity a WHERE a.accountCode =:acctCode")
-    boolean doesAccountCodeExist(@Param("acctCode") String acctCode);
+    int doesAccountCodeExist(@Param("acctCode") String acctCode);
 
     @Query("SELECT COUNT(a) FROM AccountEntity a WHERE a.acctID =:acctID")
     int doesAccountIDExist(@Param("acctID") int acctID);
+
+    @Query("SELECT a.acctID FROM AccountEntity a WHERE a.userID=:userID")
+    List<Integer> getListOfAccountIDsByUserID(@Param("userID") int userID);
 }
