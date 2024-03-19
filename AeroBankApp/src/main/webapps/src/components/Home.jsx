@@ -159,7 +159,7 @@ export default function Home()
         const currentTime = new Date();
         setUserIsActive(0);
 
-        updateUserLogRequest(userID, duration_in_seconds, 0, lastLoginTime, currentTime.toLocaleTimeString());
+        updateUserLogRequest(userID, duration_in_seconds, 0, lastLoginTime, currentTime.toLocaleString());
         sessionStorage.removeItem('loginTime');
         sessionStorage.clear();
 

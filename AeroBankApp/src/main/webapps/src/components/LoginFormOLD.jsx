@@ -209,7 +209,7 @@ export default function LoginFormOLD()
         setShowBackdrop(true);
         const loginTime = new Date().getTime().toString();
         const loginISOTime = new Date().toISOString();
-        const currentLoginTime = new Date().toLocaleTimeString();
+        const currentLoginTime = new Date().toLocaleString();
         sessionStorage.setItem('loginISOTime', loginISOTime);
         sessionStorage.setItem('loginTime', loginTime);
         sessionStorage.setItem('currentLoginTime', currentLoginTime);

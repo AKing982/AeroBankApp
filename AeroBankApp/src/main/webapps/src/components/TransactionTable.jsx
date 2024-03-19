@@ -25,43 +25,63 @@ const rows = [
     // ... add more row data here
 ];
 
-export default function TransactionTable() {
+export default function TransactionTable({accountID}) {
 
-    const [transactionDate, setTransactionDate] = useState('');
-    const [description, setDescription] = useState('');
-    const [debitAmount, setDebitAmount] = useState(0);
-    const [creditAmount, setCreditAmount] = useState(0);
-    const [balance, setBalance] = useState(0);
     const [transactionStatements, setTransactionStatements] = useState([]);
+    const [randomAcctID, setRandomAcctID] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetchTransactionStatements();
+        const fetchAccountAndTransactions = async () => {
+            setIsLoading(true);
+            const userID = sessionStorage.getItem('userID');
+            let acctID = sessionStorage.getItem('accountID');
+
+            if (!acctID) {
+                try {
+                    const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/rand/${userID}`);
+                    acctID = response.data;
+                    console.log('Randomly selected accountID: ',  acctID);
+                    sessionStorage.setItem('accountID', acctID);
+                } catch (error) {
+                    console.error('Error fetching a random acctID:', error);
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
+            try {
+                const response = await axios.get(`http://localhost:8080/AeroBankApp/api/transactionStatements/${acctID}`);
+                if (response.data.length > 0) {
+                    setTransactionStatements(response.data);
+                } else {
+                    console.log('No Statements found for this account.');
+                }
+            } catch (error) {
+                console.error('There was an error fetching the transaction statements:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchAccountAndTransactions();
     }, []);
 
-    const fetchTransactionStatements = () => {
-        let userID = sessionStorage.getItem('userID');
-        axios.get(`http://localhost:8080/AeroBankApp/api/transactionStatements/${1}`)
-            .then(response => {
-                if(Array.isArray(response.data) && response.data.length > 0){
-                    console.log('Transaction Statements: ', response.data);
-                    console.log('Transaction Description: ', response.data.description);
-                    setTransactionStatements(response.data);
-
-                }else{
-                    console.log('No Statements found for this user.');
-                }
-            })
-            .catch(error => {
-                console.error('There was an error fetching the transaction statements: ', error);
-            });
-    }
+    // Group transactions by date
+    const transactionsGroupedByDate = transactionStatements.reduce((acc, statement) => {
+        const date = statement.transactionDate;
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+        acc[date].push(statement);
+        return acc;
+    }, {});
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{maxHeight: 500}}>
             <Table sx={{ minWidth: 650 }} aria-label="transaction table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>Date</TableCell>
                         <TableCell>Description</TableCell>
                         <TableCell align="right">Debit</TableCell>
                         <TableCell align="right">Credit</TableCell>
@@ -69,16 +89,41 @@ export default function TransactionTable() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {transactionStatements.map((statements, index) => (
-                        <TableRow key={index}
-                                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                            <TableCell>{statements.transactionDate}</TableCell>
-                            <TableCell>{statements.description}</TableCell>
-                            <TableCell align="right" sx={{color: statements.debit ? 'red' : 'inherit'}}>{statements.debit}</TableCell>
-                            <TableCell align="right" sx={{color: statements.credit ? 'green' : 'inherit'}}>{statements.credit}</TableCell>
-                            <TableCell align="right">{statements.balance}</TableCell>
-                        </TableRow>
+                    {Object.entries(transactionsGroupedByDate).map(([date, statements], index) => (
+                        <React.Fragment key={date}>
+                            <TableRow>
+                                <TableCell colSpan={4} sx={{ backgroundColor: '#0E0F52', color: 'white' }}>
+                                    <Typography variant="subtitle1" gutterBottom>
+                                        {date}
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                            {statements.map((statement, stmtIndex) => (
+                                <TableRow
+                                    key={`${date}-${stmtIndex}`}
+                                    sx={{
+                                        '&:last-child td, &:last-child th': { border: 0 },
+                                        '& td, & th': {
+                                            borderBottom: '1px solid rgba(224, 224, 224, 1)',
+                                            borderRight: 'none',
+                                        }
+                                    }}
+                                >
+                                    <TableCell component="th" scope="row">
+                                        {statement.description}
+                                    </TableCell>
+                                    <TableCell align="right" sx={{ color: statement.debit ? 'red' : 'inherit' }}>
+                                        {statement.debit}
+                                    </TableCell>
+                                    <TableCell align="right" sx={{ color: statement.credit ? 'green' : 'inherit' }}>
+                                        {statement.credit}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        {statement.balance}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </React.Fragment>
                     ))}
                 </TableBody>
             </Table>

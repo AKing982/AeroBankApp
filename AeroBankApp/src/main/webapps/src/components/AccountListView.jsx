@@ -5,16 +5,39 @@ import Account from "./Account";
 import {CircularProgress} from "@mui/material";
 
 
-export default function AccountListView({setAccountCode})
+export default function AccountListView({setAccountCode, updateAccountID})
 {
     const [accountData, setAccountData] = useState([]);
-    const [selectedAccount, setSelectedAccount] = useState(null);
+    const [selectedAccount, setSelectedAccount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
 
     const username = sessionStorage.getItem('username');
 
     const storeAccountCode = (accountCode) => {
         sessionStorage.setItem('AccountCode', accountCode);
+    }
+
+    useEffect(() => {
+        if(selectedAccount){
+            fetchAccountID();
+        }
+    }, [selectedAccount])
+
+    const fetchAccountID = () => {
+        const accountCode = selectedAccount;
+        const currentUserID = sessionStorage.getItem('userID');
+        console.log('Selected Account Code from Fetch: ', accountCode);
+        axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${currentUserID}/${accountCode}`)
+            .then(response => {
+                    const accountID = response.data.accountID;
+                    console.log('AccountID Response: ', accountID);
+                    updateAccountID(accountID)
+                    sessionStorage.setItem('AccountID', accountID);
+                    console.log('Fetching Account ID: ', accountID);
+            })
+            .catch(error => {
+                console.error('There was an error fetching the accountID: ', error);
+            });
     }
 
     useEffect(() => {
