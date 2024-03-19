@@ -25,5 +25,7 @@ public abstract class TransactionBalanceSummary<T extends TransactionBase>
 
     }
 
+    protected abstract String generateReportSummary();
+
 
 }

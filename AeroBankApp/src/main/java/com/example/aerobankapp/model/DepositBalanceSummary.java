@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @Setter
 public class DepositBalanceSummary extends TransactionBalanceSummary<Deposit>
 {
-
     public DepositBalanceSummary(Deposit deposit, BigDecimal balanceAfterDeposit, LocalDate dateProcessed) {
       super(deposit, balanceAfterDeposit, dateProcessed);
 
@@ -19,6 +18,11 @@ public class DepositBalanceSummary extends TransactionBalanceSummary<Deposit>
 
     public DepositBalanceSummary(){
         super();
+    }
+
+    @Override
+    protected String generateReportSummary() {
+        return null;
     }
 
 }

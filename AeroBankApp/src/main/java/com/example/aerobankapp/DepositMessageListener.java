@@ -34,9 +34,6 @@ public class DepositMessageListener
 
         try
         {
-            depositEngine.setDepositQueue(depositDTO);
-
-            List<ProcessedDepositDTO> processedDepositDTOList = depositEngine.process();
 
         }catch(Exception e)
         {
