@@ -41,7 +41,7 @@ public final class DepositServiceUtil
         deposit.setDateScheduled(request.getDate());
         deposit.setScheduleInterval(request.getScheduleInterval());
         deposit.setTimeScheduled(request.getTimeScheduled());
-        deposit.setDate_posted(LocalDate.now());
+        deposit.setPosted(LocalDate.now());
         deposit.setUserID(request.getUserID());
         return deposit;
     }

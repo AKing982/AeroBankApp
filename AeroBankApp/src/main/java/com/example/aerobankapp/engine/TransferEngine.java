@@ -22,8 +22,8 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
 {
 
     @Autowired
-    public TransferEngine(AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService) {
-        super(accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService);
+    public TransferEngine(AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
+        super(accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
     }
 
     @Override
@@ -53,11 +53,6 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
 
     @Override
     protected Map<Integer, BigDecimal> retrieveCurrentAccountBalancesByAcctID(Set<Integer> acctIDs) {
-        return null;
-    }
-
-    @Override
-    protected BigDecimal getCalculation(BigDecimal amount, BigDecimal balance) {
         return null;
     }
 

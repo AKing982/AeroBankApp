@@ -496,7 +496,7 @@ class DepositProcessorImplTest
         deposit.setAmount(depositsEntity.getAmount());
         deposit.setTimeScheduled(depositsEntity.getScheduledTime());
         deposit.setAccountID(depositsEntity.getAccount().getAcctID());
-        deposit.setDate_posted(LocalDate.now());
+        deposit.setPosted(LocalDate.now());
         return deposit;
     }
 

@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Deprecated
 @Table(name="depositQueue")
 public class DepositQueueEntity
 

@@ -19,7 +19,7 @@ import java.time.LocalTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DepositsEntity
+public class DepositsEntity extends AbstractTransactionEntityModel
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

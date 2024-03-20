@@ -3,13 +3,11 @@ package com.example.aerobankapp.engine;
 import com.example.aerobankapp.entity.BalanceHistoryEntity;
 import com.example.aerobankapp.model.PurchaseTransferSummary;
 import com.example.aerobankapp.model.TransactionBalanceSummary;
-import com.example.aerobankapp.services.AccountSecurityService;
-import com.example.aerobankapp.services.AccountService;
-import com.example.aerobankapp.services.BalanceHistoryService;
-import com.example.aerobankapp.services.NotificationService;
+import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.transactions.Purchase;
 import com.example.aerobankapp.workbench.transactions.TransactionSummary;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,9 +19,9 @@ import java.util.Set;
 @Service
 public class PurchaseEngine extends TransactionEngine<Purchase, PurchaseTransferSummary>
 {
-
-    public PurchaseEngine(AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService) {
-        super(accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService);
+    @Autowired
+    public PurchaseEngine(AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
+        super(accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
     }
 
     @Override
@@ -53,11 +51,6 @@ public class PurchaseEngine extends TransactionEngine<Purchase, PurchaseTransfer
 
     @Override
     protected Map<Integer, BigDecimal> retrieveCurrentAccountBalancesByAcctID(Set<Integer> acctIDs) {
-        return null;
-    }
-
-    @Override
-    protected BigDecimal getCalculation(BigDecimal amount, BigDecimal balance) {
         return null;
     }
 

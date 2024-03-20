@@ -1,15 +1,14 @@
 package com.example.aerobankapp.engine;
 
+import com.example.aerobankapp.entity.AbstractTransactionEntityModel;
 import com.example.aerobankapp.entity.BalanceHistoryEntity;
 import com.example.aerobankapp.exceptions.InvalidDepositException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.exceptions.ZeroBalanceException;
 import com.example.aerobankapp.model.TransactionBalanceSummary;
-import com.example.aerobankapp.services.AccountSecurityService;
-import com.example.aerobankapp.services.AccountService;
-import com.example.aerobankapp.services.BalanceHistoryService;
-import com.example.aerobankapp.services.NotificationService;
+import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+import com.example.aerobankapp.workbench.utilities.CalculationStrategy;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -27,6 +26,7 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
     private final NotificationService notificationService;
     private final CalculationEngine calculationEngine;
     private final BalanceHistoryService balanceHistoryService;
+    private final EncryptionService encryptionService;
     protected Set<Integer> accountIDSet = new HashSet<>();
     protected int successCount = 0;
     protected List<BalanceHistoryEntity> balanceHistoryList = new ArrayList<>();
@@ -34,12 +34,18 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
     protected Map<Integer, BigDecimal> transactionAmountByAcctIDHashMap = new HashMap<>();
     private Logger LOGGER = LoggerFactory.getLogger(TransactionEngine.class);
 
-    public TransactionEngine(AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService){
+    public TransactionEngine(AccountService accountService,
+                             AccountSecurityService accountSecurityService,
+                             NotificationService notificationService,
+                             CalculationEngine calculationEngine,
+                             BalanceHistoryService balanceHistoryService,
+                             EncryptionService encryptionService){
         this.accountService = accountService;
         this.accountSecurityService = accountSecurityService;
         this.notificationService = notificationService;
         this.calculationEngine = calculationEngine;
         this.balanceHistoryService = balanceHistoryService;
+        this.encryptionService = encryptionService;
     }
 
     protected abstract List<T> fetchAll();
@@ -68,6 +74,7 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
             throw new InvalidDepositException("Invalid Deposit Balance Summary.");
         }
     }
+
 
     protected void assertTransactionListNotNull(List<T> transactions){
         if(transactions == null || transactions.isEmpty()){
@@ -184,7 +191,22 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
         }
     }
 
-    abstract protected BigDecimal getCalculation(final BigDecimal amount, final BigDecimal balance);
+    protected BigDecimal getCalculation(final BigDecimal amount, final BigDecimal balance, final CalculationStrategy calculationStrategy){
+        if(amount == null || balance == null){
+            throw new IllegalArgumentException("Unable to calculate deposit from null amount or balance");
+        }
+        if(amount.compareTo(BigDecimal.ZERO) > 0 && balance.compareTo(BigDecimal.ZERO) > 0){
+            return calculationStrategy.calculate(amount, balance);
+        }
+        else if(balance.equals(BigDecimal.ZERO)){
+            throw new ZeroBalanceException("Invalid Balance Found.");
+        }
+        else if(amount.equals(BigDecimal.ZERO)){
+            return balance;
+        }
+        return BigDecimal.ZERO;
+    }
+
 
     abstract protected Set<Integer> retrieveAccountIDSet(List<T> transactionList);
 

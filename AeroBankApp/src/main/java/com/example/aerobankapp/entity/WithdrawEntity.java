@@ -1,5 +1,6 @@
 package com.example.aerobankapp.entity;
 
+import com.example.aerobankapp.workbench.utilities.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-@Table(name="withdraws")
+@Table(name="withdrawals")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,22 +21,15 @@ public class WithdrawEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long withdrawID;
 
-    @Column(name="userID")
-    private int userID;
+    @ManyToOne
+    @JoinColumn(name="userID")
+    private UserEntity user;
 
-    @Column(name="currency")
-    @NotNull
-    private String currency;
-
-    @Column(name="fromAccountID")
-    @NotNull
-    private int fromAccountID;
-
-    @Column(name="fromAccountCode")
-    @NotNull
-    private String fromAccountCode;
+    @ManyToOne
+    @JoinColumn(name="fromAcctID")
+    private AccountEntity account;
 
     @Column(name="description")
     @NotNull
@@ -45,16 +39,11 @@ public class WithdrawEntity
     @Column(name="amount")
     private BigDecimal amount;
 
-    @Column(name="date_posted")
-    private LocalDate date_posted;
-
-    @Column(name="isProcessed")
-    private boolean isProcessed;
+    @Column(name="posted")
+    private LocalDate posted;
 
     @Column(name="status")
-    private String status;
-
-    @OneToOne
-    private TransactionDetailEntity transactionDetailEntity;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
 }

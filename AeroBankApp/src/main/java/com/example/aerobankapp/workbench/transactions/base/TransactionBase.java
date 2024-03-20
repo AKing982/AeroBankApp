@@ -22,7 +22,7 @@ public abstract class TransactionBase
     protected BigDecimal amount;
     protected LocalTime timeScheduled;
     protected ScheduleType scheduleInterval;
-    protected LocalDate date_posted;
+    protected LocalDate posted;
     protected LocalDate dateScheduled;
     protected Currency currency;
 
@@ -33,7 +33,7 @@ public abstract class TransactionBase
         this.amount = amount;
         this.timeScheduled = timeScheduled;
         this.scheduleInterval = scheduleInterval;
-        this.date_posted = date_posted;
+        this.posted = date_posted;
         this.dateScheduled = dateScheduled;
         this.currency = currency;
     }

@@ -38,12 +38,6 @@ public class TransferEntity
     @JoinColumn(name="toAcctID")
     private AccountEntity toAccount;
 
-    @Column(name="toAcctName")
-    private String toAcctName;
-
-    @Column(name="fromAcctName")
-    private String fromAcctName;
-
     @Column(name="transferAmount")
     private BigDecimal transferAmount;
 

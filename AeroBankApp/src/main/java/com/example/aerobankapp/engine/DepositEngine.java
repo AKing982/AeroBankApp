@@ -1,6 +1,8 @@
 package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.DepositQueue;
+import com.example.aerobankapp.converter.DepositConverter;
+import com.example.aerobankapp.converter.EntityToModelConverter;
 import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.dto.MessageNotificationDTO;
 import com.example.aerobankapp.dto.ProcessedDepositDTO;
@@ -43,17 +45,14 @@ import static com.example.aerobankapp.workbench.utilities.DepositProcessorUtil.b
 public class DepositEngine extends TransactionEngine<Deposit, DepositBalanceSummary> implements Runnable {
 
     private final DepositService depositService;
+    private final EntityToModelConverter<DepositsEntity, Deposit> depositConverter;
     private final Logger LOGGER = LoggerFactory.getLogger(DepositEngine.class);
 
     @Autowired
-    public DepositEngine(DepositService depositService,
-                         AccountService accountService,
-                         AccountSecurityService accountSecurityService,
-                         NotificationService notificationService,
-                         CalculationEngine calculationEngine,
-                         BalanceHistoryService balanceHistoryService) {
-        super(accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService);
+    public DepositEngine(DepositService depositService, AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
+        super(accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
         this.depositService = depositService;
+        this.depositConverter = new DepositConverter();
     }
 
 
@@ -61,7 +60,7 @@ public class DepositEngine extends TransactionEngine<Deposit, DepositBalanceSumm
     protected List<Deposit> fetchAll() {
         List<DepositsEntity> allDeposits = depositService.findAll();
         return allDeposits.stream()
-                .map(DepositProcessorUtil::convertDepositEntityToDeposit)
+                .map(depositConverter::convert)
                 .toList();
     }
 
@@ -113,11 +112,6 @@ public class DepositEngine extends TransactionEngine<Deposit, DepositBalanceSumm
             }
         }
         return accountBalanceMap;
-    }
-
-    @Override
-    protected BigDecimal getCalculation(BigDecimal amount, BigDecimal balance) {
-        return null;
     }
 
     @Override

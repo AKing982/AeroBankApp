@@ -1,12 +1,11 @@
 package com.example.aerobankapp.dto;
 
 import com.example.aerobankapp.account.AbstractAccountBase;
+import com.example.aerobankapp.model.Account;
 
-public record TransferDTO<T extends AbstractAccountBase>(Long transferID,
-                                                         String toAccountID,
-                                                         String fromAccountID,
-                                                         T fromAccount,
-                                                         T toAccount)
+public record TransferDTO(Long transferID,
+                          Account fromAccount,
+                          Account toAccount)
 {
 
 }

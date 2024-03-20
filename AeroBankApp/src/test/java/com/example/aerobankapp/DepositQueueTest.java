@@ -229,7 +229,7 @@ class DepositQueueTest {
                 .description(depositDTO.getDescription())
                 .scheduledDate(depositDTO.getDateScheduled())
                 .scheduledTime(depositDTO.getTimeScheduled())
-                .posted(depositDTO.getDate_posted())
+                .posted(depositDTO.getPosted())
                 .scheduleInterval(depositDTO.getScheduleInterval())
                 .build();
     }

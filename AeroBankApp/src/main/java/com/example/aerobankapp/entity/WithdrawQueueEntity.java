@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @EqualsAndHashCode
+@Deprecated
 @Table(name="withdrawQueue")
 public class WithdrawQueueEntity
 {
