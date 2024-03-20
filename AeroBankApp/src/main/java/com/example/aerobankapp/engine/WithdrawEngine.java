@@ -25,6 +25,11 @@ public class WithdrawEngine extends TransactionEngine<Withdraw, WithdrawBalanceS
     }
 
     @Override
+    protected List<Withdraw> fetchAll() {
+        return null;
+    }
+
+    @Override
     protected List<Withdraw> retrieveTransactionsByUserID(int userID) {
         return null;
     }
@@ -46,6 +51,16 @@ public class WithdrawEngine extends TransactionEngine<Withdraw, WithdrawBalanceS
 
     @Override
     protected Map<Integer, BigDecimal> retrieveCurrentAccountBalancesByAcctID(Set<Integer> acctIDs) {
+        return null;
+    }
+
+    @Override
+    protected BigDecimal getCalculation(BigDecimal amount, BigDecimal balance) {
+        return null;
+    }
+
+    @Override
+    protected Set<Integer> retrieveAccountIDSet(List<Withdraw> transactionList) {
         return null;
     }
 

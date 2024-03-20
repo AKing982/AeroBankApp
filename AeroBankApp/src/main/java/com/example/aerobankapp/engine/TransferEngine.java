@@ -27,6 +27,11 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
     }
 
     @Override
+    protected List<Transfer> fetchAll() {
+        return null;
+    }
+
+    @Override
     protected List<Transfer> retrieveTransactionsByUserID(int userID) {
         return null;
     }
@@ -48,6 +53,16 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
 
     @Override
     protected Map<Integer, BigDecimal> retrieveCurrentAccountBalancesByAcctID(Set<Integer> acctIDs) {
+        return null;
+    }
+
+    @Override
+    protected BigDecimal getCalculation(BigDecimal amount, BigDecimal balance) {
+        return null;
+    }
+
+    @Override
+    protected Set<Integer> retrieveAccountIDSet(List<Transfer> transactionList) {
         return null;
     }
 

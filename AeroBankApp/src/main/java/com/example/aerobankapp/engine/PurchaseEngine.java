@@ -27,6 +27,11 @@ public class PurchaseEngine extends TransactionEngine<Purchase, PurchaseTransfer
     }
 
     @Override
+    protected List<Purchase> fetchAll() {
+        return null;
+    }
+
+    @Override
     protected List<Purchase> retrieveTransactionsByUserID(int userID) {
         return null;
     }
@@ -48,6 +53,16 @@ public class PurchaseEngine extends TransactionEngine<Purchase, PurchaseTransfer
 
     @Override
     protected Map<Integer, BigDecimal> retrieveCurrentAccountBalancesByAcctID(Set<Integer> acctIDs) {
+        return null;
+    }
+
+    @Override
+    protected BigDecimal getCalculation(BigDecimal amount, BigDecimal balance) {
+        return null;
+    }
+
+    @Override
+    protected Set<Integer> retrieveAccountIDSet(List<Purchase> transactionList) {
         return null;
     }
 

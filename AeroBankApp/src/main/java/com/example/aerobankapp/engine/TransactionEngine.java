@@ -1,6 +1,7 @@
 package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.entity.BalanceHistoryEntity;
+import com.example.aerobankapp.exceptions.InvalidDepositException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.exceptions.ZeroBalanceException;
 import com.example.aerobankapp.model.TransactionBalanceSummary;
@@ -9,15 +10,16 @@ import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.BalanceHistoryService;
 import com.example.aerobankapp.services.NotificationService;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+@Getter
+@Setter
 public abstract class TransactionEngine<T extends TransactionBase, S extends TransactionBalanceSummary<T>>
 {
     private final AccountService accountService;
@@ -25,7 +27,11 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
     private final NotificationService notificationService;
     private final CalculationEngine calculationEngine;
     private final BalanceHistoryService balanceHistoryService;
-
+    protected Set<Integer> accountIDSet = new HashSet<>();
+    protected int successCount = 0;
+    protected List<BalanceHistoryEntity> balanceHistoryList = new ArrayList<>();
+    protected Map<Integer, List<S>> balanceSummariesHashMap = new HashMap<>();
+    protected Map<Integer, BigDecimal> transactionAmountByAcctIDHashMap = new HashMap<>();
     private Logger LOGGER = LoggerFactory.getLogger(TransactionEngine.class);
 
     public TransactionEngine(AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService){
@@ -36,6 +42,8 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
         this.balanceHistoryService = balanceHistoryService;
     }
 
+    protected abstract List<T> fetchAll();
+
     protected void updateBalanceForAccountID(BigDecimal balance, int acctID){
         if(acctID > 0 && balance.compareTo(BigDecimal.ZERO) > 0){
             accountService.updateAccountBalanceByAcctID(balance, acctID);
@@ -45,9 +53,32 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
     private BigDecimal getMinimumBalanceRequirements(final int acctID){
         return accountSecurityService.getMinimumBalanceRequirementsByAcctID(acctID);
     }
-
-    private BigDecimal getAdjustedAmount(final BigDecimal currentBalance, final BigDecimal newBalance){
+    protected BigDecimal getAdjustedAmount(final BigDecimal currentBalance, final BigDecimal newBalance){
         return calculationEngine.getAdjustedAmount(currentBalance, newBalance);
+    }
+
+    protected void assertListNotEmpty(List<S> transactionSummaries){
+        if(transactionSummaries == null || transactionSummaries.isEmpty()){
+            throw new NonEmptyListRequiredException("Balance Summary cannot be empty");
+        }
+    }
+
+    protected void assertBalanceSummaryNotNull(S balanceSummary){
+        if(balanceSummary == null){
+            throw new InvalidDepositException("Invalid Deposit Balance Summary.");
+        }
+    }
+
+    protected void assertTransactionListNotNull(List<T> transactions){
+        if(transactions == null || transactions.isEmpty()){
+            throw new NonEmptyListRequiredException("Transactions Found Empty or Null");
+        }
+    }
+
+    protected void assertAccountBalancesMapNotNull(Map<Integer, BigDecimal> accountBalances){
+        if(accountBalances.isEmpty()){
+            throw new IllegalArgumentException("Found Empty Account Balances");
+        }
     }
 
     protected BigDecimal getMinimumBalanceRequirementsByAcctID(final int acctID){
@@ -77,7 +108,7 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
         balanceHistoryService.save(balanceHistory);
     }
 
-    private BigDecimal getCurrentBalanceByAcctID(final int acctID){
+    protected BigDecimal getCurrentBalanceByAcctID(final int acctID){
         return accountService.getBalanceByAcctID(acctID);
     }
 
@@ -86,7 +117,6 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
     abstract protected void sendNotification(List<S> balanceSummaries);
 
     protected int bulkUpdateAccountBalances(final Map<Integer, BigDecimal> accountBalanceMap){
-        int successCount = 0;
         if(!accountBalanceMap.isEmpty()){
             for(Map.Entry<Integer, BigDecimal> accountBalances : accountBalanceMap.entrySet()) {
                 int acctID = accountBalances.getKey();
@@ -153,6 +183,10 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
             throw new IllegalArgumentException("Cannot Retrieve balances for an empty set of accountIDs.");
         }
     }
+
+    abstract protected BigDecimal getCalculation(final BigDecimal amount, final BigDecimal balance);
+
+    abstract protected Set<Integer> retrieveAccountIDSet(List<T> transactionList);
 
     abstract protected Map<Integer, BigDecimal> retrieveTransactionAmountByAcctID(List<T> transactionList);
 
