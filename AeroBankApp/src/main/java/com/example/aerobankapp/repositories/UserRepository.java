@@ -44,6 +44,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>
     int getIDByUserName(@Param("user") String user);
 
     @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.username=:user")
-    boolean userExists(@Param("user") String user);
+    int userExists(@Param("user") String user);
 
 }

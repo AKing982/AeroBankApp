@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.math.BigDecimal;
@@ -190,11 +191,47 @@ class WithdrawControllerTest {
 
     @Test
     @WithMockUser
-    public void testGetWithdrawalByUserName_NonExistingUser_Return_BadRequest(){
+    public void testGetWithdrawalByUserName_NonExistingUser_Return_BadRequest() throws Exception {
         final String user = "Mike23";
 
         when(withdrawService.findByUserName(user)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/withdraw/name/{user}", user)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @WithMockUser
+    public void testGetWithdrawalByStatus_NullStatus_Return_NotFound() throws Exception {
+
+        mockMvc.perform(get("/api/withdraw/status")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetWithdrawalsByStatus_ActiveStatus_Return_StatusOk() throws Exception {
+        Status status = Status.ACTIVE;
+        when(withdrawService.findByStatus(status)).thenReturn(List.of(mockWithdraw));
+
+        mockMvc.perform(get("/api/withdraw/status")
+                .param("status", status.toString())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    public void testAddWithdrawal_NullWithdrawDTO_Return_Forbidden() throws Exception {
+
+        mockMvc.perform(post("/api/withdraw/submit")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+
 
 
     private WithdrawEntity createMockWithdraw(Long id, int userID, int acctID, String description, BigDecimal amount)

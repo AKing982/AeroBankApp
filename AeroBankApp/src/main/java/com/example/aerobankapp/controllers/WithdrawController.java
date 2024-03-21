@@ -2,6 +2,7 @@ package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.dto.WithdrawDTO;
 import com.example.aerobankapp.entity.WithdrawEntity;
+import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.WithdrawService;
 import com.example.aerobankapp.workbench.utilities.Status;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import java.util.List;
 public class WithdrawController {
 
     private final WithdrawService withdrawService;
+
     private Logger LOGGER = LoggerFactory.getLogger(WithdrawController.class);
 
     @Autowired
@@ -84,18 +86,31 @@ public class WithdrawController {
         if(user.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return null;
+
+
+        List<WithdrawEntity> withdrawEntities = withdrawService.findByUserName(user);
+        return ResponseEntity.ok(withdrawEntities);
     }
 
     @GetMapping("/status")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> getWithdrawalsByStatus(@RequestParam("status") Status status){
-        return null;
+    public ResponseEntity<?> getWithdrawalsByStatus(@RequestParam(value="status", required = false) Status status){
+        if(status == null){
+            return ResponseEntity.badRequest().body("Unable to fetch Withdrawals due to null status.");
+        }
+
+        List<WithdrawEntity> withdrawEntities = withdrawService.findByStatus(status);
+
+        return ResponseEntity.ok().body(withdrawEntities);
     }
 
     @PostMapping("/submit")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> addWithdrawal(@RequestBody WithdrawDTO withdrawDTO){
+        if(withdrawDTO == null){
+            return ResponseEntity.status(403).body("Withdraw request is forbidden.");
+        }
+
         return null;
     }
 

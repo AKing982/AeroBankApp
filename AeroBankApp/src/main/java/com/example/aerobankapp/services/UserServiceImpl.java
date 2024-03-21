@@ -161,7 +161,11 @@ public class UserServiceImpl implements UserService
 
     @Override
     public boolean userNameExists(String user) {
-      return userRepository.userExists(user);
+        int count = userRepository.userExists(user);
+        if(count == 1){
+            return true;
+        }
+        return false;
     }
 
     @Override
