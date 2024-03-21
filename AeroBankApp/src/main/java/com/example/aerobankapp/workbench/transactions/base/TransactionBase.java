@@ -18,7 +18,6 @@ public abstract class TransactionBase
 {
     protected int userID;
     protected String description;
-    protected int accountID;
     protected BigDecimal amount;
     protected LocalTime timeScheduled;
     protected ScheduleType scheduleInterval;
@@ -26,10 +25,9 @@ public abstract class TransactionBase
     protected LocalDate dateScheduled;
     protected Currency currency;
 
-    public TransactionBase(int userID, String description, int accountID, BigDecimal amount, LocalTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, LocalDate dateScheduled, Currency currency) {
+    public TransactionBase(int userID, String description, BigDecimal amount, LocalTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, LocalDate dateScheduled, Currency currency) {
         this.userID = userID;
         this.description = description;
-        this.accountID = accountID;
         this.amount = amount;
         this.timeScheduled = timeScheduled;
         this.scheduleInterval = scheduleInterval;

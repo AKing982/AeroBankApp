@@ -22,6 +22,7 @@ public class Purchase extends TransactionBase implements Serializable
 {
     private Long purchaseID;
     private String merchant;
+    private int accountID;
     private PurchaseCategory category;
 
     public Purchase(Long purchaseID, String merchant, PurchaseCategory category) {
@@ -31,9 +32,10 @@ public class Purchase extends TransactionBase implements Serializable
     }
 
     public Purchase(int userID, String description, int accountID, BigDecimal amount, LocalTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, LocalDate dateScheduled, Currency currency, Long purchaseID, String merchant, PurchaseCategory category) {
-        super(userID, description, accountID, amount, timeScheduled, scheduleInterval, date_posted, dateScheduled, currency);
+        super(userID, description, amount, timeScheduled, scheduleInterval, date_posted, dateScheduled, currency);
         this.purchaseID = purchaseID;
         this.merchant = merchant;
         this.category = category;
+        this.accountID = accountID;
     }
 }

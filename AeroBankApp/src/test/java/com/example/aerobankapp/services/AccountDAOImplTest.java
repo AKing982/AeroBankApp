@@ -4,6 +4,7 @@ import com.example.aerobankapp.account.AccountType;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
+import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.repositories.AccountRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
@@ -335,6 +336,24 @@ class AccountDAOImplTest
         BigDecimal actualBalance = accountDAO.getBalanceByAcctID(acctID);
 
         assertEquals(expectedBalance, actualBalance);
+    }
+
+    @Test
+    public void testGetAccountWithMostTransactionsByUserID_InvalidUserID(){
+        final int userID = -1;
+
+        assertThrows(InvalidUserIDException.class, () -> {
+            accountDAO.getAccountWithMostTransactionsByUserID(userID);
+        });
+    }
+
+    @Test
+    public void testGetAccountWithMostTransactionsByUserID_ValidUserID(){
+        final int userID = 1;
+
+        int actualAccountID = accountDAO.getAccountWithMostTransactionsByUserID(userID);
+
+        assertEquals(1, actualAccountID);
     }
 
 

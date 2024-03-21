@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
+import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.exceptions.ZeroBalanceException;
 import com.example.aerobankapp.repositories.AccountRepository;
 import jakarta.persistence.EntityManager;
@@ -13,6 +14,9 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,6 +141,20 @@ public class AccountServiceImpl implements AccountService
             throw new AccountIDNotFoundException("AccountID Not Found");
         }
         return result;
+    }
+
+    @Override
+    public Integer getAccountWithMostTransactionsByUserID(final int userID) {
+        if(userID < 1){
+            throw new InvalidUserIDException("Invalid UserID caught: " + userID);
+        }
+        Page<Object[]> result = accountRepository.findAccountWithMostTransactionsByUserID(userID, PageRequest.of(0, 1));
+        if(!result.hasContent())
+        {
+            return null;
+        }
+        Object[] topResult = result.getContent().get(0);
+        return (Integer) topResult[0];
     }
 
     @Override

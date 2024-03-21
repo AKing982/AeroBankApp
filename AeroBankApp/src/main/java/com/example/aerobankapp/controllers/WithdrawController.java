@@ -2,7 +2,6 @@ package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.dto.WithdrawDTO;
 import com.example.aerobankapp.entity.WithdrawEntity;
-import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.WithdrawService;
 import com.example.aerobankapp.workbench.utilities.Status;
 import org.slf4j.Logger;

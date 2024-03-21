@@ -24,13 +24,25 @@ public class Deposit extends TransactionBase implements Serializable
 {
     private int depositID;
     private String acctCode;
+    private int accountID;
     public Deposit(int depositID) {
         this.depositID = depositID;
     }
 
-    public Deposit(int userID, String description, String acctCode, int accountID, BigDecimal amount, LocalTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, LocalDate dateScheduled, Currency currency, int depositID) {
-        super(userID, description, accountID, amount, timeScheduled, scheduleInterval, date_posted, dateScheduled, currency);
+    public Deposit(int userID,
+                   String description,
+                   String acctCode,
+                   int accountID,
+                   BigDecimal amount,
+                   LocalTime timeScheduled,
+                   ScheduleType scheduleInterval,
+                   LocalDate date_posted,
+                   LocalDate dateScheduled,
+                   Currency currency,
+                   int depositID) {
+        super(userID, description, amount, timeScheduled, scheduleInterval, date_posted, dateScheduled, currency);
         this.depositID = depositID;
         this.acctCode = acctCode;
+        this.accountID = accountID;
     }
 }

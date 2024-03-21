@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -29,7 +30,6 @@ import static com.example.aerobankapp.controllers.utils.AccountControllerUtil.*;
 @CrossOrigin(origins = "http://localhost:3000")
 public class AccountController {
     private final AccountServiceImpl accountDAO;
-
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Autowired
@@ -104,6 +104,16 @@ public class AccountController {
     public ResponseEntity<?> getRandomAccountIDByUserID(@PathVariable int userID){
         int acctID = accountDAO.getRandomAccountIDByUserID(userID);
         return ResponseEntity.ok(acctID);
+    }
+
+    @GetMapping("/maxTransactions/{userID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getAccountWithMostTransactionsByUserID(@PathVariable int userID){
+        if(userID < 1){
+            return ResponseEntity.badRequest().build();
+        }
+        Integer accountID = accountDAO.getAccountWithMostTransactionsByUserID(userID);
+        return ResponseEntity.ok().body(accountID);
     }
 
     @PostMapping("/{accountID}")

@@ -1,6 +1,8 @@
 package com.example.aerobankapp.repositories;
 
 import com.example.aerobankapp.entity.AccountEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -41,6 +43,13 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Modifying
     @Query("UPDATE AccountEntity a SET a.balance =:balance WHERE a.acctID =:acctID")
     void updateAccountBalanceByAcctID(@Param("balance") BigDecimal balance, @Param("acctID") int acctID);
+
+    @Query("SELECT ts.accountEntity.acctID, COUNT(ts) AS NumberOfTransactions " +
+           "FROM TransactionStatementEntity ts " +
+            "WHERE ts.accountEntity.userID=:userID " +
+           "GROUP BY ts.accountEntity.acctID " +
+           "ORDER BY NumberOfTransactions DESC")
+    Page<Object[]> findAccountWithMostTransactionsByUserID(@Param("userID") int userID, Pageable pageable);
 
     @Query("SELECT COUNT(a) FROM AccountEntity a WHERE a.accountCode =:acctCode")
     int doesAccountCodeExist(@Param("acctCode") String acctCode);

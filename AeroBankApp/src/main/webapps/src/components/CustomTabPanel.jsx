@@ -13,6 +13,7 @@ import BillPayPage from "./BillPayPage";
 import {useNavigate} from "react-router-dom";
 import GenerateReports from "./GenerateReports";
 import AuditLogs from "./AuditLogs";
+import AccountSummaries from "./AccountSummaries";
 
 function CustomTabPanel({children, value, index, ...other})
 {
@@ -48,7 +49,7 @@ function a11yProps(index) {
 }
 
 export default function BasicTabs({role, accounts}) {
-    const [value, setValue] = useState(0);
+    const [value, setValue] = useState(1);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -87,7 +88,7 @@ export default function BasicTabs({role, accounts}) {
                 <BillPayPage />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={6}>
-                <GenerateReports />
+                <AccountSummaries />
             </CustomTabPanel>
             {role === 'ADMIN' && (
                 <CustomTabPanel value={value} index={7}>
@@ -97,7 +98,7 @@ export default function BasicTabs({role, accounts}) {
             )}
             {role === 'AUDITOR' && (
                 <CustomTabPanel value={value} index={7}>
-                    <GenerateReports />
+                    <AccountSummaries />
                     <AuditLogs />
                 </CustomTabPanel>
             )}

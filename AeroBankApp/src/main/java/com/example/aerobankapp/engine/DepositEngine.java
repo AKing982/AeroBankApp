@@ -133,6 +133,7 @@ public class DepositEngine extends TransactionEngine<Deposit, DepositBalanceSumm
             for(Deposit deposit : transactionList){
                 final int acctID = deposit.getAccountID();
                 final BigDecimal amount = deposit.getAmount();
+                LOGGER.debug("Amount: $" + amount);
                 if(acctID > 0 && amount.compareTo(BigDecimal.ZERO) > 0){
                     transactionAmountByAcctIDHashMap.put(acctID, amount);
                 }else{

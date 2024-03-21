@@ -1,6 +1,8 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.TransferEntity;
+import com.example.aerobankapp.exceptions.NoTransferEntitiesFoundException;
+import com.example.aerobankapp.exceptions.NullTransferEntityFoundException;
 import com.example.aerobankapp.repositories.TransferRepository;
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +24,21 @@ public class TransferServiceImpl implements TransferService
     }
 
     @Override
-    public List<TransferEntity> findAll() {
-        return null;
+    public List<TransferEntity> findAll()
+    {
+        List<TransferEntity> transferEntities = transferRepository.findAll();
+        if(transferEntities.isEmpty()){
+            throw new NoTransferEntitiesFoundException("No Transfer Entities were found.");
+        }
+        return transferEntities;
     }
 
     @Override
     public void save(TransferEntity obj) {
+        if(obj == null){
+            throw new NullTransferEntityFoundException("Caught Null Transfer Entity.");
+        }
+
 
     }
 

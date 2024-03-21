@@ -29,8 +29,8 @@ public class Withdraw extends TransactionBase implements Serializable
         this.fromAccountID = fromAccountID;
     }
 
-    public Withdraw(int userID, String description, int accountID, BigDecimal amount, LocalTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, LocalDate dateScheduled, Currency currency, Long id, int fromAccountID) {
-        super(userID, description, accountID, amount, timeScheduled, scheduleInterval, date_posted, dateScheduled, currency);
+    public Withdraw(int userID, String description, BigDecimal amount, LocalTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, LocalDate dateScheduled, Currency currency, Long id, int fromAccountID) {
+        super(userID, description, amount, timeScheduled, scheduleInterval, date_posted, dateScheduled, currency);
         this.id = id;
         this.fromAccountID = fromAccountID;
     }

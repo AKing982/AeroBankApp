@@ -51,7 +51,6 @@ public interface WithdrawRepository extends JpaRepository<WithdrawEntity, Long>
 
     @Query("SELECT w FROM WithdrawEntity w WHERE w.description=:description")
     Optional<WithdrawEntity> findByDescription(@Param("description") String description);
-
     // Update the processed status of withdraws by user ID
 
 }

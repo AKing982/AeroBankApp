@@ -27,4 +27,11 @@ public final class SchedulerCriteria {
     private int priority;
     private LocalDate createdAt;
     private String createdByUser;
+
+    public SchedulerCriteria(LocalTime scheduledTime, LocalDate scheduledDate, ScheduleType scheduleType, LocalDate createdAt) {
+        this.scheduledTime = scheduledTime;
+        this.scheduledDate = scheduledDate;
+        this.scheduleType = scheduleType;
+        this.createdAt = createdAt;
+    }
 }

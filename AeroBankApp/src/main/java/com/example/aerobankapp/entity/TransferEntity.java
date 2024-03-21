@@ -6,9 +6,10 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
-@Table(name="transfer")
+@Table(name="transfers")
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -41,8 +42,20 @@ public class TransferEntity
     @Column(name="transferAmount")
     private BigDecimal transferAmount;
 
+    @Column(name="description")
+    private String description;
+
+    @Column(name="scheduledDate")
+    private LocalDate scheduledDate;
+
+    @Column(name="scheduledTime")
+    private LocalTime scheduledTime;
+
     @Column(name="isPending")
     private boolean isPending;
+
+    @Column(name="isUserTransfer")
+    private boolean isUserTransfer;
 
     @Column(name="dateTransferred")
     private LocalDate dateTransferred;

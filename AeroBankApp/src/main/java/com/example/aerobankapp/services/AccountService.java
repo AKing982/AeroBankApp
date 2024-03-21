@@ -3,6 +3,8 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.model.ServiceDAOModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,6 +39,8 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
     List<String> getListOfAccountCodes(String user);
 
     int getAccountIDByAcctCodeAndUserID(int userID, String acctCode);
+
+    Integer getAccountWithMostTransactionsByUserID(int userID);
 
     Map<Integer, String> getAccountTypeMapByAccountId(String userName);
 
