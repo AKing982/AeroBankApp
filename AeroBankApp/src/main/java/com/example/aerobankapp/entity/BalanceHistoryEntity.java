@@ -30,8 +30,8 @@ public class BalanceHistoryEntity
     @Column(name="adjusted")
     private BigDecimal adjusted;
 
-    @Column(name="previousBalance")
-    private BigDecimal previousBalance;
+    @Column(name="preBalance")
+    private BigDecimal preBalance;
 
     @Column(name="transactionType")
     private String transactionType;
@@ -52,7 +52,7 @@ public class BalanceHistoryEntity
                 ", account=" + account +
                 ", postBalance=" + postBalance +
                 ", adjusted=" + adjusted +
-                ", previousBalance=" + previousBalance +
+                ", previousBalance=" + preBalance +
                 ", transactionType='" + transactionType + '\'' +
                 ", createdBy='" + createdBy + '\'' +
                 ", createdAt=" + createdAt +

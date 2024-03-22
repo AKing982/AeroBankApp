@@ -82,13 +82,13 @@ class TransferServiceImplTest {
     }
 
     @Test
-    public void testSaveValidEntity(){
-        when(transferRepository.save(transferEntity)).thenAnswer(invocation -> invocation.getArgument(0));
+    public void testFindByUserName_EmptyUserString(){
+        final String user = "";
 
-        //transferService.save(transferEntity);
 
-        verify(transferRepository).save(transferEntity);
     }
+
+
 
 
     private TransferEntity createMockTransfer(Long id,

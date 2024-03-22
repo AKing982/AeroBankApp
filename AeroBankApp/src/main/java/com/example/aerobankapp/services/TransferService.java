@@ -24,11 +24,14 @@ public interface TransferService extends ServiceDAOModel<TransferEntity>
     @Override
     List<TransferEntity> findByUserName(String user);
 
-    List<TransferEntity> getTransfersByUser(String user);
+    List<TransferEntity> getSameUserTransfer(String user);
+
+    List<TransferEntity> getTransfersFromOriginUserToTargetUser(String originUser, String targetUser);
 
     List<TransferEntity> getTransfersByStatus(TransferStatus status);
 
-    List<TransferEntity> getTransfersByAccount(int acctID);
+    List<TransferEntity> getSameUserTransferByAccount(int acctID);
+
 
     boolean cancelTransfer(Long transferID);
 }

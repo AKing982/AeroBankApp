@@ -469,7 +469,7 @@ class DepositEngineTest {
     private BalanceHistoryEntity createBalanceHistoryEntity(int acctID, BigDecimal currentBalance, BigDecimal newBalance, BigDecimal adjusted, LocalDateTime createdAt){
         BalanceHistoryEntity balanceHistoryEntity = new BalanceHistoryEntity();
         balanceHistoryEntity.setPostBalance(newBalance);
-        balanceHistoryEntity.setPreviousBalance(currentBalance);
+        balanceHistoryEntity.setPreBalance(currentBalance);
         balanceHistoryEntity.setAdjusted(adjusted);
         balanceHistoryEntity.setAccount(AccountEntity.builder().acctID(acctID).build());
         balanceHistoryEntity.setPosted(LocalDate.now());

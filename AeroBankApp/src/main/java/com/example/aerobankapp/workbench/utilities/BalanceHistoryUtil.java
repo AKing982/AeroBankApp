@@ -24,7 +24,7 @@ public class BalanceHistoryUtil {
     public static BalanceHistoryEntity convertBalanceHistoryToEntity(BalanceHistory balanceHistory){
         BalanceHistoryEntity balanceHistoryEntity = new BalanceHistoryEntity();
         balanceHistoryEntity.setPostBalance(balanceHistory.getNewBalance());
-        balanceHistoryEntity.setPreviousBalance(balanceHistory.getCurrentBalance());
+        balanceHistoryEntity.setPreBalance(balanceHistory.getCurrentBalance());
         balanceHistoryEntity.setAccount(AccountEntity.builder().acctID(balanceHistory.getAccountID()).build());
         balanceHistoryEntity.setAdjusted(balanceHistory.getAdjustedAmount());
         balanceHistoryEntity.setPosted(LocalDate.now());

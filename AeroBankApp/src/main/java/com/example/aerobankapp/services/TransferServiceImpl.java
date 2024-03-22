@@ -38,13 +38,15 @@ public class TransferServiceImpl implements TransferService
         if(obj == null){
             throw new NullTransferEntityFoundException("Caught Null Transfer Entity.");
         }
-
-
+        transferRepository.save(obj);
     }
 
     @Override
     public void delete(TransferEntity obj) {
-
+        if(obj == null){
+            throw new NullTransferEntityFoundException("Caught Null Transfer Entity.");
+        }
+        transferRepository.delete(obj);
     }
 
     @Override
@@ -54,13 +56,20 @@ public class TransferServiceImpl implements TransferService
 
     @Override
     public List<TransferEntity> findByUserName(String user) {
+        // NOT IMPLEMENTED
         return null;
     }
 
     @Override
-    public List<TransferEntity> getTransfersByUser(String user) {
+    public List<TransferEntity> getSameUserTransfer(String user) {
         return null;
     }
+
+    @Override
+    public List<TransferEntity> getTransfersFromOriginUserToTargetUser(String originUser, String targetUser) {
+        return null;
+    }
+
 
     @Override
     public List<TransferEntity> getTransfersByStatus(TransferStatus status) {
@@ -68,9 +77,10 @@ public class TransferServiceImpl implements TransferService
     }
 
     @Override
-    public List<TransferEntity> getTransfersByAccount(int acctID) {
+    public List<TransferEntity> getSameUserTransferByAccount(int acctID) {
         return null;
     }
+
 
     @Override
     public boolean cancelTransfer(Long transferID) {
