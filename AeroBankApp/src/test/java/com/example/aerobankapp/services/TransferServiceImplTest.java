@@ -3,9 +3,13 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.TransferEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.exceptions.InvalidUserStringException;
 import com.example.aerobankapp.exceptions.NoTransferEntitiesFoundException;
 import com.example.aerobankapp.exceptions.NullTransferEntityFoundException;
+import com.example.aerobankapp.exceptions.StatusNotFoundException;
 import com.example.aerobankapp.repositories.TransferRepository;
+import com.example.aerobankapp.workbench.utilities.Status;
+import com.example.aerobankapp.workbench.utilities.TransferStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +44,9 @@ class TransferServiceImplTest {
             false, new BigDecimal("45.00"),
             "Checking to Savings transfer",
             1, 1, 1, 2);
+
+    private TransferEntity userTransfer = createMockTransfer(2L, true, new BigDecimal("250.00"), "Transfer to BSmith",
+            1, 2, 1, 4);
 
     @BeforeEach
     void setUp() {
@@ -82,13 +89,178 @@ class TransferServiceImplTest {
     }
 
     @Test
-    public void testFindByUserName_EmptyUserString(){
+    public void testGetSameUserTransfer_EmptyUserString(){
         final String user = "";
+        when(transferRepository.findSameUserTransfers(user)).thenThrow(IllegalArgumentException.class);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            transferService.getSameUserTransfer(user);
+        });
+    }
+
+    @Test
+    public void testGetSameUserTransfer_ValidUser(){
+        final String user = "AKing94";
+
+        when(transferRepository.findSameUserTransfers(user)).thenReturn(List.of(transferEntity));
+
+        List<TransferEntity> results = transferService.getSameUserTransfer(user);
+
+        assertNotNull(results);
+        assertFalse(results.isEmpty());
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    public void testGetSameUserTransfer_ValidUser_EmptyList(){
+        final String user = "AKing94";
+
+        when(transferRepository.findSameUserTransfers(user)).thenReturn(Collections.emptyList());
+
+        assertThrows(NoTransferEntitiesFoundException.class, () -> {
+            transferService.getSameUserTransfer(user);
+        });
+    }
+
+    @Test
+    public void testGetTransfersFromOUserToTUser_InvalidOriginUser(){
+        final String originUser = "";
+        final String targetUser = "AKing94";
+
+        when(transferRepository.findTransfersWithOriginUserAndTargetUser(originUser, targetUser)).thenThrow(InvalidUserStringException.class);
+
+        assertThrows(InvalidUserStringException.class, () -> {
+            transferService.getTransfersFromOriginUserToTargetUser(originUser, targetUser);
+        });
+    }
+
+    @Test
+    public void testGetTransfersFromUserToUser_InvalidTargetUser_ValidOriginUser(){
+        final String originUser = "AKing94";
+        final String targetUser = "";
+
+        when(transferRepository.findTransfersWithOriginUserAndTargetUser(originUser, targetUser)).thenThrow(InvalidUserStringException.class);
+
+        assertThrows(InvalidUserStringException.class, () -> {
+            transferService.getTransfersFromOriginUserToTargetUser(originUser, targetUser);
+        });
+    }
+
+    @Test
+    public void testGetTransfersFromUserToUser_InvalidOriginAndTargetUsers(){
+        final String originUser = "";
+        final String targetUser = "";
+
+        when(transferRepository.findTransfersWithOriginUserAndTargetUser(originUser, targetUser)).thenThrow(InvalidUserStringException.class);
+
+        assertThrows(InvalidUserStringException.class, () -> {
+            transferService.getTransfersFromOriginUserToTargetUser(originUser, targetUser);
+        });
+    }
+
+    @Test
+    public void testGetTransfersFromUserToUser_ValidOriginUser_ValidTargetUser(){
+        final String originUser = "AKing94";
+        final String targetUser = "BSmith23";
+
+        when(transferRepository.findTransfersWithOriginUserAndTargetUser(originUser, targetUser)).thenReturn(List.of(userTransfer));
+
+        List<TransferEntity> result = transferService.getTransfersFromOriginUserToTargetUser(originUser, targetUser);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+
+        verify(transferRepository).findTransfersWithOriginUserAndTargetUser(originUser, targetUser);
+    }
+
+    @Test
+    public void testGetTransfersFromUserToUser_ValidOriginUser_ValidTargetUser_ReturnNoSuchEntities(){
+        final String originUser = "AKing94";
+        final String targetUser = "BSmith23";
+
+        when(transferRepository.findTransfersWithOriginUserAndTargetUser(originUser, targetUser)).thenReturn(Collections.emptyList());
+
+        assertThrows(NoTransferEntitiesFoundException.class, () -> {
+            transferService.getTransfersFromOriginUserToTargetUser(originUser, targetUser);
+        });
+
+        verify(transferRepository).findTransfersWithOriginUserAndTargetUser(originUser, targetUser);
+    }
+
+    @Test
+    public void testGetTransfersFromUserToUser_OriginUserAndTargetUserWithWhiteSpace(){
+        final String originUser = " AKing94 ";
+        final String targetUser = " BSmith23 ";
+
+        when(transferRepository.findTransfersWithOriginUserAndTargetUser(originUser, targetUser)).thenReturn(List.of(transferEntity));
+
+        List<TransferEntity> results = transferService.getTransfersFromOriginUserToTargetUser(originUser, targetUser);
+
+        assertNotNull(results);
+        assertFalse(results.isEmpty());
+        assertEquals(1 , results.size());
+
+        verify(transferRepository).findTransfersWithOriginUserAndTargetUser(originUser, targetUser);
+    }
+
+    @Test
+    public void testGetTransfersFromUserToUser_OriginUserAndTargetUserWithSpecialCharacters(){
+        final String originUser = "%AKing94%";
+        final String targetUser = "%BSmith23%";
+
+        when(transferRepository.findTransfersWithOriginUserAndTargetUser(originUser, targetUser)).thenReturn(List.of(transferEntity));
+
+        List<TransferEntity> results = transferService.getTransfersFromOriginUserToTargetUser(originUser, targetUser);
+
+        assertNotNull(results);
+        assertFalse(results.isEmpty());
+        assertEquals(1, results.size());
+
+        verify(transferRepository).findTransfersWithOriginUserAndTargetUser(originUser, targetUser);
+    }
+
+    @Test
+    public void testGetTransfersByStatus_NullStatus(){
+        TransferStatus status = null;
+
+        when(transferRepository.findTransfersByStatus(status)).thenThrow(StatusNotFoundException.class);
+
+        assertThrows(StatusNotFoundException.class, () -> {
+            transferService.getTransfersByStatus(null);
+        });
+    }
+
+    @Test
+    public void testGetTransfersByStatus_ValidStatus(){
+        TransferStatus pending = TransferStatus.PENDING;
+
+        when(transferRepository.findTransfersByStatus(pending)).thenReturn(List.of(transferEntity));
+
+        List<TransferEntity> result = transferService.getTransfersByStatus(pending);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testGetTransfersByStatus_ValidStatus_ReturnEmptyTransfers(){
+        TransferStatus status = TransferStatus.PENDING;
+
+        when(transferRepository.findTransfersByStatus(status)).thenReturn(Collections.emptyList());
+
+        assertThrows(NoTransferEntitiesFoundException.class, () -> {
+            transferService.getTransfersByStatus(status);
+       });
+    }
+
+    @Test
+    public void testGetSameUserTransferByAccount_InvalidAccountID(){
+        final int acctID = -1;
 
 
     }
-
-
 
 
     private TransferEntity createMockTransfer(Long id,
@@ -111,6 +283,7 @@ class TransferServiceImplTest {
         transferEntity.setDateTransferred(LocalDate.now());
         transferEntity.setScheduledTime(LocalTime.now());
         transferEntity.setScheduledDate(LocalDate.now());
+        transferEntity.setStatus(TransferStatus.PENDING);
         return transferEntity;
 
     }

@@ -55,6 +55,10 @@ export default function TransactionTable({accountID}) {
             }
 
             try {
+                if(accountID !== 0){
+                    setErrorMessage('');
+                }
+                console.log('AccountID Before call: ', accountID);
                 const response = await axios.get(`http://localhost:8080/AeroBankApp/api/transactionStatements/${accountID}`);
                 if (response.data.length > 0) {
                     setTransactionStatements(response.data);
@@ -66,7 +70,7 @@ export default function TransactionTable({accountID}) {
                 setErrorMessage('Unable to fetch transactions. Please Try again later.');
             } finally {
                 setIsLoading(false);
-                setErrorMessage('');
+
             }
         };
 

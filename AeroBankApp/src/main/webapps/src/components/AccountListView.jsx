@@ -8,7 +8,7 @@ import {CircularProgress} from "@mui/material";
 export default function AccountListView({updateAccountID})
 {
     const [accountData, setAccountData] = useState([]);
-    const [selectedAccount, setSelectedAccount] = useState(0);
+    const [selectedAccount, setSelectedAccount] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
     const username = sessionStorage.getItem('username');
@@ -18,13 +18,31 @@ export default function AccountListView({updateAccountID})
     }
 
     useEffect(() => {
+        console.log('Selected Account: ', selectedAccount);
         if(selectedAccount){
             fetchAccountID();
         }
+        if(selectedAccount === ''){
+            fetchAccountIDByUserID();
+        }
     }, [selectedAccount])
+
+    const fetchAccountIDByUserID = () => {
+        const userID = sessionStorage.getItem('userID');
+        axios.get(`http://localhost:8080/AeroBankApp/api/accounts/rand/${userID}`)
+            .then(response => {
+                console.log('Random AccountID Response: ', response.data);
+                const randomAcctID = response.data;
+                updateAccountID(randomAcctID);
+            })
+            .catch(error => {
+                console.error('There was an error fetching a random acctID: ', error);
+            });
+    }
 
     const fetchAccountID = () => {
         const accountCode = selectedAccount;
+
         const currentUserID = sessionStorage.getItem('userID');
         console.log('Selected Account Code from Fetch: ', accountCode);
         axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${currentUserID}/${accountCode}`)
