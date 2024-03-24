@@ -3,6 +3,7 @@ package com.example.aerobankapp.engine;
 import com.example.aerobankapp.dto.AccountDTO;
 import com.example.aerobankapp.dto.BillDTO;
 import com.example.aerobankapp.fees.FeesDTO;
+import com.example.aerobankapp.model.Account;
 
 import java.math.BigDecimal;
 
@@ -11,7 +12,7 @@ public interface CalculationEngine
 {
     BigDecimal calculateDeposit(BigDecimal amount, BigDecimal balance);
     BigDecimal calculateWithdrawal(BigDecimal amount, BigDecimal balance);
-    BigDecimal calculateTransfer(BigDecimal amount, AccountDTO toAccount, AccountDTO fromAccount);
+    BigDecimal calculateTransfer(BigDecimal amount, Account toAccount, Account fromAccount);
     BigDecimal calculatePurchase(BigDecimal amount, AccountDTO accountDTO);
     BigDecimal calculateBillPay(BigDecimal amount, AccountDTO accountDTO, BillDTO bill);
     BigDecimal calculateDepositWithInterest(BigDecimal amount, BigDecimal interest, AccountDTO accountDTO);
