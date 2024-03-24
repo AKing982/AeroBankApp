@@ -3,6 +3,7 @@ package com.example.aerobankapp.engine;
 import com.example.aerobankapp.dto.AccountDTO;
 import com.example.aerobankapp.dto.BillDTO;
 import com.example.aerobankapp.fees.FeesDTO;
+import com.example.aerobankapp.model.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,26 +26,47 @@ public class CalculationEngineImpl implements CalculationEngine
     @Transactional
     public BigDecimal calculateDeposit(BigDecimal amount, BigDecimal balance)
     {
-        LOGGER.debug("Current Balance: " + balance);
+        LOGGER.debug("Current Balance: $" + balance);
         if(amount != null && balance != null)
         {
             BigDecimal newBalance = balance.add(amount);
-            LOGGER.debug("Balance after Deposit: " + newBalance);
+            LOGGER.debug("Balance after Deposit: $" + newBalance);
             return newBalance;
         }
-        return null;
+        return BigDecimal.ZERO;
     }
 
     @Override
     @Transactional
     public BigDecimal calculateWithdrawal(BigDecimal amount, BigDecimal balance) {
-        return null;
+        LOGGER.info("Current Balance: $" + balance);
+        if(amount != null && balance != null){
+            BigDecimal newBalance = balance.subtract(amount);
+            LOGGER.info("Balance After Withdrawal: $" + newBalance);
+            return newBalance;
+        }
+        return BigDecimal.ZERO;
     }
 
     @Override
     @Transactional
-    public BigDecimal calculateTransfer(BigDecimal amount, AccountDTO toAccount, AccountDTO fromAccount) {
-        return null;
+    public BigDecimal calculateTransfer(final BigDecimal amount, final Account toAccount, final Account fromAccount) {
+        if (amount != null && toAccount != null && fromAccount != null && amount.compareTo(BigDecimal.ZERO) > 0) {
+            // Retrieve the Account Balances
+            BigDecimal fromAccountBalance = fromAccount.getBalance();
+
+            // Check fromAccount balance is not null and has sufficient balance
+            if (fromAccountBalance != null && fromAccountBalance.compareTo(amount) >= 0) {
+                // Calculate the new balance of the fromAccount after the transfer
+                return fromAccountBalance.subtract(amount);
+            } else {
+                // If fromAccount balance is insufficient or null, throw an exception
+                throw new IllegalArgumentException("Insufficient funds or null balance in the fromAccount");
+            }
+        } else {
+            // If any input is null or amount is non-positive, throw an exception
+            throw new IllegalArgumentException("Invalid input provided");
+        }
     }
 
     @Override

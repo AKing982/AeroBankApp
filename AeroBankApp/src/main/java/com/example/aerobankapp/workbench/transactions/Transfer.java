@@ -16,13 +16,14 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Transfer extends TransactionBase implements Serializable
 {
     private Long transferID;
     private int fromAccountID;
     private int toAccountID;
+    private String toAccountNumber;
+    private String toAccountCode;
     private int originUserID;
     private int targetUserID;
     private boolean isUserToUserTransfer;

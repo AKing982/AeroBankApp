@@ -3,16 +3,22 @@ package com.example.aerobankapp.dto;
 import com.example.aerobankapp.account.AbstractAccountBase;
 import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.workbench.utilities.User;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record TransferDTO(Long transferID,
-                          User user,
-                          Account fromAccount,
-                          Account toAccount,
-                          BigDecimal amount,
-                          String description,
+                          @Min(1) int fromUserID,
+                          @Min(1) int toUserID,
+                          @NotNull String toUserAccountNumber,
+                          @NotNull String toUserAccountCode,
+                          @Min(1) int fromAccountID,
+                          @Min(1) int toAccountID,
+                          @NotNull @DecimalMin("0.00") BigDecimal amount,
+                          @NotNull String description,
                           boolean isUserToUserTransfer,
                           LocalDate dateTransferred)
 {

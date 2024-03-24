@@ -58,8 +58,18 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return null;
     }
 
+
     @Override
     protected Set<Integer> retrieveAccountIDSet(List<Transfer> transactionList) {
+        // NOT IMPLEMENTED
+        return null;
+    }
+
+    protected Set<Integer> retrieveOriginAccountIDSet(List<Transfer> transferList){
+        return null;
+    }
+
+    protected Set<Integer> retrieveTargetAccountIDSet(List<Transfer> transferList){
         return null;
     }
 
@@ -81,6 +91,19 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
     @Override
     protected List<BalanceHistoryEntity> convertBalanceSummaryToBalanceHistoryEntityList(List<TransferBalanceSummary> transactionSummaries) {
         return null;
+    }
+
+    protected List<Transfer> getFilteredUserToUserTransfers(List<Transfer> unfilteredTransfers){
+        return null;
+    }
+
+    protected void executeTransfer(List<Transfer> sameUserTransferList)
+    {
+
+    }
+
+    protected void executeUserToUserTransfer(List<Transfer> transferList){
+
     }
 
 
