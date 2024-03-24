@@ -23,12 +23,14 @@ export default function AccountListView({updateAccountID})
             fetchAccountID();
         }
         if(selectedAccount === ''){
+            console.log('Going inside fetchAccountIDByUserID');
             fetchAccountIDByUserID();
         }
     }, [selectedAccount])
 
     const fetchAccountIDByUserID = () => {
         const userID = sessionStorage.getItem('userID');
+        console.log('Generating Random AccountID');
         axios.get(`http://localhost:8080/AeroBankApp/api/accounts/rand/${userID}`)
             .then(response => {
                 console.log('Random AccountID Response: ', response.data);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Accordion,
     AccordionSummary,
@@ -13,6 +13,7 @@ import {
     Paper
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import axios from "axios";
 
 function createData(description, debit, credit, balance, status) {
     return { description, debit, credit, balance, status };
@@ -25,10 +26,22 @@ const pendingTransactions = [
 
 export default function PendingTransactionsTable() {
     const [expanded, setExpanded] = useState(false);
+    const [totalPending, setTotalPending]= useState(0);
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
+
+    useEffect(() => {
+        axios.get(`http://localhost:8080/AeroBankApp/api/pending/size`)
+            .then(response => {
+                const totalPending = response.data;
+                setTotalPending(totalPending);
+            })
+            .catch(error => {
+                console.error('Unable to fetch total pending transactions: ', error);
+            })
+    })
 
     return (
         <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
@@ -38,7 +51,7 @@ export default function PendingTransactionsTable() {
                 id="panel1bh-header"
             >
                 <Typography sx={{ flexShrink: 0 }}>
-                    2 pending transactions
+                    {totalPending} pending transactions
                 </Typography>
             </AccordionSummary>
             <AccordionDetails>
