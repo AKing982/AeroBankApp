@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -40,7 +41,7 @@ public class TransactionStatementController
     public ResponseEntity<?> getPendingTransactions(@PathVariable int acctID){
         List<TransactionStatementEntity> pendingTransactions = transactionStatementService.getPendingTransactionsByAcctID(acctID);
         if(pendingTransactions.isEmpty()){
-            return ResponseEntity.badRequest().body("Bad Request. Found no Pending Transactions.");
+            return ResponseEntity.ok().body(new ArrayList());
         }
         return ResponseEntity.ok().body(pendingTransactions);
     }

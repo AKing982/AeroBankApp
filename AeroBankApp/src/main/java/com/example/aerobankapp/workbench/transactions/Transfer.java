@@ -27,6 +27,7 @@ public class Transfer extends TransactionBase implements Serializable
     private int originUserID;
     private int targetUserID;
     private boolean isUserToUserTransfer;
+    private boolean isPending;
 
     public Transfer(Long transferID, int fromAccountID, int toAccountID, int originUID, int targetUserID, boolean isUserTransfer) {
         this.transferID = transferID;

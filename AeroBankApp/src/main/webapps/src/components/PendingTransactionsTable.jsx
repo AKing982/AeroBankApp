@@ -10,11 +10,13 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Paper, Alert
+    Paper, Alert, Chip, Avatar
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from "axios";
 import {Skeleton} from "@mui/lab";
+import {HourglassEmpty} from "@mui/icons-material";
+
 
 function createData(description, debit, credit, balance, status) {
     return { description, debit, credit, balance, status };
@@ -88,9 +90,18 @@ export default function PendingTransactionsTable({accountID}) {
                 aria-controls="panel1bh-content"
                 id="panel1bh-header"
             >
-                <Typography sx={{ flexShrink: 0 }}>
-                    {!totalPending || Number(totalPending) === 0 ? 'No Pending Transactions' : totalPending + ' pending transactions'}
-                </Typography>
+                {
+                    Number(totalPending) > 0 && (
+                        <Chip
+                            avatar={
+                                <Avatar sx={{ fontSize: '2.3rem', fontWeight: 'bold' }}>
+                                    {totalPending}
+                                </Avatar>
+                            }
+                            label={<Typography sx={{ fontWeight: 'bold' }}>{`Pending Transactions`}</Typography>}
+                            color="info"
+                        />
+                )}
             </AccordionSummary>
             <AccordionDetails>
                 <TableContainer component={Paper}>

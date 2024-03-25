@@ -10,10 +10,13 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
+@Builder
 public class BalanceHistory
 {
     private Long historyID;
     private int accountID;
+    private int toAccountID;
+    private int fromAccountID;
     private BigDecimal currentBalance;
     private BigDecimal adjustedAmount;
     private BigDecimal newBalance;

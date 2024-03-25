@@ -1,16 +1,24 @@
-package com.example.aerobankapp.workbench.utilities;
+package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.model.DepositBalanceSummary;
-import com.example.aerobankapp.model.TransactionDetail;
+import com.example.aerobankapp.model.TransferBalanceSummary;
 import com.example.aerobankapp.workbench.transactions.Deposit;
+import com.example.aerobankapp.workbench.transactions.Transfer;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Deprecated
-public class DepositProcessorUtil
+public class TransactionEngineUtil
 {
+    public static TransferBalanceSummary buildTransferBalanceSummary(Transfer transfer, BigDecimal postBalance){
+        TransferBalanceSummary transferBalanceSummary = new TransferBalanceSummary();
+        transferBalanceSummary.setTransaction(transfer);
+        transferBalanceSummary.setPostBalance(postBalance);
+        transferBalanceSummary.setDateProcessed(LocalDate.now());
+        return transferBalanceSummary;
+    }
+
     public static DepositBalanceSummary buildDepositBalanceSummary(final Deposit deposit, final BigDecimal balanceAfterDeposit){
         DepositBalanceSummary depositBalanceSummary = new DepositBalanceSummary();
         depositBalanceSummary.setTransaction(deposit);
@@ -33,16 +41,4 @@ public class DepositProcessorUtil
         deposit.setPosted(LocalDate.now());
         return deposit;
     }
-
-    public static TransactionDetail convertToTransactionDetail(Deposit deposit, BigDecimal newBalance) {
-        TransactionDetail transactionDetail = new TransactionDetail();
-        transactionDetail.setTransactionID(deposit.getDepositID());
-        transactionDetail.setAccountID(deposit.getAccountID());
-        transactionDetail.setUserID(deposit.getUserID());
-        transactionDetail.setAccountCode(deposit.getAcctCode());
-        transactionDetail.setBalance(newBalance);
-        return transactionDetail;
-    }
-
-
 }

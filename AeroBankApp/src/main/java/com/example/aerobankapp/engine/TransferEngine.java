@@ -7,12 +7,14 @@ import com.example.aerobankapp.entity.BalanceHistoryEntity;
 import com.example.aerobankapp.entity.TransferEntity;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.exceptions.NullTransferObjectException;
+import com.example.aerobankapp.model.BalanceHistory;
 import com.example.aerobankapp.model.TransactionBalanceSummary;
 import com.example.aerobankapp.model.TransferBalanceSummary;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.transactions.TransactionSummary;
 import com.example.aerobankapp.workbench.transactions.Transfer;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+import com.example.aerobankapp.workbench.utilities.BalanceHistoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +25,13 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.example.aerobankapp.engine.TransactionEngineUtil.buildTransferBalanceSummary;
+
 @Service
 public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceSummary> implements Runnable
 {
-
     private final TransferService transferService;
+    protected List<Transfer> filteredTransfers = new ArrayList<>();
     private final EntityToModelConverter<TransferEntity, Transfer> transferConverter;
     private final Logger LOGGER = LoggerFactory.getLogger(TransferEngine.class);
 
@@ -95,27 +99,96 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
     }
 
     @Override
-    protected Map<Integer, BigDecimal> retrieveTransactionAmountByAcctID(List<Transfer> transactionList) {
-        return null;
+    protected Map<Integer, BigDecimal> retrieveTransactionAmountByAcctID(final List<Transfer> transactionList) {
+        if(!transactionList.isEmpty()){
+            for(Transfer transfer : transactionList){
+                if(transfer != null){
+                    final BigDecimal amount = transfer.getAmount();
+                    final int fromAccountID = transfer.getFromAccountID();
+                    if(amount.compareTo(BigDecimal.ZERO) > 0 && fromAccountID > 0){
+                        transactionAmountByAcctIDHashMap.put(fromAccountID, amount);
+                    }
+                }
+            }
+        }
+        return transactionAmountByAcctIDHashMap;
     }
 
     @Override
-    protected Map<Integer, List<TransferBalanceSummary>> generateBalanceSummaryMap(List<Transfer> transactions, Map<Integer, BigDecimal> accountBalances) {
-        return null;
+    protected Map<Integer, List<TransferBalanceSummary>> generateBalanceSummaryMap(final List<Transfer> transactions, final Map<Integer, BigDecimal> accountBalances) {
+        if(!transactions.isEmpty()){
+            for(Transfer transfer : transactions){
+                if(transfer != null){
+                    int toAccountID = transfer.getToAccountID();
+                    int fromAccountID = transfer.getFromAccountID();
+                    if(toAccountID > 0 && fromAccountID > 0){
+                        BigDecimal fromAccountBalance = accountBalances.get(fromAccountID);
+                        BigDecimal toAccountBalance = accountBalances.get(toAccountID);
+
+                        if(fromAccountBalance != null){
+                            TransferBalanceSummary fromAccountBalanceSummary = buildTransferBalanceSummary(transfer, fromAccountBalance);
+                            balanceSummariesHashMap.computeIfAbsent(fromAccountID, k -> new ArrayList<>()).add(fromAccountBalanceSummary);
+                        }
+
+                        if(toAccountBalance != null){
+                            TransferBalanceSummary toAccountBalanceSummary = buildTransferBalanceSummary(transfer, toAccountBalance);
+                            balanceSummariesHashMap.computeIfAbsent(toAccountID, k -> new ArrayList<>()).add(toAccountBalanceSummary);
+                        }
+                    }
+                }
+            }
+        }
+        return balanceSummariesHashMap;
     }
 
     @Override
     protected BalanceHistoryEntity createBalanceHistoryEntity(TransferBalanceSummary balanceSummary, BigDecimal currentBalance, BigDecimal adjustedAmount) {
+        if(balanceSummary != null){
+            if(currentBalance != null || adjustedAmount != null){
+                BalanceHistory balanceHistory = BalanceHistoryUtil.convertTransferBalanceSummaryToBalanceHistoryModel(balanceSummary, currentBalance, adjustedAmount);
+                return BalanceHistoryUtil.convertBalanceHistoryToEntity(balanceHistory);
+            }
+        }
         return null;
     }
 
     @Override
     protected List<BalanceHistoryEntity> convertBalanceSummaryToBalanceHistoryEntityList(List<TransferBalanceSummary> transactionSummaries) {
+        if(!transactionSummaries.isEmpty()){
+            for(TransferBalanceSummary transferBalanceSummary : transactionSummaries){
+                Transfer transfer = transferBalanceSummary.getTransaction();
+                if(transfer != null){
+                    int toAccountID = transfer.getToAccountID();
+                    int fromAccountID = transfer.getFromAccountID();
+                    if(toAccountID > 0 && fromAccountID > 0){
+                        BigDecimal toAccountBalance = getCurrentBalanceByAcctID(toAccountID);
+                        BigDecimal fromAccountBalance = getCurrentBalanceByAcctID(fromAccountID);
+
+                        BigDecimal fromAccountBalanceAfterTransfer = transferBalanceSummary.getPostBalance();
+                       // BigDecimal adjustedBalance = getAdjustedAmount(toAccountBalance)
+
+                        if(toAccountBalance != null){
+                        //    BalanceHistoryEntity balanceHistoryEntity = createBalanceHistoryEntity(transferBalanceSummary, toAccountBalance, )
+                        }
+                    }
+
+                }
+            }
+        }
         return null;
     }
 
-    protected List<Transfer> getFilteredUserToUserTransfers(List<Transfer> unfilteredTransfers){
-        return null;
+    protected List<Transfer> getFilteredUserToUserTransfers(final List<Transfer> unfilteredTransfers){
+        if(!unfilteredTransfers.isEmpty()){
+            for(Transfer transfer : unfilteredTransfers){
+                if(transfer != null){
+                    if(isSameUserTransfer(transfer)){
+                        filteredTransfers.add(transfer);
+                    }
+                }
+            }
+        }
+        return filteredTransfers;
     }
 
     protected boolean isSameUserTransfer(final Transfer transfer){
