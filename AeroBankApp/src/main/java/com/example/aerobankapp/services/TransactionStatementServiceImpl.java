@@ -81,4 +81,22 @@ public class TransactionStatementServiceImpl implements TransactionStatementServ
         }
         return transactionStatementEntityList;
     }
+
+    @Override
+    public List<TransactionStatementEntity> getPendingTransactionsByAcctID(int acctID) {
+        List<TransactionStatementEntity> pendingTransactions = transactionStatementRepository.getPendingTransactionStatementsByAcctID(acctID);
+        if(pendingTransactions.isEmpty()){
+            throw new NonEmptyListRequiredException("Unable to retrieve pending transactions from empty list.");
+        }
+        return pendingTransactions;
+    }
+
+    @Override
+    public int getCountOfPendingTransactionsByAcctID(int acctID) {
+        int count = transactionStatementRepository.getCountOfPendingTransactionsForAcctID(acctID);
+        if(count > 0){
+            return count;
+        }
+        return 0;
+    }
 }

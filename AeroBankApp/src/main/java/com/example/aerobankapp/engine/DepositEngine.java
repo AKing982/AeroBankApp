@@ -92,6 +92,7 @@ public class DepositEngine extends TransactionEngine<Deposit, DepositBalanceSumm
         // Get the Set of AccountID's
         Set<Integer> accountIDs = retrieveAccountIDSet(transactionList);
 
+
         // Retrieve the current account balances
         Map<Integer, BigDecimal> currentAccountBalances = retrieveCurrentAccountBalancesByAcctID(accountIDs);
 
@@ -120,8 +121,6 @@ public class DepositEngine extends TransactionEngine<Deposit, DepositBalanceSumm
             int acctID = deposit.getAccountID();
             if(acctID > 0){
                 accountIDSet.add(acctID);
-            }else{
-                throw new InvalidAccountIDException("Retrieving Invalid AcctID: " + acctID);
             }
         }
         return accountIDSet;
@@ -136,8 +135,6 @@ public class DepositEngine extends TransactionEngine<Deposit, DepositBalanceSumm
                 LOGGER.debug("Amount: $" + amount);
                 if(acctID > 0 && amount.compareTo(BigDecimal.ZERO) > 0){
                     transactionAmountByAcctIDHashMap.put(acctID, amount);
-                }else{
-                    throw new IllegalArgumentException("Invalid AcctID or Deposit Amount Found.");
                 }
             }
             return transactionAmountByAcctIDHashMap;
@@ -153,12 +150,14 @@ public class DepositEngine extends TransactionEngine<Deposit, DepositBalanceSumm
         for(Deposit deposit : transactions){
             if(deposit != null){
                 int acctID = deposit.getAccountID();
-                BigDecimal newBalance = accountBalances.get(acctID);
-                if(newBalance == null){
-                    throw new NullPointerException("Unable to retrieve new balance for accountID: " +  acctID);
+                if(acctID > 0){
+                    BigDecimal newBalance = accountBalances.get(acctID);
+                    if(newBalance == null){
+                        throw new NullPointerException("Unable to retrieve new balance for accountID: " +  acctID);
+                    }
+                    DepositBalanceSummary balanceSummary = buildDepositBalanceSummary(deposit, newBalance);
+                    balanceSummariesHashMap.computeIfAbsent(acctID, k -> new ArrayList<>()).add(balanceSummary);
                 }
-                DepositBalanceSummary balanceSummary = buildDepositBalanceSummary(deposit, newBalance);
-                balanceSummariesHashMap.computeIfAbsent(acctID, k -> new ArrayList<>()).add(balanceSummary);
             }
         }
         return balanceSummariesHashMap;

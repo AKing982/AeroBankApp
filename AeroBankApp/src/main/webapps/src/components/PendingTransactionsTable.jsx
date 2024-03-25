@@ -10,10 +10,11 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Paper
+    Paper, Alert
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from "axios";
+import {Skeleton} from "@mui/lab";
 
 function createData(description, debit, credit, balance, status) {
     return { description, debit, credit, balance, status };
@@ -24,24 +25,61 @@ const pendingTransactions = [
     // ... add more pending transactions here
 ];
 
-export default function PendingTransactionsTable() {
+export default function PendingTransactionsTable({accountID}) {
     const [expanded, setExpanded] = useState(false);
-    const [totalPending, setTotalPending]= useState(0);
+    const [totalPending, setTotalPending]= useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [pendingTransactions, setPendingTransactions] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/AeroBankApp/api/pending/size`)
-            .then(response => {
-                const totalPending = response.data;
-                setTotalPending(totalPending);
-            })
-            .catch(error => {
-                console.error('Unable to fetch total pending transactions: ', error);
-            })
-    })
+        const fetchPendingTransactions = async () => {
+            setIsLoading(true);
+            await new Promise(resolve => setTimeout(resolve, 4000));
+            let acctID = sessionStorage.getItem('accountID');
+            try{
+                if(accountID !== 0){
+                    setErrorMessage('');
+                }
+                console.log('AccountID before pending call: ', accountID);
+                    const response = await axios.get(`http://localhost:8080/AeroBankApp/api/transactionStatements/pending/${accountID}`);
+                    if(response.data.length > 0){
+                        console.log('Pending Transactions: ', response.data);
+                        setPendingTransactions(response.data);
+                    }else{
+                        console.log('No Pending Transactions found');
+                    }
+
+                }catch(error){
+                    console.error('Error fetching pending transactions: ', error);
+                    setErrorMessage('Unable to fetch pending transactions. Please try again later.');
+                    setIsLoading(false);
+                    return;
+                }
+
+                try{
+                    const response = await axios.get(`http://localhost:8080/AeroBankApp/api/transactionStatements/pending/size/${accountID}`);
+                    if(response.data && response.data.pendingAmount){
+                        console.log('Pending Size: ', response.data.pendingAmount);
+                        setTotalPending(Number(response.data.pendingAmount));
+                    }
+
+                }catch(error){
+                    console.error('Unable to retrieve a count of pending transactions: ', error);
+
+                }finally {
+                    setIsLoading(false);
+                }
+        };
+
+        fetchPendingTransactions();
+
+    }, [accountID]);
+
 
     return (
         <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
@@ -51,35 +89,69 @@ export default function PendingTransactionsTable() {
                 id="panel1bh-header"
             >
                 <Typography sx={{ flexShrink: 0 }}>
-                    {totalPending} pending transactions
+                    {!totalPending || Number(totalPending) === 0 ? 'No Pending Transactions' : totalPending + ' pending transactions'}
                 </Typography>
             </AccordionSummary>
             <AccordionDetails>
                 <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="pending transactions table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Description</TableCell>
-                                <TableCell align="right">Debit</TableCell>
-                                <TableCell align="right">Credit</TableCell>
-                                <TableCell align="right">Balance</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {pendingTransactions.map((row, index) => (
-                                <TableRow key={index}>
-                                    <TableCell component="th" scope="row">
-                                        {row.description}
-                                    </TableCell>
-                                    <TableCell align="right"sx={{color: row.debit ? 'red' : 'inherit'}}>{row.debit}</TableCell>
-                                    <TableCell align="right">{row.credit}</TableCell>
-                                    <TableCell align="right">
-                                        {row.status === 'pending' ? <em>{row.status}</em> : row.balance}
-                                    </TableCell>
+                        <Table sx={{ minWidth: 650 }} aria-label="pending transactions table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Description</TableCell>
+                                    <TableCell align="right">Debit</TableCell>
+                                    <TableCell align="right">Credit</TableCell>
+                                    <TableCell align="right">Balance</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                            </TableHead>
+                            <TableBody>
+                                {isLoading ? (
+                                    // Render Skeletons when data is loading
+                                    Array.from(new Array(5)).map((_, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>
+                                                <Skeleton animation="wave" height={30} width="100%" />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Skeleton animation="wave" height={30} width="60%" />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Skeleton animation="wave" height={30} width="60%" />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Skeleton animation="wave" height={30} width="40%" />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : errorMessage ? (
+                                    // Render Alert in a TableRow if there's an error message
+                                    <TableRow>
+                                        <TableCell colSpan={4}>
+                                            <Alert severity="error" sx={{ width: '99%' }}>
+                                                {errorMessage}
+                                            </Alert>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    // Render actual data when it's not loading and no error message
+                                    pendingTransactions.map((row, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell component="th" scope="row">
+                                                {row.description}
+                                            </TableCell>
+                                            <TableCell align="right" sx={{color: row.debit ? 'red' : 'inherit'}}>
+                                                {row.debit}
+                                            </TableCell>
+                                            <TableCell align="right" sx={{color: row.credit ? 'green' : 'inherit'}}>
+                                                {row.credit}
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {row.status === 'pending' ? <em>{row.status}</em> : row.balance}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
                 </TableContainer>
             </AccordionDetails>
         </Accordion>

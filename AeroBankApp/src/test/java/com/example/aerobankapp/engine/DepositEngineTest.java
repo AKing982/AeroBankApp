@@ -99,7 +99,9 @@ class DepositEngineTest {
                 List.of(),
                 List.of(createDeposit(1, 1, "A1", new BigDecimal("20.00"), "Checking Transfer", ScheduleType.ONCE, LocalDate.now(), LocalTime.now()),
                         createDeposit(1, 1, "", new BigDecimal("45.00"), "Checking Transfer", ScheduleType.ONCE, LocalDate.now(), LocalTime.now())),
-                List.of(createDeposit(1, 0, "A1", new BigDecimal("140.000"), "Checking Transfer", ScheduleType.ONCE, LocalDate.now(), LocalTime.now()))
+                List.of(createDeposit(1, 0, "A1", new BigDecimal("140.000"), "Checking Transfer", ScheduleType.ONCE, LocalDate.now(), LocalTime.now()),
+                        createDeposit(1, 2, "A2", new BigDecimal("250.00"), "Transfer to Savings", ScheduleType.ONCE, LocalDate.now(), LocalTime.now()))
+
         );
     }
 

@@ -23,6 +23,7 @@ public class BalanceHistoryUtil {
 
     public static BalanceHistoryEntity convertBalanceHistoryToEntity(BalanceHistory balanceHistory){
         BalanceHistoryEntity balanceHistoryEntity = new BalanceHistoryEntity();
+        balanceHistoryEntity.setHistoryID(balanceHistoryEntity.getHistoryID());
         balanceHistoryEntity.setPostBalance(balanceHistory.getNewBalance());
         balanceHistoryEntity.setPreBalance(balanceHistory.getCurrentBalance());
         balanceHistoryEntity.setAccount(AccountEntity.builder().acctID(balanceHistory.getAccountID()).build());

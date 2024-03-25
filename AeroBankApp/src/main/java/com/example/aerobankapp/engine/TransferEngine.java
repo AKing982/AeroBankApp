@@ -5,6 +5,8 @@ import com.example.aerobankapp.converter.TransferConverter;
 import com.example.aerobankapp.dto.TransferDTO;
 import com.example.aerobankapp.entity.BalanceHistoryEntity;
 import com.example.aerobankapp.entity.TransferEntity;
+import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
+import com.example.aerobankapp.exceptions.NullTransferObjectException;
 import com.example.aerobankapp.model.TransactionBalanceSummary;
 import com.example.aerobankapp.model.TransferBalanceSummary;
 import com.example.aerobankapp.services.*;
@@ -17,10 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceSummary> implements Runnable
@@ -39,7 +40,13 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
 
     @Override
     protected List<Transfer> fetchAll() {
-        return null;
+        List<TransferEntity> transferEntities = transferService.findAll();
+        if(transferEntities.isEmpty()){
+            throw new NonEmptyListRequiredException("Found No Transfer Entities.");
+        }
+        return transferEntities.stream()
+                .map(transferConverter::convert)
+                .toList();
     }
 
     @Override
@@ -55,6 +62,14 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
 
     @Override
     protected Map<Integer, BigDecimal> getCalculatedAccountBalanceMap(List<Transfer> transactionList) {
+        Map<Integer, BigDecimal> accountBalanceMap = new HashMap<>();
+
+        Set<Integer> originAccountIDs = retrieveTransferAccountIDSet(transactionList, Transfer::getFromAccountID);
+
+        Set<Integer> targetAccountIDs = retrieveTransferAccountIDSet(transactionList, Transfer::getToAccountID);
+
+        Map<Integer, BigDecimal> transactionAmountByAcctID = retrieveTransactionAmountByAcctID(transactionList);
+
         return null;
     }
 
@@ -65,12 +80,18 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return null;
     }
 
-    protected Set<Integer> retrieveOriginAccountIDSet(List<Transfer> transferList){
-        return null;
-    }
+    protected Set<Integer> retrieveTransferAccountIDSet(List<Transfer> transfers, Function<Transfer, Integer> accountIDExtractor){
+        if(transfers.isEmpty()){
+            throw new NonEmptyListRequiredException("Unable to retrieve AccountID's with empty transfer list.");
+        }
+        Set<Integer> accountIDs = transfers.stream()
+                .map(accountIDExtractor)
+                .collect(Collectors.toUnmodifiableSet());
 
-    protected Set<Integer> retrieveTargetAccountIDSet(List<Transfer> transferList){
-        return null;
+        if(accountIDs == null){
+            LOGGER.info("AccountID Set is Null");
+        }
+        return accountIDs;
     }
 
     @Override
@@ -97,15 +118,13 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return null;
     }
 
-    protected void executeTransfer(List<Transfer> sameUserTransferList)
-    {
-
+    protected boolean isSameUserTransfer(final Transfer transfer){
+        return transfer.isUserToUserTransfer();
     }
 
-    protected void executeUserToUserTransfer(List<Transfer> transferList){
+    protected void processTransfers(List<Transfer> unfilteredTransfers){
 
     }
-
 
     @Override
     public void run() {

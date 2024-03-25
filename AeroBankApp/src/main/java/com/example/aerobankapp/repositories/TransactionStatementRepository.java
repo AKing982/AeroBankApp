@@ -11,6 +11,12 @@ import java.util.List;
 @Repository
 public interface TransactionStatementRepository extends JpaRepository<TransactionStatementEntity, Long>
 {
-    @Query("SELECT e FROM TransactionStatementEntity e WHERE e.accountEntity.acctID=:acctID")
+    @Query("SELECT e FROM TransactionStatementEntity e WHERE e.accountEntity.acctID=:acctID AND e.isPending=FALSE")
     List<TransactionStatementEntity> getTransactionStatementsByAcctID(@Param("acctID") int acctID);
+
+    @Query("SELECT e FROM TransactionStatementEntity e WHERE e.accountEntity.acctID=:acctID AND e.isPending=TRUE")
+    List<TransactionStatementEntity> getPendingTransactionStatementsByAcctID(@Param("acctID") int acctID);
+
+    @Query("SELECT COUNT(*) FROM TransactionStatementEntity e WHERE e.accountEntity.acctID=:acctID AND e.isPending=TRUE")
+    int getCountOfPendingTransactionsForAcctID(@Param("acctID") int acctID);
 }

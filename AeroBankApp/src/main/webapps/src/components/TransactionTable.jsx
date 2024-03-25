@@ -88,73 +88,74 @@ export default function TransactionTable({accountID}) {
     }, {});
 
     return (
-        <TableContainer component={Paper} sx={{ maxHeight: 500 }}>
-            {errorMessage && (
-                <Alert severity="error" sx={{ p: 3}}>
-                    {errorMessage}
-                </Alert>
-            )}
-            {!errorMessage && (
-                <Table sx={{ minWidth: 650 }} aria-label="transaction table">
-                    <TableHead>
+        <TableContainer component={Paper} sx={{ maxHeight: 1080 }}>
+            <Table sx={{ minWidth: 650 }} aria-label="transaction table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Description</TableCell>
+                        <TableCell align="right">Debit</TableCell>
+                        <TableCell align="right">Credit</TableCell>
+                        <TableCell align="right">Balance</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {isLoading ? (
+                        // Render Skeletons when data is loading
+                        Array.from(new Array(5)).map((_, index) => (
+                            <TableRow key={index}>
+                                <TableCell><Skeleton animation="wave" /></TableCell>
+                                <TableCell align="right"><Skeleton animation="wave" /></TableCell>
+                                <TableCell align="right"><Skeleton animation="wave" /></TableCell>
+                                <TableCell align="right"><Skeleton animation="wave" /></TableCell>
+                            </TableRow>
+                        ))
+                    ) : errorMessage ? (
+                        // Display the error message within the table body if there's an errorMessage
                         <TableRow>
-                            <TableCell>Description</TableCell>
-                            <TableCell align="right">Debit</TableCell>
-                            <TableCell align="right">Credit</TableCell>
-                            <TableCell align="right">Balance</TableCell>
+                            <TableCell colSpan={4}>
+                                <Alert severity="error" sx={{ width: '99%' }}>
+                                    {errorMessage}
+                                </Alert>
+                            </TableCell>
                         </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {isLoading ? (
-                            // Render Skeletons when data is loading
-                            Array.from(new Array(5)).map((_, index) => (
-                                <TableRow key={index}>
-                                    <TableCell><Skeleton animation="wave" /></TableCell>
-                                    <TableCell align="right"><Skeleton animation="wave" /></TableCell>
-                                    <TableCell align="right"><Skeleton animation="wave" /></TableCell>
-                                    <TableCell align="right"><Skeleton animation="wave" /></TableCell>
+                    ) : (
+                        Object.entries(transactionsGroupedByDate).map(([date, statements]) => (
+                            <React.Fragment key={date}>
+                                <TableRow>
+                                    <TableCell colSpan={4} sx={{ backgroundColor: '#0E0F52', color: 'white' }}>
+                                        <Typography variant="subtitle1" gutterBottom>
+                                            {date}
+                                        </Typography>
+                                    </TableCell>
                                 </TableRow>
-                            ))
-                        ) : (
-                            Object.entries(transactionsGroupedByDate).map(([date, statements]) => (
-                                <React.Fragment key={date}>
-                                    <TableRow>
-                                        <TableCell colSpan={4} sx={{ backgroundColor: '#0E0F52', color: 'white' }}>
-                                            <Typography variant="subtitle1" gutterBottom>
-                                                {date}
-                                            </Typography>
+                                {statements.map((statement, stmtIndex) => (
+                                    <TableRow
+                                        key={`${date}-${stmtIndex}`}
+                                        sx={{
+                                            '&:last-child td, &:last-child th': { border: 0 },
+                                            '& td, & th': {
+                                                borderBottom: '1px solid rgba(224, 224, 224, 1)',
+                                                borderRight: 'none',
+                                            }
+                                        }}
+                                    >
+                                        <TableCell>{statement.description}</TableCell>
+                                        <TableCell align="right" sx={{ color: statement.debit ? 'red' : 'inherit' }}>
+                                            {statement.debit}
+                                        </TableCell>
+                                        <TableCell align="right" sx={{ color: statement.credit ? 'green' : 'inherit' }}>
+                                            {statement.credit}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {statement.balance}
                                         </TableCell>
                                     </TableRow>
-                                    {statements.map((statement, stmtIndex) => (
-                                        <TableRow
-                                            key={`${date}-${stmtIndex}`}
-                                            sx={{
-                                                '&:last-child td, &:last-child th': { border: 0 },
-                                                '& td, & th': {
-                                                    borderBottom: '1px solid rgba(224, 224, 224, 1)',
-                                                    borderRight: 'none',
-                                                }
-                                            }}
-                                        >
-                                            <TableCell>{statement.description}</TableCell>
-                                            <TableCell align="right" sx={{ color: statement.debit ? 'red' : 'inherit' }}>
-                                                {statement.debit}
-                                            </TableCell>
-                                            <TableCell align="right" sx={{ color: statement.credit ? 'green' : 'inherit' }}>
-                                                {statement.credit}
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                {statement.balance}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </React.Fragment>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
-            )}
-
+                                ))}
+                            </React.Fragment>
+                        ))
+                    )}
+                </TableBody>
+            </Table>
         </TableContainer>
     );
 }

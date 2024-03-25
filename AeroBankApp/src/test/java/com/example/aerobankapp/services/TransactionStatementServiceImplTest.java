@@ -41,6 +41,11 @@ class TransactionStatementServiceImplTest {
         assertEquals(4, transactionStatementEntityList.size());
     }
 
+    @Test
+    public void getPendingTransactionByAcctID(){
+
+    }
+
     @AfterEach
     void tearDown() {
     }

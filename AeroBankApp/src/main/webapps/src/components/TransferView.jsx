@@ -2,6 +2,7 @@ import AccountSelect from "./AccountSelect";
 import {useState} from "react";
 import '../TransferView.css';
 import {
+    Alert,
     Button,
     FormControl, FormControlLabel,
     FormLabel,
@@ -25,11 +26,49 @@ export default function TransferView()
     const [transferDate, setTransferDate] = useState('');
     const [description, setDescription] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackBarMessage, setSnackBarMessage] = useState('');
+    const [snackBarSeverity, setSnackBarSeverity] = useState('error');
 
     const handleTransfer = () => {
         // Handle the transfer logic
-        setOpenSnackbar(true);
+
+        if(!fromAccount){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please Select a From Account.');
+        }
+
+        if(!toAccount){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please Select a To Account.');
+        }
+
+        if(!amount){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please Enter a valid amount.');
+        }
+
+        if(!transferDate){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please choose a transfer date.');
+        }
+
+        if(!description){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please enter a description.');
+        }
+
     };
+
+    function snackBar(isOpen, errorMessage, message){
+        setOpenSnackbar(isOpen);
+        setSnackBarSeverity(errorMessage);
+        setSnackBarMessage(message);
+    }
 
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
@@ -136,7 +175,11 @@ export default function TransferView()
                 autoHideDuration={6000}
                 onClose={handleCloseSnackbar}
                 message="Transfer successful"
-            />
+            >
+                <Alert onClose={handleCloseSnackbar} severity={snackBarSeverity} variant="filled" sx={{width: '100%'}}>
+                    {snackBarMessage}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 }

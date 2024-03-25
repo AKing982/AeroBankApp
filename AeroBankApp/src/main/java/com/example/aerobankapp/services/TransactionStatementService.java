@@ -25,6 +25,9 @@ public interface TransactionStatementService extends ServiceDAOModel<Transaction
 
     List<TransactionStatementEntity> getTransactionStatementsByAcctID(int acctID);
 
+    List<TransactionStatementEntity> getPendingTransactionsByAcctID(int acctID);
+
+    int getCountOfPendingTransactionsByAcctID(int acctID);
 
 
 

@@ -36,4 +36,7 @@ public class TransactionStatementEntity {
     @Column(name="transactionDate")
     private String transactionDate;
 
+    @Column(name="isPending")
+    private boolean isPending;
+
 }

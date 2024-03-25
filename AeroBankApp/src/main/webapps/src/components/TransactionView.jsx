@@ -25,7 +25,7 @@ export default function TransactionView()
                 </Grid>
                 <Grid item xs={12} md={6} className="transaction-view-right">
                     <Box sx={{ maxWidth: 'auto', margin: 'auto', width: '100%' }}>
-                        <PendingTransactionsTable />
+                        <PendingTransactionsTable accountID={accountID} />
                         <TransactionTable accountID={accountID} />
                     </Box>
                 </Grid>
