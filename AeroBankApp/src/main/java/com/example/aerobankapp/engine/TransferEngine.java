@@ -10,6 +10,7 @@ import com.example.aerobankapp.exceptions.NullTransferObjectException;
 import com.example.aerobankapp.model.BalanceHistory;
 import com.example.aerobankapp.model.TransactionBalanceSummary;
 import com.example.aerobankapp.model.TransferBalanceSummary;
+import com.example.aerobankapp.model.TransferBalances;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.transactions.TransactionSummary;
 import com.example.aerobankapp.workbench.transactions.Transfer;
@@ -55,6 +56,7 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
 
     @Override
     protected List<Transfer> retrieveTransactionsByUserID(int userID) {
+        // NOT IMPLEMENTED
         return null;
     }
 
@@ -125,14 +127,9 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
                         BigDecimal fromAccountBalance = accountBalances.get(fromAccountID);
                         BigDecimal toAccountBalance = accountBalances.get(toAccountID);
 
-                        if(fromAccountBalance != null){
-                            TransferBalanceSummary fromAccountBalanceSummary = buildTransferBalanceSummary(transfer, fromAccountBalance);
+                        if(fromAccountBalance != null || toAccountBalance != null){
+                            TransferBalanceSummary fromAccountBalanceSummary = buildTransferBalanceSummary(transfer, fromAccountBalance, toAccountBalance);
                             balanceSummariesHashMap.computeIfAbsent(fromAccountID, k -> new ArrayList<>()).add(fromAccountBalanceSummary);
-                        }
-
-                        if(toAccountBalance != null){
-                            TransferBalanceSummary toAccountBalanceSummary = buildTransferBalanceSummary(transfer, toAccountBalance);
-                            balanceSummariesHashMap.computeIfAbsent(toAccountID, k -> new ArrayList<>()).add(toAccountBalanceSummary);
                         }
                     }
                 }
@@ -161,21 +158,26 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
                     int toAccountID = transfer.getToAccountID();
                     int fromAccountID = transfer.getFromAccountID();
                     if(toAccountID > 0 && fromAccountID > 0){
+                        // Get the balance for the toAccount
                         BigDecimal toAccountBalance = getCurrentBalanceByAcctID(toAccountID);
+
+                        // Get the balance for the from account
                         BigDecimal fromAccountBalance = getCurrentBalanceByAcctID(fromAccountID);
 
+                        // Get the post balance for the from account
                         BigDecimal fromAccountBalanceAfterTransfer = transferBalanceSummary.getPostBalance();
-                       // BigDecimal adjustedBalance = getAdjustedAmount(toAccountBalance)
 
-                        if(toAccountBalance != null){
-                        //    BalanceHistoryEntity balanceHistoryEntity = createBalanceHistoryEntity(transferBalanceSummary, toAccountBalance, )
+                        BigDecimal adjustedBalanceFromAccount = getAdjustedAmount(fromAccountBalance, fromAccountBalanceAfterTransfer);
+
+                        if(fromAccountBalance != null){
+                            BalanceHistoryEntity balanceHistoryEntity = createBalanceHistoryEntity(transferBalanceSummary, fromAccountBalance, adjustedBalanceFromAccount);
+                            balanceHistoryList.add(balanceHistoryEntity);
                         }
                     }
-
                 }
             }
         }
-        return null;
+        return balanceHistoryList;
     }
 
     protected List<Transfer> getFilteredUserToUserTransfers(final List<Transfer> unfilteredTransfers){
@@ -195,8 +197,18 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return transfer.isUserToUserTransfer();
     }
 
-    protected void processTransfers(List<Transfer> unfilteredTransfers){
+    protected TransferBalances getTransferCalculation(final BigDecimal amount, final BigDecimal toAccountBalance, final BigDecimal fromAccountBalance){
+        if(amount != null || toAccountBalance != null || fromAccountBalance != null){
+            // Withdraw from the FromAccount
+            BigDecimal newFromBalance = getCalculationEngine().calculateWithdrawal(amount, fromAccountBalance);
 
+            // Deposit to the ToAccount
+            BigDecimal newToAccountBalance = getCalculationEngine().calculateDeposit(amount, toAccountBalance);
+
+            return new TransferBalances(newToAccountBalance, newFromBalance);
+        }
+        // Return an empty constructor
+        return new TransferBalances();
     }
 
     @Override

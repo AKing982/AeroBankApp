@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import AccountBox from "./AccountBox";
 import axios from "axios";
 import Account from "./Account";
 import {CircularProgress} from "@mui/material";
@@ -8,6 +7,7 @@ import {CircularProgress} from "@mui/material";
 export default function AccountListView({updateAccountID})
 {
     const [accountData, setAccountData] = useState([]);
+    const [accountProperties, setAccountProperties] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
@@ -78,6 +78,7 @@ export default function AccountListView({updateAccountID})
         }, 2000)
     }, [username]);
 
+
     const handleAccountButtonClick = (accountCode) => {
        setSelectedAccount(accountCode);
        storeAccountCode(accountCode);
@@ -98,7 +99,9 @@ export default function AccountListView({updateAccountID})
                                 accountCode={account.accountCode}
                                 balance={account.balance}
                                 pending={account.pendingAmount}
+                                accountName={account.accountName}
                                 available={account.availableAmount}
+                                backgroundImageUrl={account.acctImage}
                                 onAccountClick={handleAccountButtonClick}
                                 color={account.acctColor}
                                 isSelected={selectedAccount === account.accountCode}

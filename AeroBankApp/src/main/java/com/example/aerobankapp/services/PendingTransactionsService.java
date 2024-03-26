@@ -6,6 +6,7 @@ import com.example.aerobankapp.model.ServiceDAOModel;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 public interface PendingTransactionsService extends ServiceDAOModel<PendingTransactionEntity>
 {
     @Override

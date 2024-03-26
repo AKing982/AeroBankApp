@@ -11,10 +11,11 @@ import java.time.LocalDate;
 
 public class TransactionEngineUtil
 {
-    public static TransferBalanceSummary buildTransferBalanceSummary(Transfer transfer, BigDecimal postBalance){
+    public static TransferBalanceSummary buildTransferBalanceSummary(Transfer transfer, BigDecimal postBalance, BigDecimal toAccountPostBalance){
         TransferBalanceSummary transferBalanceSummary = new TransferBalanceSummary();
         transferBalanceSummary.setTransaction(transfer);
         transferBalanceSummary.setPostBalance(postBalance);
+        transferBalanceSummary.setToAccountPostBalance(toAccountPostBalance);
         transferBalanceSummary.setDateProcessed(LocalDate.now());
         return transferBalanceSummary;
     }

@@ -197,6 +197,12 @@ class TransferEngineTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testGetTransferCalculation_NullInput(){
+
+    }
+
+
     private static Transfer createMockTransferModel(int userID, String description,
                                                     BigDecimal amount,
                                                     LocalTime time,

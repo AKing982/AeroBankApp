@@ -3,6 +3,8 @@ package com.example.aerobankapp.controllers;
 import com.example.aerobankapp.dto.AccountDTO;
 import com.example.aerobankapp.dto.AccountDetailsDTO;
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.AccountPropertiesEntity;
+import com.example.aerobankapp.services.AccountPropertiesService;
 import com.example.aerobankapp.services.AccountServiceImpl;
 import com.example.aerobankapp.workbench.AccountIDResponse;
 import com.example.aerobankapp.workbench.utilities.AccountCreationRequest;
@@ -30,11 +32,13 @@ import static com.example.aerobankapp.controllers.utils.AccountControllerUtil.*;
 @CrossOrigin(origins = "http://localhost:3000")
 public class AccountController {
     private final AccountServiceImpl accountDAO;
+    private final AccountPropertiesService accountPropertiesService;
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Autowired
-    public AccountController(AccountServiceImpl accountDAO) {
+    public AccountController(AccountServiceImpl accountDAO, AccountPropertiesService accountPropertiesService) {
         this.accountDAO = accountDAO;
+        this.accountPropertiesService = accountPropertiesService;
     }
 
     @GetMapping("/data/{user}")
@@ -42,8 +46,9 @@ public class AccountController {
     @ResponseBody
     public ResponseEntity<?> getUserAccounts(@PathVariable String user) {
         List<AccountEntity> accountEntities = accountDAO.findByUserName(user);
+        List<AccountPropertiesEntity> accountPropertiesEntities = accountPropertiesService.findByUserName(user);
         accountEntities.forEach(results -> System.out.println(results.getClass().getName()));
-        List<AccountResponse> accountResponseList = getAccountResponseList(accountEntities, new BigDecimal("1200"), new BigDecimal("1150"));
+        List<AccountResponse> accountResponseList = getAccountResponseList(accountPropertiesEntities, accountEntities, new BigDecimal("1200"), new BigDecimal("1150"));
 
         return ResponseEntity.ok(accountResponseList);
     }

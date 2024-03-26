@@ -73,7 +73,9 @@ export default function DepositView()
     const [selectedAccountID, setSelectedAccountID] = useState(null);
     const [isAccountCodeLoading, setIsAccountCodeLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [accountID, setAccountID] = useState(0)
+    const [accountID, setAccountID] = useState(0);
+
+    const backgroundImageUrl = '/images/pexels-pixabay-417173.jpg';
 
     useEffect(() => {
         axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${user}/account-types`)
@@ -337,10 +339,10 @@ export default function DepositView()
         }
     }
     return (
-        <Container style={{ marginTop: '20px' }}>
+        <Container style={{ marginTop: '20px'}}>
             <Typography variant="h4">Make a Deposit</Typography>
 
-            <Accordion style={{ marginBottom: '20px' }}>
+            <Accordion style={{ marginBottom: '20px'}}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography>Select Account</Typography>
                 </AccordionSummary>

@@ -1,6 +1,8 @@
 .deposit-form-container {
     max-width: 800px; /* Adjust as necessary */
     margin: 0 auto;
+    background-size: cover;
+    background-position: center;
 }
 
 .deposit-row1 {
@@ -71,3 +73,4 @@
         margin-bottom: 10px; /* Add space between stacked elements */
     }
 }
+

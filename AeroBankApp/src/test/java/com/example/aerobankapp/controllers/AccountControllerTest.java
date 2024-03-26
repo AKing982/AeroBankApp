@@ -1,6 +1,7 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.AccountPropertiesEntity;
 import com.example.aerobankapp.services.AccountServiceImpl;
 import com.example.aerobankapp.workbench.utilities.response.AccountResponse;
 import org.junit.jupiter.api.AfterEach;
@@ -80,21 +81,36 @@ class AccountControllerTest {
 
     }
 
-    private List<AccountResponse> getAccountResponseList(List<AccountEntity> entityList, BigDecimal pending, BigDecimal available)
+    private static List<AccountResponse> getAccountResponseList(List<AccountPropertiesEntity> accountProperties, List<AccountEntity> entityList, BigDecimal pending, BigDecimal available)
     {
         List<AccountResponse> accountResponseList = new ArrayList<>();
-        for(AccountEntity entity : entityList)
-        {
+
+        // Map for quick lookup of AccountProperties by AccountEntity ID
+        Map<Long, AccountPropertiesEntity> propertiesMap = new HashMap<>();
+        for (AccountPropertiesEntity prop : accountProperties) {
+            if (prop.getAccount() != null) {
+                propertiesMap.put((long) prop.getAccount().getAcctID(), prop);
+            }
+        }
+
+        for (AccountEntity entity : entityList) {
             BigDecimal balance = entity.getBalance();
             String acctCode = entity.getAccountCode();
-            String acctColor = entity.getAcct_color();
-            AccountResponse accountResponse = new AccountResponse(acctCode, balance, pending, available, acctColor);
+            String accountName = entity.getAccountName();
+
+            // Lookup account properties using AccountEntity ID
+            AccountPropertiesEntity prop = propertiesMap.get(entity.getAcctID());
+            String acctColor = prop != null ? prop.getAcct_color() : null;
+
+            String acctImage = prop != null ? prop.getImage_url() : null; // Use image_url as acctImage
+
+            AccountResponse accountResponse = new AccountResponse(
+                    acctCode, balance, pending, available, accountName, acctColor, acctImage);
             accountResponseList.add(accountResponse);
         }
 
         return accountResponseList;
     }
-
     @Test
     @WithMockUser
     public void whenGetAccountCodes_thenReturnListOfAccountCodes() throws Exception

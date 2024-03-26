@@ -52,9 +52,6 @@ public class AccountEntity
     @Column(name="hasMortgage")
     private boolean hasMortgage;
 
-    @Column(name="acct_color")
-    private String acct_color;
-
     @ManyToMany(mappedBy = "accounts")
     private Set<UserEntity> users = new HashSet<>();
 

@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
-import {Box, Typography, Grid, Paper, Avatar} from '@mui/material';
+import {Box, Typography, Grid, Paper, Avatar, CardContent, Card} from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import {blue} from "@mui/material/colors";
 
-export default function Account({ color, accountCode, balance, pending, available, onAccountClick, isSelected})
+
+export default function Account({ color, accountCode, accountName, balance, pending, available, onAccountClick, isSelected, backgroundImageUrl})
 {
     const handleClick = () => {
         onAccountClick(accountCode);
@@ -16,11 +17,16 @@ export default function Account({ color, accountCode, balance, pending, availabl
     };
 
     const defaultColor = '#9e9e9e'; // Default color if none is provided
-    const selectedColor = color || defaultColor; // Use provided color or default
-    const gradient = isSelected ? 'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)' : selectedColor;
+    const avatarColor = color || defaultColor; // Use provided color or default
+
+    // Adding a semi-transparent overlay if the account is selected
+    const backgroundImageWithOverlay = isSelected ?
+        `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${backgroundImageUrl})` :
+        `url(${backgroundImageUrl})`;
+
 
     const avatarStyle = {
-        bgcolor: gradient,
+        bgcolor: avatarColor,
         width: 56,
         height: 56,
         display: 'flex',
@@ -28,43 +34,48 @@ export default function Account({ color, accountCode, balance, pending, availabl
         alignItems: 'center',
         marginRight: '16px',
         // If the selected color is a gradient, we'll use the text color that ensures readability
-        color: isSelected ? '#fff' : 'contrastText', // Adjust text color for readability if necessary
+        color: 'contrastText', // Adjust text color for readability if necessary
     };
 
     return (
-        <Paper
-            elevation={3}
+        <Card
             tabIndex="0"
             role="button"
             onClick={handleClick}
             onKeyPress={handleKeyPress}
             sx={{
-                p: 2,
-                display: 'flex',
-                alignItems: 'center',
                 cursor: 'pointer',
-                mb: 2,
-                transition: 'background-color 0.3s'
+                m: 1,
+                transition: 'background-color 0.3s',
+                backgroundImage: backgroundImageWithOverlay,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                '&:focus-visible': {
+                    boxShadow: '0 0 0 2px #ff8e53',
+                },
             }}
         >
-            <Avatar sx={avatarStyle}>
-                <Typography variant="subtitle1">
-                    {accountCode}
-                </Typography>
-            </Avatar>
-            <Box sx={{ flexGrow: 1, ml: 2 }}>
-                <Grid container>
-                    <Grid item xs={12}>
-                        <Typography variant="body1">Balance: <strong>${balance}</strong></Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Typography variant="body1">Pending: <strong>${pending}</strong></Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Typography variant="body1">Available: <strong>${available}</strong></Typography>
-                    </Grid>
-                </Grid>
-            </Box>
-        </Paper>
+            <CardContent sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                {/* Inner Card for Account Details */}
+                <Card sx={{ bgcolor: 'white', p: 2, mr: 2, minWidth: 200 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                        <Avatar sx={avatarStyle}>
+                            <Typography variant="subtitle1">
+                                {accountCode}
+                            </Typography>
+                        </Avatar>
+                    </Box>
+                    <Typography variant="h6" component="div" sx={{ mb: 2, textAlign: 'center' }}>
+                        {accountName}
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 1 }}>Balance: <strong>${balance}</strong></Typography>
+                    <Typography variant="body1" sx={{ mb: 1 }}>Pending: <strong>${pending}</strong></Typography>
+                    <Typography variant="body1">Available: <strong>${available}</strong></Typography>
+                </Card>
+                {/* Existing Content */}
+
+
+            </CardContent>
+        </Card>
     );
 }

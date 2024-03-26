@@ -1,6 +1,8 @@
 import {useState} from "react";
+import {Box} from "@mui/system";
+import {Card, CardContent, Typography} from "@mui/material";
 
-export default function AccountBox({color, accountCode, balance, pending, available})
+export default function AccountBox({color, accountCode, accountName, balance, pending, available})
 {
     const handleClick = () => {
         console.log('Clicked');
@@ -26,23 +28,28 @@ export default function AccountBox({color, accountCode, balance, pending, availa
     };
 
     return (
-        <div className="account-box" role="button" onClick={handleClick} onKeyPress={handleKeyPress} tabIndex="0">
-            <div style={circleStyle}>{accountCode}</div>
-            <div className="account-details-container">
-                <div className="account-item">
-                    <span className="account-label">Balance:</span>
-                    <span className="account-value">${balance}</span>
-                </div>
-                <div className="account-item">
-                    <span className="account-label">Pending:</span>
-                    <span className="account-value">${pending}</span>
-                </div>
-                <div className="account-item">
-                    <span className="account-label">Available:</span>
-                    <span className="account-value">${available}</span>
-                </div>
-            </div>
-        </div>
+        <Card
+            component="div"
+            role="button"
+            onClick={handleClick}
+            onKeyPress={handleKeyPress}
+            tabIndex="0"
+            sx={{ display: 'flex', alignItems: 'center', padding: 2, cursor: 'pointer' }}
+        >
+            <Box sx={circleStyle}>{accountCode}</Box>
+            <CardContent>
+                <Typography variant="h6" component="div">{accountName}</Typography>
+                <Typography variant="body1" component="div" sx={{ mb: 1.5 }}>
+                    Balance: ${balance}
+                </Typography>
+                <Typography variant="body1" component="div" sx={{ mb: 1.5 }}>
+                    Pending: ${pending}
+                </Typography>
+                <Typography variant="body1" component="div">
+                    Available: ${available}
+                </Typography>
+            </CardContent>
+        </Card>
     );
 }
 
