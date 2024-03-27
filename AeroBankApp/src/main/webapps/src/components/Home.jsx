@@ -13,6 +13,8 @@ import CustomTabPanel from "./CustomTabPanel";
 import BillPayView from "./BillPayView";
 import BasicTabs from "./CustomTabPanel";
 import DashBoard from "./DashBoard";
+import {Box, Container} from "@mui/system";
+import {Button, Typography} from "@mui/material";
 
 
 
@@ -39,6 +41,7 @@ export default function Home()
     const route = '/';
 
     const username = sessionStorage.getItem('username');
+    const backgroundImage = '/images/aerobank3copy.jpg';
 
     useEffect(() => {
             setIsLoading(true);
@@ -252,30 +255,68 @@ export default function Home()
     }, []);
 
     return (
-        <div className="home-container">
-            <header className="home-header">
-                <div className="welcome-section">
-                    <div className="welcome-message"><TimeGreeting username={username}/></div>
-                    <div className="date-info">Date: {new Date().toLocaleDateString()}</div>
-                    <div className="current-time">Time: <CurrentTime /></div>
-                </div>
-                <div className="account-info-section">
-                    <div className="account-number">AccountNumber: {accountNumber}</div>
-                    <div className="account-details">
-                        <div className="current-balance">Total Balance: ${formatAmount(balance)}</div>
-                        <div className="total-accounts">Total Accounts: {totalAccounts}</div>
-                    </div>
-                    <div className="logout-button-header">
-                        <BasicButton text="Logout" submit={handleLogout}/>
-                    </div>
-
-                </div>
-            </header>
-            <div className="home-tabs">
-            </div>
-            <div className="tab-content">
+        <Container maxWidth={false} sx={{
+            fontFamily: 'Arial, sans-serif',
+            margin: 0,
+            padding: 0,
+            boxSizing: 'border-box',
+            width: '100%', // ensure full width
+        }}>
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                background: 'linear-gradient(to right, #0E0F52, #2A5058)', // Linear gradient for the whole header
+                color: 'white',
+                padding: '15px',
+                flexWrap: 'wrap',
+            }}>
+                <Box sx={{
+                    position: 'relative', // Position relative for the pseudo-element
+                    flex: 1,
+                    display: 'flex',
+                    '::before': { // Pseudo-element for the background image
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '50%', // Half width for the background image
+                        height: '100%',
+                        backgroundImage: `url(${backgroundImage})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'left center', // aligned to the left
+                        backgroundRepeat: 'no-repeat', // prevent repeating the background
+                        zIndex: 0, // Ensure the pseudo-element is behind the Box content
+                    }
+                }}>
+                    {/* Invisible Box to keep the space for the background */}
+                    <Box sx={{ flex: 1 }} />
+                </Box>
+                <Box sx={{
+                    flex: 1, // Takes the remaining space
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
+                    zIndex: 1, // Ensure the content is above the pseudo-element
+                }}>
+                    <Typography variant="h6" sx={{ fontSize: '1.5em' }}>
+                        Account Number: {accountNumber}
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontSize: '1.5em', margin: '10px 0' }}>
+                        Total Balance: ${formatAmount(balance)}
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontSize: '1.5em' }}>
+                        Total Accounts: {totalAccounts}
+                    </Typography>
+                    <Button variant="outlined" onClick={handleLogout} sx={{ marginTop: '10px' }}>
+                        Logout
+                    </Button>
+                </Box>
+            </Box>
+            <Box className="home-tabs">
                 <BasicTabs role={role}/>
-            </div>
-        </div>
-    )
+            </Box>
+        </Container>
+    );
 }

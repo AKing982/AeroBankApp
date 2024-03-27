@@ -56,7 +56,7 @@ export default function BasicTabs({role, accounts}) {
     };
 
     return (
-        <Box sx={{ width: '100%', bgcolor: 'background.paper'}}>
+        <Box sx={{ width: '100%'}}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: '#e0f2f1' }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                     <Tab label="Dashboard" {...a11yProps(0)} sx={{fontWeight: 'bold'}}/>
