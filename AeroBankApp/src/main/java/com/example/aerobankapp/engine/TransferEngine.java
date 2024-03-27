@@ -79,6 +79,9 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return null;
     }
 
+    protected Set<Integer> retrieveUserAccountIDSet(List<Transfer> transfers, Function<Transfer, Integer> userIDExtractor){
+        return null;
+    }
 
     @Override
     protected Set<Integer> retrieveAccountIDSet(List<Transfer> transactionList) {

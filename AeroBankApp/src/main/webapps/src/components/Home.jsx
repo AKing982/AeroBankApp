@@ -15,6 +15,9 @@ import BasicTabs from "./CustomTabPanel";
 import DashBoard from "./DashBoard";
 import {Box, Container} from "@mui/system";
 import {Button, Typography} from "@mui/material";
+import aerobankImage from './images/aerobank3copy.jpg';
+
+
 
 
 
@@ -282,7 +285,7 @@ export default function Home()
                         left: 0,
                         width: '50%', // Half width for the background image
                         height: '100%',
-                        backgroundImage: `url(${backgroundImage})`,
+                        backgroundImage: `url(${aerobankImage})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'left center', // aligned to the left
                         backgroundRepeat: 'no-repeat', // prevent repeating the background
@@ -312,6 +315,7 @@ export default function Home()
                     <Button variant="outlined" onClick={handleLogout} sx={{ marginTop: '10px' }}>
                         Logout
                     </Button>
+                    <img src='./images/aerobank3copy.jpg' alt="Descriptive alt text" style={{ width: '100%', height: 'auto' }} />
                 </Box>
             </Box>
             <Box className="home-tabs">
