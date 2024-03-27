@@ -1,6 +1,7 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.UserRepository;
 
@@ -149,6 +150,28 @@ class UserServiceImplTest {
         int foundID = userService.getUserIDByUserName(testUser);
 
         assertEquals(userID, foundID);
+    }
+
+    @Test
+    public void testGetUsersFullNameById_InvalidID(){
+        final int userID = -1;
+
+        String name = "Alex King";
+
+        assertThrows(InvalidUserIDException.class, () -> {
+            String actual = userService.getUsersFullNameById(userID);
+        });
+    }
+
+    @Test
+    public void testGetUserFullNameById_ValidUserID(){
+        final int userID = 1;
+
+        String name = "Alex King";
+
+        String actual = userService.getUsersFullNameById(userID);
+
+        assertEquals(name, actual);
     }
 
 

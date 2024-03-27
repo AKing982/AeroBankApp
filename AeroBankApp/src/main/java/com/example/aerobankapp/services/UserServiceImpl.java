@@ -4,6 +4,7 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.dto.RegistrationDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.Role;
 import jakarta.persistence.*;
@@ -128,6 +129,14 @@ public class UserServiceImpl implements UserService
     @Override
     public String getPinNumberByUserName(String user) {
         return null;
+    }
+
+    @Override
+    public String getUsersFullNameById(int userID) {
+        if(userID < 1){
+            throw new InvalidUserIDException("Invalid UserID caught: " + userID);
+        }
+        return userRepository.findFullNameByUserID(userID);
     }
 
     @Override

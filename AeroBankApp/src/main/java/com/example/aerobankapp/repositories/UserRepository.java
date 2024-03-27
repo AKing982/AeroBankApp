@@ -19,6 +19,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>
     @Query("SELECT e FROM UserEntity e WHERE e.username=:user")
     List<UserEntity> findByUserName(@Param("user") String user);
 
+    @Query("SELECT CONCAT(e.firstName, ' ', e.lastName) FROM UserEntity e WHERE e.userID=:userID")
+    String findFullNameByUserID(@Param("userID") int userID);
+
     @Modifying
     @Query("UPDATE UserEntity u SET u.username=:username, u.email=:email, u.role=:role, u.password = :password, u.pinNumber =:pinNumber, u.firstName =:firstName, u.lastName =:lastName WHERE u.userID =:id")
     @Transactional

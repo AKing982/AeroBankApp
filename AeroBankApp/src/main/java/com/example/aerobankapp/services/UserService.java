@@ -40,6 +40,8 @@ public interface UserService extends ServiceDAOModel<UserEntity>
 
     String getPinNumberByUserName(String user);
 
+    String getUsersFullNameById(int userID);
+
     String getPinNumberByID(Long id);
 
     List<String> getListOfUserNames();

@@ -7,6 +7,7 @@ import com.example.aerobankapp.services.UserServiceImpl;
 import com.example.aerobankapp.workbench.utilities.AccountNumberResponse;
 import com.example.aerobankapp.workbench.utilities.Role;
 import com.example.aerobankapp.workbench.utilities.UserRequest;
+import com.example.aerobankapp.workbench.utilities.UserResponse;
 import com.example.aerobankapp.workbench.utilities.response.UserServiceResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -79,6 +80,19 @@ public class UserServiceController {
     public ResponseEntity<?> getUserIDByUserName(@PathVariable String userName){
         int userID = userService.getUserIDByUserName(userName);
         return ResponseEntity.ok(userID);
+    }
+
+    @GetMapping("/name/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponse> getUsersFullName(@PathVariable int id)
+    {
+        String fullName = userService.getUsersFullNameById(id);
+
+        String[] segs = fullName.split(" ");
+        String first_name = segs[0];
+        String last_name = segs[1];
+
+        return ResponseEntity.ok(new UserResponse(first_name, last_name));
     }
 
     private UserDTO convertToUserDTO(UserEntity userEntity)
