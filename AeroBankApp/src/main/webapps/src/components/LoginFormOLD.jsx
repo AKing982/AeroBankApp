@@ -12,9 +12,9 @@ import {
     Button,
     Card,
     CardContent,
-    CircularProgress,
+    CircularProgress, Grid,
     IconButton,
-    InputAdornment,
+    InputAdornment, Link,
     TextField,
     Typography
 } from "@mui/material";
@@ -299,150 +299,182 @@ export default function LoginFormOLD()
 
 
     return (
-        <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', p: 2, backgroundImage:`url(${backgroundImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', maxWidth: 'auto' }}>
+        <Grid container sx={{
+            height: '130vh',
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            justifyContent: {xs: 'center', lg: 'flex-end'},
+            p: 2,
+            overflowY: 'auto',
+        }}>
+            {/* Banner at the top spanning the full width */}
+            <Grid item xs={12} sx={{
+                display: 'flex',
+                height: '100px',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '0.5rem 1rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+            }}>
+                {/* Left part with logo and menu items */}
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <img src={Logo} alt="Mountain America Credit Union" style={{ height: '100px', marginRight: '2rem' }} />
+                    <Link to="/accounts" style={{ marginRight: '1rem', textDecoration: 'none', color: 'inherit' }}>ACCOUNTS</Link>
+                    <Link to="/loans" style={{ marginRight: '1rem', textDecoration: 'none', color: 'inherit' }}>LOANS & CARDS</Link>
+                    {/* ... other links */}
+                </Box>
+
+                {/* Right part with locations and login */}
+                <Box>
+                    <Link to="/locations" style={{ textDecoration: 'none', color: 'inherit' }}>LOCATIONS</Link>
+                    <Button variant="outlined" sx={{ marginLeft: '1rem' }}>LOG IN</Button>
+                </Box>
+            </Grid>
 
             <div style={overlayStyle}></div>
-            <Box sx={{
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                p: 2
-            }}>
-                {/* Ensure there's only one <img> tag for the logo */}
-                <img src="./images/aerobank3.jpg" style={{ maxWidth: '200px', marginBottom: '20px' }}  alt="logo" />
 
-                {/* Rest of the content */}
-                <Card sx={{
-                    position: 'relative',
-                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                    backdropFilter: 'blur(30px)',
-                    maxWidth: '600px',
-                    width: '100%',
-                    // Rest of your card styling here...
-                }}>
-                    <CardContent>
-                        {/* Card content */}
-                    </CardContent>
-                </Card>
-            </Box>
-            <Card sx={{position: 'relative',
-                backgroundColor: 'rgba(255, 255, 255, 0.5)', // White with 50% transparency
-                backdropFilter: 'blur(30px)', // Optional: apply a blur effect to the content behind the card}}>
-            }}>
-                <CardContent>
-                    <Typography variant="h5" component="div" gutterBottom sx={{fontWeight: 'bold', textAlign: 'left'}}>
-                        Sign In
-                    </Typography>
-                    <Backdrop
-                        sx={{
-                            zIndex: (theme) => theme.zIndex.drawer + 1,
-                            color: '#fff',
-                        }}
-                        open={showBackdrop} // Show the backdrop conditionally
-                    >
-                        <CircularProgress color="inherit" />
-                    </Backdrop>
-                    {error && (
-                        <Alert severity="error"
-                               sx={{
-                                   backgroundColor: 'rgba(255, 255, 255, 0.5)', // Apply transparency
-                                   backdropFilter: 'blur(80px)', // Apply blur effect
-                                   // Ensure that the text is still readable
-                                   color: 'text.primary',
-                                   // You might need to adjust the color of the border or other parts too
-                                   border: '1px solid rgba(255, 0, 0, 0.5)', // Example of adjusting the border
-                               }}>{error}</Alert>
-                    )}
-                    <Box
-                        component="form"
-                        noValidate
-                        autoComplete="off"
-                        onSubmit={handleSubmit}
-                        sx={{ mt: 2 }}
-                    >
-                        <TextField
-                            required
-                            fullWidth
-                            id="username"
-                            label="User Name"
-                            margin="normal"
-                            value={username}
-                            onChange={(e) => setUserName(e.target.value)}
-                            variant="outlined"
-                            InputProps={{
-                                style: {
-                                    height: '55px',
-                                    padding: '0 5px', // Adjust horizontal padding if needed
-                                    // You might not need to adjust the line height if the height and padding are set correctly
-                                    // lineHeight: 'normal' // Adjust if the text isn't vertically centered
-                                }
-                            }}
-                            // Adjust the height of the TextField, considering label and border
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    height: '55px', // Adjust to the desired input height
-                                    alignItems: 'center', // This will vertically center the text field content
-                                },
-                                // Adjust the label position if needed
-                                '& .MuiInputLabel-outlined.MuiInputLabel-shrink': {
-                                    transform: 'translate(14px, -6px) scale(0.75)', // Adjust translation if needed
-                                }
-                            }}
-                        />
-                        <TextField
-                            required
-                            fullWidth
-                            id="password"
-                            label="Password"
-                            type={showPassword ? 'text' : 'password'}
-                            margin="normal"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            sx={{ fieldset: { height: 55 } }}
-                            InputProps={{
-                                style: {
-                                    alignItems: 'center'
-                                },
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
-                                            edge="end"
-                                        >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                            inputProps={{
-                                style: {
-                                    height: '40px',
-                                    padding: '10px',
-                                },
-                            }}
-                        />
-                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-                            <Button variant="outlined" onClick={navigateToRegister}>
-                                Register
-                            </Button>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                disabled={!username || !password}
+            <Grid item xs={12} container justifyContent="right" alignItems="center">
+                <Grid item xs={11} sm={8} md={6} lg={4} container direction="column" alignItems="center" justifyContent="center">
+
+                    <Card sx={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backdropFilter: 'blur(30px)',
+                        width: '100%',
+                        maxWidth: '480px',
+                    }}>
+                        <CardContent>
+                            <Typography variant="h5" component="div" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'left' }}>
+                                Sign In
+                            </Typography>
+                            <Backdrop
+                                sx={{
+                                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                                    color: '#fff',
+                                }}
+                                open={showBackdrop}
                             >
-                                Login
-                            </Button>
-                        </Box>
-                    </Box>
-                </CardContent>
-            </Card>
-        </Box>
+                                <CircularProgress color="inherit" />
+                            </Backdrop>
+                            {error && (
+                                <Alert severity="error" sx={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                                    backdropFilter: 'blur(80px)',
+                                    color: 'text.primary',
+                                    border: '1px solid rgba(255, 0, 0, 0.5)',
+                                }}>{error}</Alert>
+                            )}
+                            <Box
+                                component="form"
+                                noValidate
+                                autoComplete="off"
+                                onSubmit={handleSubmit}
+                                sx={{ mt: 2 }}
+                            >
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="username"
+                                    label="User Name"
+                                    margin="normal"
+                                    value={username}
+                                    onChange={(e) => setUserName(e.target.value)}
+                                    variant="outlined"
+                                    InputProps={{
+                                        style: {
+                                            height: '55px',
+                                            padding: '0 5px',
+                                        }
+                                    }}
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            height: '55px',
+                                            alignItems: 'center',
+                                        },
+                                        '& .MuiInputLabel-outlined.MuiInputLabel-shrink': {
+                                            transform: 'translate(14px, -6px) scale(0.75)',
+                                        }
+                                    }}
+                                />
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="password"
+                                    label="Password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    margin="normal"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    sx={{ fieldset: { height: 55 } }}
+                                    InputProps={{
+                                        style: {
+                                            alignItems: 'center'
+                                        },
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    inputProps={{
+                                        style: {
+                                            height: '40px',
+                                            padding: '10px',
+                                        },
+                                    }}
+                                />
+                                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+                                    <Button variant="outlined" onClick={navigateToRegister}>
+                                        Register
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={!username || !password}
+                                    >
+                                        Login
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
+            {/* Footer */}
+            <Box sx={{ width: '100%', backgroundColor: 'lightgrey', color: 'white', py: 3, maxWidth: 'auto'}}>
+                <Grid container spacing={2} justifyContent="center">
+                    {/* Footer content structured into Grid items */}
+                    <Grid item xs={12} sm={4} md={3}>
+                        {/* Service Center Info */}
+                    </Grid>
+                    <Grid item xs={6} sm={4} md={2}>
+                        {/* Useful Links */}
+                    </Grid>
+                    <Grid item xs={6} sm={4} md={2}>
+                        {/* About Us */}
+                    </Grid>
+                    <Grid item xs={6} sm={4} md={2}>
+                        {/* Help */}
+                    </Grid>
+                    <Grid item xs={6} sm={4} md={3}>
+                        {/* Social Media Icons */}
+                    </Grid>
+                </Grid>
+                <Typography variant="caption" display="block" textAlign="center" sx={{ mt: 2 }}>
+                    © 2024, all rights reserved. AeroBank
+                </Typography>
+            </Box>
+            {/* End Footer */}
+        </Grid>
     );
 
 }
