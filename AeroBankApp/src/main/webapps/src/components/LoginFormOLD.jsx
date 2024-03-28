@@ -20,7 +20,8 @@ import {
 } from "@mui/material";
 import {Box} from "@mui/system";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
-import backgroundImage from '../background.jpg';
+import backgroundImage from './images/pexels-julius-silver-753325.jpg';
+import Logo from './images/aerobank3.jpg'
 import axios from "axios";
 
 export default function LoginFormOLD()
@@ -298,9 +299,39 @@ export default function LoginFormOLD()
 
 
     return (
-        <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', p: 2, backgroundImage:`url(${backgroundImage})` }}>
+        <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', p: 2, backgroundImage:`url(${backgroundImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', maxWidth: 'auto' }}>
+
             <div style={overlayStyle}></div>
-            <Card sx={{position: 'relative'}}>
+            <Box sx={{
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                p: 2
+            }}>
+                {/* Ensure there's only one <img> tag for the logo */}
+                <img src="./images/aerobank3.jpg" style={{ maxWidth: '200px', marginBottom: '20px' }}  alt="logo" />
+
+                {/* Rest of the content */}
+                <Card sx={{
+                    position: 'relative',
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                    backdropFilter: 'blur(30px)',
+                    maxWidth: '600px',
+                    width: '100%',
+                    // Rest of your card styling here...
+                }}>
+                    <CardContent>
+                        {/* Card content */}
+                    </CardContent>
+                </Card>
+            </Box>
+            <Card sx={{position: 'relative',
+                backgroundColor: 'rgba(255, 255, 255, 0.5)', // White with 50% transparency
+                backdropFilter: 'blur(30px)', // Optional: apply a blur effect to the content behind the card}}>
+            }}>
                 <CardContent>
                     <Typography variant="h5" component="div" gutterBottom sx={{fontWeight: 'bold', textAlign: 'left'}}>
                         Sign In
@@ -315,7 +346,15 @@ export default function LoginFormOLD()
                         <CircularProgress color="inherit" />
                     </Backdrop>
                     {error && (
-                        <Alert severity="error">{error}</Alert>
+                        <Alert severity="error"
+                               sx={{
+                                   backgroundColor: 'rgba(255, 255, 255, 0.5)', // Apply transparency
+                                   backdropFilter: 'blur(80px)', // Apply blur effect
+                                   // Ensure that the text is still readable
+                                   color: 'text.primary',
+                                   // You might need to adjust the color of the border or other parts too
+                                   border: '1px solid rgba(255, 0, 0, 0.5)', // Example of adjusting the border
+                               }}>{error}</Alert>
                     )}
                     <Box
                         component="form"

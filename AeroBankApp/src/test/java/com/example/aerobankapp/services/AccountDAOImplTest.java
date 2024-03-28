@@ -356,6 +356,27 @@ class AccountDAOImplTest
         assertEquals(1, actualAccountID);
     }
 
+    @Test
+    public void testGetAccountIDByAcctCodeAndAcctNumber_EmptyParameters(){
+        final String acctCode = "";
+        final String acctNumber = "";
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            accountDAO.getAccountIDByAccountCodeAndAccountNumber(acctCode, acctNumber);
+        });
+    }
+
+    @Test
+    public void testGetAccountIDByAcctCodeAndAcctNumber_ValidParameters(){
+        final String acctCode = "A1";
+        final String acctNumber = "89-42-48";
+
+        int actual = accountDAO.getAccountIDByAccountCodeAndAccountNumber(acctCode, acctNumber);
+
+        assertEquals(1, actual);
+        assertEquals(2, accountDAO.getAccountIDByAccountCodeAndAccountNumber("A2", acctNumber));
+    }
+
 
     @AfterEach
     void tearDown() {

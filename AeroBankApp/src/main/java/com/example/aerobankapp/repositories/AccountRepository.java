@@ -16,6 +16,9 @@ import java.util.List;
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Long>
 {
+    @Query("SELECT e.acctID FROM AccountEntity e JOIN e.users u WHERE u.accountNumber LIKE %:acctNum% AND e.accountCode LIKE %:acctCode%")
+    int findAccountIDByAcctCodeAndAccountNumber(@Param("acctNum") String accountNumber, @Param("acctCode") String acctCode);
+
     @Query("SELECT a FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
     List<AccountEntity> findByUserName(@Param("username") String username);
 

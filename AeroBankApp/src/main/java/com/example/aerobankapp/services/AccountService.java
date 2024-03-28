@@ -36,6 +36,8 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
 
     Long getNumberOfAccounts(String user);
 
+    int getAccountIDByAccountCodeAndAccountNumber(String acctCode, String accountNumber);
+
     List<String> getListOfAccountCodes(String user);
 
     int getAccountIDByAcctCodeAndUserID(int userID, String acctCode);

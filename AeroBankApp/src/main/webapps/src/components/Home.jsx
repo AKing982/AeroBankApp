@@ -13,6 +13,9 @@ import CustomTabPanel from "./CustomTabPanel";
 import BillPayView from "./BillPayView";
 import BasicTabs from "./CustomTabPanel";
 import DashBoard from "./DashBoard";
+import {Button, Typography} from "@mui/material";
+import {Box} from "@mui/system";
+import * as PropTypes from "prop-types";
 
 
 
@@ -252,30 +255,35 @@ export default function Home()
     }, []);
 
     return (
-        <div className="home-container">
-            <header className="home-header">
-                <div className="welcome-section">
-                    <div className="welcome-message"><TimeGreeting username={username}/></div>
-                    <div className="date-info">Date: {new Date().toLocaleDateString()}</div>
-                    <div className="current-time">Time: <CurrentTime /></div>
-                </div>
-                <div className="account-info-section">
-                    <div className="account-number">AccountNumber: {accountNumber}</div>
-                    <div className="account-details">
-                        <div className="current-balance">Total Balance: ${formatAmount(balance)}</div>
-                        <div className="total-accounts">Total Accounts: {totalAccounts}</div>
-                    </div>
-                    <div className="logout-button-header">
-                        <BasicButton text="Logout" submit={handleLogout}/>
-                    </div>
-
-                </div>
-            </header>
-            <div className="home-tabs">
-            </div>
-            <div className="tab-content">
-                <BasicTabs role={role}/>
-            </div>
-        </div>
+        <Box className="home-container">
+            <Box className="home-header">
+                <Box className="welcome-section">
+                    <img src="/images/aerobank3.jpg" alt="aerobank" />
+                </Box>
+                <Box className="account-info-section">
+                    <Typography variant="body1" className="account-number">
+                        AccountNumber: {accountNumber}
+                    </Typography>
+                    <Box className="account-details">
+                        <Typography variant="body1" className="current-balance">
+                            Total Balance: ${formatAmount(balance)}
+                        </Typography>
+                        <Typography variant="body1" className="total-accounts">
+                            Total Accounts: {totalAccounts}
+                        </Typography>
+                    </Box>
+                    <Box className="logout-button-header">
+                        <Button variant="contained" onClick={handleLogout}>Logout</Button>
+                        {/* Use BasicButton if it's specifically styled or provides additional functionality */}
+                    </Box>
+                </Box>
+            </Box>
+            <Box className="home-tabs">
+                {/* Tabs can go here */}
+            </Box>
+            <Box className="tab-content">
+                <BasicTabs role={role} />
+            </Box>
+        </Box>
     )
 }

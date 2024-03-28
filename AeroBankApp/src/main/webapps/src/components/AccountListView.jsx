@@ -10,6 +10,7 @@ export default function AccountListView({updateAccountID})
     const [accountProperties, setAccountProperties] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [fullName, setFullName] = useState('');
 
     const username = sessionStorage.getItem('username');
 
@@ -78,6 +79,24 @@ export default function AccountListView({updateAccountID})
         }, 2000)
     }, [username]);
 
+    useEffect(() => {
+        const fetchUsersFullName = async () => {
+            let userID = sessionStorage.getItem('userID');
+            console.log('UserID fetched: ', userID);
+            axios.get(`http://localhost:8080/AeroBankApp/api/users/name/${userID}`)
+                .then(response => {
+                    const first = response.data.firstName;
+                    const last = response.data.lastName;
+                    const fullName = first + " " + last;
+                    setFullName(fullName);
+                })
+                .catch(error => {
+                    console.error('There was an error fetching the full name: ', error);
+                });
+        }
+        fetchUsersFullName();
+    }, [])
+
 
     const handleAccountButtonClick = (accountCode) => {
        setSelectedAccount(accountCode);
@@ -87,7 +106,7 @@ export default function AccountListView({updateAccountID})
 
     return (
         <div>
-            <h2>{username}'s Shares</h2>
+            <h2>{fullName}'s Shares</h2>
             {isLoading ? (
                 <CircularProgress />
             ) : (

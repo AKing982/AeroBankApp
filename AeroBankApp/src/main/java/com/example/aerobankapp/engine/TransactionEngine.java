@@ -22,6 +22,7 @@ import java.util.*;
 public abstract class TransactionEngine<T extends TransactionBase, S extends TransactionBalanceSummary<T>>
 {
     private final AccountService accountService;
+    private final UserService userService;
     private final AccountSecurityService accountSecurityService;
     private final NotificationService notificationService;
     private final CalculationEngine calculationEngine;
@@ -35,12 +36,14 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
     private Logger LOGGER = LoggerFactory.getLogger(TransactionEngine.class);
 
     public TransactionEngine(AccountService accountService,
+                             UserService userService,
                              AccountSecurityService accountSecurityService,
                              NotificationService notificationService,
                              CalculationEngine calculationEngine,
                              BalanceHistoryService balanceHistoryService,
                              EncryptionService encryptionService){
         this.accountService = accountService;
+        this.userService = userService;
         this.accountSecurityService = accountSecurityService;
         this.notificationService = notificationService;
         this.calculationEngine = calculationEngine;

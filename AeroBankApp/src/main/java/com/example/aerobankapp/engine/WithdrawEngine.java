@@ -28,8 +28,8 @@ public class WithdrawEngine extends TransactionEngine<Withdraw, WithdrawBalanceS
     private final Logger LOGGER = LoggerFactory.getLogger(WithdrawEngine.class);
 
     @Autowired
-    public WithdrawEngine(WithdrawService withdrawService, AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
-        super(accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+    public WithdrawEngine(WithdrawService withdrawService, UserService userService, AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
+        super(accountService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
         this.withdrawService = withdrawService;
         this.withdrawConverter = new WithdrawConverter();
     }

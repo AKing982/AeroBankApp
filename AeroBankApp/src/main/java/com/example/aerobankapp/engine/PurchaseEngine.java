@@ -20,8 +20,8 @@ import java.util.Set;
 public class PurchaseEngine extends TransactionEngine<Purchase, PurchaseTransferSummary>
 {
     @Autowired
-    public PurchaseEngine(AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
-        super(accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+    public PurchaseEngine(AccountService accountService, UserService userService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
+        super(accountService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
     }
 
     @Override

@@ -29,6 +29,9 @@ class WithdrawEngineTest {
     private AccountService accountService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private AccountSecurityService accountSecurityService;
 
     @Autowired
@@ -46,7 +49,7 @@ class WithdrawEngineTest {
 
     @BeforeEach
     void setUp() {
-        withdrawEngine = new WithdrawEngine(withdrawService, accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+        withdrawEngine = new WithdrawEngine(withdrawService, userService, accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
     }
 
     @Test

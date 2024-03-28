@@ -1,6 +1,7 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.exceptions.InvalidAccountNumberException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.UserRepository;
@@ -172,6 +173,25 @@ class UserServiceImplTest {
         String actual = userService.getUsersFullNameById(userID);
 
         assertEquals(name, actual);
+    }
+
+    @Test
+    public void testGetUserIDByAccountNumber_emptyAccountNumber(){
+        final String emptyAcctNum = "";
+
+        assertThrows(InvalidAccountNumberException.class, () -> {
+            userService.getUserIDByAccountNumber(emptyAcctNum);
+        });
+    }
+
+    @Test
+    public void testGetUserIDByAccountNumber_ValidAcctNumber(){
+        final String acctNum = "89-42-48";
+
+        final int expectedID = 1;
+        final int actual = userService.getUserIDByAccountNumber(acctNum);
+
+        assertEquals(expectedID, actual);
     }
 
 

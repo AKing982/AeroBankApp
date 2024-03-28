@@ -34,6 +34,8 @@ public interface UserService extends ServiceDAOModel<UserEntity>
 
     String getAccountNumberByUserName(String user);
 
+    int getUserIDByAccountNumber(String accountNumber);
+
     String getEmailByUserName(String user);
 
     String getEmailByID(Long id);

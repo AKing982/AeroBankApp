@@ -37,8 +37,8 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
     private final Logger LOGGER = LoggerFactory.getLogger(TransferEngine.class);
 
     @Autowired
-    public TransferEngine(TransferService transferService, AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
-        super(accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+    public TransferEngine(TransferService transferService, AccountService accountService, UserService userService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
+        super(accountService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
         this.transferService = transferService;
         this.transferConverter = new TransferConverter();
     }
@@ -65,17 +65,26 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
 
     }
 
+    protected Map<Integer, BigDecimal> getNewAccountBalancesAfterTransfer(final Map<Integer, BigDecimal> transferAmount, final Map<Integer, BigDecimal> currentBalances){
+        Map<Integer, BigDecimal> newBalances = new HashMap<>(currentBalances);
+        if(!transferAmount.isEmpty() || !currentBalances.isEmpty()){
+            transferAmount.forEach((accountID, amount) -> {
+                BigDecimal currentBalance = newBalances.getOrDefault(accountID, BigDecimal.ZERO);
+
+                TransferBalances balanceChange = getTransferCalculation(amount, currentBalance, currentBalance);
+
+                newBalances.put(accountID, balanceChange.getToAccountBalance());
+            });
+        }else{
+            throw new NonEmptyListRequiredException("Unable to process Account Balances due to empty maps.");
+        }
+        return newBalances;
+    }
 
     @Override
-    protected Map<Integer, BigDecimal> getCalculatedAccountBalanceMap(List<Transfer> transactionList) {
-        Map<Integer, BigDecimal> accountBalanceMap = new HashMap<>();
+    protected Map<Integer, BigDecimal> getCalculatedAccountBalanceMap(final List<Transfer> transactionList) {
 
-        Set<Integer> originAccountIDs = retrieveTransferAccountIDSet(transactionList, Transfer::getFromAccountID);
-
-        Set<Integer> targetAccountIDs = retrieveTransferAccountIDSet(transactionList, Transfer::getToAccountID);
-
-        Map<Integer, BigDecimal> transactionAmountByAcctID = retrieveTransactionAmountByAcctID(transactionList);
-
+        // NOT IMPLEMENTED
         return null;
     }
 
@@ -86,7 +95,46 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return null;
     }
 
-    protected Set<Integer> retrieveTransferAccountIDSet(List<Transfer> transfers, Function<Transfer, Integer> accountIDExtractor){
+    private int getUserIDByAccountNumber(String accountNumber){
+        return getUserService().getUserIDByAccountNumber(accountNumber);
+    }
+
+    protected Set<Integer> retrieveTransferToUserIDSet(final List<Transfer> transfers){
+        Set<Integer> userIDs = new HashSet<>();
+        if(!transfers.isEmpty()){
+            for(Transfer transfer : transfers){
+                if(transfer != null){
+                    // Grab the AccountNumber and Account Code from the transfer
+                    String accountNumber = getAccountNumberFromTransfer(transfer);
+                    // Use the AccountService to retrieve the UserID
+                    int foundUserID = getUserIDByAccountNumber(accountNumber);
+                    userIDs.add(foundUserID);
+                }
+            }
+        }
+        return userIDs;
+    }
+
+    private int getAccountIDByAcctCodeAndAcctNumber(final String acctCode, final String acctNum){
+        return getAccountService().getAccountIDByAccountCodeAndAccountNumber(acctCode, acctNum);
+    }
+
+    protected Set<Integer> retrieveToAccountIDSetByAcctCodeAndAccountNumber(final List<Transfer> transfers){
+        Set<Integer> accountIDs = new HashSet<>();
+        if(!transfers.isEmpty()){
+            for(Transfer transfer : transfers){
+                if(transfer != null){
+                    String accountNumber = getAccountNumberFromTransfer(transfer);
+                    String accountCode = getAccountCodeFromTransfer(transfer);
+                    int accountID = getAccountIDByAcctCodeAndAcctNumber(accountCode, accountNumber);
+                    accountIDs.add(accountID);
+                }
+            }
+        }
+        return accountIDs;
+    }
+
+    protected Set<Integer> retrieveTransferAccountIDSet(final List<Transfer> transfers, final Function<Transfer, Integer> accountIDExtractor){
         if(transfers.isEmpty()){
             throw new NonEmptyListRequiredException("Unable to retrieve AccountID's with empty transfer list.");
         }
@@ -180,12 +228,17 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return balanceHistoryList;
     }
 
-    protected List<Transfer> getFilteredUserToUserTransfers(final List<Transfer> unfilteredTransfers){
+    protected Map<String, List<Transfer>> filterTransfersByType(final List<Transfer> unfilteredTransfers){
+        Map<String, List<Transfer>> filteredTransfers = new HashMap<>();
+        filteredTransfers.put("UserToUser", new ArrayList<>());
+        filteredTransfers.put("SameUser", new ArrayList<>());
         if(!unfilteredTransfers.isEmpty()){
             for(Transfer transfer : unfilteredTransfers){
-                if(transfer != null){
-                    if(isSameUserTransfer(transfer)){
-                        filteredTransfers.add(transfer);
+                if(transfer != null) {
+                    if (!isUserToUserTransfer(transfer)) {
+                        filteredTransfers.get("SameUser").add(transfer);
+                    } else if (isUserToUserTransfer(transfer)){
+                        filteredTransfers.get("UserToUser").add(transfer);
                     }
                 }
             }
@@ -193,7 +246,7 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return filteredTransfers;
     }
 
-    protected boolean isSameUserTransfer(final Transfer transfer){
+    protected boolean isUserToUserTransfer(final Transfer transfer){
         return transfer.isUserToUserTransfer();
     }
 
@@ -209,6 +262,62 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         }
         // Return an empty constructor
         return new TransferBalances();
+    }
+
+    protected void processUserToUserTransfers(final List<Transfer> userToUserTransfer){
+        if(!userToUserTransfer.isEmpty()){
+
+            // Retrieve the Set of ToAccountIDs
+            Set<Integer> accountIDSet = retrieveToAccountIDSetByAcctCodeAndAccountNumber(userToUserTransfer);
+
+            // Retrieve the ToUserIDs Set
+            Set<Integer> userIDs = retrieveTransferToUserIDSet(userToUserTransfer);
+
+            // Retrieve the Account Balance for the ToAccount
+
+            // Retrieve the Account balance for the From Account
+            Map<Integer, BigDecimal> fromAccountBalances = getCalculatedAccountBalanceMap(userToUserTransfer);
+
+            // Retrieve the AccountBalance Map after the transfer calculation
+
+            // Update both the ToAccount balance and the From Account balance
+            bulkUpdateAccountBalances(fromAccountBalances);
+
+            bulkUpdateAccountBalances(fromAccountBalances);
+        }
+    }
+
+    private String getAccountCodeFromTransfer(final Transfer transfer){
+        return transfer.getToAccountCode();
+    }
+
+    private String getAccountNumberFromTransfer(final Transfer transfer){
+        return transfer.getToAccountNumber();
+    }
+
+
+    protected void processSameUserTransfers(final List<Transfer> sameUserTransfers){
+        if(!sameUserTransfers.isEmpty()){
+            // Grab the AccountID Set
+            Set<Integer> fromAccountIDs = retrieveTransferAccountIDSet(sameUserTransfers, Transfer::getFromAccountID);
+
+            Set<Integer> toAccountIDs = retrieveTransferAccountIDSet(sameUserTransfers, Transfer::getToAccountID);
+
+            // Retrieve the current Account Balances
+            Map<Integer, BigDecimal> fromAccountBalance = retrieveCurrentAccountBalancesByAcctID(fromAccountIDs);
+
+            // Retrieve the balance of the To Account
+            Map<Integer, BigDecimal> toAccountBalance = retrieveCurrentAccountBalancesByAcctID(toAccountIDs);
+
+            // Retrieve the transaction amount by acctID map
+            Map<Integer, BigDecimal> transactionAmountByAcctID = retrieveTransactionAmountByAcctID(sameUserTransfers);
+
+            // Get the Calculated Transfer
+            Map<Integer, BigDecimal> calculatedNewBalances = getNewAccountBalancesAfterTransfer(transactionAmountByAcctID, fromAccountBalance);
+
+            // Update the balance
+            bulkUpdateAccountBalances(calculatedNewBalances);
+        }
     }
 
     @Override

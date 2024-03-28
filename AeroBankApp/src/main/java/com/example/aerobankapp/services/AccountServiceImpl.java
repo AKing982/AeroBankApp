@@ -118,6 +118,18 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    public int getAccountIDByAccountCodeAndAccountNumber(String acctCode, String accountNumber) {
+        if(acctCode.isEmpty() || accountNumber.isEmpty()){
+            throw new IllegalArgumentException("Caught empty AccountCode or AccountNumber.");
+        }
+        int accountID = accountRepository.findAccountIDByAcctCodeAndAccountNumber(accountNumber, acctCode);
+        if(accountID > 0){
+            return accountID;
+        }
+        return 0;
+    }
+
+    @Override
     public List<String> getListOfAccountCodes(String user) {
         List<String> accountCodesList = accountRepository.findAccountCodesByUserName(user);
         if(accountCodesList.isEmpty())

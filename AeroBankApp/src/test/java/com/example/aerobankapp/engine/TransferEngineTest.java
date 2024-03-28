@@ -5,8 +5,10 @@ import com.example.aerobankapp.converter.TransferConverter;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.TransferEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.exceptions.NullTransferObjectException;
+import com.example.aerobankapp.model.TransferBalances;
 import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.transactions.Transfer;
@@ -63,6 +65,9 @@ class TransferEngineTest {
     @Autowired
     private EncryptionService encryptionService;
 
+    @Autowired
+    private UserService userService;
+
     private EntityToModelConverter<TransferEntity, Transfer> transferConverter = new TransferConverter();
 
     private static TransferEntity transferEntity;
@@ -96,7 +101,7 @@ class TransferEngineTest {
         transfer3 = new Transfer(1, "Transfer test 3", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 3L , 1, 3, 1, 1, false);
 
 
-        transferEngine = new TransferEngine(transferService, accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+        transferEngine = new TransferEngine(transferService, accountService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
     }
 
     @Test
@@ -200,6 +205,61 @@ class TransferEngineTest {
     @Test
     public void testGetTransferCalculation_NullInput(){
 
+    }
+
+    @Test
+    public void testRetrieveTransferUserIDSet_EmptyTransfers(){
+
+        List<Transfer> emptyTransfers = new ArrayList<>();
+
+        Set<Integer> expectedUserIDs = new HashSet<>();
+        expectedUserIDs.add(1);
+
+       // Set<Integer> actualFromUserIDs = transferEngine.retrieveTransferUserIDSet()
+    }
+
+    @Test
+    public void testGetTransferCalculation_NullAmount_NullBalances(){
+
+        TransferBalances expected = new TransferBalances(new BigDecimal("2010"), new BigDecimal("1120"));
+        TransferBalances actual = transferEngine.getTransferCalculation(null, null, null);
+
+        assertEquals(expected.getToAccountBalance(), actual.getToAccountBalance());
+    }
+
+    @Test
+    public void testGetNewAccountBalancesAfterTransfer_EmptyTransferMap_EmptyBalances(){
+        Map<Integer, BigDecimal> emptyTransferAmount = new HashMap<>();
+        Map<Integer, BigDecimal> emptyBalances = new HashMap<>();
+
+        Map<Integer, BigDecimal> expectedNewBalances = new HashMap<>();
+        expectedNewBalances.put(1, new BigDecimal("1215"));
+        expectedNewBalances.put(2, new BigDecimal("3500"));
+
+       assertThrows(NonEmptyListRequiredException.class, () -> {
+           transferEngine.getNewAccountBalancesAfterTransfer(emptyTransferAmount, emptyBalances);
+       });
+    }
+
+    @Test
+    public void testGetNewAccountBalancesAfterTransfer_ValidParameters(){
+        Map<Integer, BigDecimal> expectedNewBalances = new HashMap<>();
+        expectedNewBalances.put(1, new BigDecimal("1215"));
+        expectedNewBalances.put(2, new BigDecimal("3500"));
+
+        Map<Integer, BigDecimal> transferAmountMap = new HashMap<>();
+        Map<Integer, BigDecimal> currentBalances = new HashMap<>();
+
+        transferAmountMap.put(1,  new BigDecimal("45.00"));
+        transferAmountMap.put(2, new BigDecimal("120.00"));
+        currentBalances.put(1, new BigDecimal("1020"));
+        currentBalances.put(2, new BigDecimal("3450"));
+
+        Map<Integer, BigDecimal> actual = transferEngine.getNewAccountBalancesAfterTransfer(transferAmountMap, currentBalances);
+
+        assertNotNull(actual);
+        assertFalse(actual.isEmpty());
+        assertEquals(expectedNewBalances.size(), actual.size());
     }
 
 

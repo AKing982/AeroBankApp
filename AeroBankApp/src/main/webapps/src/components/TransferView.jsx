@@ -62,7 +62,19 @@ export default function TransferView()
             setSnackBarMessage('Please enter a description.');
         }
 
+
     };
+
+    function getTransferRequest(TransferType){
+        switch(TransferType){
+            case 'To Another User':
+
+            case  'To Own Account':
+
+            default:
+                console.log('Selected option not valid');
+        }
+    }
 
     function snackBar(isOpen, errorMessage, message){
         setOpenSnackbar(isOpen);

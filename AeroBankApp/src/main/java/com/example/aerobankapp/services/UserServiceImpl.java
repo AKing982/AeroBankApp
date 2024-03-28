@@ -4,7 +4,9 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.dto.RegistrationDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.exceptions.InvalidAccountNumberException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
+import com.example.aerobankapp.exceptions.InvalidUserStringException;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.Role;
 import jakarta.persistence.*;
@@ -114,6 +116,14 @@ public class UserServiceImpl implements UserService
     @Transactional
     public String getAccountNumberByUserName(String user) {
        return userRepository.getAccountNumberByUserName(user);
+    }
+
+    @Override
+    public int getUserIDByAccountNumber(String accountNumber) {
+        if(accountNumber.isEmpty()){
+            throw new InvalidAccountNumberException("Invalid AccountNumber caught: " + accountNumber);
+        }
+        return userRepository.findUserIDByAccountNumber(accountNumber);
     }
 
     @Override
