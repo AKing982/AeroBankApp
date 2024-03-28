@@ -13,6 +13,7 @@ import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.transactions.Transfer;
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
+import com.example.aerobankapp.workbench.utilities.TransferType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -89,16 +91,16 @@ class TransferEngineTest {
     @BeforeEach
     void setUp() {
         transferEntity =  createMockTransfer(1L,
-                false, new BigDecimal("45.00"),
+                TransferType.SAME_USER, new BigDecimal("45.00"),
                 "Checking to Savings transfer",
                 1, 1, 1, 2);
 
-        userTransfer = createMockTransfer(2L, true, new BigDecimal("250.00"), "Transfer to BSmith",
+        userTransfer = createMockTransfer(2L, TransferType.USER_TO_USER, new BigDecimal("250.00"), "Transfer to BSmith",
                 1, 2, 1, 4);
 
-        transfer1 = new Transfer(1, "Transfer test", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 1L, 1, 2, 1, 1, false);
-        transfer2 = new Transfer(1, "Transfer Test 2", null, LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 2L, 1, 1, 1, 1, false);
-        transfer3 = new Transfer(1, "Transfer test 3", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 3L , 1, 3, 1, 1, false);
+        transfer1 = new Transfer(1, "Transfer test", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 1L, 1, 2, 1, 1, TransferType.SAME_USER);
+        transfer2 = new Transfer(1, "Transfer Test 2", null, LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 2L, 1, 1, 1, 1, TransferType.USER_TO_USER);
+        transfer3 = new Transfer(1, "Transfer test 3", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 3L , 1, 3, 1, 1, TransferType.USER_TO_USER);
 
 
         transferEngine = new TransferEngine(transferService, accountService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
@@ -180,8 +182,8 @@ class TransferEngineTest {
 
     private static Stream<Arguments> provideTransfersForTesting() {
         return Stream.of(
-                Arguments.of( List.of(createMockTransferModel(1, "Transfer test", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(),  1L, 1, 2, 1, 1, false),
-                                     createMockTransferModel(2, "Transfer test 2", new BigDecimal("200"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), 2L, 1, 3, 1, 1, false)
+                Arguments.of( List.of(createMockTransferModel(1, "Transfer test", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(),  1L, 1, 2, 1, 1, TransferType.SAME_USER),
+                                     createMockTransferModel(2, "Transfer test 2", new BigDecimal("200"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), 2L, 1, 3, 1, 1, TransferType.SAME_USER)
                         ),
                         new HashMap<Integer, BigDecimal>() {{
                             put(1, new BigDecimal("200"));
@@ -217,6 +219,86 @@ class TransferEngineTest {
 
        // Set<Integer> actualFromUserIDs = transferEngine.retrieveTransferUserIDSet()
     }
+
+    @Test
+    void testGetTransferCalculation_InitialFail() {
+        BigDecimal amount = BigDecimal.valueOf(100);
+        BigDecimal fromBalance = BigDecimal.valueOf(500);
+        BigDecimal toBalance = BigDecimal.valueOf(200);
+
+        TransferBalances result = transferEngine.getTransferCalculation(amount, toBalance, fromBalance);
+
+        // This test is designed to fail, as the actual method should adjust the balances, not return them as-is.
+        assertEquals(amount, result.getFromAccountBalance());
+        assertEquals(amount, result.getToAccountBalance());
+    }
+
+    @Test
+    void testGetTransferCalculation_FromAccountBalanceDeducted() {
+        BigDecimal amount = BigDecimal.valueOf(100);
+        BigDecimal fromBalance = BigDecimal.valueOf(500);
+
+        TransferBalances result = transferEngine.getTransferCalculation(amount, null, fromBalance);
+
+        // Assuming the calculation engine simply subtracts the amount from the fromAccountBalance
+        BigDecimal expectedFromBalance = fromBalance.subtract(amount);
+
+        assertEquals(expectedFromBalance, result.getFromAccountBalance());
+    }
+
+    @Test
+    void testGetTransferCalculation_ToAccountBalanceIncreased() {
+        BigDecimal amount = BigDecimal.valueOf(100);
+        BigDecimal toBalance = BigDecimal.valueOf(200);
+        BigDecimal fromAccountBalance = BigDecimal.valueOf(1500);
+
+        TransferBalances result = transferEngine.getTransferCalculation(amount, toBalance, fromAccountBalance);
+
+        // Assuming the calculation engine simply adds the amount to the toAccountBalance
+        BigDecimal expectedToBalance = toBalance.add(amount);
+        BigDecimal expectedFromBalance = fromAccountBalance.subtract(amount);
+
+        assertEquals(expectedFromBalance, result.getFromAccountBalance());
+        assertEquals(expectedToBalance, result.getToAccountBalance());
+    }
+
+    @Test
+    void testGetTransferCalculation_NullAmount() {
+        BigDecimal fromBalance = BigDecimal.valueOf(500);
+        BigDecimal toBalance = BigDecimal.valueOf(200);
+
+        TransferBalances result = transferEngine.getTransferCalculation(null, toBalance, fromBalance);
+
+        // When the amount is null, we expect the original balances to be unchanged.
+        assertNull(result.getFromAccountBalance());
+        assertNull(result.getToAccountBalance());
+    }
+
+    @Test
+    public void testFilterTransfersByType_EmptyList(){
+        List<Transfer> emptyList = new ArrayList<>();
+
+        Map<TransferType, List<Transfer>> filteredTransfers = transferEngine.filterTransfersByType(emptyList, TransferType.SAME_USER);
+
+        assertNotNull(filteredTransfers);
+        assertEquals(1, filteredTransfers.size());
+    }
+
+    @Test
+    public void testFilterTransfersByType_return_SameUserTransfers(){
+        Transfer transfer1 = new Transfer(1, "Transfer test", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 1L, 1, 2, 1, 1, TransferType.SAME_USER);
+        Transfer transfer2 = new Transfer(1, "Transfer Test 2", null, LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 2L, 1, 1, 1, 1, TransferType.USER_TO_USER);
+        Transfer transfer3 = new Transfer(1, "Transfer test 3", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 3L , 1, 3, 1, 1, TransferType.USER_TO_USER);
+
+        List<Transfer> transfers = Arrays.asList(transfer1, transfer2, transfer3);
+
+        Map<TransferType, List<Transfer>> sameTransfers = transferEngine.filterTransfersByType(transfers, TransferType.USER_TO_USER);
+
+        assertNotNull(sameTransfers);
+        assertEquals(1, sameTransfers.size());
+    }
+
+
 
     @Test
     public void testGetTransferCalculation_NullAmount_NullBalances(){
@@ -273,7 +355,7 @@ class TransferEngineTest {
                                                     int toAccountID,
                                                     int originUserID,
                                                     int targetUserID,
-                                                    boolean isUserTransfer){
+                                                    TransferType transferType){
         Transfer transfer = new Transfer();
         transfer.setTransferID(transferID);
         transfer.setPending(false);
@@ -288,7 +370,7 @@ class TransferEngineTest {
         transfer.setDateScheduled(dateScheduled);
         transfer.setScheduleInterval(interval);
         transfer.setTimeScheduled(time);
-        transfer.setUserToUserTransfer(isUserTransfer);
+        transfer.setTransferType(transferType);
         return transfer;
     }
 
@@ -296,7 +378,7 @@ class TransferEngineTest {
     private static Transfer createTransfer(TransferEntity entity){
         Transfer transfer = new Transfer();
         transfer.setTransferID(entity.getTransferID());
-        transfer.setUserToUserTransfer(entity.isUserTransfer());
+        transfer.setTransferType(entity.getTransferType());
         transfer.setFromAccountID(entity.getFromAccount().getAcctID());
         transfer.setOriginUserID(entity.getFromUser().getUserID());
         transfer.setTargetUserID(entity.getToUser().getUserID());
@@ -314,7 +396,7 @@ class TransferEngineTest {
         entity.setTransferID(transferEntity.getTransferID());
         entity.setTransferAmount(transferEntity.getAmount());
         entity.setDateTransferred(LocalDate.now());
-        entity.setUserTransfer(transferEntity.isUserToUserTransfer());
+        entity.setTransferType(transferEntity.getTransferType());
         entity.setStatus(TransferStatus.PENDING);
         entity.setToUser(UserEntity.builder().userID(transferEntity.getTargetUserID()).build());
         entity.setFromUser(UserEntity.builder().userID(transferEntity.getOriginUserID()).build());
@@ -329,7 +411,7 @@ class TransferEngineTest {
 
 
     private static TransferEntity createMockTransfer(Long id,
-                                              boolean isUserTransfer,
+                                              TransferType transferType,
                                               BigDecimal amount,
                                               String description,
                                               int fromUserID,
@@ -338,7 +420,7 @@ class TransferEngineTest {
                                               int fromAccountID){
         TransferEntity transferEntity = new TransferEntity();
         transferEntity.setTransferID(id);
-        transferEntity.setUserTransfer(isUserTransfer);
+        transferEntity.setTransferType(transferType);
         transferEntity.setTransferAmount(amount);
         transferEntity.setDescription(description);
         transferEntity.setFromUser(UserEntity.builder().userID(fromUserID).build());

@@ -4,6 +4,7 @@ import com.example.aerobankapp.account.AbstractAccountBase;
 import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+import com.example.aerobankapp.workbench.utilities.TransferType;
 import lombok.*;
 
 import java.io.Serializable;
@@ -26,16 +27,16 @@ public class Transfer extends TransactionBase implements Serializable
     private String toAccountCode;
     private int originUserID;
     private int targetUserID;
-    private boolean isUserToUserTransfer;
+    private TransferType transferType;
     private boolean isPending;
 
-    public Transfer(Long transferID, int fromAccountID, int toAccountID, int originUID, int targetUserID, boolean isUserTransfer) {
+    public Transfer(Long transferID, int fromAccountID, int toAccountID, int originUID, int targetUserID, TransferType transferType) {
         this.transferID = transferID;
         this.fromAccountID = fromAccountID;
         this.toAccountID = toAccountID;
         this.originUserID = originUID;
         this.targetUserID = targetUserID;
-        this.isUserToUserTransfer = isUserTransfer;
+        this.transferType = transferType;
     }
 
     public Transfer(int userID,
@@ -51,7 +52,7 @@ public class Transfer extends TransactionBase implements Serializable
                     int toAccountID,
                     int originUserID,
                     int targetUserID,
-                    boolean isUserTransfer) {
+                    TransferType transferType) {
 
         super(userID, description, amount, timeScheduled, scheduleInterval, date_posted, dateScheduled, currency);
         this.transferID = transferID;
@@ -59,7 +60,7 @@ public class Transfer extends TransactionBase implements Serializable
         this.toAccountID = toAccountID;
         this.originUserID = originUserID;
         this.targetUserID = targetUserID;
-        this.isUserToUserTransfer = isUserTransfer;
+        this.transferType = transferType;
     }
 
     @Override
@@ -68,12 +69,12 @@ public class Transfer extends TransactionBase implements Serializable
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Transfer transfer = (Transfer) o;
-        return fromAccountID == transfer.fromAccountID && toAccountID == transfer.toAccountID && originUserID == transfer.originUserID && targetUserID == transfer.targetUserID && isUserToUserTransfer == transfer.isUserToUserTransfer && Objects.equals(transferID, transfer.transferID);
+        return fromAccountID == transfer.fromAccountID && toAccountID == transfer.toAccountID && originUserID == transfer.originUserID && targetUserID == transfer.targetUserID && transferType == transfer.transferType && Objects.equals(transferID, transfer.transferID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), transferID, fromAccountID, toAccountID, originUserID, targetUserID, isUserToUserTransfer);
+        return Objects.hash(super.hashCode(), transferID, fromAccountID, toAccountID, originUserID, targetUserID, transferType);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class Transfer extends TransactionBase implements Serializable
                 ", toAccountID=" + toAccountID +
                 ", originUserID=" + originUserID +
                 ", targetUserID=" + targetUserID +
-                ", isUserToUserTransfer=" + isUserToUserTransfer +
+                ", isUserToUserTransfer=" + transferType +
                 '}';
     }
 }

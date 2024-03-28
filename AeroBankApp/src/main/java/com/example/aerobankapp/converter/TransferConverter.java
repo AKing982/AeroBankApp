@@ -12,7 +12,7 @@ public class TransferConverter implements EntityToModelConverter<TransferEntity,
     public Transfer convert(TransferEntity entity) {
         Transfer transfer = new Transfer();
         transfer.setTransferID(entity.getTransferID());
-        transfer.setUserToUserTransfer(entity.isUserTransfer());
+        transfer.setTransferType(entity.getTransferType());
         transfer.setFromAccountID(entity.getFromAccount().getAcctID());
         transfer.setOriginUserID(entity.getFromUser().getUserID());
         transfer.setTargetUserID(entity.getToUser().getUserID());

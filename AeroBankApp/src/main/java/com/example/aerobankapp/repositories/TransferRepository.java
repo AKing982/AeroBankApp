@@ -14,10 +14,10 @@ import java.util.List;
 @Repository
 public interface TransferRepository extends JpaRepository<TransferEntity, Long>
 {
-    @Query("SELECT e FROM TransferEntity e WHERE e.fromUser.username=:user AND e.toUser.username=:user AND e.isUserTransfer=false")
+    @Query("SELECT e FROM TransferEntity e WHERE e.fromUser.username=:user AND e.toUser.username=:user AND e.transferType='SAME_USER'")
     List<TransferEntity> findSameUserTransfers(@Param("user") String user);
 
-    @Query("SELECT e FROM TransferEntity e WHERE e.fromUser.username=:fromUser AND e.toUser.username=:toUser AND e.isUserTransfer=true")
+    @Query("SELECT e FROM TransferEntity e WHERE e.fromUser.username=:fromUser AND e.toUser.username=:toUser AND e.transferType='USER_USER'")
     List<TransferEntity> findTransfersWithOriginUserAndTargetUser(@Param("fromUser") String fromUser, @Param("toUser") String toUser);
 
     @Query("SELECT e FROM TransferEntity e WHERE e.status=:status")

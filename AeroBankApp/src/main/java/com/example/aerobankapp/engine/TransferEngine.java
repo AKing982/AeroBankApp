@@ -16,6 +16,7 @@ import com.example.aerobankapp.workbench.transactions.TransactionSummary;
 import com.example.aerobankapp.workbench.transactions.Transfer;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
 import com.example.aerobankapp.workbench.utilities.BalanceHistoryUtil;
+import com.example.aerobankapp.workbench.utilities.TransferType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -228,30 +229,35 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return balanceHistoryList;
     }
 
-    protected Map<String, List<Transfer>> filterTransfersByType(final List<Transfer> unfilteredTransfers){
-        Map<String, List<Transfer>> filteredTransfers = new HashMap<>();
-        filteredTransfers.put("UserToUser", new ArrayList<>());
-        filteredTransfers.put("SameUser", new ArrayList<>());
-        if(!unfilteredTransfers.isEmpty()){
-            for(Transfer transfer : unfilteredTransfers){
-                if(transfer != null) {
-                    if (!isUserToUserTransfer(transfer)) {
-                        filteredTransfers.get("SameUser").add(transfer);
-                    } else if (isUserToUserTransfer(transfer)){
-                        filteredTransfers.get("UserToUser").add(transfer);
-                    }
-                }
+    private List<Transfer> filterByType(final List<Transfer> transfers, TransferType transferType){
+        List<Transfer> filteredList = new ArrayList<>();
+        for(Transfer transfer : transfers){
+            if(transfer.getTransferType().equals(transferType)){
+                filteredList.add(transfer);
             }
+        }
+        return filteredList;
+    }
+
+
+    protected Map<TransferType, List<Transfer>> filterTransfersByType(final List<Transfer> unfilteredTransfers, final TransferType transferType){
+        Map<TransferType, List<Transfer>> filteredTransfers = new HashMap<>();
+        filteredTransfers.put(TransferType.USER_TO_USER, new ArrayList<>());
+        filteredTransfers.put(TransferType.SAME_USER, new ArrayList<>());
+        if(!unfilteredTransfers.isEmpty()){
+            List<Transfer> filteredList = filterByType(unfilteredTransfers, transferType);
+            filteredTransfers.put(transferType, filteredList);
         }
         return filteredTransfers;
     }
 
-    protected boolean isUserToUserTransfer(final Transfer transfer){
-        return transfer.isUserToUserTransfer();
+    protected TransferType getTransferType(final Transfer transfer){
+        return transfer.getTransferType();
     }
 
     protected TransferBalances getTransferCalculation(final BigDecimal amount, final BigDecimal toAccountBalance, final BigDecimal fromAccountBalance){
         if(amount != null || toAccountBalance != null || fromAccountBalance != null){
+
             // Withdraw from the FromAccount
             BigDecimal newFromBalance = getCalculationEngine().calculateWithdrawal(amount, fromAccountBalance);
 

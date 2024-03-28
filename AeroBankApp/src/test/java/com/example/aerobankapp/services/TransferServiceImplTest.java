@@ -10,6 +10,7 @@ import com.example.aerobankapp.exceptions.StatusNotFoundException;
 import com.example.aerobankapp.repositories.TransferRepository;
 import com.example.aerobankapp.workbench.utilities.Status;
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
+import com.example.aerobankapp.workbench.utilities.TransferType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,11 +42,11 @@ class TransferServiceImplTest {
     private TransferRepository transferRepository;
 
     private TransferEntity transferEntity =  createMockTransfer(1L,
-            false, new BigDecimal("45.00"),
+            TransferType.USER_TO_USER, new BigDecimal("45.00"),
             "Checking to Savings transfer",
             1, 1, 1, 2);
 
-    private TransferEntity userTransfer = createMockTransfer(2L, true, new BigDecimal("250.00"), "Transfer to BSmith",
+    private TransferEntity userTransfer = createMockTransfer(2L, TransferType.USER_TO_USER, new BigDecimal("250.00"), "Transfer to BSmith",
             1, 2, 1, 4);
 
     @BeforeEach
@@ -56,7 +57,7 @@ class TransferServiceImplTest {
     @Test
     public void testFindAllReturnsNonEmptyList(){
         TransferEntity mockTransfer = createMockTransfer(1L,
-                false, new BigDecimal("45.00"),
+                TransferType.USER_TO_USER, new BigDecimal("45.00"),
                 "Checking to Savings transfer",
                             1, 1, 1, 2);
 
@@ -264,7 +265,7 @@ class TransferServiceImplTest {
 
 
     private TransferEntity createMockTransfer(Long id,
-                                              boolean isUserTransfer,
+                                              TransferType transferType,
                                               BigDecimal amount,
                                               String description,
                                               int fromUserID,
@@ -273,7 +274,7 @@ class TransferServiceImplTest {
                                               int fromAccountID){
         TransferEntity transferEntity = new TransferEntity();
         transferEntity.setTransferID(id);
-        transferEntity.setUserTransfer(isUserTransfer);
+        transferEntity.setTransferType(transferType);
         transferEntity.setTransferAmount(amount);
         transferEntity.setDescription(description);
         transferEntity.setFromUser(UserEntity.builder().userID(fromUserID).build());

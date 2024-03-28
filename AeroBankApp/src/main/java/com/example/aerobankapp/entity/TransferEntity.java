@@ -1,6 +1,8 @@
 package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
+import com.example.aerobankapp.workbench.utilities.TransferType;
+import com.plaid.client.model.TransferTestClock;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -54,8 +56,9 @@ public class TransferEntity
     @Column(name="isPending")
     private boolean isPending;
 
-    @Column(name="isUserTransfer")
-    private boolean isUserTransfer;
+    @Column(name="transferType")
+    @Enumerated(EnumType.STRING)
+    private TransferType transferType;
 
     @Column(name="dateTransferred")
     private LocalDate dateTransferred;
