@@ -14,6 +14,7 @@ import {
     Typography
 } from "@mui/material";
 import {Container} from "@mui/system";
+import axios from "axios";
 
 export default function TransferView()
 {
@@ -62,8 +63,20 @@ export default function TransferView()
             setSnackBarMessage('Please enter a description.');
         }
 
-
     };
+
+    const fetchAccountNumberExists = async (accountNumber) => {
+        try{
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/users/exists/${accountNumber}`)
+
+            if(response.data){
+
+            }
+
+        }catch(error){
+            console.error('There was an error determining if account number exists: ', error);
+        }
+    }
 
     function getTransferRequest(TransferType){
         switch(TransferType){
@@ -132,14 +145,15 @@ export default function TransferView()
                     <>
                         <TextField
                             fullWidth
-                            height="55"
                             label="Recipient's Account Number"
+                            type="text"
                             value={recipientAccount}
                             onChange={(e) => setRecipientAccount(e.target.value)}
                             style={{ marginBottom: '20px' }}
                         />
                         <TextField
                             fullWidth
+                            type="text"
                             label="Recipient's Account Code"
                             value={recipientAccountCode}
                             onChange={(e) => setRecipientAccountCode(e.target.value)}

@@ -122,11 +122,7 @@ public class AccountServiceImpl implements AccountService
         if(acctCode.isEmpty() || accountNumber.isEmpty()){
             throw new IllegalArgumentException("Caught empty AccountCode or AccountNumber.");
         }
-        int accountID = accountRepository.findAccountIDByAcctCodeAndAccountNumber(accountNumber, acctCode);
-        if(accountID > 0){
-            return accountID;
-        }
-        return 0;
+        return accountRepository.findAccountIDByAcctCodeAndAccountNumber(accountNumber, acctCode);
     }
 
     @Override

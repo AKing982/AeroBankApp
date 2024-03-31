@@ -164,6 +164,14 @@ public class UserServiceController {
         return ResponseEntity.ok(new AccountNumberResponse(accountNumber));
     }
 
+    @GetMapping("/exists/{accountNumber}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> doesAccountNumberExist(@PathVariable String accountNumber){
+        boolean exists = userService.doesAccountNumberExist(accountNumber);
+
+        return ResponseEntity.ok(exists);
+    }
+
     @GetMapping("/generateAccountNumber/{username}")
     @PreAuthorize("isAuthenticated() ")
     public ResponseEntity<?> generateAccountNumber(@PathVariable String username)

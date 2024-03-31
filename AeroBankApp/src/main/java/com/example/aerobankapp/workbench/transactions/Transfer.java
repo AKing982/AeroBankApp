@@ -63,6 +63,33 @@ public class Transfer extends TransactionBase implements Serializable
         this.transferType = transferType;
     }
 
+    /**
+     * To be used with Same User Transfers
+     */
+    public Transfer(int userID, String description, BigDecimal amount, LocalTime timeScheduled, LocalDate dateScheduled, Long transferID, int fromAccountID, int toAccountID, TransferType transferType){
+        super(userID, description, amount, timeScheduled, dateScheduled);
+        this.transferID = transferID;
+        this.fromAccountID = fromAccountID;
+        this.toAccountID = toAccountID;
+        this.transferType = transferType;
+    }
+
+
+    /**
+     * To be used with UserToUser Transfers
+     */
+    public Transfer(String description, BigDecimal amount, LocalTime timeScheduled, LocalDate dateScheduled, Long transferID, int fromAccountID, int toAccountID, int originUserID, int targetUserID, String accountCode, String accountNumber, TransferType type){
+        super(description, amount, timeScheduled, dateScheduled);
+        this.transferID = transferID;
+        this.fromAccountID = fromAccountID;
+        this.toAccountID = toAccountID;
+        this.originUserID = originUserID;
+        this.targetUserID = targetUserID;
+        this.toAccountCode = accountCode;
+        this.toAccountNumber = accountNumber;
+        this.transferType = type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,7 +112,7 @@ public class Transfer extends TransactionBase implements Serializable
                 ", toAccountID=" + toAccountID +
                 ", originUserID=" + originUserID +
                 ", targetUserID=" + targetUserID +
-                ", isUserToUserTransfer=" + transferType +
+                ", transferType=" + transferType +
                 '}';
     }
 }

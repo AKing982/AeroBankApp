@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -75,6 +75,24 @@ class UserDAOImplTest
         UserEntity foundUser = userEntities.get(0);
 
         assertEquals(user, foundUser.getUsername());
+    }
+
+    @Test
+    public void testDoesAccountNumberExist_EmptyAccountNumber(){
+        final String accountNumber = "";
+
+        boolean result = userDAO.doesAccountNumberExist(accountNumber);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testDoesAccountNumberExist_ValidAccountNumber(){
+        final String accountNumber = "89-42-48";
+
+        boolean result = userDAO.doesAccountNumberExist(accountNumber);
+
+        assertTrue(result);
     }
 
 

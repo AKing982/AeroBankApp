@@ -183,7 +183,7 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
                 }
                 boolean isLessThanMinimumBalance = balance.compareTo(BigDecimal.ZERO) > 0 && balance.compareTo(minimumBalanceRequirement) < 0;
                 if(isLessThanMinimumBalance){
-                    throw new RuntimeException("AccountID: " + acctID + " does not meet the minimum balance requirements of: " + minimumBalanceRequirement);
+                    throw new RuntimeException("AccountID: " + acctID + " does not meet the minimum balance requirements of $" + minimumBalanceRequirement);
                 }
                 accountBalanceMapByAcctID.put(acctID, balance);
             }
@@ -194,6 +194,7 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
         }
     }
 
+    @Deprecated
     protected BigDecimal getCalculation(final BigDecimal amount, final BigDecimal balance, final CalculationStrategy calculationStrategy){
         if(amount == null || balance == null){
             throw new IllegalArgumentException("Unable to calculate deposit from null amount or balance");

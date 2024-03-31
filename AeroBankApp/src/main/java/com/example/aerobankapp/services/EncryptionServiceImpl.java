@@ -4,14 +4,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 
-@Service
 public class EncryptionServiceImpl implements EncryptionService
 {
-
-    @Override
-    public String encryptData(String plainText) {
-        return null;
-    }
 
     @Override
     public String decryptData(String cipher) {

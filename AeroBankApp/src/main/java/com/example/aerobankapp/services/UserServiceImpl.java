@@ -188,6 +188,14 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
+    public boolean doesAccountNumberExist(final String accountNumber) {
+        if(!accountNumber.isEmpty()){
+            return userRepository.doesAccountNumberExist(accountNumber);
+        }
+        return false;
+    }
+
+    @Override
     public String generateAccountNumber(String user)
     {
         try {

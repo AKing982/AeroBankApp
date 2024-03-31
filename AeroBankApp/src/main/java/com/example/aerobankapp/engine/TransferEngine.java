@@ -67,7 +67,7 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
     }
 
     protected Map<Integer, BigDecimal> getNewAccountBalancesAfterTransfer(final Map<Integer, BigDecimal> transferAmount, final Map<Integer, BigDecimal> currentBalances){
-        Map<Integer, BigDecimal> newBalances = new HashMap<>(currentBalances);
+        Map<Integer, BigDecimal> newBalances = new HashMap<>();
         if(!transferAmount.isEmpty() || !currentBalances.isEmpty()){
             transferAmount.forEach((accountID, amount) -> {
                 BigDecimal currentBalance = newBalances.getOrDefault(accountID, BigDecimal.ZERO);
@@ -117,6 +117,8 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
     }
 
     private int getAccountIDByAcctCodeAndAcctNumber(final String acctCode, final String acctNum){
+        LOGGER.info("AccountNumber: " + acctNum);
+        LOGGER.info("AccountCode: " + acctCode);
         return getAccountService().getAccountIDByAccountCodeAndAccountNumber(acctCode, acctNum);
     }
 
@@ -156,7 +158,9 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
                 if(transfer != null){
                     final BigDecimal amount = transfer.getAmount();
                     final int fromAccountID = transfer.getFromAccountID();
-                    if(amount.compareTo(BigDecimal.ZERO) > 0 && fromAccountID > 0){
+                    if(amount != null || fromAccountID > 0){
+                        LOGGER.info("Saving amount: $" + amount);
+                        LOGGER.info("Saving fromAccountID: " + fromAccountID);
                         transactionAmountByAcctIDHashMap.put(fromAccountID, amount);
                     }
                 }
@@ -229,7 +233,7 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return balanceHistoryList;
     }
 
-    private List<Transfer> filterByType(final List<Transfer> transfers, TransferType transferType){
+    protected List<Transfer> filterByType(final List<Transfer> transfers, final TransferType transferType){
         List<Transfer> filteredList = new ArrayList<>();
         for(Transfer transfer : transfers){
             if(transfer.getTransferType().equals(transferType)){
@@ -242,8 +246,6 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
 
     protected Map<TransferType, List<Transfer>> filterTransfersByType(final List<Transfer> unfilteredTransfers, final TransferType transferType){
         Map<TransferType, List<Transfer>> filteredTransfers = new HashMap<>();
-        filteredTransfers.put(TransferType.USER_TO_USER, new ArrayList<>());
-        filteredTransfers.put(TransferType.SAME_USER, new ArrayList<>());
         if(!unfilteredTransfers.isEmpty()){
             List<Transfer> filteredList = filterByType(unfilteredTransfers, transferType);
             filteredTransfers.put(transferType, filteredList);
@@ -270,27 +272,35 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return new TransferBalances();
     }
 
-    protected void processUserToUserTransfers(final List<Transfer> userToUserTransfer){
-        if(!userToUserTransfer.isEmpty()){
+    protected boolean processUserToUserTransfers(final List<Transfer> userToUserTransfer){
+        if (!userToUserTransfer.isEmpty()) {
+            // Step 1: Filter Transfers for USER_TO_USER type.
+            Map<TransferType, List<Transfer>> userToUserTransferMap = filterTransfersByType(userToUserTransfer, TransferType.USER_TO_USER);
 
-            // Retrieve the Set of ToAccountIDs
-            Set<Integer> accountIDSet = retrieveToAccountIDSetByAcctCodeAndAccountNumber(userToUserTransfer);
+            // Get the List of USER TO USER transfers
+            List<Transfer> userToUserList = userToUserTransferMap.get(TransferType.USER_TO_USER);
 
-            // Retrieve the ToUserIDs Set
-            Set<Integer> userIDs = retrieveTransferToUserIDSet(userToUserTransfer);
+            // Step 2 & 3: Retrieve Account and User IDs.
+            Set<Integer> toAccountIDs = retrieveToAccountIDSetByAcctCodeAndAccountNumber(userToUserTransferMap.get(TransferType.USER_TO_USER));
+            Set<Integer> userIDs = retrieveTransferToUserIDSet(userToUserTransferMap.get(TransferType.USER_TO_USER));
 
-            // Retrieve the Account Balance for the ToAccount
+            Map<Integer, BigDecimal> currentAccountBalances = retrieveCurrentAccountBalancesByAcctID(toAccountIDs);
 
-            // Retrieve the Account balance for the From Account
-            Map<Integer, BigDecimal> fromAccountBalances = getCalculatedAccountBalanceMap(userToUserTransfer);
+            Map<Integer, BigDecimal> transactionAmountMap = retrieveTransactionAmountByAcctID(userToUserList);
 
-            // Retrieve the AccountBalance Map after the transfer calculation
+            // Assume retrieval and calculation logic for current and new balances is correctly implemented.
+            Map<Integer, BigDecimal> fromAccountBalances = getCalculatedAccountBalanceMap(userToUserTransferMap.get(TransferType.USER_TO_USER));
 
-            // Update both the ToAccount balance and the From Account balance
-            bulkUpdateAccountBalances(fromAccountBalances);
+            // Step 4: Calculate New Balances.
+            Map<Integer, BigDecimal> newBalances = getNewAccountBalancesAfterTransfer(transactionAmountMap, currentAccountBalances); // This method might need adjustments to correctly handle "from" and "to" balances.
 
-            bulkUpdateAccountBalances(fromAccountBalances);
+            // Step 5: Update Balances.
+            int status = bulkUpdateAccountBalances(newBalances);
+            if(status == 1){
+                return true;
+            }
         }
+        return false;
     }
 
     private String getAccountCodeFromTransfer(final Transfer transfer){
@@ -302,28 +312,27 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
     }
 
 
-    protected void processSameUserTransfers(final List<Transfer> sameUserTransfers){
-        if(!sameUserTransfers.isEmpty()){
-            // Grab the AccountID Set
+    protected boolean processSameUserTransfers(final List<Transfer> sameUserTransfers){
+        if (!sameUserTransfers.isEmpty()) {
+            // Step 1: Extract Account IDs.
             Set<Integer> fromAccountIDs = retrieveTransferAccountIDSet(sameUserTransfers, Transfer::getFromAccountID);
-
             Set<Integer> toAccountIDs = retrieveTransferAccountIDSet(sameUserTransfers, Transfer::getToAccountID);
 
-            // Retrieve the current Account Balances
+            // Step 2: Retrieve Current Balances.
             Map<Integer, BigDecimal> fromAccountBalance = retrieveCurrentAccountBalancesByAcctID(fromAccountIDs);
-
-            // Retrieve the balance of the To Account
             Map<Integer, BigDecimal> toAccountBalance = retrieveCurrentAccountBalancesByAcctID(toAccountIDs);
 
-            // Retrieve the transaction amount by acctID map
+            // Step 3: Calculate New Balances.
             Map<Integer, BigDecimal> transactionAmountByAcctID = retrieveTransactionAmountByAcctID(sameUserTransfers);
+            Map<Integer, BigDecimal> calculatedNewBalances = getNewAccountBalancesAfterTransfer(transactionAmountByAcctID, fromAccountBalance); // Adjust this logic as necessary.
 
-            // Get the Calculated Transfer
-            Map<Integer, BigDecimal> calculatedNewBalances = getNewAccountBalancesAfterTransfer(transactionAmountByAcctID, fromAccountBalance);
-
-            // Update the balance
-            bulkUpdateAccountBalances(calculatedNewBalances);
+            // Step 4: Update Account Balances.
+            int status = bulkUpdateAccountBalances(calculatedNewBalances);
+            if(status == 1){
+                return true;
+            }
         }
+        return false;
     }
 
     @Override

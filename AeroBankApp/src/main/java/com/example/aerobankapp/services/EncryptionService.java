@@ -4,8 +4,6 @@ import java.security.Key;
 
 public interface EncryptionService
 {
-    String encryptData(String plainText);
-
     String decryptData(String cipher);
 
     String rotateEncryption();

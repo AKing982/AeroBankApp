@@ -35,4 +35,19 @@ public abstract class TransactionBase
         this.dateScheduled = dateScheduled;
         this.currency = currency;
     }
+
+    public TransactionBase(String description, BigDecimal amount, LocalTime timeScheduled, LocalDate dateScheduled){
+        this.description = description;
+        this.amount = amount;
+        this.timeScheduled = timeScheduled;
+        this.dateScheduled = dateScheduled;
+    }
+
+    public TransactionBase(int userID, String description, BigDecimal amount, LocalTime timeScheduled, LocalDate dateScheduled){
+        this.userID = userID;
+        this.description = description;
+        this.amount = amount;
+        this.timeScheduled = timeScheduled;
+        this.dateScheduled = dateScheduled;
+    }
 }

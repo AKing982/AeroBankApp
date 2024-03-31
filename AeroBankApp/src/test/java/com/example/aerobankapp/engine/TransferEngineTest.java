@@ -3,15 +3,19 @@ package com.example.aerobankapp.engine;
 import com.example.aerobankapp.converter.EntityToModelConverter;
 import com.example.aerobankapp.converter.TransferConverter;
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.BalanceHistoryEntity;
 import com.example.aerobankapp.entity.TransferEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.exceptions.NullTransferObjectException;
+import com.example.aerobankapp.model.BalanceHistory;
+import com.example.aerobankapp.model.TransferBalanceSummary;
 import com.example.aerobankapp.model.TransferBalances;
 import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.transactions.Transfer;
+import com.example.aerobankapp.workbench.utilities.BalanceHistoryUtil;
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
 import com.example.aerobankapp.workbench.utilities.TransferType;
 import org.junit.jupiter.api.AfterEach;
@@ -293,9 +297,98 @@ class TransferEngineTest {
         List<Transfer> transfers = Arrays.asList(transfer1, transfer2, transfer3);
 
         Map<TransferType, List<Transfer>> sameTransfers = transferEngine.filterTransfersByType(transfers, TransferType.USER_TO_USER);
+        Map<TransferType, List<Transfer>> userTransfers = transferEngine.filterTransfersByType(transfers, TransferType.SAME_USER);
+
+        List<Transfer> sameTransferList = sameTransfers.get(TransferType.USER_TO_USER);
+        List<Transfer> userTransferList = userTransfers.get(TransferType.SAME_USER);
 
         assertNotNull(sameTransfers);
+        assertEquals(2, sameTransferList.size());
+        assertEquals(1, userTransferList.size());
         assertEquals(1, sameTransfers.size());
+    }
+
+    @Test
+    public void testFilterByType(){
+        Transfer transfer1 = new Transfer(1, "Transfer test", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 1L, 1, 2, 1, 1, TransferType.SAME_USER);
+        Transfer transfer2 = new Transfer(1, "Transfer Test 2", null, LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 2L, 1, 1, 1, 1, TransferType.USER_TO_USER);
+        Transfer transfer3 = new Transfer(1, "Transfer test 3", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 3L , 1, 3, 1, 1, TransferType.USER_TO_USER);
+
+        List<Transfer> transfers = Arrays.asList(transfer1, transfer2, transfer3);
+
+        List<Transfer> sameAsList = transferEngine.filterByType(transfers, TransferType.USER_TO_USER);
+
+        assertNotNull(transfers);
+        assertEquals(2, sameAsList.size());
+    }
+
+    @Test
+    public void testRetrieveTransactionAmountByAcctID_NullAmount(){
+        final BigDecimal amount = null;
+
+        Transfer transfer1 = new Transfer(1, "Transfer test", new BigDecimal("45.00"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 1L, 1, 2, 1, 1, TransferType.SAME_USER);
+        Transfer transfer2 = new Transfer(1, "Transfer Test 2", new BigDecimal("120.000"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 2L, 4, 1, 1, 1, TransferType.USER_TO_USER);
+        Transfer transfer3 = new Transfer(1, "Transfer test 3", null, LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 3L , 1, 3, 1, 1, TransferType.USER_TO_USER);
+
+        List<Transfer> transfers = Arrays.asList(transfer1, transfer2, transfer3);
+
+        Map<Integer, BigDecimal> expected = new HashMap<>();
+        expected.put(1, new BigDecimal("45.00"));
+        expected.put(2, new BigDecimal("120.00"));
+
+        Map<Integer, BigDecimal> actual = transferEngine.retrieveTransactionAmountByAcctID(transfers);
+
+        assertNotNull(actual);
+        assertFalse(actual.isEmpty());
+        assertEquals(2, actual.size());
+    }
+
+    @Test
+    public void testConvertBalanceSummaryToBalanceHistoryEntityList(){
+        Transfer transfer1 = new Transfer(1, "Transfer test", new BigDecimal("45.00"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 1L, 1, 2, 1, 1, TransferType.SAME_USER);
+
+        TransferBalanceSummary transferBalanceSummary = new TransferBalanceSummary();
+        transferBalanceSummary.setToAccountPostBalance(new BigDecimal("4500.00"));
+        transferBalanceSummary.setPostBalance(new BigDecimal("1120.00"));
+        transferBalanceSummary.setDateProcessed(LocalDate.now());
+        transferBalanceSummary.setTransaction(transfer1);
+
+        List<TransferBalanceSummary> transferBalanceSummaries = Arrays.asList(transferBalanceSummary);
+
+        BalanceHistoryEntity balanceHistoryEntity = createBalanceHistoryEntity(transferBalanceSummaries.get(0), new BigDecimal("1215"), new BigDecimal("120"));
+        List<BalanceHistoryEntity> balanceHistoryEntities = Arrays.asList(balanceHistoryEntity);
+
+        List<BalanceHistoryEntity> actualBalanceHistories = transferEngine.convertBalanceSummaryToBalanceHistoryEntityList(transferBalanceSummaries);
+
+        assertNotNull(actualBalanceHistories);
+        assertFalse(actualBalanceHistories.isEmpty());
+        assertEquals(1, actualBalanceHistories.size());
+    }
+
+    @Test
+    public void testProcessUserToUserTransfers(){
+        Transfer transfer1 = new Transfer(1, "Transfer test", new BigDecimal("45.00"), LocalTime.now(),  LocalDate.now(), 1L, 1, 2,TransferType.SAME_USER);
+        Transfer transfer2 = new Transfer("Transfer Test 2", new BigDecimal("120.000"), LocalTime.now(), LocalDate.now() , 2L, 4, 1, 1, 1, "B1", "35-09-24", TransferType.USER_TO_USER);
+        Transfer transfer3 = new Transfer("Transfer test 3", new BigDecimal("12.000"), LocalTime.now(), LocalDate.now(), 3L , 1, 3, 1, 1, "A1", "89-42-48", TransferType.USER_TO_USER);
+
+        List<Transfer> transfers = Arrays.asList(transfer1, transfer2, transfer3);
+
+        boolean result = transferEngine.processUserToUserTransfers(transfers);
+        assertTrue(result);
+    }
+
+    @Test
+    public void testProcessSameUserTransfers(){
+        Transfer transfer1 = new Transfer(1, "Transfer test", new BigDecimal("45.00"), LocalTime.now(),  LocalDate.now(), 1L, 1, 2,TransferType.SAME_USER);
+        Transfer transfer2 = new Transfer(1, "Transfer Test 2", new BigDecimal("120.000"), LocalTime.now(), LocalDate.now() , 2L, 1, 2, TransferType.SAME_USER);
+        Transfer transfer3 = new Transfer(1, "Transfer test 3", new BigDecimal("12.000"), LocalTime.now(), LocalDate.now(), 3L , 1, 3, TransferType.SAME_USER);
+
+        List<Transfer> transfers = Arrays.asList(transfer1, transfer2, transfer3);
+
+        boolean result = transferEngine.processSameUserTransfers(transfers);
+
+        assertTrue(result);
+
     }
 
 
@@ -433,6 +526,16 @@ class TransferEngineTest {
         transferEntity.setStatus(TransferStatus.PENDING);
         return transferEntity;
 
+    }
+
+    private BalanceHistoryEntity createBalanceHistoryEntity(TransferBalanceSummary transferBalanceSummary, BigDecimal currentBalance, BigDecimal adjusted){
+        if(transferBalanceSummary != null){
+            if(currentBalance != null || adjusted != null){
+                BalanceHistory balanceHistory = BalanceHistoryUtil.convertTransferBalanceSummaryToBalanceHistoryModel(transferBalanceSummary, currentBalance, adjusted);
+                return BalanceHistoryUtil.convertBalanceHistoryToEntity(balanceHistory);
+            }
+        }
+        return null;
     }
 
 

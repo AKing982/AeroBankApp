@@ -56,5 +56,7 @@ public interface UserService extends ServiceDAOModel<UserEntity>
 
     boolean userNameExists(String user);
 
+    boolean doesAccountNumberExist(String accountNumber);
+
     String generateAccountNumber(String user);
 }
