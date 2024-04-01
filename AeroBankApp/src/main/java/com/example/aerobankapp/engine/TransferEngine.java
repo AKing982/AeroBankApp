@@ -96,7 +96,7 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return null;
     }
 
-    private int getUserIDByAccountNumber(String accountNumber){
+    private int getUserIDByAccountNumber(final String accountNumber){
         return getUserService().getUserIDByAccountNumber(accountNumber);
     }
 
