@@ -387,7 +387,7 @@ class TransferEngineTest {
 
         boolean result = transferEngine.processSameUserTransfers(transfers);
 
-
+        assertTrue(result);
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.aerobankapp.entity;
 
+import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.workbench.utilities.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
@@ -41,6 +43,16 @@ public class WithdrawEntity
 
     @Column(name="posted")
     private LocalDate posted;
+
+    @Column(name="scheduledInterval")
+    @Enumerated(EnumType.STRING)
+    private ScheduleType scheduledInterval;
+
+    @Column(name="scheduledTime")
+    private LocalTime scheduledTime;
+
+    @Column(name="scheduledDate")
+    private LocalDate scheduledDate;
 
     @Column(name="status")
     @Enumerated(EnumType.STRING)

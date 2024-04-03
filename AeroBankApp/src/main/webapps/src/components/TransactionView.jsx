@@ -1,9 +1,7 @@
 import AccountBox from "./AccountBox";
 import '../AccountBox.css';
 import './TransactionView.css';
-import TableView from "./TableView";
 import ListView from "./AccountListView";
-import CollapsiblePanel from "./CollapsiblePanel";
 import {Divider, Grid, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import axios from "axios";

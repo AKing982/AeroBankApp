@@ -151,6 +151,7 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
         }
     }
 
+
     abstract protected Map<Integer, BigDecimal> getCalculatedAccountBalanceMap(List<T> transactionList);
 
     protected Map<Integer, BigDecimal> retrieveCurrentAccountBalancesByAcctID(Set<Integer> acctIDs){

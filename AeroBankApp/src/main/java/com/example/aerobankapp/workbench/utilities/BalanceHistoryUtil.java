@@ -2,10 +2,7 @@ package com.example.aerobankapp.workbench.utilities;
 
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.BalanceHistoryEntity;
-import com.example.aerobankapp.model.BalanceHistory;
-import com.example.aerobankapp.model.DepositBalanceSummary;
-import com.example.aerobankapp.model.TransactionBalanceSummary;
-import com.example.aerobankapp.model.TransferBalanceSummary;
+import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
 
@@ -13,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class BalanceHistoryUtil {
+public class BalanceHistoryUtil{
 
     public static BalanceHistory convertBalanceSummaryToBalanceHistoryModel(DepositBalanceSummary deposit, BigDecimal currentBalance, BigDecimal adjustedAmount){
         BalanceHistory balanceHistory = new BalanceHistory();
@@ -21,6 +18,15 @@ public class BalanceHistoryUtil {
         balanceHistory.setNewBalance(deposit.getPostBalance());
         balanceHistory.setAccountID(deposit.getTransaction().getAccountID());
         balanceHistory.setAdjustedAmount(adjustedAmount);
+        return balanceHistory;
+    }
+
+    public static BalanceHistory convertWithdrawBalanceSummaryToBalanceHistory(WithdrawBalanceSummary balanceSummary, BigDecimal currentBalance, BigDecimal adjusted){
+        BalanceHistory balanceHistory = new BalanceHistory();
+        balanceHistory.setCurrentBalance(currentBalance);
+        balanceHistory.setNewBalance(balanceSummary.getPostBalance());
+        balanceHistory.setAccountID(balanceHistory.getFromAccountID());
+        balanceHistory.setAdjustedAmount(adjusted);
         return balanceHistory;
     }
 

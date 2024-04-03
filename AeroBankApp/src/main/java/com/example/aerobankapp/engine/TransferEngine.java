@@ -92,6 +92,7 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
 
     @Override
     protected Set<Integer> retrieveAccountIDSet(List<Transfer> transactionList) {
+
         // NOT IMPLEMENTED
         return null;
     }
@@ -234,13 +235,7 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
     }
 
     protected List<Transfer> filterByType(final List<Transfer> transfers, final TransferType transferType){
-        List<Transfer> filteredList = new ArrayList<>();
-        for(Transfer transfer : transfers){
-            if(transfer.getTransferType().equals(transferType)){
-                filteredList.add(transfer);
-            }
-        }
-        return filteredList;
+        return transfers.stream().filter(transfer -> transfer.getTransferType().equals(transferType)).collect(Collectors.toList());
     }
 
 

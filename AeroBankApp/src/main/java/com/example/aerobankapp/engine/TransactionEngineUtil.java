@@ -3,8 +3,10 @@ package com.example.aerobankapp.engine;
 import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.model.DepositBalanceSummary;
 import com.example.aerobankapp.model.TransferBalanceSummary;
+import com.example.aerobankapp.model.WithdrawBalanceSummary;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.Transfer;
+import com.example.aerobankapp.workbench.transactions.Withdraw;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,6 +28,14 @@ public class TransactionEngineUtil
         depositBalanceSummary.setPostBalance(balanceAfterDeposit);
         depositBalanceSummary.setDateProcessed(LocalDate.now());
         return depositBalanceSummary;
+    }
+
+    public static WithdrawBalanceSummary buildWithdrawBalanceSummary(final Withdraw withdraw, final BigDecimal balanceAfterWithdraw){
+         WithdrawBalanceSummary withdrawBalanceSummary = new WithdrawBalanceSummary();
+         withdrawBalanceSummary.setTransaction(withdraw);
+         withdrawBalanceSummary.setPostBalance(balanceAfterWithdraw);
+         withdrawBalanceSummary.setDateProcessed(LocalDate.now());
+         return withdrawBalanceSummary;
     }
 
     public static Deposit convertDepositEntityToDeposit(final DepositsEntity depositsEntity){
