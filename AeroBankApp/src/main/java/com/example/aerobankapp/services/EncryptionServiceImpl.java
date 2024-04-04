@@ -2,13 +2,15 @@ package com.example.aerobankapp.services;
 
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 
 public class EncryptionServiceImpl implements EncryptionService
 {
 
+
     @Override
-    public String decryptData(String cipher) {
+    public String decryptData(String cipher, SecretKey key) {
         return null;
     }
 

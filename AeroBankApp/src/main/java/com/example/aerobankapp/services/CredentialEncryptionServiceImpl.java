@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 
 @Service
@@ -12,8 +13,9 @@ public class CredentialEncryptionServiceImpl implements CredentialEncryptionServ
         return null;
     }
 
+
     @Override
-    public String decryptData(String cipher) {
+    public String decryptData(String cipher, SecretKey key) {
         return null;
     }
 
