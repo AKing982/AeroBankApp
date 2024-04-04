@@ -1,27 +1,51 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.exceptions.KeyGenerationException;
+import com.google.gson.Gson;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.vault.core.VaultTemplate;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
 @Service
+@Getter
+@Setter
 public class FinancialEncryptionServiceImpl implements FinancialEncryptionService
 {
-    public static SecretKey generateKey(int n) throws Exception
+    private final VaultTemplate vaultTemplate;
+    private Gson gson;
+
+    @Autowired
+    public FinancialEncryptionServiceImpl(VaultTemplate vaultTemplate){
+        this.vaultTemplate = vaultTemplate;
+    }
+
+    public SecretKey generateKey(int bits) throws KeyGenerationException
     {
-        byte[] key = new byte[n / 8];
-        SecureRandom.getInstanceStrong().nextBytes(key);
-        return new SecretKeySpec(key, "AES");
+        try
+        {
+            byte[] key = new byte[bits / 8];
+            SecureRandom.getInstanceStrong().nextBytes(key);
+            return new SecretKeySpec(key, "AES");
+
+        }catch(NoSuchAlgorithmException ex)
+        {
+            throw new KeyGenerationException("Failed to generate AES Key.");
+        }
     }
 
     @Override
-    public String decryptData(String encryptedText, SecretKey key) throws Exception {
+    public String decrypt(String encryptedText, SecretKey key) throws Exception {
         byte[] encryptedIvTextBytes = Base64.getDecoder().decode(encryptedText);
 
         byte[] iv = new byte[16];
@@ -40,7 +64,7 @@ public class FinancialEncryptionServiceImpl implements FinancialEncryptionServic
     }
 
     @Override
-    public String rotateEncryption() {
+    public String rotateKey() {
         return null;
     }
 
@@ -68,5 +92,17 @@ public class FinancialEncryptionServiceImpl implements FinancialEncryptionServic
         System.arraycopy(encrypted, 0, encryptedIVAndText, iv.length, encrypted.length);
 
         return Base64.getEncoder().encodeToString(encryptedIVAndText);
+    }
+
+    public SecretKey getCurrentKey(){
+        return null;
+    }
+
+    public int getKeyRotationPeriod(){
+        return 0;
+    }
+
+    public boolean isCurrentKey(final SecretKey key){
+        return false;
     }
 }

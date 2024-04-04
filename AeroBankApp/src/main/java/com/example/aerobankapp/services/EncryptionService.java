@@ -5,9 +5,9 @@ import java.security.Key;
 
 public interface EncryptionService
 {
-    String decryptData(String cipher, SecretKey key) throws Exception;
+    String decrypt(String cipher, SecretKey key) throws Exception;
 
-    String rotateEncryption();
+    String rotateKey();
 
     Key getEncryptionKey(String keyId);
 

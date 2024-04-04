@@ -10,12 +10,12 @@ public class EncryptionServiceImpl implements EncryptionService
 
 
     @Override
-    public String decryptData(String cipher, SecretKey key) {
+    public String decrypt(String cipher, SecretKey key) {
         return null;
     }
 
     @Override
-    public String rotateEncryption() {
+    public String rotateKey() {
         return null;
     }
 
