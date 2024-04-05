@@ -24,6 +24,6 @@ public interface VaultService
 
     String decryptData(String keyName, String cipherText);
 
-    void renewToken();
-    void revokeToken();
+    void renewToken(String token);
+    void revokeToken(String token);
 }

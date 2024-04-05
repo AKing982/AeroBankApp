@@ -2,6 +2,11 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.exceptions.InvalidStringException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.vault.authentication.AppRoleAuthentication;
 import org.springframework.vault.authentication.AppRoleAuthenticationOptions;
@@ -12,10 +17,12 @@ import org.springframework.vault.core.VaultKeyValueOperationsSupport;
 import org.springframework.vault.core.VaultTemplate;
 import org.springframework.vault.core.VaultTransitOperations;
 import org.springframework.vault.support.VaultResponseSupport;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.SecretKey;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -96,7 +103,10 @@ public class VaultServiceImpl implements VaultService{
 
     @Override
     public List<String> listSecrets(String path) {
-        return null;
+        if(path.isEmpty()){
+            throw new InvalidStringException("Invalid path found.");
+        }
+        return vaultTemplate.list("secret/metadata/" + path);
     }
 
     @Override
@@ -106,16 +116,51 @@ public class VaultServiceImpl implements VaultService{
 
     @Override
     public String decryptData(String keyName, String cipherText) {
-        return null;
+        if(keyName.isEmpty()){
+            throw new InvalidStringException("Invalid KeyName string caught.");
+        }
+        VaultTransitOperations transitOperations = vaultTemplate.opsForTransit();
+        return transitOperations.decrypt(keyName, cipherText);
     }
 
     @Override
-    public void renewToken() {
+    public void renewToken(final String token) {
+       int increment = 3600; // Renewal increment
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Vault-Token", token);
+        HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(Collections.singletonMap("increment", increment), headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "http://localhost:8200/v1/auth/token/renew-self",
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class
+            );
+        }catch(RestClientException ex){
+            throw new RuntimeException("Failed to renew token: " + ex.getMessage(), ex);
+        }
     }
 
     @Override
-    public void revokeToken() {
+    public void revokeToken(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Vault-Token", token);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            restTemplate.exchange(
+                    "http://localhost:8200/v1/auth/token/revoke-self",
+                    HttpMethod.POST,
+                    requestEntity,
+                    Void.class
+            );
+
+        }catch(RestClientException ex){
+            throw new RuntimeException("Failed to Revoke Token: " + ex.getMessage(), ex);
+        }
     }
 }

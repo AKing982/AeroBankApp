@@ -77,9 +77,13 @@ public class FinancialEncryptionServiceImpl implements FinancialEncryptionServic
         }
     }
 
+    public SecretKey rotateKeyByVault(final String keyName){
+        return vaultService.rotateKey(keyName);
+    }
+
     @Override
     public Key getEncryptionKey(String keyId) {
-        return null;
+        return vaultService.getSecretKeyById(keyId);
     }
 
     @Override
