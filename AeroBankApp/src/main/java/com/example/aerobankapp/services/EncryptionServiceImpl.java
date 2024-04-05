@@ -15,7 +15,7 @@ public class EncryptionServiceImpl implements EncryptionService
     }
 
     @Override
-    public String rotateKey() {
+    public SecretKey rotateKey() {
         return null;
     }
 

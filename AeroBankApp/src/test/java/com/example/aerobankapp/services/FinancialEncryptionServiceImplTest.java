@@ -22,16 +22,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @RunWith(SpringRunner.class)
 class FinancialEncryptionServiceImplTest {
 
+    @InjectMocks
     private FinancialEncryptionServiceImpl financialEncryptionService;
 
     @Autowired
-    private VaultTemplate vaultTemplate;
+    private VaultService vaultService;
 
     private SecretKey secretKey;
 
     @BeforeEach
     void setUp() throws Exception{
-        financialEncryptionService = new FinancialEncryptionServiceImpl(vaultTemplate);
+        financialEncryptionService = new FinancialEncryptionServiceImpl(vaultService);
         secretKey = financialEncryptionService.generateKey(128);
     }
 
@@ -81,8 +82,14 @@ class FinancialEncryptionServiceImplTest {
     }
 
     @Test
-    public void testRotateEncryptionKey(){
+    public void testRotateKey() throws Exception{
+        SecretKey originalKey = financialEncryptionService.generateKey(256);
 
+        SecretKey rotatedKey = financialEncryptionService.rotateKey();
+
+        SecretKey newKey = financialEncryptionService.getCurrentKey();
+
+        assertNotEquals(originalKey, rotatedKey);
     }
 
     @Test

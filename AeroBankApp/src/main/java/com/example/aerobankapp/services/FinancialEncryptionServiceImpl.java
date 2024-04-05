@@ -22,12 +22,13 @@ import java.util.Base64;
 @Setter
 public class FinancialEncryptionServiceImpl implements FinancialEncryptionService
 {
-    private final VaultTemplate vaultTemplate;
+    private final VaultService vaultService;
+    private SecretKey currentKey;
     private Gson gson;
 
     @Autowired
-    public FinancialEncryptionServiceImpl(VaultTemplate vaultTemplate){
-        this.vaultTemplate = vaultTemplate;
+    public FinancialEncryptionServiceImpl(VaultService vaultService){
+        this.vaultService = vaultService;
     }
 
     public SecretKey generateKey(int bits) throws KeyGenerationException
@@ -64,8 +65,16 @@ public class FinancialEncryptionServiceImpl implements FinancialEncryptionServic
     }
 
     @Override
-    public String rotateKey() {
-        return null;
+    public SecretKey rotateKey() throws KeyGenerationException {
+        // Generate a new key
+        try{
+            SecretKey secretKey = generateKey(256);
+            setCurrentKey(secretKey);
+            return secretKey;
+
+        }catch(KeyGenerationException ex){
+            throw new KeyGenerationException("Unable to generate key.");
+        }
     }
 
     @Override
@@ -94,9 +103,6 @@ public class FinancialEncryptionServiceImpl implements FinancialEncryptionServic
         return Base64.getEncoder().encodeToString(encryptedIVAndText);
     }
 
-    public SecretKey getCurrentKey(){
-        return null;
-    }
 
     public int getKeyRotationPeriod(){
         return 0;
