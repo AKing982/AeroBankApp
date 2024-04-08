@@ -40,21 +40,18 @@ public class DepositServiceImpl implements DepositService
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+   // @Autowired
+   // private RabbitTemplate rabbitTemplate;
 
-    private AsyncDepositService asyncDepositService;
+  //  private AsyncDepositService asyncDepositService;
 
     private Logger LOGGER = LoggerFactory.getLogger(DepositServiceImpl.class);
 
     @Autowired
-    public DepositServiceImpl(DepositRepository depositRepository,
-                              EntityManager entityManager,
-                              AsyncDepositService asyncDepositService)
+    public DepositServiceImpl(DepositRepository depositRepository, EntityManager entityManager)
     {
         this.depositRepository = depositRepository;
         this.entityManager = entityManager;
-        this.asyncDepositService = asyncDepositService;
     }
 
     private void nullCheck(DepositsEntity deposits)
@@ -123,18 +120,19 @@ public class DepositServiceImpl implements DepositService
     }
 
     @Override
+    @Deprecated
     public void submit(DepositDTO request)
     {
         // Build the DepositsEntity
-        buildAndSaveDepositEntity(request);
-        SchedulerCriteria schedulerCriteria = buildAndProcessSchedulerCriteria(request);
-        logSchedulerCriteria(schedulerCriteria);
-        System.out.println("Deposit has been received");
+        //buildAndSaveDepositEntity(request);
+      //  SchedulerCriteria schedulerCriteria = buildAndProcessSchedulerCriteria(request);
+     //   logSchedulerCriteria(schedulerCriteria);
+      //  System.out.println("Deposit has been received");
     }
 
     private void buildAndSaveDepositEntity(DepositDTO request) {
-        DepositsEntity depositsEntity = buildDepositEntity(request);
-        getDepositRepository().save(depositsEntity);
+       // DepositsEntity depositsEntity = buildDepositEntity(request);
+       // getDepositRepository().save(depositsEntity);
     }
 
     private SchedulerCriteria buildAndProcessSchedulerCriteria(DepositDTO request) {
@@ -144,16 +142,16 @@ public class DepositServiceImpl implements DepositService
     }
 
     private void processSchedulerCriteriaAsync(SchedulerCriteria schedulerCriteria, DepositDTO request) {
-        asyncDepositService.validateAndParse(schedulerCriteria, triggerCriteria -> {
-            Deposit depositDTO = buildDeposit(request);
-            asyncDepositService.sendToRabbitMQ(depositDTO);
-            try {
-                asyncDepositService.startScheduler(triggerCriteria);
+      //  asyncDepositService.validateAndParse(schedulerCriteria, triggerCriteria -> {
+       //     Deposit depositDTO = buildDeposit(request);
+       //     asyncDepositService.sendToRabbitMQ(depositDTO);
+         //   try {
+         //       asyncDepositService.startScheduler(triggerCriteria);
 
-            } catch (SchedulerException e) {
-                throw new RuntimeException(e);
-            }
-        });
+          //  } catch (SchedulerException e) {
+          //      throw new RuntimeException(e);
+          //  }
+        //});
     }
 
     private void logSchedulerCriteria(SchedulerCriteria schedulerCriteria) {
