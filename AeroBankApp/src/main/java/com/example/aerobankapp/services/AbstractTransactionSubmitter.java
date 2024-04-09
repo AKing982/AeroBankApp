@@ -1,13 +1,10 @@
 package com.example.aerobankapp.services;
 
 public abstract class AbstractTransactionSubmitter<T, S> {
-    protected VaultService vaultService;
     protected FinancialEncryptionService financialEncryptionService;
 
-    public AbstractTransactionSubmitter(VaultService vaultService,
-                                        FinancialEncryptionService financialEncryptionService)
+    public AbstractTransactionSubmitter(FinancialEncryptionService financialEncryptionService)
     {
-        this.vaultService = vaultService;
         this.financialEncryptionService = financialEncryptionService;
     }
 

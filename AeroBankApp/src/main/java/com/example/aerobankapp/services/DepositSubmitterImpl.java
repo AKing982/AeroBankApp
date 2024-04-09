@@ -13,25 +13,18 @@ import org.springframework.stereotype.Service;
 @Setter
 public class DepositSubmitterImpl extends AbstractTransactionSubmitter<DepositDTO, DepositsEntity>
 {
-    private final DepositRepository depositRepository;
     private final DepositService depositService;
 
     @Autowired
-    public DepositSubmitterImpl(DepositRepository depositRepository,
-                                DepositService depositService,
-                                FinancialEncryptionService financialEncryptionService,
-                                VaultService vaultService){
-        super(vaultService, financialEncryptionService);
-        this.depositRepository = depositRepository;
+    public DepositSubmitterImpl(DepositService depositService,
+                                FinancialEncryptionService financialEncryptionService){
+        super(financialEncryptionService);
         this.depositService = depositService;
     }
 
     @Override
     public void submit(DepositDTO depositDTO) {
-        DepositsEntity depositsEntity = buildEntity(depositDTO);
 
-        // Save the Deposits entity
-        saveEntity(depositsEntity);
     }
 
     @Override

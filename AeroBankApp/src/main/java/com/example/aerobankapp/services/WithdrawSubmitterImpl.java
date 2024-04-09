@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 @Setter
 public class WithdrawSubmitterImpl extends AbstractTransactionSubmitter<WithdrawDTO, WithdrawEntity> {
 
-    private final WithdrawRepository withdrawRepository;
+    private final WithdrawService withdrawService;
 
     @Autowired
-    public WithdrawSubmitterImpl(WithdrawRepository withdrawRepo, VaultService vaultService, FinancialEncryptionService financialEncryptionService) {
-        super(vaultService, financialEncryptionService);
-        this.withdrawRepository = withdrawRepo;
+    public WithdrawSubmitterImpl(WithdrawService withdrawService, FinancialEncryptionService financialEncryptionService) {
+        super(financialEncryptionService);
+        this.withdrawService = withdrawService;
     }
 
     @Override
