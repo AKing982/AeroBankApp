@@ -1,5 +1,6 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.scheduler.DepositScheduler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
@@ -21,11 +22,14 @@ class DepositSubmitterImplTest {
     private DepositService depositService;
 
     @Mock
+    private DepositScheduler depositScheduler;
+
+    @Mock
     private FinancialEncryptionService financialEncryptionService;
 
     @BeforeEach
     void setUp() {
-        depositSubmitter = new DepositSubmitterImpl(depositService, financialEncryptionService);
+        depositSubmitter = new DepositSubmitterImpl(depositService, depositScheduler, financialEncryptionService);
     }
 
 
