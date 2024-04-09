@@ -2,7 +2,7 @@ package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
 import com.example.aerobankapp.workbench.utilities.TransferType;
-import com.plaid.client.model.TransferTestClock;
+
 import jakarta.persistence.*;
 import lombok.*;
 
