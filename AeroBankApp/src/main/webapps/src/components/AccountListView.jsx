@@ -122,6 +122,7 @@ export default function AccountListView({updateAccountID})
                                 available={account.availableAmount}
                                 backgroundImageUrl={account.acctImage}
                                 onAccountClick={handleAccountButtonClick}
+                                notificationCount={1}
                                 color={account.acctColor}
                                 isSelected={selectedAccount === account.accountCode}
                             />

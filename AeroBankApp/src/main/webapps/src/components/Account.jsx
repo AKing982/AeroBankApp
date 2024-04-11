@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
-import {Box, Typography, Grid, Paper, Avatar, CardContent, Card} from '@mui/material';
+import {Box, Typography, Grid, Paper, Avatar, CardContent, Card, IconButton, Badge} from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import {blue} from "@mui/material/colors";
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 
-export default function Account({ color, accountCode, accountName, balance, pending, available, onAccountClick, isSelected, backgroundImageUrl})
+export default function Account({ color, accountCode, accountName, balance, pending, available, notificationCount, onAccountClick, isSelected, backgroundImageUrl})
 {
     const handleClick = () => {
         onAccountClick(accountCode);
@@ -57,7 +58,16 @@ export default function Account({ color, accountCode, accountName, balance, pend
         >
             <CardContent sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                 {/* Inner Card for Account Details */}
-                <Card sx={{ bgcolor: 'white', p: 2, mr: 2, minWidth: 200 }}>
+                <Card sx={{ bgcolor: 'white', p: 2, mr: 2, minWidth: 200, position: 'relative' }}>
+                    {notificationCount > 0 && (
+                        <IconButton
+                            color="inherit"
+                            sx={{position: 'absolute', top: 8, right: 8}} >
+                            <Badge badgeContent={notificationCount} color="secondary">
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
+                    )}
                     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                         <Avatar sx={avatarStyle}>
                             <Typography variant="subtitle1">
