@@ -3,11 +3,14 @@ package com.example.aerobankapp.controllers;
 import com.example.aerobankapp.dto.AccountDTO;
 import com.example.aerobankapp.dto.AccountDetailsDTO;
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.AccountNotificationEntity;
 import com.example.aerobankapp.entity.AccountPropertiesEntity;
 import com.example.aerobankapp.services.AccountNotificationService;
 import com.example.aerobankapp.services.AccountPropertiesService;
 import com.example.aerobankapp.services.AccountServiceImpl;
 import com.example.aerobankapp.workbench.AccountIDResponse;
+import com.example.aerobankapp.workbench.AccountNotificationResponse;
+import com.example.aerobankapp.workbench.NotificationRequest;
 import com.example.aerobankapp.workbench.utilities.AccountCreationRequest;
 import com.example.aerobankapp.workbench.utilities.BalanceRequest;
 import com.example.aerobankapp.workbench.utilities.response.AccountCodeResponse;
@@ -123,6 +126,30 @@ public class AccountController {
         }
         Integer accountID = accountDAO.getAccountWithMostTransactionsByUserID(userID);
         return ResponseEntity.ok().body(accountID);
+    }
+
+    @GetMapping("/notifications/{acctID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getAccountNotifications(@PathVariable int acctID){
+        return ResponseEntity.ok("Fetching Account Notifications for accountID: " + acctID);
+    }
+
+    /**
+     * This Method will be used for testing the account notifications on the front-end
+     * @return
+     */
+    @PostMapping("/notifications/test")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> sendTestRequest(@RequestBody NotificationRequest notificationRequest){
+
+        AccountEntity account = AccountEntity.builder()
+                .acctID(notificationRequest.getAccountID())
+                .build();
+
+        AccountNotificationEntity accountNotificationEntity = new AccountNotificationEntity(account, notificationRequest.getMessage(), notificationRequest.getPriority());
+        AccountNotificationResponse accountNotificationResponse = new AccountNotificationResponse(account.getAcctID(), notificationRequest.getMessage(), notificationRequest.getPriority());
+        List<AccountNotificationResponse> accountNotificationEntities = List.of(accountNotificationResponse);
+        return ResponseEntity.ok("Sent Test Request: " + accountNotificationEntities);
     }
 
     @PostMapping("/{accountID}")
