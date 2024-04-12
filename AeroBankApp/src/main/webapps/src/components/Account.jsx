@@ -4,6 +4,7 @@ import CircleIcon from '@mui/icons-material/Circle';
 import {blue} from "@mui/material/colors";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import axios from "axios";
+import NotificationBell from "./NotificationBell";
 
 
 export default function Account({ color, accountCode, accountName, balance, pending, available, notificationCount, onAccountClick, isSelected, backgroundImageUrl})
@@ -87,14 +88,10 @@ export default function Account({ color, accountCode, accountName, balance, pend
                 {/* Inner Card for Account Details */}
                 <Card sx={{ bgcolor: 'white', p: 2, mr: 2, minWidth: 200, position: 'relative' }}>
                     {notificationCount > 0 && (
-                        <IconButton
-                            color="inherit"
-                            sx={{position: 'absolute', top: 8, right: 8}}
-                            onClick={handleOnNotificationClick}>
-                            <Badge badgeContent={notificationCount} color="secondary">
-                                <NotificationsIcon />
-                            </Badge>
-                        </IconButton>
+                       <NotificationBell
+                           notificationCount={1}
+                           notifications={["Hello"]}
+                           onBellClick={fetchAccountNotifications} />
                     )}
                     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                         <Avatar sx={avatarStyle}>

@@ -51,7 +51,7 @@ class DepositServiceImplTest
     void setUp()
     {
 
-        depositService =  /new DepositServiceImpl(depositRepository, entityManager, asyncDepositService);
+        depositService = new DepositServiceImpl(depositRepository, entityManager);
     }
 
     @Test
