@@ -75,6 +75,9 @@ class DepositEngineTest {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AccountNotificationService accountNotificationService;
+
     private static Deposit mockDeposit1;
 
     private static Deposit mockDeposit2;
@@ -89,7 +92,7 @@ class DepositEngineTest {
         mockDeposit1 = createDeposit(1, 1, "A1", new BigDecimal("45.00"), "Checking Transfer", ScheduleType.ONCE, LocalDate.now(), LocalTime.now());
         mockDeposit2 = createDeposit(1, 2, "A2", new BigDecimal("120.00"), "Savings Transfer", ScheduleType.ONCE, LocalDate.now(), LocalTime.now());
         mockDeposit3 = createDeposit(2, 1, "B1", new BigDecimal("250"), "Checking Payment", ScheduleType.ONCE, LocalDate.now(), LocalTime.now());
-        engine = new DepositEngine(depositService, userService, accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+        engine = new DepositEngine(depositService, userService, accountService, accountNotificationService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
     }
 
     private static Stream<List<Deposit>> depositProvider() {

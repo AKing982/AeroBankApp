@@ -49,8 +49,8 @@ public class DepositEngine extends TransactionEngine<Deposit, DepositBalanceSumm
     private final Logger LOGGER = LoggerFactory.getLogger(DepositEngine.class);
 
     @Autowired
-    public DepositEngine(DepositService depositService, UserService userService, AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
-        super(accountService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+    public DepositEngine(DepositService depositService, UserService userService, AccountService accountService, AccountNotificationService accountNotificationService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
+        super(accountService, accountNotificationService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
         this.depositService = depositService;
         this.depositConverter = new DepositConverter();
     }
@@ -62,6 +62,11 @@ public class DepositEngine extends TransactionEngine<Deposit, DepositBalanceSumm
         return allDeposits.stream()
                 .map(depositConverter::convert)
                 .toList();
+    }
+
+    @Override
+    protected PriorityQueue<Deposit> fetchAllWithPriority() {
+        return null;
     }
 
     @Override

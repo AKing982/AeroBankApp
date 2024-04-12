@@ -4,6 +4,7 @@ import com.example.aerobankapp.dto.AccountDTO;
 import com.example.aerobankapp.dto.AccountDetailsDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.AccountPropertiesEntity;
+import com.example.aerobankapp.services.AccountNotificationService;
 import com.example.aerobankapp.services.AccountPropertiesService;
 import com.example.aerobankapp.services.AccountServiceImpl;
 import com.example.aerobankapp.workbench.AccountIDResponse;
@@ -33,12 +34,15 @@ import static com.example.aerobankapp.controllers.utils.AccountControllerUtil.*;
 public class AccountController {
     private final AccountServiceImpl accountDAO;
     private final AccountPropertiesService accountPropertiesService;
+    private final AccountNotificationService accountNotificationService;
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Autowired
-    public AccountController(AccountServiceImpl accountDAO, AccountPropertiesService accountPropertiesService) {
+    public AccountController(AccountServiceImpl accountDAO, AccountPropertiesService accountPropertiesService,
+                             AccountNotificationService accountNotificationService) {
         this.accountDAO = accountDAO;
         this.accountPropertiesService = accountPropertiesService;
+        this.accountNotificationService = accountNotificationService;
     }
 
     @GetMapping("/data/{user}")

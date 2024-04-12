@@ -85,17 +85,18 @@ export default function AccountListView({updateAccountID})
             console.log('UserID fetched: ', userID);
             axios.get(`http://localhost:8080/AeroBankApp/api/users/name/${userID}`)
                 .then(response => {
-                    const first = response.data.firstName;
-                    const last = response.data.lastName;
-                    const fullName = first + " " + last;
-                    setFullName(fullName);
+                    setFullName(getFullName(response.data.firstName, response.data.lastName));
                 })
                 .catch(error => {
                     console.error('There was an error fetching the full name: ', error);
                 });
         }
         fetchUsersFullName();
-    }, [])
+    }, []);
+
+    const getFullName = (first, last) => {
+        return first + " " + last;
+    }
 
 
     const handleAccountButtonClick = (accountCode) => {
@@ -122,7 +123,7 @@ export default function AccountListView({updateAccountID})
                                 available={account.availableAmount}
                                 backgroundImageUrl={account.acctImage}
                                 onAccountClick={handleAccountButtonClick}
-                                notificationCount={1}
+                                notificationCount={6}
                                 color={account.acctColor}
                                 isSelected={selectedAccount === account.accountCode}
                             />

@@ -61,12 +61,14 @@ class WithdrawEngineTest {
     @Autowired
     private EncryptionService encryptionService;
 
+    @Autowired
+    private AccountNotificationService accountNotificationService;
 
 
 
     @BeforeEach
     void setUp() {
-        withdrawEngine = new WithdrawEngine(withdrawService, userService, accountService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+        withdrawEngine = new WithdrawEngine(withdrawService, userService, accountService, accountNotificationService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
     }
 
     @Test

@@ -82,6 +82,8 @@ export default function PendingTransactionsTable({accountID}) {
 
     }, [accountID]);
 
+    if(Number(totalPending) === 0) return null;
+
 
     return (
         <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>

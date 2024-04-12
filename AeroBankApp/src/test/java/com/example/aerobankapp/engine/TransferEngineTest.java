@@ -74,6 +74,9 @@ class TransferEngineTest {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AccountNotificationService accountNotificationService;
+
     private EntityToModelConverter<TransferEntity, Transfer> transferConverter = new TransferConverter();
 
     private static TransferEntity transferEntity;
@@ -107,7 +110,7 @@ class TransferEngineTest {
         transfer3 = new Transfer(1, "Transfer test 3", new BigDecimal("45"), LocalTime.now(), ScheduleType.ONCE, LocalDate.now(), LocalDate.now(), Currency.getInstance(Locale.US), 3L , 1, 3, 1, 1, TransferType.USER_TO_USER);
 
 
-        transferEngine = new TransferEngine(transferService, accountService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+        transferEngine = new TransferEngine(transferService, accountService, accountNotificationService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
     }
 
     @Test

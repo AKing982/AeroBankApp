@@ -38,8 +38,8 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
     private final Logger LOGGER = LoggerFactory.getLogger(TransferEngine.class);
 
     @Autowired
-    public TransferEngine(TransferService transferService, AccountService accountService, UserService userService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
-        super(accountService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+    public TransferEngine(TransferService transferService, AccountService accountService, AccountNotificationService accountNotificationService, UserService userService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
+        super(accountService, accountNotificationService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
         this.transferService = transferService;
         this.transferConverter = new TransferConverter();
     }
@@ -53,6 +53,11 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return transferEntities.stream()
                 .map(transferConverter::convert)
                 .toList();
+    }
+
+    @Override
+    protected PriorityQueue<Transfer> fetchAllWithPriority() {
+        return null;
     }
 
     @Override

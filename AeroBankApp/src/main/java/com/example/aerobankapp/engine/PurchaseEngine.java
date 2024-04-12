@@ -11,21 +11,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PurchaseEngine extends TransactionEngine<Purchase, PurchaseTransferSummary>
 {
     @Autowired
-    public PurchaseEngine(AccountService accountService, UserService userService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
-        super(accountService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+    public PurchaseEngine(AccountService accountService, AccountNotificationService accountNotificationService, UserService userService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
+        super(accountService, accountNotificationService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
     }
 
     @Override
     protected List<Purchase> fetchAll() {
+        return null;
+    }
+
+    @Override
+    protected PriorityQueue<Purchase> fetchAllWithPriority() {
         return null;
     }
 

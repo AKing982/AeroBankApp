@@ -22,6 +22,7 @@ import java.util.*;
 public abstract class TransactionEngine<T extends TransactionBase, S extends TransactionBalanceSummary<T>>
 {
     private final AccountService accountService;
+    private final AccountNotificationService accountNotificationService;
     private final UserService userService;
     private final AccountSecurityService accountSecurityService;
     private final NotificationService notificationService;
@@ -36,6 +37,7 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
     private Logger LOGGER = LoggerFactory.getLogger(TransactionEngine.class);
 
     public TransactionEngine(AccountService accountService,
+                             AccountNotificationService accountNotificationService,
                              UserService userService,
                              AccountSecurityService accountSecurityService,
                              NotificationService notificationService,
@@ -43,6 +45,7 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
                              BalanceHistoryService balanceHistoryService,
                              EncryptionService encryptionService){
         this.accountService = accountService;
+        this.accountNotificationService = accountNotificationService;
         this.userService = userService;
         this.accountSecurityService = accountSecurityService;
         this.notificationService = notificationService;
@@ -52,6 +55,8 @@ public abstract class TransactionEngine<T extends TransactionBase, S extends Tra
     }
 
     protected abstract List<T> fetchAll();
+
+    protected abstract PriorityQueue<T> fetchAllWithPriority();
 
     protected void updateBalanceForAccountID(BigDecimal balance, int acctID){
         if(acctID > 0 && balance.compareTo(BigDecimal.ZERO) > 0){

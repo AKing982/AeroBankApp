@@ -28,8 +28,8 @@ public class WithdrawEngine extends TransactionEngine<Withdraw, WithdrawBalanceS
     private final Logger LOGGER = LoggerFactory.getLogger(WithdrawEngine.class);
 
     @Autowired
-    public WithdrawEngine(WithdrawService withdrawService, UserService userService, AccountService accountService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
-        super(accountService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
+    public WithdrawEngine(WithdrawService withdrawService, UserService userService, AccountService accountService, AccountNotificationService accountNotificationService, AccountSecurityService accountSecurityService, NotificationService notificationService, CalculationEngine calculationEngine, BalanceHistoryService balanceHistoryService, EncryptionService encryptionService) {
+        super(accountService, accountNotificationService, userService, accountSecurityService, notificationService, calculationEngine, balanceHistoryService, encryptionService);
         this.withdrawService = withdrawService;
         this.withdrawConverter = new WithdrawConverter();
     }
@@ -40,6 +40,11 @@ public class WithdrawEngine extends TransactionEngine<Withdraw, WithdrawBalanceS
         return withdrawEntities.stream()
                 .map(withdrawConverter::convert)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    protected PriorityQueue<Withdraw> fetchAllWithPriority() {
+        return null;
     }
 
     @Override

@@ -3,19 +3,46 @@ import {Box, Typography, Grid, Paper, Avatar, CardContent, Card, IconButton, Bad
 import CircleIcon from '@mui/icons-material/Circle';
 import {blue} from "@mui/material/colors";
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import axios from "axios";
 
 
 export default function Account({ color, accountCode, accountName, balance, pending, available, notificationCount, onAccountClick, isSelected, backgroundImageUrl})
 {
+    const [notifications, setNotifications] = useState([]);
+
     const handleClick = () => {
         onAccountClick(accountCode);
     };
+
+
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter' || event.key === ' ') {
             handleClick();
         }
     };
+
+    const handleOnNotificationClick = (event) => {
+        // Send a request to fetch notifications for the account with accountID
+        event.stopPropagation();
+        console.log('Notification Clicked');
+       // onNotificationClick(accountCode);
+        fetchAccountNotifications();
+
+    };
+
+    const fetchAccountNotifications = async () => {
+        const acctID = sessionStorage.getItem('AccountID');
+        try{
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/notifications/${acctID}`);
+            console.log('Notification Response: ', response.data);
+            setNotifications(response.data);
+
+        }catch(error)
+        {
+            console.error('Error fetching Account Notifications: ', error);
+        }
+    }
 
     const defaultColor = '#9e9e9e'; // Default color if none is provided
     const avatarColor = color || defaultColor; // Use provided color or default
@@ -62,7 +89,8 @@ export default function Account({ color, accountCode, accountName, balance, pend
                     {notificationCount > 0 && (
                         <IconButton
                             color="inherit"
-                            sx={{position: 'absolute', top: 8, right: 8}} >
+                            sx={{position: 'absolute', top: 8, right: 8}}
+                            onClick={handleOnNotificationClick}>
                             <Badge badgeContent={notificationCount} color="secondary">
                                 <NotificationsIcon />
                             </Badge>
