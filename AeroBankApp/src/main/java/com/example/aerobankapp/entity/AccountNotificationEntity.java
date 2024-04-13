@@ -12,6 +12,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor(access= AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
+@Builder
 public class AccountNotificationEntity {
 
 
@@ -19,7 +20,7 @@ public class AccountNotificationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long acctNotificationID;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="acctID", referencedColumnName = "acctID")
     private AccountEntity account;
 
@@ -43,12 +44,19 @@ public class AccountNotificationEntity {
     @Column(name="accountNotificationCategory")
     @Enumerated(EnumType.STRING)
     private AccountNotificationCategory accountNotificationCategory;
-
-
     public AccountNotificationEntity(AccountEntity account, String message, int priority){
         this.account = account;
         this.message = message;
         this.priority = priority;
     }
 
+    public AccountNotificationEntity(AccountEntity account, String title, String message, int priority, boolean isRead, boolean isSevere, AccountNotificationCategory accountNotificationCategory) {
+        this.account = account;
+        this.title = title;
+        this.message = message;
+        this.priority = priority;
+        this.isRead = isRead;
+        this.isSevere = isSevere;
+        this.accountNotificationCategory = accountNotificationCategory;
+    }
 }

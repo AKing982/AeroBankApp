@@ -6,16 +6,49 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import axios from "axios";
 import NotificationBell from "./NotificationBell";
 
+const NotificationCategory = {
+    TRANSACTION_ALERT: "TransactionAlert",
+    BALANCE_UPDATE: "BalanceUpdate",
+    ACCOUNT_SECURITY: "AccountSecurity",
+    PAYMENT_REMINDER: "PaymentReminder",
+    SCHEDULED_MAINTENANCE: "ScheduledMaintenance",
+    ACCOUNT_UPDATE: "AccountUpdate"
+};
 
-export default function Account({ color, accountCode, accountName, balance, pending, available, notificationCount, onAccountClick, isSelected, backgroundImageUrl})
+const testNotifications = [
+    {
+        id: 1,
+        title: "Payment Received",
+        message: "You have received a payment of $150 from John Doe.",
+        category: NotificationCategory.TRANSACTION_ALERT
+    },
+    {
+        id: 2,
+        title: "Account Alert",
+        message: "Your account balance is lower than $100.",
+        category: NotificationCategory.BALANCE_UPDATE
+    },
+    {
+        id: 3,
+        title: "Scheduled Maintenance",
+        message: "Our banking services will be unavailable this Sunday from 2 AM to 5 AM due to scheduled maintenance.",
+        category: NotificationCategory.SCHEDULED_MAINTENANCE
+    },
+    {
+        id: 4,
+        title: "New Offer",
+        message: "A new savings account with an attractive interest rate is available now. Check it out!",
+        category: NotificationCategory.ACCOUNT_UPDATE
+    }
+];
+
+export default function Account({ color, accountCode, accountName, balance, pending, available, notifications, onNotificationClick, notificationCount, onAccountClick, isSelected, backgroundImageUrl})
 {
-    const [notifications, setNotifications] = useState([]);
+
 
     const handleClick = () => {
         onAccountClick(accountCode);
     };
-
-
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -27,23 +60,8 @@ export default function Account({ color, accountCode, accountName, balance, pend
         // Send a request to fetch notifications for the account with accountID
         event.stopPropagation();
         console.log('Notification Clicked');
-       // onNotificationClick(accountCode);
-        fetchAccountNotifications();
-
+        onNotificationClick(accountCode);
     };
-
-    const fetchAccountNotifications = async () => {
-        const acctID = sessionStorage.getItem('AccountID');
-        try{
-            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/notifications/${acctID}`);
-            console.log('Notification Response: ', response.data);
-            setNotifications(response.data);
-
-        }catch(error)
-        {
-            console.error('Error fetching Account Notifications: ', error);
-        }
-    }
 
     const defaultColor = '#9e9e9e'; // Default color if none is provided
     const avatarColor = color || defaultColor; // Use provided color or default
@@ -89,9 +107,9 @@ export default function Account({ color, accountCode, accountName, balance, pend
                 <Card sx={{ bgcolor: 'white', p: 2, mr: 2, minWidth: 200, position: 'relative' }}>
                     {notificationCount > 0 && (
                        <NotificationBell
-                           notificationCount={1}
-                           notifications={["Hello"]}
-                           onBellClick={fetchAccountNotifications} />
+                           notificationCount={notificationCount}
+                           notifications={notifications}
+                           onBellClick={onNotificationClick} />
                     )}
                     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                         <Avatar sx={avatarStyle}>

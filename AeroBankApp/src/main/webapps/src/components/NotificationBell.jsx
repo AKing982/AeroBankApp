@@ -2,28 +2,16 @@ import {Badge, IconButton, List, ListItem, ListItemText, Popover} from "@mui/mat
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import {useState} from "react";
 
-const testNotifications = [
-    {
-        id: 1,
-        title: "Payment Received",
-        message: "You have received a payment of $150 from John Doe."
-    },
-    {
-        id: 2,
-        title: "Account Alert",
-        message: "Your account balance is lower than $100."
-    },
-    {
-        id: 3,
-        title: "Scheduled Maintenance",
-        message: "Our banking services will be unavailable this Sunday from 2 AM to 5 AM due to scheduled maintenance."
-    },
-    {
-        id: 4,
-        title: "New Offer",
-        message: "A new savings account with an attractive interest rate is available now. Check it out!"
-    }
-];
+
+
+const notificationColors = {
+    TransactionAlert: "#4caf50", // Green
+    BalanceUpdate: "#2196f3", // Blue
+    AccountSecurity: "#f44336", // Red
+    PaymentReminder: "#ffeb3b", // Yellow
+    ScheduledMaintenance: "#9c27b0", // Purple
+    AccountUpdate: "#3f51b5" // Indigo
+};
 
 
 function NotificationBell({notificationCount, notifications, onBellClick}){
@@ -63,9 +51,18 @@ function NotificationBell({notificationCount, notifications, onBellClick}){
                 }}
             >
                 <List>
-                    {testNotifications.map((notification, index) => (
-                        <ListItem key={index} button>
-                            <ListItemText primary={notification.title} secondary={notification.message} />
+                    {notifications.map((notification, index) => (
+                        <ListItem
+                            key={index}
+                            button
+                            style={{ backgroundColor: notificationColors[notification.category] || "#ffffff" }}
+                        >
+                            <ListItemText
+                                primary={notification.title}
+                                secondary={notification.message}
+                                primaryTypographyProps={{ style: { color: "#fff" } }}
+                                secondaryTypographyProps={{ style: { color: "#fff" } }}
+                            />
                         </ListItem>
                     ))}
                 </List>

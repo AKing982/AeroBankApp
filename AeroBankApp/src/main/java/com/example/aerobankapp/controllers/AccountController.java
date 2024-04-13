@@ -9,6 +9,7 @@ import com.example.aerobankapp.services.AccountNotificationService;
 import com.example.aerobankapp.services.AccountPropertiesService;
 import com.example.aerobankapp.services.AccountServiceImpl;
 import com.example.aerobankapp.workbench.AccountIDResponse;
+import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import com.example.aerobankapp.workbench.AccountNotificationResponse;
 import com.example.aerobankapp.workbench.NotificationRequest;
 import com.example.aerobankapp.workbench.utilities.AccountCreationRequest;
@@ -131,7 +132,9 @@ public class AccountController {
     @GetMapping("/notifications/{acctID}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAccountNotifications(@PathVariable int acctID){
-        return ResponseEntity.ok("Fetching Account Notifications for accountID: " + acctID);
+
+        List<AccountNotificationEntity> accountNotificationEntities = accountNotificationService.getUnreadAccountNotifications(acctID);
+        return ResponseEntity.ok(accountNotificationEntities);
     }
 
     /**
@@ -146,10 +149,28 @@ public class AccountController {
                 .acctID(notificationRequest.getAccountID())
                 .build();
 
-        AccountNotificationEntity accountNotificationEntity = new AccountNotificationEntity(account, notificationRequest.getMessage(), notificationRequest.getPriority());
-        AccountNotificationResponse accountNotificationResponse = new AccountNotificationResponse(account.getAcctID(), notificationRequest.getMessage(), notificationRequest.getPriority());
-        List<AccountNotificationResponse> accountNotificationEntities = List.of(accountNotificationResponse);
-        return ResponseEntity.ok("Sent Test Request: " + accountNotificationEntities);
+        AccountNotificationEntity accountNotificationEntity = new AccountNotificationEntity(account, notificationRequest.getTitle(), notificationRequest.getMessage(), notificationRequest.getPriority(), notificationRequest.isRead(), notificationRequest.isSevere(), notificationRequest.getAccountNotificationCategory());
+
+        accountNotificationService.save(accountNotificationEntity);
+        return ResponseEntity.ok("Account Notification Saved Successfully.");
+    }
+
+    @GetMapping("/notifications/unread/{acctID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> fetchUnreadAccountNotifications(@PathVariable int acctID){
+        return null;
+    }
+
+    @GetMapping("/notifications/read/{acctID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> fetchReadAccountNotifications(@PathVariable int acctID){
+        return null;
+    }
+
+    @GetMapping("/notifications/category")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> fetchAccountNotificationsByCategory(@RequestParam AccountNotificationCategory category){
+        return null;
     }
 
     @PostMapping("/{accountID}")

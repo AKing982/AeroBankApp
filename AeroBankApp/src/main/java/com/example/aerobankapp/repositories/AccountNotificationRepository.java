@@ -25,9 +25,15 @@ public interface AccountNotificationRepository extends JpaRepository<AccountNoti
     @Query("SELECT e FROM AccountNotificationEntity e WHERE e.account.acctID=:acctID AND e.isRead=true")
     List<AccountNotificationEntity> findReadAccountNotifications(@Param("acctID") int acctID);
 
+    @Query("SELECT e FROM AccountNotificationEntity e WHERE e.account.acctID=:acctID AND e.isRead=false")
+    List<AccountNotificationEntity> findUnreadAccountNotifications(@Param("acctID") int acctID);
+
     @Query("SELECT e FROM AccountNotificationEntity e WHERE e.account.acctID=:acctID AND e.isRead=:isRead")
     List<AccountNotificationEntity> findAccountNotificationsByIsRead(@Param("acctID") int acctID, @Param("isRead") boolean isRead);
 
     @Query("SELECT e FROM AccountNotificationEntity e WHERE e.accountNotificationCategory=:category")
     List<AccountNotificationEntity> findAccountNotificationsByCategory(@Param("category")AccountNotificationCategory category);
+
+    @Query("SELECT e FROM AccountNotificationEntity e WHERE e.account.acctID=:acctID AND e.accountNotificationCategory=:category")
+    List<AccountNotificationEntity> findAccountNotificationsByAcctAndCategory(@Param("acctID") int acctID, @Param("category") AccountNotificationCategory category);
 }

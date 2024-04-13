@@ -3,6 +3,42 @@ import axios from "axios";
 import Account from "./Account";
 import {CircularProgress} from "@mui/material";
 
+const testNotifications = [
+    {
+        id: 1,
+        title: "Payment Received",
+        message: "You have received a payment of $150 from John Doe.",
+        category: NotificationCategory.TRANSACTION_ALERT
+    },
+    {
+        id: 2,
+        title: "Account Alert",
+        message: "Your account balance is lower than $100.",
+        category: NotificationCategory.BALANCE_UPDATE
+    },
+    {
+        id: 3,
+        title: "Scheduled Maintenance",
+        message: "Our banking services will be unavailable this Sunday from 2 AM to 5 AM due to scheduled maintenance.",
+        category: NotificationCategory.SCHEDULED_MAINTENANCE
+    },
+    {
+        id: 4,
+        title: "New Offer",
+        message: "A new savings account with an attractive interest rate is available now. Check it out!",
+        category: NotificationCategory.ACCOUNT_UPDATE
+    }
+];
+
+const NotificationCategory = {
+    TRANSACTION_ALERT: "TransactionAlert",
+    BALANCE_UPDATE: "BalanceUpdate",
+    ACCOUNT_SECURITY: "AccountSecurity",
+    PAYMENT_REMINDER: "PaymentReminder",
+    SCHEDULED_MAINTENANCE: "ScheduledMaintenance",
+    ACCOUNT_UPDATE: "AccountUpdate"
+};
+
 
 export default function AccountListView({updateAccountID})
 {
@@ -11,6 +47,8 @@ export default function AccountListView({updateAccountID})
     const [selectedAccount, setSelectedAccount] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [fullName, setFullName] = useState('');
+    const [notifications, setNotifications] = useState([]);
+    const [notificationsByAccount, setNotificationsByAccount] = useState([]);
 
     const username = sessionStorage.getItem('username');
 
@@ -27,7 +65,7 @@ export default function AccountListView({updateAccountID})
             console.log('Going inside fetchAccountIDByUserID');
             fetchAccountIDByUserID();
         }
-    }, [selectedAccount])
+    }, [selectedAccount]);
 
     const fetchAccountIDByUserID = () => {
         const userID = sessionStorage.getItem('userID');
@@ -41,6 +79,34 @@ export default function AccountListView({updateAccountID})
             .catch(error => {
                 console.error('There was an error fetching a random acctID: ', error);
             });
+    }
+
+    useEffect(() => {
+        if(accountData.length > 0){
+            accountData.forEach(account => {
+                fetchAccountNotifications(account.accountID);
+            });
+        }
+    }, [accountData]);
+
+    const fetchAccountNotifications = async (accountID) => {
+        try{
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/notifications/${accountID}`);
+            if(Array.isArray(response.data)){
+                console.log('Notification Response: ', response.data);
+                setNotificationsByAccount(prev => ({
+                    ...prev,
+                    [accountID]: response.data
+                }));
+            }else{
+                console.error('Expected an array of notifications, but received: ', response.data);
+                setNotifications([]);
+            }
+
+        }catch(error)
+        {
+            console.error('Error fetching Account Notifications: ', error);
+        }
     }
 
     const fetchAccountID = () => {
@@ -98,6 +164,11 @@ export default function AccountListView({updateAccountID})
         return first + " " + last;
     }
 
+    const handleNotificationClick = () => {
+        let accountID = sessionStorage.getItem('AccountID');
+        fetchAccountNotifications(1);
+    }
+
 
     const handleAccountButtonClick = (accountCode) => {
        setSelectedAccount(accountCode);
@@ -123,7 +194,9 @@ export default function AccountListView({updateAccountID})
                                 available={account.availableAmount}
                                 backgroundImageUrl={account.acctImage}
                                 onAccountClick={handleAccountButtonClick}
-                                notificationCount={6}
+                                notificationCount={notificationsByAccount[account.accountID]?.length || 0}
+                                notifications={notificationsByAccount[account.accountID] || []}
+                                onNotificationClick={() => handleNotificationClick(account.accountID)}
                                 color={account.acctColor}
                                 isSelected={selectedAccount === account.accountCode}
                             />
