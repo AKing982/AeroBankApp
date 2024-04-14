@@ -3,6 +3,16 @@ import axios from "axios";
 import Account from "./Account";
 import {CircularProgress} from "@mui/material";
 
+const NotificationCategory = {
+    TRANSACTION_ALERT: "TransactionAlert",
+    BALANCE_UPDATE: "BalanceUpdate",
+    ACCOUNT_SECURITY: "AccountSecurity",
+    PAYMENT_REMINDER: "PaymentReminder",
+    SCHEDULED_MAINTENANCE: "ScheduledMaintenance",
+    ACCOUNT_UPDATE: "AccountUpdate"
+};
+
+
 const testNotifications = [
     {
         id: 1,
@@ -29,15 +39,6 @@ const testNotifications = [
         category: NotificationCategory.ACCOUNT_UPDATE
     }
 ];
-
-const NotificationCategory = {
-    TRANSACTION_ALERT: "TransactionAlert",
-    BALANCE_UPDATE: "BalanceUpdate",
-    ACCOUNT_SECURITY: "AccountSecurity",
-    PAYMENT_REMINDER: "PaymentReminder",
-    SCHEDULED_MAINTENANCE: "ScheduledMaintenance",
-    ACCOUNT_UPDATE: "AccountUpdate"
-};
 
 
 export default function AccountListView({updateAccountID})
@@ -194,8 +195,8 @@ export default function AccountListView({updateAccountID})
                                 available={account.availableAmount}
                                 backgroundImageUrl={account.acctImage}
                                 onAccountClick={handleAccountButtonClick}
-                                notificationCount={notificationsByAccount[account.accountID]?.length || 0}
-                                notifications={notificationsByAccount[account.accountID] || []}
+                                notificationCount={1}
+                                notifications={notifications}
                                 onNotificationClick={() => handleNotificationClick(account.accountID)}
                                 color={account.acctColor}
                                 isSelected={selectedAccount === account.accountCode}

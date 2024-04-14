@@ -5,7 +5,7 @@ import {useState} from "react";
 
 
 const notificationColors = {
-    TransactionAlert: "#4caf50", // Green
+    TRANSACTION_ALERT: "#4caf50", // Green
     BalanceUpdate: "#2196f3", // Blue
     AccountSecurity: "#f44336", // Red
     PaymentReminder: "#ffeb3b", // Yellow

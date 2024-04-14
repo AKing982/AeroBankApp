@@ -114,7 +114,7 @@ class AccountNotificationServiceImplTest {
     @Test
     public void testGetAccountNotificationByMessage_ValidAcctID_ValidMessage(){
 
-        AccountNotificationEntity accountNotification = buildAccountNotification(1, "Payment Received", "You have recieved a payment of $150 from John Doe.", 1, false, false, AccountNotificationCategory.PAYMENT_RECIEVED);
+        AccountNotificationEntity accountNotification = buildAccountNotification(1, "Payment Received", "You have recieved a payment of $150 from John Doe.", 1, false, false, AccountNotificationCategory.PAYMENT_RECEIVED);
         when(accountNotificationRepository.findAccountNotificationsByMessage(1, "You have recieved a payment of $150 from John Doe.")).thenReturn(List.of(accountNotification));
 
         List<AccountNotificationEntity> actualNotifications = accountNotificationService.getAccountNotificationsByMessage(1, "You have recieved a payment of $150 from John Doe.");
