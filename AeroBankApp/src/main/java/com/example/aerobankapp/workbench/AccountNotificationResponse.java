@@ -11,6 +11,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class AccountNotificationResponse implements Serializable
 {
+    private Long notificationID;
     private int accountID;
 
     private String title;
@@ -28,5 +29,16 @@ public class AccountNotificationResponse implements Serializable
         this.isRead = isRead;
         this.isSevere = isSevere;
         this.accountNotificationCategory = category;
+    }
+
+    public AccountNotificationResponse(Long notificationID, int accountID, String title, String message, int priority, boolean isRead, boolean isSevere, AccountNotificationCategory accountNotificationCategory) {
+        this.notificationID = notificationID;
+        this.accountID = accountID;
+        this.title = title;
+        this.message = message;
+        this.priority = priority;
+        this.isRead = isRead;
+        this.isSevere = isSevere;
+        this.accountNotificationCategory = accountNotificationCategory;
     }
 }

@@ -85,9 +85,6 @@ public class TransactionStatementServiceImpl implements TransactionStatementServ
     @Override
     public List<TransactionStatementEntity> getPendingTransactionsByAcctID(int acctID) {
         List<TransactionStatementEntity> pendingTransactions = transactionStatementRepository.getPendingTransactionStatementsByAcctID(acctID);
-        if(pendingTransactions.isEmpty()){
-            throw new NonEmptyListRequiredException("Unable to retrieve pending transactions from empty list.");
-        }
         return pendingTransactions;
     }
 

@@ -7,7 +7,8 @@ import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import com.example.aerobankapp.workbench.AccountNotificationResponse;
 import com.example.aerobankapp.workbench.utilities.response.AccountCodeResponse;
 import com.example.aerobankapp.workbench.utilities.response.AccountResponse;
-import org.jetbrains.annotations.NotNull;
+
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,13 +67,14 @@ public class AccountControllerUtil {
 
     @NotNull
     private static AccountNotificationResponse getAccountNotificationResponse(AccountNotificationEntity accountNotification, int acctID) {
+        Long notificationID = accountNotification.getAcctNotificationID();
         String title = accountNotification.getTitle();
         String message = accountNotification.getMessage();
         int priority = accountNotification.getPriority();
         boolean isRead = accountNotification.isRead();
         boolean isSevere = accountNotification.isSevere();
         AccountNotificationCategory category = accountNotification.getAccountNotificationCategory();
-        return new AccountNotificationResponse(acctID, title, message, priority, isRead, isSevere, category);
+        return new AccountNotificationResponse(notificationID, acctID, title, message, priority, isRead, isSevere, category);
     }
 
     public static List<AccountResponse> getAccountResponseList(List<AccountPropertiesEntity> accountProperties, List<AccountEntity> entityList, BigDecimal pending, BigDecimal available)

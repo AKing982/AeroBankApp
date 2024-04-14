@@ -9,6 +9,7 @@ public enum AccountNotificationCategory
     PAYMENT_REMINDER("PaymentReminder"),
     PAYMENT_RECEIVED("PaymentReceived"),
     SCHEDULED_MAINTENANCE("ScheduledMaintenance"),
+    SYSTEM_TEST("SystemTest"),
     ACCOUNT_UPDATE("AccountUpdate");
 
     private String code;

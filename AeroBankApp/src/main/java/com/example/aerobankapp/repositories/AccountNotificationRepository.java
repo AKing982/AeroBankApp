@@ -3,6 +3,7 @@ package com.example.aerobankapp.repositories;
 import com.example.aerobankapp.entity.AccountNotificationEntity;
 import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -36,4 +37,12 @@ public interface AccountNotificationRepository extends JpaRepository<AccountNoti
 
     @Query("SELECT e FROM AccountNotificationEntity e WHERE e.account.acctID=:acctID AND e.accountNotificationCategory=:category")
     List<AccountNotificationEntity> findAccountNotificationsByAcctAndCategory(@Param("acctID") int acctID, @Param("category") AccountNotificationCategory category);
+
+    @Query("DELETE FROM AccountNotificationEntity e WHERE e.account.acctID=:acctID AND e.acctNotificationID=:id")
+    @Modifying
+    void deleteAccountNotification(@Param("acctID") int acctID, @Param("id") Long notificationID);
+
+    @Query("UPDATE AccountNotificationEntity e SET e.isRead=true WHERE e.account.acctID=:acctID AND e.acctNotificationID=:id")
+    @Modifying
+    void updateAccountNotificationAsRead(@Param("acctID") int acctID, @Param("id") Long notificationID);
 }

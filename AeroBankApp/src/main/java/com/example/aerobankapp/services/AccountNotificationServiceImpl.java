@@ -6,6 +6,7 @@ import com.example.aerobankapp.repositories.AccountNotificationRepository;
 import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -138,5 +139,17 @@ public class AccountNotificationServiceImpl implements AccountNotificationServic
             throw new NonEmptyListRequiredException("Unable to find Account Notifications for accountID: " + acctID + " and category: " + category);
         }
         return accountNotificationEntities;
+    }
+
+    @Override
+    @Transactional
+    public void deleteAccountNotification(int acctID, Long notificationID) {
+        accountNotificationRepository.deleteAccountNotification(acctID, notificationID);
+    }
+
+    @Override
+    @Transactional
+    public void updateAccountNotificationAsRead(int acctID, Long notificationID) {
+        accountNotificationRepository.updateAccountNotificationAsRead(acctID, notificationID);
     }
 }

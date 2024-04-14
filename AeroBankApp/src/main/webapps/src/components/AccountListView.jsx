@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import Account from "./Account";
 import {CircularProgress} from "@mui/material";
+import io from 'socket.io-client';
 
 const NotificationCategory = {
     TRANSACTION_ALERT: "TransactionAlert",
@@ -50,6 +51,9 @@ export default function AccountListView({updateAccountID})
     const [fullName, setFullName] = useState('');
     const [notifications, setNotifications] = useState([]);
     const [notificationsByAccount, setNotificationsByAccount] = useState([]);
+    const [popOverOpen, setPopOverOpen] = useState(false);
+    const [currentNotification, setCurrentNotification] = useState([]);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const username = sessionStorage.getItem('username');
 
@@ -159,6 +163,7 @@ export default function AccountListView({updateAccountID})
                         }
                     });
 
+                    console.log('New Notifications By Account: ', newNotificationsByAccount);
                     setNotificationsByAccount(newNotificationsByAccount);
 
                     console.log('NotificationsByAccount: ', notificationsByAccount);
@@ -175,6 +180,8 @@ export default function AccountListView({updateAccountID})
         // Clear the timeout when the component unmounts or the dependency changes
         return () => clearTimeout(timeout);
     }, [username]); // Depend on 'username' to refetch when it changes
+
+
 
     useEffect(() => {
         const fetchUsersFullName = async () => {
@@ -195,8 +202,9 @@ export default function AccountListView({updateAccountID})
         return first + " " + last;
     }
 
-    const handleNotificationClick = (accountID) => {
-        fetchAccountNotifications(accountID);
+    const handleNotificationClick = (event) => {
+        setAnchorEl(event.currentTarget);
+
     }
 
 
@@ -214,7 +222,7 @@ export default function AccountListView({updateAccountID})
             ) : (
                 <div className="account-list-body">
                     {accountData.map((account) => {
-                        const accountNotifications = notificationsByAccount[account.acctID] || [];
+                        const accountNotifications = notificationsByAccount[account.acctID];
                         return (
                             <Account
                                 key={account.id}
@@ -227,7 +235,7 @@ export default function AccountListView({updateAccountID})
                                 onAccountClick={handleAccountButtonClick}
                                 notificationCount={accountNotifications.length}
                                 notifications={accountNotifications}
-                                onNotificationClick={() => handleNotificationClick(account.acctID)}
+                                onNotificationClick={(event) => handleNotificationClick(event)}
                                 color={account.acctColor}
                                 isSelected={selectedAccount === account.accountCode}
                             />

@@ -44,7 +44,11 @@ const testNotifications = [
 
 export default function Account({ color, accountCode, accountName, balance, pending, available, notifications, onNotificationClick, notificationCount, onAccountClick, isSelected, backgroundImageUrl})
 {
+    const [newNotificationCount, setNewNotificationCount] = useState(notifications.length);
 
+    const handleUpdateNotificationCount = (newCount) => {
+        setNewNotificationCount(newCount);
+    }
 
     const handleClick = () => {
         onAccountClick(accountCode);
@@ -58,9 +62,9 @@ export default function Account({ color, accountCode, accountName, balance, pend
 
     const handleOnNotificationClick = (event) => {
         // Send a request to fetch notifications for the account with accountID
-        event.stopPropagation();
-        console.log('Notification Clicked');
-        onNotificationClick(accountCode);
+      //  event.stopPropagation();
+      //  console.log('Notification Clicked');
+      //  onNotificationClick(accountCode);
     };
 
     const defaultColor = '#9e9e9e'; // Default color if none is provided
@@ -107,9 +111,9 @@ export default function Account({ color, accountCode, accountName, balance, pend
                 <Card sx={{ bgcolor: 'white', p: 2, mr: 2, minWidth: 200, position: 'relative' }}>
                     {notificationCount > 0 && (
                        <NotificationBell
-                           notificationCount={notificationCount}
-                           notifications={notifications}
-                           onBellClick={onNotificationClick} />
+                           notificationCount={newNotificationCount}
+                           initialNotifications={notifications}
+                           onBellClick={handleUpdateNotificationCount} />
                     )}
                     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                         <Avatar sx={avatarStyle}>

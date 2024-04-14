@@ -22,4 +22,8 @@ public interface AccountNotificationService extends ServiceDAOModel<AccountNotif
     List<AccountNotificationEntity> getAccountNotificationsByCategory(AccountNotificationCategory category);
 
     List<AccountNotificationEntity> getAccountNotificationsByAcctAndCategory(int acctID, AccountNotificationCategory category);
+
+    void deleteAccountNotification(int acctID, Long notificationID);
+
+    void updateAccountNotificationAsRead(int acctID, Long notificationID);
 }

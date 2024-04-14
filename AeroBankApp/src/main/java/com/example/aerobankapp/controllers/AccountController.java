@@ -217,6 +217,20 @@ public class AccountController {
         return null;
     }
 
+    @DeleteMapping("/notifications/{acctID}/{notificationID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> deleteNotification(@PathVariable int acctID, @PathVariable Long notificationID){
+        accountNotificationService.deleteAccountNotification(acctID, notificationID);
+        return ResponseEntity.ok("Deleted AccountNotification with acctID: " + acctID + " and accountNotificationID: " + notificationID);
+    }
+
+    @PutMapping("/notifications/update/{acctID}/{notificationID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> updateAccountNotificationAsRead(@PathVariable int acctID, @PathVariable Long notificationID){
+        accountNotificationService.updateAccountNotificationAsRead(acctID, notificationID);
+        return ResponseEntity.ok("Updated Account Notification with acctID: " + acctID + " and notificationID: " + notificationID + " as read");
+    }
+
 
     private boolean isInvalidAccountCode(String accountCode)
     {
