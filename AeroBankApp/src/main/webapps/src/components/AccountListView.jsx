@@ -165,9 +165,8 @@ export default function AccountListView({updateAccountID})
         return first + " " + last;
     }
 
-    const handleNotificationClick = () => {
-        let accountID = sessionStorage.getItem('AccountID');
-        fetchAccountNotifications(1);
+    const handleNotificationClick = (accountID) => {
+        fetchAccountNotifications(accountID);
     }
 
 
@@ -197,7 +196,7 @@ export default function AccountListView({updateAccountID})
                                 onAccountClick={handleAccountButtonClick}
                                 notificationCount={1}
                                 notifications={notifications}
-                                onNotificationClick={() => handleNotificationClick(account.accountID)}
+                                onNotificationClick={() => handleNotificationClick(account.id)}
                                 color={account.acctColor}
                                 isSelected={selectedAccount === account.accountCode}
                             />

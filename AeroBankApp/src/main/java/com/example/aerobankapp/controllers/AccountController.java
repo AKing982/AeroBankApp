@@ -55,6 +55,7 @@ public class AccountController {
     public ResponseEntity<?> getUserAccounts(@PathVariable String user) {
         List<AccountEntity> accountEntities = accountDAO.findByUserName(user);
         List<AccountPropertiesEntity> accountPropertiesEntities = accountPropertiesService.findByUserName(user);
+        
         accountEntities.forEach(results -> System.out.println(results.getClass().getName()));
         List<AccountResponse> accountResponseList = getAccountResponseList(accountPropertiesEntities, accountEntities, new BigDecimal("1200"), new BigDecimal("1150"));
 
@@ -134,7 +135,8 @@ public class AccountController {
     public ResponseEntity<?> getAccountNotifications(@PathVariable int acctID){
 
         List<AccountNotificationEntity> accountNotificationEntities = accountNotificationService.getUnreadAccountNotifications(acctID);
-        return ResponseEntity.ok(accountNotificationEntities);
+        List<AccountNotificationResponse> accountNotificationResponses = getAccountNotificationResponseList(accountNotificationEntities);
+        return ResponseEntity.ok(accountNotificationResponses);
     }
 
     /**

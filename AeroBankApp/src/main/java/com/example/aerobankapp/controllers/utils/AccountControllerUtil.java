@@ -1,9 +1,13 @@
 package com.example.aerobankapp.controllers.utils;
 
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.AccountNotificationEntity;
 import com.example.aerobankapp.entity.AccountPropertiesEntity;
+import com.example.aerobankapp.workbench.AccountNotificationCategory;
+import com.example.aerobankapp.workbench.AccountNotificationResponse;
 import com.example.aerobankapp.workbench.utilities.response.AccountCodeResponse;
 import com.example.aerobankapp.workbench.utilities.response.AccountResponse;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +52,27 @@ public class AccountControllerUtil {
             accountCodeResponses.add(accountCodeResponse);
         }
         return accountCodeResponses;
+    }
+    
+    public static List<AccountNotificationResponse> getAccountNotificationResponseList(List<AccountNotificationEntity> accountNotificationEntities){
+        List<AccountNotificationResponse> accountNotificationResponses = new ArrayList<>();
+        for(AccountNotificationEntity accountNotification : accountNotificationEntities){
+            int acctID = accountNotification.getAccount().getAcctID();
+            AccountNotificationResponse accountNotificationResponse = getAccountNotificationResponse(accountNotification, acctID);
+            accountNotificationResponses.add(accountNotificationResponse);
+        }
+        return accountNotificationResponses;
+    }
+
+    @NotNull
+    private static AccountNotificationResponse getAccountNotificationResponse(AccountNotificationEntity accountNotification, int acctID) {
+        String title = accountNotification.getTitle();
+        String message = accountNotification.getMessage();
+        int priority = accountNotification.getPriority();
+        boolean isRead = accountNotification.isRead();
+        boolean isSevere = accountNotification.isSevere();
+        AccountNotificationCategory category = accountNotification.getAccountNotificationCategory();
+        return new AccountNotificationResponse(acctID, title, message, priority, isRead, isSevere, category);
     }
 
     public static List<AccountResponse> getAccountResponseList(List<AccountPropertiesEntity> accountProperties, List<AccountEntity> entityList, BigDecimal pending, BigDecimal available)
