@@ -82,23 +82,13 @@ export default function AccountListView({updateAccountID})
             });
     }
 
-    useEffect(() => {
-        if(accountData.length > 0){
-            accountData.forEach(account => {
-                fetchAccountNotifications(account.accountID);
-            });
-        }
-    }, [accountData]);
 
     const fetchAccountNotifications = async (accountID) => {
         try{
             const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/notifications/${accountID}`);
             if(Array.isArray(response.data)){
                 console.log('Notification Response: ', response.data);
-                setNotificationsByAccount(prev => ({
-                    ...prev,
-                    [accountID]: response.data
-                }));
+                setNotificationsByAccount(response.data);
             }else{
                 console.error('Expected an array of notifications, but received: ', response.data);
                 setNotifications([]);
@@ -109,6 +99,10 @@ export default function AccountListView({updateAccountID})
             console.error('Error fetching Account Notifications: ', error);
         }
     }
+
+    useEffect(() => {
+
+    })
 
     const fetchAccountID = () => {
         const accountCode = selectedAccount;
@@ -128,23 +122,59 @@ export default function AccountListView({updateAccountID})
             });
     }
 
+
     useEffect(() => {
+        // Set a timeout to delay the fetch operation
         const timeout = setTimeout(() => {
-            const fetchAccounts = async () => {
-                axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/${username}`)
-                    .then(response => {
-                        console.log('Fetching Accounts: ', response.data);
-                        setAccountData(response.data);
-                        setIsLoading(false);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching account data: ', error);
-                        setIsLoading(false);
+            const fetchAccountsAndNotifications = async () => {
+                setIsLoading(true);
+                try {
+                    // Fetch account data
+                    const accountsResponse = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/${username}`);
+                    const accounts = accountsResponse.data;
+                    setAccountData(accounts);
+                    console.log('Accounts Response: ', accountsResponse.data);
+                    console.log('AccountID List: ', accountsResponse.data.acctID);
+
+                    // Prepare and execute all notifications fetch operations
+                    const notificationPromises = accounts.map(account =>
+                        axios.get(`http://localhost:8080/AeroBankApp/api/accounts/notifications/${account.acctID}`)
+                            .catch(error => {
+                                console.error(`Failed to fetch notifications for account ID ${account.acctID}:`, error);
+                                return { error };  // Return an error object to handle this case gracefully
+                            })
+                    );
+
+                    // Resolve all notification promises
+                    const notificationResponses = await Promise.allSettled(notificationPromises);
+                    console.log('Notification Response: ', notificationResponses);
+
+                    // Initialize notifications map from resolved promises
+                    const newNotificationsByAccount = {};
+                    notificationResponses.forEach((result, index) => {
+                        if (result.status === 'fulfilled' && Array.isArray(result.value.data)) {
+                            newNotificationsByAccount[accounts[index].acctID] = result.value.data;
+                        } else {
+                            newNotificationsByAccount[accounts[index].acctID] = []; // Handle errors or no notifications case
+                        }
                     });
-            }
-            fetchAccounts();
-        }, 2000)
-    }, [username]);
+
+                    setNotificationsByAccount(newNotificationsByAccount);
+
+                    console.log('NotificationsByAccount: ', notificationsByAccount);
+                } catch (error) {
+                    console.error('Error fetching account data or notifications:', error);
+                } finally {
+                    setIsLoading(false); // Ensure the loading state is updated correctly
+                }
+            };
+
+            fetchAccountsAndNotifications();
+        }, 2000); // Delay fetching by 2000 ms
+
+        // Clear the timeout when the component unmounts or the dependency changes
+        return () => clearTimeout(timeout);
+    }, [username]); // Depend on 'username' to refetch when it changes
 
     useEffect(() => {
         const fetchUsersFullName = async () => {
@@ -184,6 +214,7 @@ export default function AccountListView({updateAccountID})
             ) : (
                 <div className="account-list-body">
                     {accountData.map((account) => {
+                        const accountNotifications = notificationsByAccount[account.acctID] || [];
                         return (
                             <Account
                                 key={account.id}
@@ -194,9 +225,9 @@ export default function AccountListView({updateAccountID})
                                 available={account.availableAmount}
                                 backgroundImageUrl={account.acctImage}
                                 onAccountClick={handleAccountButtonClick}
-                                notificationCount={1}
-                                notifications={notifications}
-                                onNotificationClick={() => handleNotificationClick(account.id)}
+                                notificationCount={accountNotifications.length}
+                                notifications={accountNotifications}
+                                onNotificationClick={() => handleNotificationClick(account.acctID)}
                                 color={account.acctColor}
                                 isSelected={selectedAccount === account.accountCode}
                             />

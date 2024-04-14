@@ -113,9 +113,6 @@ public class AccountNotificationServiceImpl implements AccountNotificationServic
             throw new InvalidAccountIDException("Caught Invalid AccountID: " + acctID);
         }
         List<AccountNotificationEntity> accountNotificationEntities = accountNotificationRepository.findUnreadAccountNotifications(acctID);
-        if(accountNotificationEntities.isEmpty()){
-            throw new NonEmptyListRequiredException("Unable to find Account Notifications for accountID: " + acctID);
-        }
         return accountNotificationEntities;
     }
 

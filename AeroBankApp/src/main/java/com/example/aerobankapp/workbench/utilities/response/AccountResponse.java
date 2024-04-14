@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @EqualsAndHashCode
 public class AccountResponse implements Serializable
 {
+    private int acctID;
     private String accountCode;
     private BigDecimal balance;
     private BigDecimal pendingAmount;
@@ -28,6 +29,17 @@ public class AccountResponse implements Serializable
         this.balance = bal;
         this.pendingAmount = pending;
         this.availableAmount = available;
+        this.accountName = accountName;
+        this.acctColor = acctColor;
+        this.acctImage = acctImage;
+    }
+
+    public AccountResponse(int acctID, String accountCode, BigDecimal balance, BigDecimal pendingAmount, BigDecimal availableAmount, String accountName, String acctColor, String acctImage) {
+        this.acctID = acctID;
+        this.accountCode = accountCode;
+        this.balance = balance;
+        this.pendingAmount = pendingAmount;
+        this.availableAmount = availableAmount;
         this.accountName = accountName;
         this.acctColor = acctColor;
         this.acctImage = acctImage;

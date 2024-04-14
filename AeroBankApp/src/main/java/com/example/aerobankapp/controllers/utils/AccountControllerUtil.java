@@ -88,6 +88,7 @@ public class AccountControllerUtil {
         }
 
         for (AccountEntity entity : entityList) {
+            int acctID = entity.getAcctID();
             BigDecimal balance = entity.getBalance();
             String acctCode = entity.getAccountCode();
             String accountName = entity.getAccountName();
@@ -98,7 +99,7 @@ public class AccountControllerUtil {
             String acctImage = prop != null ? prop.getImage_url() : null; // Use image_url as acctImage
             LOGGER.info("Account Color: " + acctColor);
             LOGGER.info("Account Image: " + acctImage);
-            AccountResponse accountResponse = new AccountResponse(
+            AccountResponse accountResponse = new AccountResponse(acctID,
                     acctCode, balance, pending, available, accountName, acctColor, acctImage);
             accountResponseList.add(accountResponse);
         }
