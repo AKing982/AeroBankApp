@@ -2,7 +2,6 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import Account from "./Account";
 import {CircularProgress} from "@mui/material";
-import io from 'socket.io-client';
 
 const NotificationCategory = {
     TRANSACTION_ALERT: "TransactionAlert",

@@ -13,6 +13,7 @@ import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import com.example.aerobankapp.workbench.AccountNotificationResponse;
 import com.example.aerobankapp.workbench.NotificationRequest;
 import com.example.aerobankapp.workbench.utilities.AccountCreationRequest;
+import com.example.aerobankapp.workbench.utilities.AccountNameResponse;
 import com.example.aerobankapp.workbench.utilities.BalanceRequest;
 import com.example.aerobankapp.workbench.utilities.response.AccountCodeResponse;
 import com.example.aerobankapp.workbench.utilities.response.AccountResponse;
@@ -29,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.example.aerobankapp.controllers.utils.AccountControllerUtil.*;
 
@@ -60,6 +63,21 @@ public class AccountController {
         List<AccountResponse> accountResponseList = getAccountResponseList(accountPropertiesEntities, accountEntities, new BigDecimal("1200"), new BigDecimal("1150"));
 
         return ResponseEntity.ok(accountResponseList);
+    }
+
+    @GetMapping("/list/{userID}")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public ResponseEntity<?> fetchAccountNamesByUserID(@PathVariable int userID){
+        List<AccountEntity> accountEntities = accountDAO.getListOfAccountsByUserID(userID);
+
+        List<String> accountNames = accountEntities.stream()
+                .map(AccountEntity::getAccountName)
+                .filter(Objects::nonNull)
+                .toList();
+
+        List<AccountNameResponse> accountNamesList = getAccountNamesResponseList(accountNames);
+        return ResponseEntity.ok(accountNamesList);
     }
 
     @GetMapping("/data/codes/{user}")
@@ -236,6 +254,4 @@ public class AccountController {
     {
         return accountCode == null || accountCode.length() != 2;
     }
-
-
 }

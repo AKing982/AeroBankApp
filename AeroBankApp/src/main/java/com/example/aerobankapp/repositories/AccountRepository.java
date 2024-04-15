@@ -34,7 +34,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("SELECT COUNT(a) FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
     Long getNumberOfAccounts(@Param("username") String username);
 
-    @Query("SELECT a.accountCode FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
+    @Query("SELECT CONCAT(a.accountCode, ' - ', a.accountName) AS AccountCodeName FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
     List<String> findAccountCodesByUserName(@Param("username") String username);
 
     @Query("SELECT e.balance FROM AccountEntity e WHERE e.accountCode =:acctCode AND e.userID =:userID")
@@ -42,6 +42,9 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
 
     @Query("SELECT a.acctID FROM AccountEntity a WHERE a.userID =:userID AND a.accountCode =:acctCode")
     Integer getAccountIDByAcctCodeAndUserID(@Param("userID") int userID, @Param("acctCode") String acctCode);
+
+    @Query("SELECT a FROM AccountEntity a WHERE a.userID=:userID")
+    List<AccountEntity> findAccountsByUserID(@Param("userID") int userID);
 
     @Modifying
     @Query("UPDATE AccountEntity a SET a.balance =:balance WHERE a.acctID =:acctID")

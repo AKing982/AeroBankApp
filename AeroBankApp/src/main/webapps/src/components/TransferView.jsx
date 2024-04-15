@@ -1,9 +1,9 @@
 import AccountSelect from "./AccountSelect";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import '../TransferView.css';
 import {
     Alert,
-    Button,
+    Button, CircularProgress,
     FormControl, FormControlLabel,
     FormLabel,
     InputLabel,
@@ -15,9 +15,11 @@ import {
 } from "@mui/material";
 import {Container} from "@mui/system";
 import axios from "axios";
+import Dialog from "@mui/material/Dialog";
 
 export default function TransferView()
 {
+    let userID = sessionStorage.getItem('userID');
     const [transferType, setTransferType] = useState('ownAccount');
     const [fromAccount, setFromAccount] = useState('');
     const [toAccount, setToAccount] = useState('');
@@ -25,10 +27,32 @@ export default function TransferView()
     const [recipientAccountCode, setRecipientAccountCode] = useState('');
     const [amount, setAmount] = useState('');
     const [transferDate, setTransferDate] = useState('');
+    const [transferTime, setTransferTime] = useState('');
     const [description, setDescription] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackBarMessage, setSnackBarMessage] = useState('');
     const [snackBarSeverity, setSnackBarSeverity] = useState('error');
+    const [accountNamesList, setAccountNamesList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        setIsLoading(true);
+        const timeoutId = setTimeout(() => {
+            axios.get(`http://localhost:8080/AeroBankApp/api/accounts/list/${userID}`)
+                .then(response => {
+                    console.log('Account Names List: ', response.data);
+                    setAccountNamesList(response.data);
+                })
+                .catch(error => {
+                    console.error('Unable to fetch List of Account Names due to the following: ', error);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                })
+        }, 2000);
+
+        return () => clearTimeout(timeoutId);
+    }, [userID]);
 
     const handleTransfer = () => {
         // Handle the transfer logic
@@ -122,10 +146,25 @@ export default function TransferView()
                     <Select
                         value={fromAccount}
                         onChange={(e) => setFromAccount(e.target.value)}
+                        displayEmpty
+                        renderValue={selected => {
+                            if (selected.length === 0) {
+                                return <em>Please wait while we load your accounts...</em>;
+                            }
+                            return selected;
+                        }}
                     >
-                        {/* Populate with user's accounts */}
-                        <MenuItem value="checking">Checking</MenuItem>
-                        <MenuItem value="savings">Savings</MenuItem>
+                        {isLoading ? (
+                            <MenuItem disabled value="">
+                                <CircularProgress size={24} />
+                            </MenuItem>
+                        ) : (
+                            accountNamesList.map((account) => (
+                                <MenuItem key={account.id} value={account.accountName}>
+                                    {account.accountName}
+                                </MenuItem>
+                            ))
+                        )}
                     </Select>
                 </FormControl>
 
@@ -135,10 +174,25 @@ export default function TransferView()
                         <Select
                             value={toAccount}
                             onChange={(e) => setToAccount(e.target.value)}
+                            displayEmpty
+                            renderValue={selected => {
+                                if(selected.length === 0){
+                                    return <em>Please wait while we load your accounts...</em>;
+                                }
+                                return selected;
+                            }}
                         >
-                            {/* Populate with user's other accounts */}
-                            <MenuItem value="otherChecking">Other Checking</MenuItem>
-                            <MenuItem value="otherSavings">Other Savings</MenuItem>
+                            {isLoading ? (
+                                <MenuItem disabled value="">
+                                    <CircularProgress size={24} />
+                                </MenuItem>
+                            ) : (
+                                accountNamesList.filter(account => account.accountName !== fromAccount).map((account) => (
+                                        <MenuItem key={account.id} value={account.accountName}>
+                                            {account.accountName}
+                                        </MenuItem>
+                                ))
+                            )}
                         </Select>
                     </FormControl>
                 ) : (
@@ -178,6 +232,15 @@ export default function TransferView()
                     InputLabelProps={{ shrink: true }}
                     value={transferDate}
                     onChange={(e) => setTransferDate(e.target.value)}
+                    style={{ marginBottom: '20px' }}
+                />
+
+                <TextField
+                    fullWidth
+                    type="time"
+                    label="Transfer Time"
+                    value={transferTime}
+                    onChange={(e) => setTransferTime(e.target.value)}
                     style={{ marginBottom: '20px' }}
                 />
 

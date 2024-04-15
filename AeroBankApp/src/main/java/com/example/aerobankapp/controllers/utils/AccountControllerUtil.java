@@ -5,6 +5,7 @@ import com.example.aerobankapp.entity.AccountNotificationEntity;
 import com.example.aerobankapp.entity.AccountPropertiesEntity;
 import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import com.example.aerobankapp.workbench.AccountNotificationResponse;
+import com.example.aerobankapp.workbench.utilities.AccountNameResponse;
 import com.example.aerobankapp.workbench.utilities.response.AccountCodeResponse;
 import com.example.aerobankapp.workbench.utilities.response.AccountResponse;
 
@@ -31,6 +32,15 @@ public class AccountControllerUtil {
             accountCodeResponseList.add(accountCodeResponse);
         }
         return accountCodeResponseList;
+    }
+
+    public static List<AccountNameResponse> getAccountNamesResponseList(List<String> accountNames){
+        List<AccountNameResponse> accountNameResponses = new ArrayList<>();
+        for(String names : accountNames){
+            AccountNameResponse accountNameResponse = new AccountNameResponse(names);
+            accountNameResponses.add(accountNameResponse);
+        }
+        return accountNameResponses;
     }
 
 

@@ -4,10 +4,7 @@ import com.example.aerobankapp.dto.UserDTO;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.UserServiceImpl;
-import com.example.aerobankapp.workbench.utilities.AccountNumberResponse;
-import com.example.aerobankapp.workbench.utilities.Role;
-import com.example.aerobankapp.workbench.utilities.UserRequest;
-import com.example.aerobankapp.workbench.utilities.UserResponse;
+import com.example.aerobankapp.workbench.utilities.*;
 import com.example.aerobankapp.workbench.utilities.response.UserServiceResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -169,7 +166,7 @@ public class UserServiceController {
     public ResponseEntity<?> doesAccountNumberExist(@PathVariable String accountNumber){
         boolean exists = userService.doesAccountNumberExist(accountNumber);
 
-        return ResponseEntity.ok(exists);
+        return ResponseEntity.ok(new AccountNumberBoolResponse(exists));
     }
 
     @GetMapping("/generateAccountNumber/{username}")

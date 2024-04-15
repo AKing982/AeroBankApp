@@ -128,10 +128,6 @@ public class AccountServiceImpl implements AccountService
     @Override
     public List<String> getListOfAccountCodes(String user) {
         List<String> accountCodesList = accountRepository.findAccountCodesByUserName(user);
-        if(accountCodesList.isEmpty())
-        {
-
-        }
         return accountRepository.findAccountCodesByUserName(user);
     }
 
@@ -163,6 +159,14 @@ public class AccountServiceImpl implements AccountService
         }
         Object[] topResult = result.getContent().get(0);
         return (Integer) topResult[0];
+    }
+
+    @Override
+    public List<AccountEntity> getListOfAccountsByUserID(int userID) {
+        if(userID > 0){
+            return accountRepository.findAccountsByUserID(userID);
+        }
+        return List.of();
     }
 
     @Override
