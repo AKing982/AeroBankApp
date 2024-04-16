@@ -128,7 +128,9 @@ export default function TransferView()
         }
         setIsLoadingAccountCodes(true);
         try{
-            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/codes/${accountNumber}`)
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/codes/${accountNumber}`, {
+                timeout: 4000
+            });
             console.log('ToAccountCode List: ', response.data);
             if(Array.isArray(response.data) && response.data.length > 0){
                 setAccountCodeList(response.data);
@@ -324,12 +326,17 @@ export default function TransferView()
                                                 value={selectedToAccountCode}
                                                 onChange={(e) => setSelectedToAccountCode(e.target.value)}
                                                 displayEmpty
-                                            >
-                                                {accountCodeList.map((code) => (
-                                                    <MenuItem key={code.id} value={code.accountCode}>
-                                                        {code.accountCode}
-                                                    </MenuItem>
-                                                ))}
+                                            >{isLoadingAccountCodes ? (
+                                                <MenuItem value="" disabled>
+                                                    <CircularProgress size={24}/>
+                                                </MenuItem>
+                                            ) : (accountCodeList.map((code) => (
+                                                        <MenuItem key={code.id} value={code.accountCode}>
+                                                            {code.accountCode}
+                                                        </MenuItem>
+                                            ))
+
+                                                )}
                                             </Select>
                                         </FormControl>
                                     ) : null}
