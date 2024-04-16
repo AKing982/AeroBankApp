@@ -132,6 +132,11 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    public List<String> getAccountCodeListByAccountNumber(String accountNumber) {
+        return accountRepository.findAccountCodesByAccountNumber(accountNumber);
+    }
+
+    @Override
     public int getAccountIDByAcctCodeAndUserID(int userID, String acctCode) {
         if (!doesAccountCodeExist(acctCode)) {
             throw new IllegalArgumentException("Account Code does not exist.");

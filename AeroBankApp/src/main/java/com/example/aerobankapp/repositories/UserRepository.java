@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long>
 {
-    @Query(value="SELECT EXISTS(SELECT 1 FROM AccountEntity e JOIN e.users u WHERE u.accountNumber LIKE %:accountNum%)")
+    @Query(value="SELECT EXISTS(SELECT 1 FROM AccountEntity e JOIN e.users u WHERE u.accountNumber =:accountNum)")
     boolean doesAccountNumberExist(@Param("accountNum") String acctNum);
 
 

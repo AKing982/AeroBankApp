@@ -37,6 +37,9 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("SELECT CONCAT(a.accountCode, ' - ', a.accountName) AS AccountCodeName FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
     List<String> findAccountCodesByUserName(@Param("username") String username);
 
+    @Query("SELECT a.accountCode FROM AccountEntity a JOIN a.users u WHERE u.accountNumber=:acctNum")
+    List<String> findAccountCodesByAccountNumber(@Param("acctNum") String acctNum);
+
     @Query("SELECT e.balance FROM AccountEntity e WHERE e.accountCode =:acctCode AND e.userID =:userID")
     BigDecimal findBalanceByAccountCodeAndUserID(@Param("acctCode") String acctCode, @Param("userID") int userID);
 

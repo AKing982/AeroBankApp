@@ -34,6 +34,14 @@ export default function TransferView()
     const [snackBarSeverity, setSnackBarSeverity] = useState('error');
     const [accountNamesList, setAccountNamesList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [searchType, setSearchType] = useState('accountNumber');
+    const [toUserNames, setToUserNames] = useState([]);
+    const [selectedToUserName, setSelectedToUserName] = useState('');
+    const [selectedAccountNumber, setSelectedAccountNumber] = useState('');
+    const [accountNumberExists, setAccountNumberExists] = useState(false);
+    const [selectedToAccountCode, setSelectedToAccountCode] = useState('');
+    const [accountCodeList, setAccountCodeList] = useState([]);
+    const [isLoadingAccountCodes, setIsLoadingAccountCodes] = useState(false);
 
     useEffect(() => {
         setIsLoading(true);
@@ -53,6 +61,29 @@ export default function TransferView()
 
         return () => clearTimeout(timeoutId);
     }, [userID]);
+
+    useEffect(() => {
+        setIsLoading(true);
+        const timeoutId = setTimeout(() => {
+            axios.get(`http://localhost:8080/AeroBankApp/api/users/user-names-list`)
+                .then(response => {
+                    setToUserNames(response.data);
+                })
+                .catch(error => {
+                    console.error('There was an error fetching the list of usernames: ', error);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                })
+        }, 2000);
+        return () => clearTimeout(timeoutId);
+    }, [])
+
+    useEffect(() => {
+        if(accountNumberExists){
+            fetchToAccountCodesList(selectedAccountNumber);
+        }
+    }, [accountNumberExists, selectedAccountNumber])
 
     const handleTransfer = () => {
         // Handle the transfer logic
@@ -89,18 +120,51 @@ export default function TransferView()
 
     };
 
+    const fetchToAccountCodesList = async (accountNumber) => {
+        if(!accountNumber){
+            return;
+        }
+        setIsLoadingAccountCodes(true);
+        try{
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/codes/${accountNumber}`)
+            console.log('ToAccountCode List: ', response.data);
+            if(Array.isArray(response.data) && response.data.length > 0){
+                setAccountCodeList(response.data);
+            }
+
+        }catch(error){
+            console.error('There was an error fetching Account Codes: ', error);
+        }finally{
+            setIsLoadingAccountCodes(false);
+        }
+    }
+
     const fetchAccountNumberExists = async (accountNumber) => {
         try{
             const response = await axios.get(`http://localhost:8080/AeroBankApp/api/users/exists/${accountNumber}`)
-
-            if(response.data){
-
+            console.log('Does Account Number Exist: ', response.data);
+            if(response.data.exists)
+            {
+                setAccountNumberExists(true);
+                setOpenSnackbar(true);
+                setSnackBarSeverity('success');
+                setSnackBarMessage('An Account Number Exists');
+            }else{
+                setAccountNumberExists(false);
+                setOpenSnackbar(true);
+                setSnackBarMessage('Account Number not found.');
             }
 
         }catch(error){
             console.error('There was an error determining if account number exists: ', error);
         }
     }
+
+    useEffect(() => {
+        if(searchType === 'accountNumber' && selectedAccountNumber.trim()){
+            fetchAccountNumberExists(selectedAccountNumber);
+        }
+    }, [selectedAccountNumber, searchType]);
 
     function getTransferRequest(TransferType){
         switch(TransferType){
@@ -121,6 +185,14 @@ export default function TransferView()
 
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
+    };
+
+    const handleKeyPressOnAccountNumber = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent form submission if form logic is tied to Enter key
+            console.log('Enter clicked');
+            fetchAccountNumberExists(selectedAccountNumber); // Trigger your function to check account existence
+        }
     };
 
     return (
@@ -195,27 +267,69 @@ export default function TransferView()
                             )}
                         </Select>
                     </FormControl>
-                ) : (
-                    <>
-                        <TextField
-                            fullWidth
-                            label="Recipient's Account Number"
-                            type="text"
-                            value={recipientAccount}
-                            onChange={(e) => setRecipientAccount(e.target.value)}
-                            style={{ marginBottom: '20px' }}
-                        />
-                        <TextField
-                            fullWidth
-                            type="text"
-                            label="Recipient's Account Code"
-                            value={recipientAccountCode}
-                            onChange={(e) => setRecipientAccountCode(e.target.value)}
-                            style={{ marginBottom: '20px' }}
-                        />
-                    </>
-                )}
+                ) : (transferType === 'otherUser' && (
+                        <>
+                            <FormControl component="fieldset" style={{ marginBottom: '20px' }}>
+                                <FormLabel component="legend">Search Recipient By</FormLabel>
+                                <RadioGroup
+                                    row
+                                    aria-label="searchType"
+                                    name="searchTypeRadioGroup"
+                                    value={searchType}
+                                    onChange={(e) => setSearchType(e.target.value)}
+                                >
+                                    <FormControlLabel value="accountNumber" control={<Radio />} label="Account Number" />
+                                    <FormControlLabel value="username" control={<Radio />} label="Username" />
+                                </RadioGroup>
+                            </FormControl>
 
+                            {searchType === 'username' ? (
+                                <FormControl fullWidth style={{ marginBottom: '20px' }}>
+                                    <InputLabel>Recipient's Username</InputLabel>
+                                    <Select
+                                        value={selectedToUserName}
+                                        onChange={(e) => setSelectedToUserName(e.target.value)}
+                                        displayEmpty
+                                    >
+                                        {toUserNames.map((username) => (
+                                            <MenuItem key={username} value={username}>
+                                                {username}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            ) : (
+                                <>
+                                    <TextField
+                                        fullWidth
+                                        label="Recipient's Account Number"
+                                        type="text"
+                                        value={selectedAccountNumber}
+                                        onChange={(e) => setSelectedAccountNumber(e.target.value)}
+                                        onKeyDown={handleKeyPressOnAccountNumber}
+                                        style={{ marginBottom: '20px' }}
+                                    />
+                                    {accountNumberExists ? (
+                                        <FormControl fullWidth style={{ marginBottom: '20px' }}>
+                                            <InputLabel>User's Account Codes</InputLabel>
+                                            <Select
+                                                value={selectedToAccountCode}
+                                                onChange={(e) => setSelectedToAccountCode(e.target.value)}
+                                                displayEmpty
+                                            >
+                                                {accountCodeList.map((code) => (
+                                                    <MenuItem key={code.id} value={code.accountCode}>
+                                                        {code.accountCode}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    ) : null}
+                                </>
+                            )}
+                        </>
+                    )
+                )}
                 <TextField
                     fullWidth
                     label="Amount"

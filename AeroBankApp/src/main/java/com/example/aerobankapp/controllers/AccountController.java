@@ -65,6 +65,15 @@ public class AccountController {
         return ResponseEntity.ok(accountResponseList);
     }
 
+    @GetMapping("/codes/{accountNumber}")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public ResponseEntity<?> fetchAccountCodesByAccountNumber(@PathVariable String accountNumber){
+        List<String> accountCodes = accountDAO.getAccountCodeListByAccountNumber(accountNumber);
+        List<AccountCodeResponse> accountCodeResponseList = getAccountCodesAsResponse(accountCodes);
+        return ResponseEntity.ok(accountCodeResponseList);
+    }
+
     @GetMapping("/list/{userID}")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
