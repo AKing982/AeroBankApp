@@ -71,6 +71,9 @@ export default function TransferView()
                 .then(response => {
                     console.log('To UserName List: ', response.data);
                     setToUserNames(response.data);
+                    if(response.data.length < 0){
+                        console.log('No Such Data found in the response.');
+                    }
                 })
                 .catch(error => {
                     console.error('There was an error fetching the list of usernames: ', error);
@@ -91,36 +94,64 @@ export default function TransferView()
     const handleTransfer = () => {
         // Handle the transfer logic
 
-        if(!fromAccount){
-            setOpenSnackbar(true);
-            setSnackBarSeverity('error');
-            setSnackBarMessage('Please Select a From Account.');
-        }
+        console.log('Search Type: ', searchType);
+        if(searchType === 'accountNumber'){
+            if(!selectedAccountNumber){
+                setOpenSnackbar(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Please select a recipient account number');
+            }
+            if(!amount){
+                setOpenSnackbar(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Please enter an amount.');
+            }
 
-        if(!toAccount){
-            setOpenSnackbar(true);
-            setSnackBarSeverity('error');
-            setSnackBarMessage('Please Select a To Account.');
+            if(!transferDate){
+                setOpenSnackbar(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Please choose a transfer date.');
+            }
+            if(!transferTime){
+                setOpenSnackbar(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Please choose a transfer time.');
+            }
+            if(!description){
+                setOpenSnackbar(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Please enter a valid description.');
+            }
         }
+        if(searchType === 'username'){
+            if(!selectedToUserName){
+                setOpenSnackbar(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Please select a recipient username.');
+            }
+            if(!amount){
+                setOpenSnackbar(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Please enter an amount.');
+            }
 
-        if(!amount){
-            setOpenSnackbar(true);
-            setSnackBarSeverity('error');
-            setSnackBarMessage('Please Enter a valid amount.');
+            if(!transferDate){
+                setOpenSnackbar(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Please choose a transfer date.');
+            }
+            if(!transferTime){
+                setOpenSnackbar(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Please choose a transfer time.');
+            }
+            if(!description){
+                setOpenSnackbar(true);
+                setSnackBarSeverity('error');
+                setSnackBarMessage('Please enter a valid description.');
+            }
+
         }
-
-        if(!transferDate){
-            setOpenSnackbar(true);
-            setSnackBarSeverity('error');
-            setSnackBarMessage('Please choose a transfer date.');
-        }
-
-        if(!description){
-            setOpenSnackbar(true);
-            setSnackBarSeverity('error');
-            setSnackBarMessage('Please enter a description.');
-        }
-
     };
 
     const fetchAccountCodesUserNameList = async (username) => {
@@ -358,6 +389,8 @@ export default function TransferView()
                             <>
                                 <TextField
                                     fullWidth
+                                    multiline
+                                    rows={1}
                                     label="Recipient's Account Number"
                                     type="text"
                                     value={selectedAccountNumber}
