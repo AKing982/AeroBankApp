@@ -4,6 +4,7 @@ import com.example.aerobankapp.dto.UserDTO;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.UserServiceImpl;
+import com.example.aerobankapp.workbench.UserNameResponse;
 import com.example.aerobankapp.workbench.utilities.*;
 import com.example.aerobankapp.workbench.utilities.response.UserServiceResponse;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,10 +56,20 @@ public class UserServiceController {
 
     @GetMapping("/user-names-list")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<String>> getListOfUserNames()
+    public ResponseEntity<List<UserNameResponse>> getListOfUserNames()
     {
         List<String> userNamesList = userService.getListOfUserNames();
-        return ResponseEntity.ok(userNamesList);
+        List<UserNameResponse> userNameResponses = getUserNameResponseList(userNamesList);
+        return ResponseEntity.ok(userNameResponses);
+    }
+
+    private List<UserNameResponse> getUserNameResponseList(List<String> userNameList){
+        List<UserNameResponse> userNameResponses = new ArrayList<>();
+        for(String user : userNameList){
+            UserNameResponse userNameResponse = new UserNameResponse(user);
+            userNameResponses.add(userNameResponse);
+        }
+        return userNameResponses;
     }
 
     @GetMapping("/{username}")

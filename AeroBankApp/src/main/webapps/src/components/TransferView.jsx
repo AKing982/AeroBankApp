@@ -20,6 +20,7 @@ import Dialog from "@mui/material/Dialog";
 export default function TransferView()
 {
     let userID = sessionStorage.getItem('userID');
+    let currentUser = sessionStorage.getItem('username');
     const [transferType, setTransferType] = useState('ownAccount');
     const [fromAccount, setFromAccount] = useState('');
     const [toAccount, setToAccount] = useState('');
@@ -67,6 +68,7 @@ export default function TransferView()
         const timeoutId = setTimeout(() => {
             axios.get(`http://localhost:8080/AeroBankApp/api/users/user-names-list`)
                 .then(response => {
+                    console.log('To UserName List: ', response.data);
                     setToUserNames(response.data);
                 })
                 .catch(error => {
@@ -292,11 +294,16 @@ export default function TransferView()
                                         onChange={(e) => setSelectedToUserName(e.target.value)}
                                         displayEmpty
                                     >
-                                        {toUserNames.map((username) => (
-                                            <MenuItem key={username} value={username}>
-                                                {username}
-                                            </MenuItem>
-                                        ))}
+                                        {toUserNames.filter(users => users.username !== currentUser).map((user) => (
+                                            <MenuItem key={user.id} value={user.username}>
+                                                {user.username}
+                                            </MenuItem>))}
+
+                                        {/*{toUserNames.map((username) => (*/}
+                                        {/*    <MenuItem key={username} value={username}>*/}
+                                        {/*        {username}*/}
+                                        {/*    </MenuItem>*/}
+                                        {/*))}*/}
                                     </Select>
                                 </FormControl>
                             ) : (
