@@ -109,6 +109,14 @@ public class AccountController {
         return ResponseEntity.ok(accountTypeMap);
     }
 
+    @GetMapping("/id/{accountName}")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public ResponseEntity<?> fetchAccountIDFromAccountName(@PathVariable String accountName){
+        int accountID = accountDAO.getAccountIDByAccountName(accountName);
+        return ResponseEntity.ok(new AccountIDResponse(accountID));
+    }
+
     @GetMapping("/{userID}/{accountCode}")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody

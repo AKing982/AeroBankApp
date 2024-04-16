@@ -66,6 +66,9 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("SELECT COUNT(a) FROM AccountEntity a WHERE a.acctID =:acctID")
     int doesAccountIDExist(@Param("acctID") int acctID);
 
+    @Query("SELECT a.acctID FROM AccountEntity a WHERE a.accountName=:name")
+    int findAccountIDByAccountName(@Param("name") String accountName);
+
     @Query("SELECT a.acctID FROM AccountEntity a WHERE a.userID=:userID")
     List<Integer> getListOfAccountIDsByUserID(@Param("userID") int userID);
 }

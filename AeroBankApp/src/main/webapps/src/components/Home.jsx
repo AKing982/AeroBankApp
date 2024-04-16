@@ -16,6 +16,7 @@ import DashBoard from "./DashBoard";
 import {Button, Typography} from "@mui/material";
 import {Box} from "@mui/system";
 import * as PropTypes from "prop-types";
+import TransactionSummary from "./TransactionSummary";
 
 
 
@@ -238,6 +239,7 @@ export default function Home()
         'Make a Deposit': <DepositView />,
         'Make a Withdraw': <WithdrawView />,
         'Make a Transfer': <TransferView />,
+        'Transaction Summary': <TransactionSummary />,
         'Bill Pay': <BillPayView />,
         'Settings': <SettingsView />
     };

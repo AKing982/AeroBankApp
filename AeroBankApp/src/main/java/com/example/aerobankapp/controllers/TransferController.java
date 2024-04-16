@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/transfers")
+@RequestMapping("/api/transfers")
 @CrossOrigin(value="http://localhost:3000")
 public class TransferController
 {
@@ -28,6 +28,6 @@ public class TransferController
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> saveTransfer(@RequestBody @Valid TransferDTO transferDTO)
     {
-        return null;
+        return ResponseEntity.ok("Transfer Request submitted successfully.");
     }
 }

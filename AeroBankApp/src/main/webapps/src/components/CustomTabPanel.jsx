@@ -14,6 +14,8 @@ import {useNavigate} from "react-router-dom";
 import GenerateReports from "./GenerateReports";
 import AuditLogs from "./AuditLogs";
 import AccountSummaries from "./AccountSummaries";
+import TransactionSummary from "./TransactionSummary";
+
 
 function CustomTabPanel({children, value, index, ...other})
 {
@@ -64,9 +66,10 @@ export default function BasicTabs({role, accounts}) {
                     <Tab label="Make Deposit" {...a11yProps(2)} sx={{fontWeight: 'bold'}}/>
                     <Tab label="Make a Withdrawal" {...a11yProps(3)} sx={{fontWeight: 'bold'}} />
                     <Tab label="Make a Transfer" {...a11yProps(4)} sx={{fontWeight: 'bold'}}/>
-                    <Tab label="Bill Pay" {...a11yProps(5)} sx={{fontWeight: 'bold'}}/>
-                    <Tab label="Account Activity" {...a11yProps(6)} sx={{fontWeight: 'bold'}}/>
-                    {role === 'ADMIN' &&  <Tab label="Settings" {...a11yProps(7)} sx={{fontWeight: 'bold'}}/>}
+                    <Tab label="Transaction Summary" {...a11yProps(5)} sx={{fontWeight: 'bold'}}/>
+                    <Tab label="Bill Pay" {...a11yProps(6)} sx={{fontWeight: 'bold'}}/>
+                    <Tab label="Account Activity" {...a11yProps(7)} sx={{fontWeight: 'bold'}}/>
+                    {role === 'ADMIN' &&  <Tab label="Settings" {...a11yProps(8)} sx={{fontWeight: 'bold'}}/>}
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
@@ -85,19 +88,22 @@ export default function BasicTabs({role, accounts}) {
                 <TransferView />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={5}>
-                <BillPayPage />
+                <TransactionSummary />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={6}>
+                <BillPayPage />
+            </CustomTabPanel>
+            <CustomTabPanel value={value} index={7}>
                 <AccountSummaries />
             </CustomTabPanel>
             {role === 'ADMIN' && (
-                <CustomTabPanel value={value} index={7}>
+                <CustomTabPanel value={value} index={8}>
                 <SettingsView />
             </CustomTabPanel>
 
             )}
             {role === 'AUDITOR' && (
-                <CustomTabPanel value={value} index={7}>
+                <CustomTabPanel value={value} index={9}>
                     <AccountSummaries />
                     <AuditLogs />
                 </CustomTabPanel>

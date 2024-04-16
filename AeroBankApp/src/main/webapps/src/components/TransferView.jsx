@@ -1,13 +1,16 @@
-import AccountSelect from "./AccountSelect";
 import {useEffect, useState} from "react";
 import '../TransferView.css';
 import {
     Alert,
-    Button, CircularProgress,
-    FormControl, FormControlLabel,
+    Button,
+    CircularProgress,
+    FormControl,
+    FormControlLabel,
     FormLabel,
     InputLabel,
-    MenuItem, Radio, RadioGroup,
+    MenuItem,
+    Radio,
+    RadioGroup,
     Select,
     Snackbar,
     TextField,
@@ -15,7 +18,6 @@ import {
 } from "@mui/material";
 import {Container} from "@mui/system";
 import axios from "axios";
-import Dialog from "@mui/material/Dialog";
 
 export default function TransferView()
 {
@@ -44,6 +46,9 @@ export default function TransferView()
     const [accountCodeList, setAccountCodeList] = useState([]);
     const [isLoadingAccountCodes, setIsLoadingAccountCodes] = useState(false);
     const [accountCodeUserList, setAccountCodeUserList] = useState([]);
+    const [fromAccountID, setFromAccountID] = useState(0);
+
+
 
     useEffect(() => {
         setIsLoading(true);
@@ -91,66 +96,79 @@ export default function TransferView()
         }
     }, [accountNumberExists, selectedAccountNumber])
 
-    const handleTransfer = () => {
+    const handleTransfer = async () => {
         // Handle the transfer logic
 
         console.log('Search Type: ', searchType);
         if(searchType === 'accountNumber'){
-            if(!selectedAccountNumber){
-                setOpenSnackbar(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('Please select a recipient account number');
-            }
-            if(!amount){
-                setOpenSnackbar(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('Please enter an amount.');
-            }
-
-            if(!transferDate){
-                setOpenSnackbar(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('Please choose a transfer date.');
-            }
-            if(!transferTime){
-                setOpenSnackbar(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('Please choose a transfer time.');
-            }
-            if(!description){
-                setOpenSnackbar(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('Please enter a valid description.');
-            }
+            validateAccountNumber(selectedAccountNumber);
+            validateTransferCriteria(amount, transferDate, transferTime, description);
         }
         if(searchType === 'username'){
-            if(!selectedToUserName){
-                setOpenSnackbar(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('Please select a recipient username.');
-            }
-            if(!amount){
-                setOpenSnackbar(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('Please enter an amount.');
-            }
+            validateSelectedToUserName(selectedToUserName);
+            validateTransferCriteria(amount, transferDate, transferTime, description);
+        }
 
-            if(!transferDate){
-                setOpenSnackbar(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('Please choose a transfer date.');
-            }
-            if(!transferTime){
-                setOpenSnackbar(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('Please choose a transfer time.');
-            }
-            if(!description){
-                setOpenSnackbar(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('Please enter a valid description.');
-            }
+        const isUserToUser = transferType === 'otherUser';
+        const request = await createTransferRequest(fromAccount, amount, selectedAccountNumber, selectedToAccountCode, description, transferDate, transferTime, isUserToUser);
 
+        sendTransferRequestToServer(request);
+    };
+
+    const validateSelectedToUserName = (user) => {
+        if(!user){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please select a recipient username.');
+        }
+    };
+
+    const createTransferRequest = async (fromAccount, transferAmount, accountNumber, accountCode, description, transferDate, TransferTime, isUserToUser) => {
+
+        const accountID = await fetchFromAccountID(fromAccount);
+
+        return {
+            fromAccountID: accountID,
+            fromUserID: userID,
+            transferAmount: transferAmount,
+            accountNumber: accountNumber,
+            accountCode: accountCode,
+            transferDescription: description,
+            transferDate: transferDate,
+            transferTime: transferTime,
+            isUserToUserTransfer: isUserToUser
+        };
+    }
+
+    const validateAccountNumber = (accountNumber) => {
+        if(!accountNumber){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please select a recipient account number');
+        }
+    };
+
+    const validateTransferCriteria = (amount, transferDate, transferTime, description) => {
+        if(!amount){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please enter an amount.');
+        }
+
+        if(!transferDate){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please choose a transfer date.');
+        }
+        if(!transferTime){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please choose a transfer time.');
+        }
+        if(!description){
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('Please enter a valid description.');
         }
     };
 
@@ -171,6 +189,22 @@ export default function TransferView()
             console.error('There was an error fetching Account Codes by username: ', error);
         }finally{
             setIsLoadingAccountCodes(false);
+        }
+    };
+
+    const fetchFromAccountID = async (accountName) => {
+        console.log('Fetching Account ID for account Name: ', accountName);
+        if(!accountName){
+            return;
+        }
+        try{
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/id/${accountName}`)
+            if(response.status === 200 || response.status === 201){
+                console.log('FromAccount response: ', response.data);
+                return response.data.accountID;
+            }
+        }catch(error){
+            console.error('Unable to fetch accountID for accountName due to the following error: ', error);
         }
     }
 
@@ -217,6 +251,38 @@ export default function TransferView()
         }
     }
 
+    const sendTransferRequestToServer = async (request) => {
+        console.log('Saving Request: ', request);
+        try {
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/transfers/save`, request)
+            if(response.status === 200 || response.status === 201){
+                console.log('Transfer Successful: ', response.data);
+                setOpenSnackbar(true);
+                setSnackBarSeverity('success');
+                setSnackBarMessage('Transfer was successfully saved.');
+            }else{
+                throw new Error(`Unexpected status response: ${response.status}`);
+            }
+        }catch(error){
+            console.error('There was an error saving your Transfer: ', error);
+            setOpenSnackbar(true);
+            setSnackBarSeverity('error');
+            setSnackBarMessage('There was an error saving the Transfer. Please try again...');
+            if (error.response) {
+                // Server responded with a status code that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                // Request was made but no response was received
+                console.log(error.request);
+            } else {
+                // An error occurred in setting up the request
+                console.log('Error', error.message);
+            }
+        }
+    }
+
     useEffect(() => {
         if(searchType === 'accountNumber' && selectedAccountNumber.trim()){
             fetchAccountNumberExists(selectedAccountNumber);
@@ -229,16 +295,6 @@ export default function TransferView()
         }
     }, [selectedToUserName, searchType]);
 
-    function getTransferRequest(TransferType){
-        switch(TransferType){
-            case 'To Another User':
-
-            case  'To Own Account':
-
-            default:
-                console.log('Selected option not valid');
-        }
-    }
 
     function snackBar(isOpen, errorMessage, message){
         setOpenSnackbar(isOpen);
@@ -364,7 +420,7 @@ export default function TransferView()
                                 </FormControl>
                                 {selectedToUserName && (
                                     <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                                        <InputLabel>User's Account Codes</InputLabel>
+                                        <InputLabel>Recipient's Account Codes</InputLabel>
                                         <Select
                                             value={selectedToAccountCode}
                                             onChange={(e) => setSelectedToAccountCode(e.target.value)}
@@ -400,7 +456,7 @@ export default function TransferView()
                                 />
                                 {accountNumberExists ? (
                                     <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                                        <InputLabel>User's Account Codes</InputLabel>
+                                        <InputLabel>Recipient's Account Codes</InputLabel>
                                         <Select
                                             value={selectedToAccountCode}
                                             onChange={(e) => setSelectedToAccountCode(e.target.value)}

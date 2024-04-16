@@ -217,6 +217,11 @@ public class AccountServiceImpl implements AccountService
         return accountIDList.get(randomAcctID);
     }
 
+    @Override
+    public int getAccountIDByAccountName(final String accountName) {
+        return accountRepository.findAccountIDByAccountName(accountName);
+    }
+
     private boolean doesAccountCodeExist(String acctCode)
     {
         int count = accountRepository.doesAccountCodeExist(acctCode);
