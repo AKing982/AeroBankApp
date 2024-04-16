@@ -43,6 +43,7 @@ export default function TransferView()
     const [selectedToAccountCode, setSelectedToAccountCode] = useState('');
     const [accountCodeList, setAccountCodeList] = useState([]);
     const [isLoadingAccountCodes, setIsLoadingAccountCodes] = useState(false);
+    const [accountCodeUserList, setAccountCodeUserList] = useState([]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -122,6 +123,26 @@ export default function TransferView()
 
     };
 
+    const fetchAccountCodesUserNameList = async (username) => {
+        if(!username){
+            return;
+        }
+        setIsLoadingAccountCodes(true);
+        try{
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/codes/${username}`, {
+                timeout: 4000
+            });
+            console.log('Account Codes UserName List: ', response.data);
+            if(Array.isArray(response.data) && response.data.length > 0){
+                setAccountCodeUserList(response.data);
+            }
+        }catch(error){
+            console.error('There was an error fetching Account Codes by username: ', error);
+        }finally{
+            setIsLoadingAccountCodes(false);
+        }
+    }
+
     const fetchToAccountCodesList = async (accountNumber) => {
         if(!accountNumber){
             return;
@@ -171,6 +192,12 @@ export default function TransferView()
         }
     }, [selectedAccountNumber, searchType]);
 
+    useEffect(() => {
+        if(searchType === 'username' && selectedToUserName.trim()){
+            fetchAccountCodesUserNameList(selectedToUserName);
+        }
+    }, [selectedToUserName, searchType]);
+
     function getTransferRequest(TransferType){
         switch(TransferType){
             case 'To Another User':
@@ -201,7 +228,7 @@ export default function TransferView()
     };
 
     return (
-        <Container style={{ marginTop: '20px'}}>
+        <Container style={{ marginTop: '20px' }}>
             <Typography variant="h4">Make a Transfer</Typography>
             <form style={{ marginTop: '20px' }}>
                 <FormControl component="fieldset" style={{ marginBottom: '20px' }}>
@@ -253,7 +280,7 @@ export default function TransferView()
                             onChange={(e) => setToAccount(e.target.value)}
                             displayEmpty
                             renderValue={selected => {
-                                if(selected.length === 0){
+                                if (selected.length === 0) {
                                     return <em>Please wait while we load your accounts...</em>;
                                 }
                                 return selected;
@@ -265,30 +292,31 @@ export default function TransferView()
                                 </MenuItem>
                             ) : (
                                 accountNamesList.filter(account => account.accountName !== fromAccount).map((account) => (
-                                        <MenuItem key={account.id} value={account.accountName}>
-                                            {account.accountName}
-                                        </MenuItem>
+                                    <MenuItem key={account.id} value={account.accountName}>
+                                        {account.accountName}
+                                    </MenuItem>
                                 ))
                             )}
                         </Select>
                     </FormControl>
                 ) : (transferType === 'otherUser' && (
-                        <>
-                            <FormControl component="fieldset" style={{ marginBottom: '20px' }}>
-                                <FormLabel component="legend">Search Recipient By</FormLabel>
-                                <RadioGroup
-                                    row
-                                    aria-label="searchType"
-                                    name="searchTypeRadioGroup"
-                                    value={searchType}
-                                    onChange={(e) => setSearchType(e.target.value)}
-                                >
-                                    <FormControlLabel value="accountNumber" control={<Radio />} label="Account Number" />
-                                    <FormControlLabel value="username" control={<Radio />} label="Username" />
-                                </RadioGroup>
-                            </FormControl>
+                    <>
+                        <FormControl component="fieldset" style={{ marginBottom: '20px' }}>
+                            <FormLabel component="legend">Search Recipient By</FormLabel>
+                            <RadioGroup
+                                row
+                                aria-label="searchType"
+                                name="searchTypeRadioGroup"
+                                value={searchType}
+                                onChange={(e) => setSearchType(e.target.value)}
+                            >
+                                <FormControlLabel value="accountNumber" control={<Radio />} label="Account Number" />
+                                <FormControlLabel value="username" control={<Radio />} label="Username" />
+                            </RadioGroup>
+                        </FormControl>
 
-                            {searchType === 'username' ? (
+                        {searchType === 'username' ? (
+                            <>
                                 <FormControl fullWidth style={{ marginBottom: '20px' }}>
                                     <InputLabel>Recipient's Username</InputLabel>
                                     <Select
@@ -296,55 +324,73 @@ export default function TransferView()
                                         onChange={(e) => setSelectedToUserName(e.target.value)}
                                         displayEmpty
                                     >
-                                        {toUserNames.filter(users => users.username !== currentUser).map((user) => (
+                                        {toUserNames.filter(user => user.username !== currentUser).map((user) => (
                                             <MenuItem key={user.id} value={user.username}>
                                                 {user.username}
-                                            </MenuItem>))}
-
-                                        {/*{toUserNames.map((username) => (*/}
-                                        {/*    <MenuItem key={username} value={username}>*/}
-                                        {/*        {username}*/}
-                                        {/*    </MenuItem>*/}
-                                        {/*))}*/}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                 </FormControl>
-                            ) : (
-                                <>
-                                    <TextField
-                                        fullWidth
-                                        label="Recipient's Account Number"
-                                        type="text"
-                                        value={selectedAccountNumber}
-                                        onChange={(e) => setSelectedAccountNumber(e.target.value)}
-                                        onKeyDown={handleKeyPressOnAccountNumber}
-                                        style={{ marginBottom: '20px' }}
-                                    />
-                                    {accountNumberExists ? (
-                                        <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                                            <InputLabel>User's Account Codes</InputLabel>
-                                            <Select
-                                                value={selectedToAccountCode}
-                                                onChange={(e) => setSelectedToAccountCode(e.target.value)}
-                                                displayEmpty
-                                            >{isLoadingAccountCodes ? (
+                                {selectedToUserName && (
+                                    <FormControl fullWidth style={{ marginBottom: '20px' }}>
+                                        <InputLabel>User's Account Codes</InputLabel>
+                                        <Select
+                                            value={selectedToAccountCode}
+                                            onChange={(e) => setSelectedToAccountCode(e.target.value)}
+                                            displayEmpty
+                                        >
+                                            {isLoadingAccountCodes ? (
                                                 <MenuItem value="" disabled>
-                                                    <CircularProgress size={24}/>
+                                                    <CircularProgress size={24} />
                                                 </MenuItem>
-                                            ) : (accountCodeList.map((code) => (
-                                                        <MenuItem key={code.id} value={code.accountCode}>
-                                                            {code.accountCode}
-                                                        </MenuItem>
-                                            ))
-
-                                                )}
-                                            </Select>
-                                        </FormControl>
-                                    ) : null}
-                                </>
-                            )}
-                        </>
-                    )
-                )}
+                                            ) : (
+                                                accountCodeUserList.map((code) => (
+                                                    <MenuItem key={code.id} value={code.accountCode}>
+                                                        {code.accountCode}
+                                                    </MenuItem>
+                                                ))
+                                            )}
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <TextField
+                                    fullWidth
+                                    label="Recipient's Account Number"
+                                    type="text"
+                                    value={selectedAccountNumber}
+                                    onChange={(e) => setSelectedAccountNumber(e.target.value)}
+                                    onKeyDown={handleKeyPressOnAccountNumber}
+                                    style={{ marginBottom: '20px' }}
+                                />
+                                {accountNumberExists ? (
+                                    <FormControl fullWidth style={{ marginBottom: '20px' }}>
+                                        <InputLabel>User's Account Codes</InputLabel>
+                                        <Select
+                                            value={selectedToAccountCode}
+                                            onChange={(e) => setSelectedToAccountCode(e.target.value)}
+                                            displayEmpty
+                                        >
+                                            {isLoadingAccountCodes ? (
+                                                <MenuItem value="" disabled>
+                                                    <CircularProgress size={24} />
+                                                </MenuItem>
+                                            ) : (
+                                                accountCodeList.map((code) => (
+                                                    <MenuItem key={code.id} value={code.accountCode}>
+                                                        {code.accountCode}
+                                                    </MenuItem>
+                                                ))
+                                            )}
+                                        </Select>
+                                    </FormControl>
+                                ) : null}
+                            </>
+                        )}
+                    </>
+                ))}
                 <TextField
                     fullWidth
                     label="Amount"
@@ -381,9 +427,9 @@ export default function TransferView()
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     style={{ marginBottom: '20px' }}
-                />
+                        />
 
-                <Button variant="contained" color="primary" onClick={handleTransfer}>
+                        <Button variant="contained" color="primary" onClick={handleTransfer}>
                     Submit Transfer
                 </Button>
             </form>
