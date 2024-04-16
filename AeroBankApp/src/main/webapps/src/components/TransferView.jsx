@@ -152,6 +152,7 @@ export default function TransferView()
             }else{
                 setAccountNumberExists(false);
                 setOpenSnackbar(true);
+                setSnackBarSeverity('error');
                 setSnackBarMessage('Account Number not found.');
             }
 
