@@ -460,8 +460,8 @@ class TransferEngineTest {
         transfer.setCurrency(Currency.getInstance(Locale.US));
         transfer.setFromAccountID(fromAccountID);
         transfer.setToAccountID(toAccountID);
-        transfer.setOriginUserID(originUserID);
-        transfer.setTargetUserID(targetUserID);
+        transfer.setFromUserID(originUserID);
+        transfer.setToUserID(targetUserID);
         transfer.setDateScheduled(dateScheduled);
         transfer.setScheduleInterval(interval);
         transfer.setTimeScheduled(time);
@@ -475,8 +475,8 @@ class TransferEngineTest {
         transfer.setTransferID(entity.getTransferID());
         transfer.setTransferType(entity.getTransferType());
         transfer.setFromAccountID(entity.getFromAccount().getAcctID());
-        transfer.setOriginUserID(entity.getFromUser().getUserID());
-        transfer.setTargetUserID(entity.getToUser().getUserID());
+        transfer.setFromUserID(entity.getFromUser().getUserID());
+        transfer.setToUserID(entity.getToUser().getUserID());
         transfer.setAmount(entity.getTransferAmount());
         transfer.setDescription(entity.getDescription());
         transfer.setPosted(LocalDate.now());
@@ -490,16 +490,15 @@ class TransferEngineTest {
         TransferEntity entity = new TransferEntity();
         entity.setTransferID(transferEntity.getTransferID());
         entity.setTransferAmount(transferEntity.getAmount());
-        entity.setDateTransferred(LocalDate.now());
         entity.setTransferType(transferEntity.getTransferType());
         entity.setStatus(TransferStatus.PENDING);
-        entity.setToUser(UserEntity.builder().userID(transferEntity.getTargetUserID()).build());
-        entity.setFromUser(UserEntity.builder().userID(transferEntity.getOriginUserID()).build());
+        entity.setToUser(UserEntity.builder().userID(transferEntity.getToUserID()).build());
+        entity.setFromUser(UserEntity.builder().userID(transferEntity.getFromUserID()).build());
         entity.setToAccount(AccountEntity.builder().acctID(transferEntity.getToAccountID()).build());
         entity.setFromAccount(AccountEntity.builder().acctID(transferEntity.getFromAccountID()).build());
         entity.setDescription(transferEntity.getDescription());
-        entity.setScheduledTime(transferEntity.getTimeScheduled());
-        entity.setScheduledDate(transferEntity.getDateScheduled());
+        entity.setTransferTime(transferEntity.getTimeScheduled());
+        entity.setTransferDate(transferEntity.getDateScheduled());
         entity.setPending(transferEntity.isPending());
         return entity;
     }
@@ -521,10 +520,9 @@ class TransferEngineTest {
         transferEntity.setFromUser(UserEntity.builder().userID(fromUserID).build());
         transferEntity.setToUser(UserEntity.builder().userID(toUserID).build());
         transferEntity.setFromAccount(AccountEntity.builder().acctID(fromAccountID).build());
-        transferEntity.setToAccount(AccountEntity.builder().acctID(toAccountID).build());
-        transferEntity.setDateTransferred(LocalDate.now());
-        transferEntity.setScheduledTime(LocalTime.now());
-        transferEntity.setScheduledDate(LocalDate.now());
+        transferEntity.setToAccount(AccountEntity.builder().acctID(toAccountID).build());;
+        transferEntity.setTransferTime(LocalTime.now());
+        transferEntity.setTransferDate(LocalDate.now());
         transferEntity.setStatus(TransferStatus.PENDING);
         return transferEntity;
 

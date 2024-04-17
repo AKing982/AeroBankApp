@@ -69,6 +69,11 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    public Optional<AccountEntity> findById(int id) {
+        return accountRepository.findById(id);
+    }
+
+    @Override
     public List<AccountEntity> findByUserName(String user) {
        return accountRepository.findByUserName(user);
     }
@@ -129,6 +134,14 @@ public class AccountServiceImpl implements AccountService
     public List<String> getListOfAccountCodes(String user) {
         List<String> accountCodesList = accountRepository.findAccountCodesByUserName(user);
         return accountRepository.findAccountCodesByUserName(user);
+    }
+
+    @Override
+    public int getAccountIDByAcctCodeAndAccountNumber(String acctCode, String accountNumber) {
+        if(!acctCode.isEmpty() || !accountNumber.isEmpty()){
+            return accountRepository.getAccountIDByAcctCodeAndAccountNumber(acctCode, accountNumber);
+        }
+        return 0;
     }
 
     @Override

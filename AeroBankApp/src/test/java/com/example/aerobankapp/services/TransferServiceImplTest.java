@@ -281,9 +281,8 @@ class TransferServiceImplTest {
         transferEntity.setToUser(UserEntity.builder().userID(toUserID).build());
         transferEntity.setFromAccount(AccountEntity.builder().acctID(fromAccountID).build());
         transferEntity.setToAccount(AccountEntity.builder().acctID(toAccountID).build());
-        transferEntity.setDateTransferred(LocalDate.now());
-        transferEntity.setScheduledTime(LocalTime.now());
-        transferEntity.setScheduledDate(LocalDate.now());
+        transferEntity.setTransferTime(LocalTime.now());
+        transferEntity.setTransferDate(LocalDate.now());
         transferEntity.setStatus(TransferStatus.PENDING);
         return transferEntity;
 

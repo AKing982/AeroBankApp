@@ -91,6 +91,13 @@ public class UserServiceController {
         return ResponseEntity.ok(userID);
     }
 
+    @GetMapping("/id-num/{accountNumber}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> fetchUserIDByAccountNumber(@PathVariable String accountNumber){
+        int userID = userService.getUserIDByAccountNumber(accountNumber);
+        return ResponseEntity.ok(userID);
+    }
+
     @GetMapping("/name/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponse> getUsersFullName(@PathVariable int id)

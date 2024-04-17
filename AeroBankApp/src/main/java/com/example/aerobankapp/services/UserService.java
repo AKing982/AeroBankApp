@@ -24,6 +24,8 @@ public interface UserService extends ServiceDAOModel<UserEntity>
     @Override
     Optional<UserEntity> findAllById(Long id);
 
+    Optional<UserEntity> findById(int id);
+
     @Override
     List<UserEntity> findByUserName(String user);
     void update(UserEntity obj);

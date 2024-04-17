@@ -46,9 +46,11 @@ export default function TransferView()
     const [accountCodeList, setAccountCodeList] = useState([]);
     const [isLoadingAccountCodes, setIsLoadingAccountCodes] = useState(false);
     const [accountCodeUserList, setAccountCodeUserList] = useState([]);
-    const [fromAccountID, setFromAccountID] = useState(0);
 
-
+    const TransferType = Object.freeze({
+        USER_TO_USER: "USER_TO_USER",
+        SAME_USER: "SAME_USER"
+    });
 
     useEffect(() => {
         setIsLoading(true);
@@ -88,13 +90,13 @@ export default function TransferView()
                 })
         }, 2000);
         return () => clearTimeout(timeoutId);
-    }, [])
+    }, []);
 
     useEffect(() => {
         if(accountNumberExists){
             fetchToAccountCodesList(selectedAccountNumber);
         }
-    }, [accountNumberExists, selectedAccountNumber])
+    }, [accountNumberExists, selectedAccountNumber]);
 
     const handleTransfer = async () => {
         // Handle the transfer logic
@@ -110,9 +112,23 @@ export default function TransferView()
         }
 
         const isUserToUser = transferType === 'otherUser';
-        const request = await createTransferRequest(fromAccount, amount, selectedAccountNumber, selectedToAccountCode, description, transferDate, transferTime, isUserToUser);
+        buildAndSendRequestToServer(isUserToUser);
+    };
 
-        sendTransferRequestToServer(request);
+    const buildAndSendRequestToServer = async (type) => {
+        if(type){
+            if(searchType === 'username'){
+                const userToUserWithUserIDRequest = await createUserToUserUserIDTransferRequest(fromAccount, amount, selectedToUserName, selectedToAccountCode, description, transferDate, transferTime, TransferType.USER_TO_USER);
+                sendTransferRequestToServer(userToUserWithUserIDRequest);
+            }
+            if(searchType === 'accountNumber'){
+                const userToUserRequest =  await createUserToUserTransferRequest(fromAccount, amount, selectedAccountNumber, selectedToAccountCode, description, transferDate, transferTime, TransferType.USER_TO_USER);
+                sendTransferRequestToServer(userToUserRequest);
+            }
+        }else{
+            const sameUserRequest = await createSameUserTransferRequest(fromAccount, toAccount, amount, description, transferDate, transferTime, TransferType.SAME_USER);
+            sendTransferRequestToServer(sameUserRequest);
+        }
     };
 
     const validateSelectedToUserName = (user) => {
@@ -123,22 +139,66 @@ export default function TransferView()
         }
     };
 
-    const createTransferRequest = async (fromAccount, transferAmount, accountNumber, accountCode, description, transferDate, TransferTime, isUserToUser) => {
-
-        const accountID = await fetchFromAccountID(fromAccount);
+    const createSameUserTransferRequest = async (fromAccount, toAccount, transferAmount, description, transferDate, transferTime, isUserToUser) => {
+        const fromAcctID = await fetchFromAccountID(fromAccount);
+        const toAcctID = await fetchFromAccountID(toAccount);
 
         return {
-            fromAccountID: accountID,
+            fromAccountID: fromAcctID,
+            toAccountID: toAcctID,
             fromUserID: userID,
+            toUserID: userID,
+            toUserAccountNumber: '',
+            toUserAccountCode: '',
             transferAmount: transferAmount,
-            accountNumber: accountNumber,
-            accountCode: accountCode,
+            transferDate: transferDate,
+            transferTime: transferTime,
+            transferDescription: description,
+            transferType: isUserToUser
+        }
+    };
+
+    const createUserToUserUserIDTransferRequest = async (fromAccount, transferAmount, username, accountCode, description, transferDate, transferTime, isUserToUser) => {
+        const toUserID = await fetchToUserID(username);
+        const fromAcctID = await fetchFromAccountID(fromAccount);
+        const toAcctID = await fetchAccountIDByAccountCodeAndUserID(accountCode, toUserID);
+
+        return {
+            fromAccountID: fromAcctID,
+            toAccountID: toAcctID,
+            fromUserID: userID,
+            toUserID: toUserID,
+            toUserAccountNumber: '',
+            toUserAccountCode: accountCode,
+            transferAmount: transferAmount,
             transferDescription: description,
             transferDate: transferDate,
             transferTime: transferTime,
-            isUserToUserTransfer: isUserToUser
+            transferType: isUserToUser
+
+        }
+    };
+
+    const createUserToUserTransferRequest = async (fromAccount, transferAmount, accountNumber, accountCode, description, transferDate, transferTime, isUserToUser) => {
+
+        const accountID = await fetchFromAccountID(fromAccount);
+        const toUserID = await fetchToUserIDByAccountNumber(accountNumber);
+        const toAcctID = await fetchAccountIDByAccountCodeAndUserID(accountCode, toUserID);
+
+        return {
+            fromAccountID: accountID,
+            toAccountID: toAcctID,
+            fromUserID: userID,
+            toUserID: toUserID,
+            transferAmount: transferAmount,
+            toUserAccountNumber: accountNumber,
+            toUserAccountCode: accountCode,
+            transferDescription: description,
+            transferDate: transferDate,
+            transferTime: transferTime,
+            transferType: isUserToUser
         };
-    }
+    };
 
     const validateAccountNumber = (accountNumber) => {
         if(!accountNumber){
@@ -169,6 +229,48 @@ export default function TransferView()
             setOpenSnackbar(true);
             setSnackBarSeverity('error');
             setSnackBarMessage('Please enter a valid description.');
+        }
+    };
+
+    const fetchAccountIDByAccountCodeAndUserID = async (acctCode, userID) => {
+        if(!acctCode || !userID){
+            return;
+        }
+        try{
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${userID}/${acctCode}`)
+            if(response.status === 200){
+                return response.data.accountID;
+            }
+        }catch(error){
+            console.error('There was an error fetching the accountID: ', error);
+        }
+    };
+
+    const fetchToUserIDByAccountNumber = async (accountNumber) => {
+        if(!accountNumber){
+            return;
+        }
+        try{
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/users/id-num/${accountNumber}`)
+            if(response.status === 200){
+                return response.data;
+            }
+        }catch(error){
+            console.error('There was an error fetching the userID: ', error);
+        }
+    }
+
+    const fetchToUserID = async (username) => {
+        if(!username){
+            return;
+        }
+        try{
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/users/id/${username}`)
+            if(response.status === 200 || response.status === 201){
+                return response.data;
+            }
+        }catch(error){
+            console.error('There was an error fetching the userID: ', error);
         }
     };
 
@@ -395,7 +497,15 @@ export default function TransferView()
                                 aria-label="searchType"
                                 name="searchTypeRadioGroup"
                                 value={searchType}
-                                onChange={(e) => setSearchType(e.target.value)}
+                                onChange={(e) => {setSearchType(e.target.value);
+                                    if(e.target.value === 'username'){
+                                        setSelectedAccountNumber('');
+                                        setSelectedToAccountCode('');
+                                }else{
+                                        setSelectedToUserName('');
+                                        setAccountCodeList([]);
+                                }
+                            }}
                             >
                                 <FormControlLabel value="accountNumber" control={<Radio />} label="Account Number" />
                                 <FormControlLabel value="username" control={<Radio />} label="Username" />

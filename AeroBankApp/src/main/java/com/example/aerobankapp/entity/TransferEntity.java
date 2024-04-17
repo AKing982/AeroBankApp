@@ -26,19 +26,19 @@ public class TransferEntity
     private Long transferID;
 
     @ManyToOne
-    @JoinColumn(name="toUser", referencedColumnName = "userID")
+    @JoinColumn(name="toUserID", referencedColumnName = "userID")
     private UserEntity toUser;
 
     @ManyToOne
-    @JoinColumn(name="fromUser", referencedColumnName = "userID")
+    @JoinColumn(name="fromUserID", referencedColumnName = "userID")
     private UserEntity fromUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="fromAcctID")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="fromAccountID", referencedColumnName = "acctID")
     private AccountEntity fromAccount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="toAcctID")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="toAccountID", referencedColumnName = "acctID")
     private AccountEntity toAccount;
 
     @Column(name="transferAmount")
@@ -47,11 +47,11 @@ public class TransferEntity
     @Column(name="description")
     private String description;
 
-    @Column(name="scheduledDate")
-    private LocalDate scheduledDate;
+    @Column(name="transferDate")
+    private LocalDate transferDate;
 
-    @Column(name="scheduledTime")
-    private LocalTime scheduledTime;
+    @Column(name="transferTime")
+    private LocalTime transferTime;
 
     @Column(name="isPending")
     private boolean isPending;
@@ -60,10 +60,25 @@ public class TransferEntity
     @Enumerated(EnumType.STRING)
     private TransferType transferType;
 
-    @Column(name="dateTransferred")
-    private LocalDate dateTransferred;
-
     @Enumerated(EnumType.STRING)
     @Column(name="status")
     private TransferStatus status;
+
+    @Override
+    public String toString() {
+        return "TransferEntity{" +
+                "transferID=" + transferID +
+                ", toUser=" + toUser +
+                ", fromUser=" + fromUser +
+                ", fromAccount=" + fromAccount +
+                ", toAccount=" + toAccount +
+                ", transferAmount=" + transferAmount +
+                ", description='" + description + '\'' +
+                ", transferDate=" + transferDate +
+                ", transferTime=" + transferTime +
+                ", isPending=" + isPending +
+                ", transferType=" + transferType +
+                ", status=" + status +
+                '}';
+    }
 }

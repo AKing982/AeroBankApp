@@ -25,8 +25,8 @@ public class Transfer extends TransactionBase implements Serializable
     private int toAccountID;
     private String toAccountNumber;
     private String toAccountCode;
-    private int originUserID;
-    private int targetUserID;
+    private int fromUserID;
+    private int toUserID;
     private TransferType transferType;
     private boolean isPending;
 
@@ -34,8 +34,8 @@ public class Transfer extends TransactionBase implements Serializable
         this.transferID = transferID;
         this.fromAccountID = fromAccountID;
         this.toAccountID = toAccountID;
-        this.originUserID = originUID;
-        this.targetUserID = targetUserID;
+        this.fromUserID = originUID;
+        this.toUserID = targetUserID;
         this.transferType = transferType;
     }
 
@@ -58,8 +58,8 @@ public class Transfer extends TransactionBase implements Serializable
         this.transferID = transferID;
         this.fromAccountID = fromAccountID;
         this.toAccountID = toAccountID;
-        this.originUserID = originUserID;
-        this.targetUserID = targetUserID;
+        this.fromUserID = originUserID;
+        this.toUserID = targetUserID;
         this.transferType = transferType;
     }
 
@@ -83,8 +83,8 @@ public class Transfer extends TransactionBase implements Serializable
         this.transferID = transferID;
         this.fromAccountID = fromAccountID;
         this.toAccountID = toAccountID;
-        this.originUserID = originUserID;
-        this.targetUserID = targetUserID;
+        this.fromUserID = originUserID;
+        this.toUserID = targetUserID;
         this.toAccountCode = accountCode;
         this.toAccountNumber = accountNumber;
         this.transferType = type;
@@ -96,23 +96,13 @@ public class Transfer extends TransactionBase implements Serializable
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Transfer transfer = (Transfer) o;
-        return fromAccountID == transfer.fromAccountID && toAccountID == transfer.toAccountID && originUserID == transfer.originUserID && targetUserID == transfer.targetUserID && transferType == transfer.transferType && Objects.equals(transferID, transfer.transferID);
+        return fromAccountID == transfer.fromAccountID && toAccountID == transfer.toAccountID && fromUserID == transfer.fromUserID && toUserID == transfer.toUserID && isPending == transfer.isPending && Objects.equals(transferID, transfer.transferID) && Objects.equals(toAccountNumber, transfer.toAccountNumber) && Objects.equals(toAccountCode, transfer.toAccountCode) && transferType == transfer.transferType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), transferID, fromAccountID, toAccountID, originUserID, targetUserID, transferType);
+        return Objects.hash(super.hashCode(), transferID, fromAccountID, toAccountID, toAccountNumber, toAccountCode, fromUserID, toUserID, transferType, isPending);
     }
 
-    @Override
-    public String toString() {
-        return "Transfer{" +
-                "transferID=" + transferID +
-                ", fromAccountID=" + fromAccountID +
-                ", toAccountID=" + toAccountID +
-                ", originUserID=" + originUserID +
-                ", targetUserID=" + targetUserID +
-                ", transferType=" + transferType +
-                '}';
-    }
+
 }

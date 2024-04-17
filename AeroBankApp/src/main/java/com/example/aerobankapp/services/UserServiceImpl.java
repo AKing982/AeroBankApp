@@ -74,6 +74,11 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
+    public Optional<UserEntity> findById(int id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
     @Transactional
     public List<UserEntity> findByUserName(String user) {
 

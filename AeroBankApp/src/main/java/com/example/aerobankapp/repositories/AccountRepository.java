@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Long>
@@ -19,11 +20,18 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("SELECT e.acctID FROM AccountEntity e JOIN e.users u WHERE u.accountNumber LIKE %:acctNum% AND e.accountCode LIKE %:acctCode%")
     Integer findAccountIDByAcctCodeAndAccountNumber(@Param("acctNum") String accountNumber, @Param("acctCode") String acctCode);
 
+    @Query("SELECT a FROM AccountEntity a WHERE a.acctID=:id")
+    Optional<AccountEntity> findById(@Param("id") int acctID);
+
+
     @Query("SELECT a FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
     List<AccountEntity> findByUserName(@Param("username") String username);
 
     @Query("SELECT e.balance FROM AccountEntity e WHERE e.acctID =:acctID")
     BigDecimal getBalanceByAcctID(@Param("acctID") int acctID);
+
+    @Query("SELECT a FROM AccountEntity a JOIN a.users u WHERE a.accountCode=:acctCode AND u.accountNumber=:acctNum")
+    int getAccountIDByAcctCodeAndAccountNumber(@Param("acctCode") String acctCode, @Param("acctNum") String acctNumber);
 
     @Query("SELECT e FROM AccountEntity e WHERE e.accountCode =:acctCode AND e.userID =:userID")
     List<AccountEntity> findByAccountCodeAndUserID(@Param("acctCode") String acctCode, @Param("userID") int userID);
@@ -34,7 +42,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("SELECT COUNT(a) FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
     Long getNumberOfAccounts(@Param("username") String username);
 
-    @Query("SELECT CONCAT(a.accountCode, ' - ', a.accountName) AS AccountCodeName FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
+    @Query("SELECT a.accountCode FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
     List<String> findAccountCodesByUserName(@Param("username") String username);
 
     @Query("SELECT a.accountCode FROM AccountEntity a JOIN a.users u WHERE u.accountNumber=:acctNum")
