@@ -77,7 +77,6 @@ public class TransferController
         AccountEntity fromAccount = accountService.findById(transferDTO.fromAccountID())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid fromAccountID: " + transferDTO.fromAccountID()));
 
-        toAccount.setAccountCode(transferDTO.toUserAccountCode());
         transfer.setToAccount(toAccount);
         transfer.setFromAccount(fromAccount);
 
