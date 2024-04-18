@@ -335,7 +335,7 @@ export default function LoginFormOLD()
 
             <div style={overlayStyle}></div>
 
-            <Grid item xs={12} container justifyContent="right" alignItems="center">
+            <Grid item xs={12} container justifyContent="center" alignItems="center">
                 <Grid item xs={11} sm={8} md={6} lg={4} container direction="column" alignItems="center" justifyContent="center">
 
                     <Card sx={{
