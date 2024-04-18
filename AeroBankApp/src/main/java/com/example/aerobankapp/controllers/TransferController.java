@@ -80,6 +80,7 @@ public class TransferController
         transfer.setToAccount(toAccount);
         transfer.setFromAccount(fromAccount);
 
+        transfer.setNotificationEnabled(transferDTO.notificationEnabled());
         transfer.setStatus(TransferStatus.PENDING);
         transfer.setTransferType(transferDTO.transferType());
         LOGGER.info("Transfer Type: " + transfer.getTransferType());

@@ -28,6 +28,7 @@ public class Transfer extends TransactionBase implements Serializable
     private int fromUserID;
     private int toUserID;
     private TransferType transferType;
+    private boolean notificationEnabled;
     private boolean isPending;
 
     public Transfer(Long transferID, int fromAccountID, int toAccountID, int originUID, int targetUserID, TransferType transferType) {
@@ -88,6 +89,20 @@ public class Transfer extends TransactionBase implements Serializable
         this.toAccountCode = accountCode;
         this.toAccountNumber = accountNumber;
         this.transferType = type;
+    }
+
+    public Transfer(int userID, String description, BigDecimal amount, LocalTime timeScheduled, ScheduleType scheduleInterval, LocalDate date_posted, LocalDate dateScheduled, Currency currency, Long transferID, int fromAccountID, int toAccountID, String toAccountNumber, String toAccountCode, int fromUserID, int toUserID, TransferType transferType, boolean notificationEnabled, boolean isPending) {
+        super(userID, description, amount, timeScheduled, scheduleInterval, date_posted, dateScheduled, currency);
+        this.transferID = transferID;
+        this.fromAccountID = fromAccountID;
+        this.toAccountID = toAccountID;
+        this.toAccountNumber = toAccountNumber;
+        this.toAccountCode = toAccountCode;
+        this.fromUserID = fromUserID;
+        this.toUserID = toUserID;
+        this.transferType = transferType;
+        this.notificationEnabled = notificationEnabled;
+        this.isPending = isPending;
     }
 
     @Override

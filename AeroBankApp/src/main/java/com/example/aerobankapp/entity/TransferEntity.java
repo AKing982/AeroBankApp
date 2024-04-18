@@ -64,6 +64,9 @@ public class TransferEntity
     @Column(name="status")
     private TransferStatus status;
 
+    @Column(name="notificationEnabled")
+    private boolean notificationEnabled;
+
     @Override
     public String toString() {
         return "TransferEntity{" +

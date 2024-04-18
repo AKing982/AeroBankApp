@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import '../TransferView.css';
 import {
     Alert,
-    Button,
+    Button, Checkbox,
     CircularProgress,
     FormControl,
     FormControlLabel,
@@ -46,6 +46,7 @@ export default function TransferView()
     const [accountCodeList, setAccountCodeList] = useState([]);
     const [isLoadingAccountCodes, setIsLoadingAccountCodes] = useState(false);
     const [accountCodeUserList, setAccountCodeUserList] = useState([]);
+    const [enableNotifications, setEnableNotifications] = useState(false);
 
     const TransferType = Object.freeze({
         USER_TO_USER: "USER_TO_USER",
@@ -154,7 +155,8 @@ export default function TransferView()
             transferDate: transferDate,
             transferTime: transferTime,
             transferDescription: description,
-            transferType: isUserToUser
+            transferType: isUserToUser,
+            notificationEnabled: enableNotifications
         }
     };
 
@@ -174,8 +176,8 @@ export default function TransferView()
             transferDescription: description,
             transferDate: transferDate,
             transferTime: transferTime,
-            transferType: isUserToUser
-
+            transferType: isUserToUser,
+            notificationEnabled: enableNotifications
         }
     };
 
@@ -196,7 +198,8 @@ export default function TransferView()
             transferDescription: description,
             transferDate: transferDate,
             transferTime: transferTime,
-            transferType: isUserToUser
+            transferType: isUserToUser,
+            notificationEnabled: enableNotifications
         };
     };
 
@@ -628,7 +631,18 @@ export default function TransferView()
                     style={{ marginBottom: '20px' }}
                         />
 
-                        <Button variant="contained" color="primary" onClick={handleTransfer}>
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={enableNotifications}
+                            onChange={(e) => setEnableNotifications(e.target.checked)}
+                            color="primary"
+                        />
+                    }
+                    label="Notify me when this transfer is completed"
+                    style={{ marginBottom: '20px' }}
+                />
+                <Button variant="contained" color="primary" onClick={handleTransfer}>
                     Submit Transfer
                 </Button>
             </form>

@@ -24,6 +24,7 @@ public record TransferDTO(Long transferID,
                           LocalDate transferDate,
                           LocalTime transferTime,
                           TransferType transferType,
+                          boolean notificationEnabled,
                           LocalDate dateTransferred)
 {
 
