@@ -564,7 +564,7 @@ export default function TransferView()
                                     onKeyDown={handleKeyPressOnAccountNumber}
                                     style={{ marginBottom: '20px' }}
                                 />
-                                {accountNumberExists ? (
+                                {accountNumberExists && selectedAccountNumber ? (
                                     <FormControl fullWidth style={{ marginBottom: '20px' }}>
                                         <InputLabel>Recipient's Account Codes</InputLabel>
                                         <Select
