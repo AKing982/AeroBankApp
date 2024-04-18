@@ -81,6 +81,7 @@ public class TransferController
         transfer.setFromAccount(fromAccount);
 
         transfer.setNotificationEnabled(transferDTO.notificationEnabled());
+        transfer.setDate_posted(LocalDate.now());
         transfer.setStatus(TransferStatus.PENDING);
         transfer.setTransferType(transferDTO.transferType());
         LOGGER.info("Transfer Type: " + transfer.getTransferType());

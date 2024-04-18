@@ -4,6 +4,7 @@ import com.example.aerobankapp.account.AbstractAccountBase;
 import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.workbench.transactions.base.TransactionBase;
+import com.example.aerobankapp.workbench.utilities.TransferStatus;
 import com.example.aerobankapp.workbench.utilities.TransferType;
 import lombok.*;
 
@@ -28,8 +29,9 @@ public class Transfer extends TransactionBase implements Serializable
     private int fromUserID;
     private int toUserID;
     private TransferType transferType;
-    private boolean notificationEnabled;
+    private TransferStatus transferStatus;
     private boolean isPending;
+    private boolean notificationEnabled;
 
     public Transfer(Long transferID, int fromAccountID, int toAccountID, int originUID, int targetUserID, TransferType transferType) {
         this.transferID = transferID;

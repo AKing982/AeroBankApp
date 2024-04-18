@@ -499,7 +499,6 @@ class TransferEngineTest {
         entity.setDescription(transferEntity.getDescription());
         entity.setTransferTime(transferEntity.getTimeScheduled());
         entity.setTransferDate(transferEntity.getDateScheduled());
-        entity.setPending(transferEntity.isPending());
         return entity;
     }
 

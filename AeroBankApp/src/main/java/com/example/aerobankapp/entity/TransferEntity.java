@@ -15,7 +15,6 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -53,9 +52,6 @@ public class TransferEntity
     @Column(name="transferTime")
     private LocalTime transferTime;
 
-    @Column(name="isPending")
-    private boolean isPending;
-
     @Column(name="transferType")
     @Enumerated(EnumType.STRING)
     private TransferType transferType;
@@ -63,6 +59,9 @@ public class TransferEntity
     @Enumerated(EnumType.STRING)
     @Column(name="status")
     private TransferStatus status;
+
+    @Column(name="date_posted")
+    private LocalDate date_posted;
 
     @Column(name="notificationEnabled")
     private boolean notificationEnabled;
@@ -79,9 +78,9 @@ public class TransferEntity
                 ", description='" + description + '\'' +
                 ", transferDate=" + transferDate +
                 ", transferTime=" + transferTime +
-                ", isPending=" + isPending +
                 ", transferType=" + transferType +
                 ", status=" + status +
+                ", notificationEnabled=" + notificationEnabled +
                 '}';
     }
 }
