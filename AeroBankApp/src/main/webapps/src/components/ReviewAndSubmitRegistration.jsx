@@ -2,10 +2,14 @@ import {Button, Divider, List, ListItem, ListItemText, Typography} from "@mui/ma
 import {Box, Container} from "@mui/system";
 import {Fragment} from "react";
 import React from 'react';
+import {useNavigate} from "react-router-dom";
 
 function ReviewAndSubmitRegistration({formData}){
 
+    const navigate = useNavigate();
+
     const handleSubmit = (e) => {
+        navigate('/');
         console.log('Submitted');
     }
 
