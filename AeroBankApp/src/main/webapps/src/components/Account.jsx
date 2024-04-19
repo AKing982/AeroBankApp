@@ -108,12 +108,20 @@ export default function Account({ color, accountCode, accountName, balance, pend
         >
             <CardContent sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                 {/* Inner Card for Account Details */}
-                <Card sx={{ bgcolor: 'white', p: 2, mr: 2, minWidth: 200, position: 'relative' }}>
+                <Card sx={{ bgcolor: 'white', p: 2, mr: 2, minWidth: 200, position: 'right' }}>
                     {notificationCount > 0 && (
-                       <NotificationBell
-                           notificationCount={newNotificationCount}
-                           initialNotifications={notifications}
-                           onBellClick={handleUpdateNotificationCount} />
+                        <Box sx={{
+                            position: 'relative',
+                            top: 0,
+                            right: 0,
+                            transform: 'translate(40%, -20%)' // Adjusts the bell icon to be partly outside the card
+                        }}>
+                            <NotificationBell
+                                notificationCount={newNotificationCount}
+                                initialNotifications={notifications}
+                                onBellClick={handleUpdateNotificationCount}
+                            />
+                        </Box>
                     )}
                     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                         <Avatar sx={avatarStyle}>
