@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService
     public UserEntity registerUser(RegistrationDTO registrationDTO)
     {
         UserEntity userEntity = UserEntity.builder()
-                .username(registrationDTO.userName())
+                .username(registrationDTO.username())
                 .password(registrationDTO.password())
                 .email(registrationDTO.email())
                 .pinNumber(registrationDTO.PIN())

@@ -24,9 +24,6 @@ const steps = [
     'Submit',
 ];
 
-function SecurityQuestion() {
-    return null;
-}
 
 export default function RegistrationStepper({regForm, handleFormChange, handleSwitchChange, addAccount, deleteAccount})
 {

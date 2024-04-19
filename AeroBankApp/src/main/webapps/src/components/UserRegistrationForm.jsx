@@ -1,4 +1,4 @@
-import {Button, FormControlLabel, Switch, TextField, Typography} from "@mui/material";
+import {Alert, Button, FormControlLabel, Snackbar, Switch, TextField, Typography} from "@mui/material";
 import {Container} from "@mui/system";
 import {useState} from "react";
 import PasswordField from "./PasswordField";
@@ -6,9 +6,18 @@ import Password from "./Password";
 
 function UserRegistrationForm({activeStep, handleStepChange, formData, handleFormDataChange, handleSwitchChange}){
 
+    const [isPasswordsValid, setIsPasswordsValid] = useState(false);
+    const [openSnackBar, setOpenSnackBar] = useState(false);
+    const [snackBarMessage, setSnackBarMessage] = useState('');
+    const [snackBarSeverity, setSnackBarSeverity] = useState('error');
+
     const handleNextButtonClick = (e) => {
         e.preventDefault();
-        handleStepChange(activeStep + 1);
+        validatePasswordFields(formData.password, formData.confirmPassword);
+        console.log("Password's match: ", isPasswordsValid);
+        if(isPasswordsValid){
+            handleStepChange(activeStep + 1);
+        }
     };
 
     const handleSubmit = () => {
@@ -18,6 +27,24 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
     const handleChange = () => {
 
     };
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackBar(false);
+    }
+
+    const validatePasswordFields = (password, confirmPassword) => {
+        if(password === confirmPassword){
+            setIsPasswordsValid(true);
+            setOpenSnackBar(true);
+            setSnackBarMessage("Password's match");
+            setSnackBarSeverity('success');
+        }else{
+            setIsPasswordsValid(false);
+            setOpenSnackBar(true);
+            setSnackBarMessage("Password's don't match.");
+            setSnackBarSeverity('error');
+        }
+    }
 
 
     return(
@@ -105,6 +132,16 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
                     Next
                 </Button>
             </form>
+            <Snackbar
+                open={openSnackBar}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                message="Password's don't match"
+            >
+                <Alert onClose={handleCloseSnackbar} severity={snackBarSeverity} variant="filled" sx={{width: '100%'}}>
+                    {snackBarMessage}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 }
