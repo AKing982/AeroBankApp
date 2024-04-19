@@ -3,8 +3,14 @@ import {Box, Container} from "@mui/system";
 import {Fragment} from "react";
 import React from 'react';
 
-function ReviewAndSubmitRegistration({formData, securityData, handleSubmit}){
+function ReviewAndSubmitRegistration({formData}){
+
+    const handleSubmit = (e) => {
+        console.log('Submitted');
+    }
+
     console.log('Form Accounts: ', formData.accounts);
+    console.log('Security Questions: ', formData.securityQuestions);
     return (
         <Container maxWidth="sm">
             <Typography variant="h6" align="center" gutterBottom>
@@ -44,12 +50,25 @@ function ReviewAndSubmitRegistration({formData, securityData, handleSubmit}){
                     ))}
                 </Box>
                 <Typography variant="subtitle1">Security Questions:</Typography>
-                <ListItem>
-                    <ListItemText primary="Question" secondary={securityData.question} />
-                </ListItem>
-                <ListItem>
-                    <ListItemText primary="Answer" secondary={securityData.answer} />
-                </ListItem>
+                <Box sx={{ maxHeight: '200px', overflow: 'auto', width: '100%' }}>
+                    {formData.securityQuestions && formData.securityQuestions.length > 0 ? (
+                        formData.securityQuestions.map((question, index) => (
+                            <Fragment key={question.id || index}> {/* Use a unique ID if available */}
+                                <ListItem>
+                                    <ListItemText primary="Security Question" secondary={question.question} />
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemText primary="Answer" secondary={question.answer} />
+                                </ListItem>
+                                {index < formData.securityQuestions.length - 1 && <Divider />}
+                            </Fragment>
+                        ))
+                    ) : (
+                        <ListItem>
+                            <ListItemText primary="No security questions set." />
+                        </ListItem>
+                    )}
+                </Box>
             </List>
             <Button variant="contained" color="primary" onClick={handleSubmit}>
                 Submit All Information

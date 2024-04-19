@@ -4,9 +4,10 @@ import {useState} from "react";
 
 export default function SecurityQuestionForm({activeStep, handleStepChange, securityForm, handleSecurityFormChange}){
     const [selectedQuestion, setSelectedQuestion] = useState('');
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answer, setAnswer] = useState('');
 
-    const securityQuestions = [
+    const predefinedQuestions = [
         "What was the make and model of your first car?",
         "What was the name of your first pet?",
         "In what city did your parents meet?",
@@ -19,18 +20,41 @@ export default function SecurityQuestionForm({activeStep, handleStepChange, secu
         "What is the first name of the person you went to your first concert with?"
     ];
 
-    const handleQuestionChange = (event) => {
-        setSelectedQuestion(event.target.value);
+    const handleQuestionSelect = (event) => {
+        const question = event.target.value;
+        const index = predefinedQuestions.indexOf(question);
+        setCurrentQuestionIndex(index);
+        const currentQuestion = securityForm.securityQuestions.find(q => q.question === question);
+        setAnswer(currentQuestion ? currentQuestion.answer : '');
     };
 
     const handleNextButtonClick = (e) => {
         e.preventDefault();
+        // Assuming `selectedQuestion` is the current question selected from dropdown and `answer` is the state holding the answer input
+        const updatedQuestions = [...securityForm.securityQuestions];
+
+        // Check if the question already exists in the array
+        const questionIndex = updatedQuestions.findIndex(q => q.question === selectedQuestion);
+
+        if (questionIndex > -1) {
+            // Update existing question
+            updatedQuestions[questionIndex] = {
+                ...updatedQuestions[questionIndex],
+                answer: answer
+            };
+        } else {
+            // Add new question and answer
+            updatedQuestions.push({ question: selectedQuestion, answer: answer });
+        }
+
+        // Update the securityForm state with the new array of questions
+        handleSecurityFormChange({ ...securityForm, securityQuestions: updatedQuestions });
+
+        // Proceed to next step
         handleStepChange(activeStep + 1);
+        console.log('Security Questions: ', updatedQuestions.length);
     };
 
-    const handleChange = () => {
-
-    }
 
     const handleAnswerChange = (event) => {
         setAnswer(event.target.value);
@@ -50,11 +74,11 @@ export default function SecurityQuestionForm({activeStep, handleStepChange, secu
                     <TextField
                         select
                         label="Select a Security Question"
-                        value={selectedQuestion}
-                        onChange={handleQuestionChange}
+                        value={predefinedQuestions[currentQuestionIndex]}
+                        onChange={handleQuestionSelect}
                         helperText="Please select your security question"
                     >
-                        {securityQuestions.map((question, index) => (
+                        {predefinedQuestions.map((question, index) => (
                             <MenuItem key={index} value={question}>
                                 {question}
                             </MenuItem>

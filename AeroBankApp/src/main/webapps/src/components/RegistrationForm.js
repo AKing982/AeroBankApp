@@ -16,14 +16,18 @@ export default function RegistrationForm()
         password: '',
         confirmPassword: '',
         pin: '',
-        secQuestion1: '',
-        secQuestion2: '',
-        secQuestion3: '',
+        securityQuestions: [],
         isAdmin: false,
         accounts: []
     });
 
     const handleFormChange = (event) => {
+        console.log(event);
+
+        if(!event || !event.target){
+            console.error('Event or event target is undefined');
+            return;
+        }
         const {name, value} = event.target;
         setRegistrationForm({
             ...registrationForm,

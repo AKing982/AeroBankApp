@@ -98,28 +98,33 @@ export default function AccountInformation({activeStep, handleStepChange, accoun
                     </Button>
                 </form>
                 <Paper elevation={3} style={{ marginTop: '20px' }}>
-                    <Typography variant="h6" gutterBottom style={{ padding: '10px' }}>
-                        Added Accounts
-                    </Typography>
-                    <List>
-                        {accountInfo.accounts.map((account, index) => (
-                            <ListItem key={index}>
-                                <ListItemText
-                                    primary={`${account.accountName} (${account.accountType})`}
-                                    secondary={`Initial Balance: $${account.initialBalance}`}
-                                />
-                                <ListItemSecondaryAction>
-                                    <IconButton
-                                        edge="end"
-                                        aria-label="delete"
-                                        onClick={() => handleAccountDeletion(index)}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        ))}
-                    </List>
+                    {accountInfo.accounts.length > 0 && (
+                        <>
+                            <Typography variant="h6" gutterBottom style={{ padding: '10px' }}>
+                                Added Accounts
+                            </Typography>
+                            <List>
+                                {accountInfo.accounts.map((account, index) => (
+                                    <ListItem key={index}>
+                                        <ListItemText
+                                            primary={`${account.accountName} (${account.accountType})`}
+                                            secondary={`Initial Balance: $${account.initialBalance}`}
+                                        />
+                                        <ListItemSecondaryAction>
+                                            <IconButton
+                                                edge="end"
+                                                aria-label="delete"
+                                                onClick={() => handleAccountDeletion(index)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </>
+                    )}
+
                 </Paper>
                 <Button
                     type="submit"

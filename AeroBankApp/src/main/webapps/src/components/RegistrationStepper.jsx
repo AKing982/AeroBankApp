@@ -39,25 +39,11 @@ export default function RegistrationStepper({regForm, handleFormChange, handleSw
         setActiveStep(step);
     };
 
-    const userData = {
-        firstName: "John",
-        lastName: "Doe",
-        username: "JDoe23",
-        email: "johndoe@example.com",
-        phone: "123-456-7890"
-    };
-
-    const accountData = {
-        type: "Checking",
-        balance: 1000
-    };
 
     const securityData = {
         question: "What was the name of your first pet?",
         answer: "Fluffy"
     };
-
-
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -136,7 +122,7 @@ export default function RegistrationStepper({regForm, handleFormChange, handleSw
                 <SecurityQuestionForm securityForm={regForm} handleSecurityFormChange={handleFormChange} activeStep={activeStep} handleStepChange={(step) => setActiveStep(step)} />
             )}
             {activeStep === steps.indexOf('Submit') && (
-                <ReviewAndSubmitRegistration formData={regForm} securityData={securityData} />
+                <ReviewAndSubmitRegistration formData={regForm} />
             )}
         </Box>
     );
