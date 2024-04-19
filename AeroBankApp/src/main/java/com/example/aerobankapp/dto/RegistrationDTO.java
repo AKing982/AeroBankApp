@@ -1,16 +1,20 @@
 package com.example.aerobankapp.dto;
 
+import com.example.aerobankapp.model.Account;
 import lombok.Builder;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Builder
 public record RegistrationDTO(String firstName,
                               String lastName,
-                              String userName,
+                              String username,
                               String email,
-                              String street,
-                              String city,
-                              String zip,
+                              List<AccountInfoDTO> accounts,
+                              List<SecurityQuestionsDTO> securityQuestions,
                               String PIN,
-                              String password,
-                              String confirmPassword) {
+                              boolean isAdmin,
+                              String password) {
 }

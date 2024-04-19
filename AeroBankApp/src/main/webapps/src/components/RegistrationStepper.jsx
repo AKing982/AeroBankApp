@@ -24,38 +24,81 @@ const steps = [
     'Submit',
 ];
 
-function SecurityQuestion() {
-    return null;
-}
+<<<<<<< HEAD
+=======
 
+>>>>>>> b54900ca1034189b5c5015a6b5f864da56c7dcbc
 export default function RegistrationStepper({regForm, handleFormChange, handleSwitchChange, addAccount, deleteAccount})
 {
     const [activeStep, setActiveStep] = useState(0); // Change 0 to your desired default step
-    const [errors, setErrors] = useState({});
-    const [loginType, setLoginType] = useState('OAuth');
-
+    const [completedSteps, setCompletedSteps] = useState(new Array(steps.length).fill(false));
+    const [errors, setErrors] = useState([]);
     // You can change this function to update the active step as needed
     const handleStepChange = (step) => {
-        setActiveStep(step);
-    };
-
-
-    const securityData = {
-        question: "What was the name of your first pet?",
-        answer: "Fluffy"
+        if (completedSteps[step] || step < activeStep) {  // Allow going back to the first step or any completed step
+            setActiveStep(step);
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-      //  const validationErrors = validateData(formData);
-     //   setErrors(validationErrors);
+       const validationErrors = validateData(regForm);
+       setErrors(validationErrors);
 
-       // if(Object.keys(validationErrors).length === 0)
-       // {
-         //   console.log('Form Data: ', formData);
-       // }
+       if(Object.keys(validationErrors).length === 0){
+           let newCompletedSteps = [...completedSteps];
+           newCompletedSteps[steps.indexOf('Account Information')] = true;
+           setCompletedSteps(newCompletedSteps);
+           handleStepChange(activeStep + 1);
+       }
+
     };
 
+    // Example validation function for user information
+    const validateUserInfo = (userInfo) => {
+        return userInfo.username.length > 0 && userInfo.email.includes("@");
+    };
+
+// Example validation function for account information
+    const validateAccountInfo = (accountInfo) => {
+        return accountInfo.password.length >= 8;
+    };
+
+// Example validation function for security questions
+    const validateSecurityQuestion = (securityQuestion) => {
+        return securityQuestion.answer.length > 0;
+    };
+
+    const validateCurrentStep = () => {
+        let isValid = false;
+        switch (activeStep) {
+            case 0: // User Information
+                isValid = validateUserInfo(regForm.userInfo);
+                break;
+            case 1: // Account Information
+                isValid = validateAccountInfo(regForm.accountInfo);
+                break;
+            case 2: // Security Question
+                isValid = validateSecurityQuestion(regForm.securityQuestion);
+                break;
+            case 3: // Review Step
+                isValid = true; // Normally review step does not need validation
+                break;
+            default:
+                isValid = false;
+        }
+        return isValid;
+    };
+
+
+    const handleNext = () => {
+        if(validateCurrentStep()){
+            let newCompletedSteps = [...completedSteps];
+            newCompletedSteps[activeStep] = true;
+            setCompletedSteps(newCompletedSteps);
+            setActiveStep(prevActiveStep => prevActiveStep + 1);
+        }
+    }
 
     const validateData = (data) => {
         let errors = {};
@@ -94,16 +137,11 @@ export default function RegistrationStepper({regForm, handleFormChange, handleSw
         return errors;
     };
 
-    const handleLoginTypeChange = (event) => {
-        setLoginType(event.target.value);
-    }
-
-
     return (
         <Box sx={{ width: '100%' }}>
             <Stepper activeStep={activeStep} alternativeLabel>
                 {steps.map((label, index) => (
-                    <Step key={label} onClick={() => setActiveStep(index)}>
+                    <Step key={label} onClick={() => handleStepChange(index)} disabled={!completedSteps[index]}>
                         <StepLabel>{label}</StepLabel>
                     </Step>
                 ))}

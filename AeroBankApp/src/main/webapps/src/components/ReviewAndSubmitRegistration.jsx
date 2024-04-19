@@ -1,16 +1,69 @@
 import {Button, Divider, List, ListItem, ListItemText, Typography} from "@mui/material";
 import {Box, Container} from "@mui/system";
-import {Fragment} from "react";
+import {Fragment, useEffect, useState} from "react";
 import React from 'react';
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 function ReviewAndSubmitRegistration({formData}){
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
-        navigate('/');
         console.log('Submitted');
+
+        const registrationRequest = buildRegistrationRequest(formData);
+        console.log('Registration Request: ', registrationRequest);
+
+        sendRegistrationToServer(registrationRequest);
+    }
+
+    const buildRegistrationRequest = (formData) => {
+        return {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            username: formData.username,
+            email: formData.email,
+            PIN: formData.pin,
+            password: formData.password,
+            isAdmin: formData.isAdmin,
+            accounts: formData.accounts,
+            securityQuestions: formData.securityQuestions
+        }
+    }
+
+    const sendRegistrationToServer = async (request) => {
+        if(!request){
+            return;
+        }
+        setIsLoading(true);
+        try{
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/registration/register`, request);
+            if(response.status === 200 || response.status === 201){
+                console.log('Registration Saved successfully.');
+            }else{
+                throw new Error(`Unexpected status response: ${response.status}`);
+            }
+        }catch(error){
+            console.error('There was an error submitting registration: ', error);
+
+            if (error.response) {
+                // Server responded with a status code that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                // Request was made but no response was received
+                console.log(error.request);
+            } else {
+                // An error occurred in setting up the request
+                console.log('Error', error.message);
+            }
+        }finally{
+            setIsLoading(false);
+        }
     }
 
     console.log('Form Accounts: ', formData.accounts);

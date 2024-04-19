@@ -28,7 +28,7 @@ public class RegistrationController
     public ResponseEntity<?> sendRegistrationRequest(@Valid @RequestBody RegistrationDTO request)
     {
         UserEntity userEntity = getUserDAO().registerUser(request);
-        return ResponseEntity.ok().body(userEntity);
+        return ResponseEntity.ok("Registration Saved successfully.");
     }
 
 }
