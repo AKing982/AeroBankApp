@@ -24,10 +24,7 @@ const steps = [
     'Submit',
 ];
 
-<<<<<<< HEAD
-=======
 
->>>>>>> b54900ca1034189b5c5015a6b5f864da56c7dcbc
 export default function RegistrationStepper({regForm, handleFormChange, handleSwitchChange, addAccount, deleteAccount})
 {
     const [activeStep, setActiveStep] = useState(0); // Change 0 to your desired default step
