@@ -21,7 +21,7 @@ const steps = [
     'User Information',
     'Account Information',
     'Security Question Form',
-    'Submit',
+    'Review & Submit',
 ];
 
 
@@ -118,8 +118,8 @@ export default function RegistrationStepper({regForm, handleFormChange, handleSw
             {activeStep === steps.indexOf('Security Question Form') && (
                 <SecurityQuestionForm securityForm={regForm} handleSecurityFormChange={handleFormChange} activeStep={activeStep} handleStepChange={(step) => setActiveStep(step)} />
             )}
-            {activeStep === steps.indexOf('Submit') && (
-                <ReviewAndSubmitRegistration formData={regForm} />
+            {activeStep === steps.indexOf('Review & Submit') && (
+                <ReviewAndSubmitRegistration formData={regForm} handleFormChange={handleFormChange}/>
             )}
         </Box>
     );

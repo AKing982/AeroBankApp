@@ -5,7 +5,7 @@ import React from 'react';
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 
-function ReviewAndSubmitRegistration({formData}){
+function ReviewAndSubmitRegistration({formData, handleFormChange}){
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -109,13 +109,13 @@ function ReviewAndSubmitRegistration({formData}){
                 <Typography variant="subtitle1">Security Questions:</Typography>
                 <Box sx={{ maxHeight: '200px', overflow: 'auto', width: '100%' }}>
                     {formData.securityQuestions && formData.securityQuestions.length > 0 ? (
-                        formData.securityQuestions.map((question, index) => (
-                            <Fragment key={question.id || index}> {/* Use a unique ID if available */}
+                        formData.securityQuestions.map((param, index) => (
+                            <Fragment key={param.id || index}>
                                 <ListItem>
-                                    <ListItemText primary="Security Question" secondary={question.question} />
+                                    <ListItemText primary="Security Question" secondary={param.question} />
                                 </ListItem>
                                 <ListItem>
-                                    <ListItemText primary="Answer" secondary={question.answer} />
+                                    <ListItemText primary="Answer" secondary={param.answer} />
                                 </ListItem>
                                 {index < formData.securityQuestions.length - 1 && <Divider />}
                             </Fragment>

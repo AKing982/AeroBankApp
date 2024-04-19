@@ -1,5 +1,5 @@
 import {Container} from "@mui/system";
-import {Button, FormControl, MenuItem, TextField, Typography} from "@mui/material";
+import {Button, Divider, FormControl, MenuItem, TextField, Typography} from "@mui/material";
 import {useState} from "react";
 import React from "react";
 
@@ -33,26 +33,49 @@ export default function SecurityQuestionForm({activeStep, handleStepChange, secu
         newAnswers[index] = currentQuestion ? currentQuestion.answer : '';
         setAnswers(newAnswers);
     };
+    // const handleNextButtonClick = (e) => {
+    //     e.preventDefault();
+    //     // Update the security questions in the main form state
+    //     const updatedQuestions = selectedQuestions.map((question, index) => ({
+    //         question: question,
+    //         answer: answers[index]
+    //     }));
+    //
+    //     // Ensure to merge with existing questions that are not being edited
+    //     const newSecurityQuestions = securityForm.securityQuestions
+    //         .filter(q => !selectedQuestions.includes(q.question))
+    //         .concat(updatedQuestions);
+    //
+    //     handleSecurityFormChange({ ...securityForm, securityQuestions: newSecurityQuestions });
+    //
+    //     // Proceed to the next step
+    //     handleStepChange(activeStep + 1);
+    //     console.log('Security Questions: ', updatedQuestions.length);
+    // };
+
     const handleNextButtonClick = (e) => {
         e.preventDefault();
-        // Update the security questions in the main form state
+
+        // Create the array of updated question-answer pairs
         const updatedQuestions = selectedQuestions.map((question, index) => ({
             question: question,
             answer: answers[index]
         }));
 
-        // Ensure to merge with existing questions that are not being edited
+        // This ensures that you are not adding empty questions or answers
+        const validUpdatedQuestions = updatedQuestions.filter(q => q.question && q.answer);
+
+        // Merge with existing questions that are not currently being edited
         const newSecurityQuestions = securityForm.securityQuestions
             .filter(q => !selectedQuestions.includes(q.question))
-            .concat(updatedQuestions);
+            .concat(validUpdatedQuestions);
 
+        // Update the main form state with the new set of security questions
         handleSecurityFormChange({ ...securityForm, securityQuestions: newSecurityQuestions });
 
-        // Proceed to the next step
+        // Move to the next step in the form process
         handleStepChange(activeStep + 1);
-        console.log('Security Questions: ', updatedQuestions.length);
     };
-
     const handleAnswerChange = (index) => (event) => {
         const newAnswers = [...answers];
         newAnswers[index] = event.target.value;
@@ -97,6 +120,7 @@ export default function SecurityQuestionForm({activeStep, handleStepChange, secu
                                 onChange={handleAnswerChange(index)}
                                 required
                             />
+                            <Divider />
                         </FormControl>
                     </React.Fragment>
                 ))}
