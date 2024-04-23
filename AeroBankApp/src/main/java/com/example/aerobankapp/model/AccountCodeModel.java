@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @ToString
 @EqualsAndHashCode
+@Deprecated
 public class AccountCodeModel
 {
     private AccountType accountType;

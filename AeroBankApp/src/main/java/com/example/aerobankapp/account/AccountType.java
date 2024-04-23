@@ -4,11 +4,11 @@ import org.springframework.stereotype.Component;
 
 public enum AccountType
 {
-    CHECKING("Checking"),
-    SAVINGS("Savings"),
-    INVESTMENT("Investment"),
-    RENT("Rent"),
-    MORTGAGE("Mortgage");
+    CHECKING("01"),
+    SAVINGS("02"),
+    INVESTMENT("04"),
+    RENT("03"),
+    MORTGAGE("05");
     private String code;
 
     AccountType(String code)
