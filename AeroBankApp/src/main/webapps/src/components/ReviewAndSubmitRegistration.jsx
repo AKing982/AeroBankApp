@@ -90,6 +90,7 @@ function ReviewAndSubmitRegistration({formData}){
                 <Typography variant="subtitle1" sx={{ mt: 2 }}>
                     Account Review:
                 </Typography>
+                <Divider sx={{ height: 1, my: 2 }} />
                 <Box sx={{ maxHeight: '200px', overflow: 'auto', width: '100%' }}>
                     {formData.accounts && formData.accounts.map((account, index) => (
                         <Fragment key={index}>

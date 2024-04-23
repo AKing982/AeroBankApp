@@ -10,13 +10,24 @@ import {
 } from "@mui/material";
 import {Box, Container} from "@mui/system";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import backgroundImage from "./images/pexels-julius-silver-753325.jpg";
 
 
 export default function AccountInformation({activeStep, handleStepChange, accountInfo, handleAccountInfoChange, handleAddAccount, handleDeleteAccount}) {
 
     const [newAccounts, setNewAccounts] = useState([]);
+    const [isAddButtonEnabled, setIsAddButtonEnabled] = useState(false);
+    const [isNextButtonEnabled, setIsNextButtonEnabled] = useState(false);
+
+
+    useEffect(() => {
+        const {accountName, initialBalance, accountType} = accountInfo;
+        const isEnabled = accountName && initialBalance && accountType;
+        setIsAddButtonEnabled(isEnabled);
+        setIsNextButtonEnabled(isEnabled);
+    }, [accountInfo]);
+
 
     const handleNextButtonClick = (e) => {
         e.preventDefault();
@@ -93,10 +104,12 @@ export default function AccountInformation({activeStep, handleStepChange, accoun
                         color="primary"
                         onClick={handleAddAccountClick}
                         style={{ marginTop: '10px' }}
+                        disabled={!isAddButtonEnabled}
                     >
                         Add Account
                     </Button>
                 </form>
+            <Box style={{maxHeight: '300px', overflowY: 'auto'}}>
                 <Paper elevation={3} style={{ marginTop: '20px' }}>
                     {accountInfo.accounts.length > 0 && (
                         <>
@@ -124,8 +137,8 @@ export default function AccountInformation({activeStep, handleStepChange, accoun
                             </List>
                         </>
                     )}
-
                 </Paper>
+            </Box>
                 <Button
                     type="submit"
                     variant="contained"
@@ -133,6 +146,7 @@ export default function AccountInformation({activeStep, handleStepChange, accoun
                     fullWidth
                     size="large"
                     onClick={handleNextButtonClick}
+                    disabled={!isNextButtonEnabled}
                     >
                     Next
                 </Button>

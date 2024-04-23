@@ -15,8 +15,6 @@ import java.time.LocalTime;
 public record TransferDTO(Long transferID,
                           @Min(1) int fromUserID,
                           @Min(1) int toUserID,
-                          @NotNull String toUserAccountNumber,
-                          @NotNull String toUserAccountCode,
                           @Min(1) int fromAccountID,
                           @Min(1) int toAccountID,
                           @NotNull @DecimalMin("0.00") BigDecimal transferAmount,

@@ -1,6 +1,6 @@
 import {Alert, Button, FormControlLabel, Snackbar, Switch, TextField, Typography} from "@mui/material";
 import {Container} from "@mui/system";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import PasswordField from "./PasswordField";
 import Password from "./Password";
 
@@ -10,9 +10,19 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
     const [openSnackBar, setOpenSnackBar] = useState(false);
     const [snackBarMessage, setSnackBarMessage] = useState('');
     const [snackBarSeverity, setSnackBarSeverity] = useState('error');
+    const [isNextButtonEnabled, setIsNextButtonEnabled] = useState(false);
+
+    useEffect(() => {
+        const { firstName, lastName, username, email, password, confirmPassword } = formData;
+        // Check if all fields are not empty
+        const fieldsAreFilled = firstName && lastName && username && email && password && confirmPassword;
+        setIsNextButtonEnabled(fieldsAreFilled);
+    }, [formData]); // Re-evaluate whenever formData changes
+
 
     const handleNextButtonClick = (e) => {
         e.preventDefault();
+
         validatePasswordFields(formData.password, formData.confirmPassword);
         console.log("Password's match: ", isPasswordsValid);
         if(isPasswordsValid){
@@ -128,6 +138,7 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
                     fullWidth
                     size="large"
                     onClick={handleNextButtonClick}
+                    disabled={!isNextButtonEnabled}
                 >
                     Next
                 </Button>

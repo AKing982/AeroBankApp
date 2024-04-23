@@ -72,6 +72,20 @@ public class UserEntity
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public UserEntity(String firstName, String lastName, String username, String email, String password, String pinNumber, String accountNumber, boolean isAdmin, boolean isEnabled, Set<AccountEntity> accounts, Role role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.pinNumber = pinNumber;
+        this.accountNumber = accountNumber;
+        this.isAdmin = isAdmin;
+        this.isEnabled = isEnabled;
+        this.accounts = accounts;
+        this.role = role;
+    }
+
     public void addAccount(AccountEntity accountEntity)
     {
         accounts.add(accountEntity);
