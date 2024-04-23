@@ -3,7 +3,6 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.repositories.AccountCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

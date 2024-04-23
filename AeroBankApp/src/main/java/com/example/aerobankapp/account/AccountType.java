@@ -1,7 +1,5 @@
 package com.example.aerobankapp.account;
 
-import org.springframework.stereotype.Component;
-
 public enum AccountType
 {
     CHECKING("01"),
@@ -21,19 +19,19 @@ public enum AccountType
         AccountType type = null;
         switch(code)
         {
-            case "Checking":
+            case "01":
                 type = CHECKING;
                 break;
-            case "Savings":
+            case "02":
                 type = SAVINGS;
                 break;
-            case "Investment":
+            case "04":
                 type = INVESTMENT;
                 break;
-            case "Rent":
+            case "03":
                 type = RENT;
                 break;
-            case "Mortage":
+            case "05":
                 type = MORTGAGE;
                 break;
             default:
