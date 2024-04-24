@@ -16,6 +16,8 @@ import {DatePicker, LocalizationProvider, TimePicker} from "@mui/x-date-pickers"
 import {useState} from "react";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import TransactionSummaryTable from "./TransactionSummaryTable";
+import backgroundImage from './images/pexels-julius-silver-753325.jpg';
+import TransactionSummaryStats from "./TransactionSummaryStats";
 
 
 function TransactionSummary(){
@@ -86,7 +88,13 @@ function TransactionSummary(){
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <div>
+            <div style={{
+                backgroundImage: `url(${backgroundImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                minHeight: '100vh',
+                padding: '20px'
+            }}>
                 <Typography variant="h4" align="center" gutterBottom>Transaction Summary</Typography>
                 <Grid container spacing={2} justifyContent="center">
                     <Grid item xs={12} md={10}>
@@ -96,22 +104,41 @@ function TransactionSummary(){
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Grid container spacing={2} justifyContent="center">
-                                    <Paper elevation={3} sx={{ padding: 2, margin: 1, width: '100%' }}>
-                                        <Typography variant="h6">Last Transaction Submitted</Typography>
-                                        <Typography>{transactionStats.lastTransaction}</Typography>
-                                    </Paper>
-                                    <Paper elevation={3} sx={{ padding: 2, margin: 1, width: '100%' }}>
-                                        <Typography variant="h6">Transaction Count</Typography>
-                                        <Typography>{transactionStats.transactionCount}</Typography>
-                                    </Paper>
-                                    <Paper elevation={3} sx={{ padding: 2, margin: 1, width: '100%' }}>
-                                        <Typography variant="h6">Total Amount Transferred</Typography>
-                                        <Typography>{transactionStats.totalAmountTransferred}</Typography>
-                                    </Paper>
-                                    <Paper elevation={3} sx={{ padding: 2, margin: 1, width: '100%' }}>
-                                        <Typography variant="h6">Average Transaction Value</Typography>
-                                        <Typography>{transactionStats.averageTransaction}</Typography>
-                                    </Paper>
+                                    {/* Row 1 */}
+                                    <Grid item xs={4}>
+                                        <TransactionSummaryStats title="Last Transaction Submitted" value={transactionStats.lastTransaction} />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TransactionSummaryStats title="Transaction Count" value={transactionStats.transactionCount} />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TransactionSummaryStats title="Total Amount Transferred" value={transactionStats.totalAmountTransferred} />
+                                    </Grid>
+                                    {/* Row 2 */}
+                                    <Grid item xs={4}>
+                                        <TransactionSummaryStats title="Average Transaction Value" value={transactionStats.averageTransaction} />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        {/* You can add more stats here */}
+                                        <TransactionSummaryStats title="New Stat Title" value="New Stat Value" />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        {/* Additional stat */}
+                                        <TransactionSummaryStats title="Another Stat" value="Another Value" />
+                                    </Grid>
+                                    {/* Row 3 */}
+                                    <Grid item xs={4}>
+                                        {/* Additional stat */}
+                                        <TransactionSummaryStats title="Further Stat" value="Further Value" />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        {/* Placeholder or another stat */}
+                                        <TransactionSummaryStats title="More Stats" value="More Data" />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        {/* Placeholder or another stat */}
+                                        <TransactionSummaryStats title="Final Stat" value="Final Value" />
+                                    </Grid>
                                 </Grid>
                             </AccordionDetails>
                         </Accordion>
