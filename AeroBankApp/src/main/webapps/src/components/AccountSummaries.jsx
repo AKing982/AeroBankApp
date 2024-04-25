@@ -1,9 +1,14 @@
-import {Container} from "@mui/system";
-import {Button, Grid, MenuItem, TextField, Typography} from "@mui/material";
+import {Box, Container} from "@mui/system";
+import {Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography} from "@mui/material";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import {useState} from "react";
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import ComboBox from "./ComboBox";
+
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import {TreeItem, TreeView} from "@mui/x-tree-view";
 
 // ReportPreview component for displaying the generated report
 const ReportPreview = ({ report }) => (
@@ -12,7 +17,72 @@ const ReportPreview = ({ report }) => (
         <Typography variant="body1">{report}</Typography>
     </div>
 );
+const reportData = [
+    {
+        id: 'transaction-reports',
+        name: 'Transaction Reports',
+        children: [
+            {
+                id: 'daily-transactions',
+                name: 'Daily Transactions',
+            },
+            {
+                id: 'monthly-transactions',
+                name: 'Monthly Transactions',
+                children: [
+                    {
+                        id: 'january-transactions',
+                        name: 'January Transactions',
+                    },
+                    {
+                        id: 'february-transactions',
+                        name: 'February Transactions',
+                    },
+                    // Add more months as needed
+                ],
+            },
+            // Add more sub-reports under Transaction Reports
+        ],
+    },
+    {
+        id: 'audit-reports',
+        name: 'Audit Reports',
+        children: [
+            {
+                id: 'financial-audit',
+                name: 'Financial Audit',
+            },
+            {
+                id: 'compliance-audit',
+                name: 'Compliance Audit',
+            },
+            // Add more sub-reports under Audit Reports
+        ],
+    },
+    // Add more top-level reports as needed
+];
 
+// Recursive function to render tree nodes
+const renderTreeNodes = (reports) =>
+    reports.map((report) => (
+        <TreeItem key={report.id} nodeId={String(report.id)} label={report.name} itemId={report.id}>
+            {report.children && renderTreeNodes(report.children)}
+        </TreeItem>
+    ));
+
+
+const ReportTree = () => {
+    return (
+        <Box border={1} borderColor="grey.400" borderRadius={1} p={1}>
+            <TreeView
+                defaultCollapseIcon={<ExpandMoreIcon />}
+                defaultExpandIcon={<ChevronRightIcon />}
+            >
+                {renderTreeNodes(reportData)}
+            </TreeView>
+        </Box>
+    );
+};
 
 export default function AccountSummaries(){
 
@@ -25,34 +95,45 @@ export default function AccountSummaries(){
     const handleGenerateReport = async () => {
         // Placeholder for generating report
         // You would replace this with your API call to the backend
-        let generatedReport = '';
-        switch (reportType) {
-            case 'Transaction Statements':
-                generatedReport = `Transaction statements report generated for the period: ${startDate.toDateString()} to ${endDate.toDateString()} in ${reportFormat} format`;
-                break;
-            case 'Statements showing particular transactions':
-                generatedReport = `Statements showing particular transactions report generated for the period: ${startDate.toDateString()} to ${endDate.toDateString()} in ${reportFormat} format`;
-                break;
-            case 'Audit Reports':
-                generatedReport = `Audit reports generated for the period: ${startDate.toDateString()} to ${endDate.toDateString()} in ${reportFormat} format`;
-                break;
-            case 'Logging Data':
-                generatedReport = `Logging data report generated for the period: ${startDate.toDateString()} to ${endDate.toDateString()} in ${reportFormat} format`;
-                break;
-            case 'Transaction Statistics':
-                generatedReport = `Transaction statistics report generated for the period: ${startDate.toDateString()} to ${endDate.toDateString()} in ${reportFormat} format`;
-                break;
-            default:
-                generatedReport = 'Please select a report type.';
-        }
+        const generatedReport = `Report generated for the period: ${startDate?.toDateString()} to ${endDate?.toDateString()} in ${reportFormat} format`;
         setReport(generatedReport);
     };
 
+    const [selectedFormat, setSelectedFormat] = useState(null); // State for selected format
+    const [selectedReportType, setSelectedReportType] = useState(null); // State for selected report type
+
+    // Sample options for format and report type
+    const formatOptions = ['PDF', 'HTML', 'Excel Spreadsheet'];
+    const reportTypeOptions = ['Transaction Statements', 'Statements showing particular transactions', 'Audit Reports', 'Logging Data', 'Transaction Statistics'];
+
     return (
-        <Container>
-            <Typography variant="h4" gutterBottom>Account Summary Report</Typography>
-            <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+        <div className="account-summaries-container">
+            <div className="sidebar">
+                <h2>Reports</h2>
+                <ReportTree /> {/* Render the ReportTree component */}
+            </div>
+            <div className="main-content">
+                <Container>
+                    <Typography variant="h4" gutterBottom>Account Summary Report</Typography>
+                    {/* ComboBox for selecting format */}
+                    <ComboBox
+                        fullWidth
+                        label="Select Format"
+                        value={selectedFormat}
+                        onChange={(event, newValue) => setSelectedFormat(newValue)}
+                        options={formatOptions}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                    {/* ComboBox for selecting report type */}
+                    <ComboBox
+                        fullWidth
+                        label="Select Report Type"
+                        value={selectedReportType}
+                        onChange={(event, newValue) => setSelectedReportType(newValue)}
+                        options={reportTypeOptions}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                    {/* Include other content of the AccountSummaries component */}
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                             label="Start Date"
@@ -62,10 +143,6 @@ export default function AccountSummaries(){
                             }}
                             renderInput={(params) => <TextField {...params} />}
                         />
-                    </LocalizationProvider>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                             label="End Date"
                             value={endDate}
@@ -75,44 +152,16 @@ export default function AccountSummaries(){
                             renderInput={(params) => <TextField {...params} />}
                         />
                     </LocalizationProvider>
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        select
-                        label="Report Type"
-                        value={reportType}
-                        onChange={(e) => setReportType(e.target.value)}
-                        variant="outlined"
-                        fullWidth
-                    >
-                        <MenuItem value="Transaction Statements">Transaction Statements</MenuItem>
-                        <MenuItem value="Statements showing particular transactions">Statements showing particular transactions</MenuItem>
-                        <MenuItem value="Audit Reports">Audit Reports</MenuItem>
-                        <MenuItem value="Logging Data">Logging Data</MenuItem>
-                        <MenuItem value="Transaction Statistics">Transaction Statistics</MenuItem>
-                    </TextField>
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        select
-                        label="Report Format"
-                        value={reportFormat}
-                        onChange={(e) => setReportFormat(e.target.value)}
-                        variant="outlined"
-                        fullWidth
-                    >
-                        <MenuItem value="PDF">PDF</MenuItem>
-                        <MenuItem value="HTML">HTML</MenuItem>
-                        <MenuItem value="Excel Spreadsheet">Excel Spreadsheet</MenuItem>
-                    </TextField>
-                </Grid>
-                <Grid item xs={12}>
-                    <Button variant="contained" color="primary" startIcon={<PlayCircleOutlineIcon />} onClick={handleGenerateReport} fullWidth>Generate Report</Button>
-                </Grid>
-            </Grid>
-            {report && (
-                <ReportPreview report={report} />
-            )}
-        </Container>
+                    <Button variant="contained" color="primary" onClick={handleGenerateReport}>Generate Report</Button>
+                    {report && (
+                        <div>
+                            <Typography variant="body1" style={{ marginTop: '20px' }}>
+                                {report}
+                            </Typography>
+                        </div>
+                    )}
+                </Container>
+            </div>
+        </div>
     );
 }
