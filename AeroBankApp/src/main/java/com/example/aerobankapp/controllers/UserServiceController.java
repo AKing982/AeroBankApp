@@ -192,7 +192,7 @@ public class UserServiceController {
     @PreAuthorize("isAuthenticated() ")
     public ResponseEntity<?> generateAccountNumber(@PathVariable String username)
     {
-        String accountNumber = userService.generateAccountNumber(username);
-        return ResponseEntity.ok(accountNumber);
+       // String accountNumber = userService.generateAccountNumber(username);
+        return ResponseEntity.ok("");
     }
 }

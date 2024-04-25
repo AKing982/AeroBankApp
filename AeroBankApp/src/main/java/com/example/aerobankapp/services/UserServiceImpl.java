@@ -103,19 +103,6 @@ public class UserServiceImpl implements UserService
        return userRepository.getUserRole(user);
     }
 
-    @Override
-    public UserEntity registerUser(RegistrationDTO registrationDTO)
-    {
-        UserEntity userEntity = UserEntity.builder()
-                .username(registrationDTO.username())
-                .password(registrationDTO.password())
-                .email(registrationDTO.email())
-                .pinNumber(registrationDTO.PIN())
-                .build();
-
-
-        return userEntity;
-    }
 
     @Override
     @Transactional
@@ -199,25 +186,4 @@ public class UserServiceImpl implements UserService
         }
         return false;
     }
-
-    @Override
-    public String generateAccountNumber(String user)
-    {
-        try {
-            // Use SHA-256 hashing
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(user.getBytes());
-            byte[] digest = md.digest();
-
-            // Convert the hash bytes to integers and format
-            int part1 = Math.abs(new BigInteger(1, new byte[]{digest[0], digest[1]}).intValue() % 100);
-            int part2 = Math.abs(new BigInteger(1, new byte[]{digest[2], digest[3]}).intValue() % 100);
-            int part3 = Math.abs(new BigInteger(1, new byte[]{digest[4], digest[5]}).intValue() % 100);
-
-            return String.format("%02d-%02d-%02d", part1, part2, part3);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error generating account number", e);
-        }
-    }
-
 }

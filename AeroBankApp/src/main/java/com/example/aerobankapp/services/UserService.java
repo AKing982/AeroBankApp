@@ -32,8 +32,6 @@ public interface UserService extends ServiceDAOModel<UserEntity>
 
     Role getUserRole(String user) throws NoResultException;
 
-    UserEntity registerUser(RegistrationDTO registrationDTO);
-
     String getAccountNumberByUserName(String user);
 
     int getUserIDByAccountNumber(String accountNumber);
@@ -59,6 +57,4 @@ public interface UserService extends ServiceDAOModel<UserEntity>
     boolean userNameExists(String user);
 
     boolean doesAccountNumberExist(String accountNumber);
-
-    String generateAccountNumber(String user);
 }
