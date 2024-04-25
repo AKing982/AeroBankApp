@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidAccountNumberException;
+import com.example.aerobankapp.exceptions.InvalidUserDTOException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.UserRepository;
@@ -192,6 +193,18 @@ class UserServiceImplTest {
         final int actual = userService.getUserIDByAccountNumber(acctNum);
 
         assertEquals(expectedID, actual);
+    }
+
+    @Test
+    public void testRegisterUser_NullUserDTO(){
+        assertThrows(InvalidUserDTOException.class, () -> {
+            userService.registerUser(null);
+        });
+    }
+
+    @Test
+    public void testRegisterUser_ValidUserDTO(){
+
     }
 
 

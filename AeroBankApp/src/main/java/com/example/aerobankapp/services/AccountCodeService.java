@@ -1,5 +1,7 @@
 package com.example.aerobankapp.services;
 
+
+import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
@@ -22,4 +24,6 @@ public interface AccountCodeService extends ServiceDAOModel<AccountCodeEntity>
 
     @Override
     List<AccountCodeEntity> findByUserName(String user);
+
+    AccountCodeEntity buildAccountCodeEntity(AccountCodeDTO accountCodeDTO);
 }

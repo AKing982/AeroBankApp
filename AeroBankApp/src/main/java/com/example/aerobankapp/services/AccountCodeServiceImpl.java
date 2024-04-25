@@ -1,5 +1,6 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.repositories.AccountCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,11 @@ public class AccountCodeServiceImpl implements AccountCodeService
 
     @Override
     public List<AccountCodeEntity> findByUserName(String user) {
+        return null;
+    }
+
+    @Override
+    public AccountCodeEntity buildAccountCodeEntity(AccountCodeDTO accountCodeDTO) {
         return null;
     }
 }

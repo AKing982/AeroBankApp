@@ -1,5 +1,6 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.dto.AccountInfoDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
@@ -246,6 +247,35 @@ public class AccountServiceImpl implements AccountService
         int accountCount = accountRepository.doesAccountIDExist(acctID);
         return accountCount > 1;
     }
+
+    public AccountEntity buildAccountEntity(final AccountInfoDTO accountInfoDTO){
+        AccountEntity account = new AccountEntity();
+
+        final BigDecimal DEFAULT_INTEREST = new BigDecimal("1.67");
+
+        if(accountInfoDTO.accountType().equals("RENT")){
+            account.setRentAccount(true);
+            account.setHasMortgage(false);
+            account.setHasDividend(true);
+        }
+        if(accountInfoDTO.accountType().equals("MORTGAGE")){
+            account.setHasDividend(true);
+            account.setHasMortgage(true);
+            account.setRentAccount(false);
+        }
+        // Generate the AccountCode
+
+        account.setRentAccount(false);
+        account.setHasMortgage(false);
+        account.setAccountName(accountInfoDTO.accountName());
+        account.setAccountType(accountInfoDTO.accountType());
+        account.setBalance(account.getBalance());
+        account.setHasDividend(true);
+        //account.setAccountCode();
+        account.setInterest(DEFAULT_INTEREST);
+        return account;
+    }
+
 
     public boolean isInvalidUserID(int userID)
     {

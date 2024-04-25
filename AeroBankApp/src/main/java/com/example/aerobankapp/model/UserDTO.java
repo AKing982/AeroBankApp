@@ -1,6 +1,7 @@
 package com.example.aerobankapp.model;
 
 import com.example.aerobankapp.account.AccountNumber;
+import com.example.aerobankapp.workbench.utilities.Role;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +14,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserDTO
 {
-    private int id;
+    private String firstName;
+    private String lastName;
     private String userName;
     private String email;
-    private AccountNumber accountNumber;
     private String password;
     private String pinNumber;
+    private boolean isAdmin;
+    private Role role;
 
     public UserDTO(String user)
     {

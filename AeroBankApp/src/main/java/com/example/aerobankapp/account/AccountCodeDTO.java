@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @ToString
+@Deprecated
 public class AccountCodeDTO
 {
     private GenerateAccountCode generateAccountCode;

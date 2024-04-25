@@ -4,9 +4,9 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.dto.RegistrationDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
-import com.example.aerobankapp.exceptions.InvalidAccountNumberException;
-import com.example.aerobankapp.exceptions.InvalidUserIDException;
-import com.example.aerobankapp.exceptions.InvalidUserStringException;
+import com.example.aerobankapp.exceptions.*;
+import com.example.aerobankapp.model.AccountNumber;
+import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.Role;
 import jakarta.persistence.*;
@@ -186,4 +186,85 @@ public class UserServiceImpl implements UserService
         }
         return false;
     }
+
+    public UserEntity buildUserEntity(UserDTO userDTO, AccountNumber accountNumber){
+
+        String user = userDTO.getUserName();
+        if(userRepository.userExists(user) != 1){
+            throw new UserExistsException("User already exists in the database: " + user);
+        }
+
+        return UserEntity.builder()
+                .firstName(userDTO.getFirstName())
+                .lastName(userDTO.getLastName())
+                .email(userDTO.getEmail())
+                .username(userDTO.getUserName())
+                .pinNumber(userDTO.getPinNumber())
+                .password(userDTO.getPassword())
+                .isAdmin(userDTO.isAdmin())
+                .isEnabled(true)
+                .accountNumber(accountNumber.getAccountNumberToString())
+                .role(userDTO.getRole())
+                .build();
+    }
+
+    @Override
+    public void registerUser(UserDTO userDTO) {
+        if (userDTO == null) {
+            throw new InvalidUserDTOException("Invalid UserDTO caught.");
+        }
+        // Get the Generated AccountNumber
+        AccountNumber generatedAccountNumber = generateAccountNumber(userDTO.getUserName());
+
+        // Build the User Entity
+        UserEntity userEntity = buildUserEntity(userDTO, generatedAccountNumber);
+
+        // Save the User Entity
+        userRepository.save(userEntity);
+    }
+
+    @Override
+    public AccountNumber generateAccountNumber(String user) {
+        if(user.isEmpty()){
+            throw new InvalidUserStringException("Invalid user name found. Unable to proceed with creating account number.");
+        }
+        try {
+            // Use SHA-256 hashing
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(user.getBytes());
+            byte[] digest = md.digest();
+
+            // Convert the hash bytes to integers and format
+            int part1 = Math.abs(new BigInteger(1, new byte[]{digest[0], digest[1]}).intValue() % 100);
+            int part2 = Math.abs(new BigInteger(1, new byte[]{digest[2], digest[3]}).intValue() % 100);
+            int part3 = Math.abs(new BigInteger(1, new byte[]{digest[4], digest[5]}).intValue() % 100);
+
+            // Create the Account Number
+            AccountNumber accountNumber = new AccountNumber(part1, part2, part3);
+
+            // use the validation method to verify account number doesn't already exist in the database.
+            if(validateGeneratedAccountNumber(accountNumber)){
+                return accountNumber;
+            }
+            // If the Account Number is not valid, simply return null
+            return null;
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error generating account number", e);
+        }
+    }
+
+    public boolean validateGeneratedAccountNumber(final AccountNumber accountNumber){
+        if(accountNumber.isValid()){
+            // If the account number doesn't exist in the database, then return true
+            String accountNumberAsStr = accountNumber.getAccountNumberToString();
+            boolean accountNumberExistsInDatabase = userRepository.doesAccountNumberExist(accountNumberAsStr);
+            if(accountNumberExistsInDatabase){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }
