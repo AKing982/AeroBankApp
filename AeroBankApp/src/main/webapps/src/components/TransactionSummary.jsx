@@ -100,7 +100,7 @@ function TransactionSummary(){
                     <Grid item xs={12} md={10}>
                         <Accordion>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography>Transaction Statistics</Typography>
+                                <Typography fontFamily="Montserrat" fontWeight="bold">Transaction Statistics</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Grid container spacing={2} justifyContent="center">
@@ -120,24 +120,24 @@ function TransactionSummary(){
                                     </Grid>
                                     <Grid item xs={4}>
                                         {/* You can add more stats here */}
-                                        <TransactionSummaryStats title="New Stat Title" value="New Stat Value" />
+                                        <TransactionSummaryStats title="Average Transactions by Month" value="140" />
                                     </Grid>
                                     <Grid item xs={4}>
                                         {/* Additional stat */}
-                                        <TransactionSummaryStats title="Another Stat" value="Another Value" />
+                                        <TransactionSummaryStats title="Total Weekly Transactions" value="50" />
                                     </Grid>
                                     {/* Row 3 */}
                                     <Grid item xs={4}>
                                         {/* Additional stat */}
-                                        <TransactionSummaryStats title="Further Stat" value="Further Value" />
+                                        <TransactionSummaryStats title="Currently Pending" value="3" />
                                     </Grid>
                                     <Grid item xs={4}>
                                         {/* Placeholder or another stat */}
-                                        <TransactionSummaryStats title="More Stats" value="More Data" />
+                                        <TransactionSummaryStats title="Failed Transactions" value="0" />
                                     </Grid>
                                     <Grid item xs={4}>
                                         {/* Placeholder or another stat */}
-                                        <TransactionSummaryStats title="Final Stat" value="Final Value" />
+                                        <TransactionSummaryStats title="Total Transfers by month" value="15" />
                                     </Grid>
                                 </Grid>
                             </AccordionDetails>

@@ -9,7 +9,7 @@ function TransactionSummaryStats({title, value}){
             background: 'linear-gradient(145deg, #6a11cb, #2575fc)', // Example gradient
             color: '#fff' // White text for better contrast
         }}>
-            <Typography variant="h6">{title}</Typography>
+            <Typography variant="h6" fontFamily="Montserrat">{title}</Typography>
             <Typography>{value}</Typography>
         </Paper>
     );
