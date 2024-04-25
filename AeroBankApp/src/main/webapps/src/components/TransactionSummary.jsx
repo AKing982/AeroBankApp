@@ -4,7 +4,7 @@ import {
     AccordionSummary,
     Button,
     Card, Checkbox, FormControl, FormControlLabel,
-    Grid, InputLabel, MenuItem, Paper, Select, Table, TableBody,
+    Grid, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody,
     TableCell,
     TableHead,
     TableRow,
@@ -18,7 +18,10 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import TransactionSummaryTable from "./TransactionSummaryTable";
 import backgroundImage from './images/pexels-julius-silver-753325.jpg';
 import TransactionSummaryStats from "./TransactionSummaryStats";
-
+import {InfoOutlined, ViewComfy} from "@mui/icons-material";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import GridOnIcon from '@mui/icons-material/GridOn';
+import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 
 function TransactionSummary(){
     const [filters, setFilters] = useState({
@@ -85,6 +88,18 @@ function TransactionSummary(){
         averageTransaction: '$150'
     };
 
+    const handleIconClick = (event) => {
+
+    }
+
+    const handleGridIconClick = (event) => {
+
+    }
+
+    const handleToggleIconClick = (event) => {
+        
+    }
+
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -100,7 +115,16 @@ function TransactionSummary(){
                     <Grid item xs={12} md={10}>
                         <Accordion>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography fontFamily="Montserrat" fontWeight="bold">Transaction Statistics</Typography>
+                                <Typography variant="h6" fontFamily="Montserrat" fontWeight="bold">Transaction Statistics</Typography>
+                                <IconButton onClick={handleIconClick} style={{fontSize: 36}}>
+                                    <FilterListIcon />
+                                </IconButton>
+                                <IconButton onClick={handleGridIconClick}>
+                                    <GridOnIcon />
+                                </IconButton>
+                                <IconButton onClick={handleToggleIconClick}>
+                                    <ViewComfyIcon/>
+                                </IconButton>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Grid container spacing={2} justifyContent="center">
