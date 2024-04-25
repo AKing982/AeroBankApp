@@ -56,7 +56,7 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
         return accountInfoDTOS;
     }
 
-    private void checkAccountInfoListForNullInput(List<AccountInfoDTO> accountInfoDTOS){
+    private void checkAccountInfoListForNullInput(final List<AccountInfoDTO> accountInfoDTOS){
         accountInfoDTOS.stream()
                 .filter(Objects::nonNull)
                 .filter(this::isAnyFieldNull)
