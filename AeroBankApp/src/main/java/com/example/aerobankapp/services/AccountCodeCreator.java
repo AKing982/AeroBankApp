@@ -7,4 +7,6 @@ import com.example.aerobankapp.model.UserDTO;
 public interface AccountCodeCreator
 {
     AccountCode generateAccountCode(UserDTO userDTO, AccountInfoDTO accountInfoDTO);
+
+    String formatAccountCode(AccountCode accountCode);
 }

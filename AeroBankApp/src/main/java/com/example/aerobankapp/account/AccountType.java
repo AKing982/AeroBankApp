@@ -14,6 +14,11 @@ public enum AccountType
         this.code = code;
     }
 
+    public String getCode()
+    {
+        return code;
+    }
+
     public static AccountType getInstance(String code)
     {
         AccountType type = null;

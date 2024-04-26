@@ -207,6 +207,14 @@ class UserServiceImplTest {
 
     }
 
+    @Test
+    public void testFindByUser(){
+        final String user = "AKing94";
+
+        Optional<UserEntity> userEntity = userService.findByUser(user);
+        assertNotNull(userEntity);
+    }
+
 
 
     @AfterEach

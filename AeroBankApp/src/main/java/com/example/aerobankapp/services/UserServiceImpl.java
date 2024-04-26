@@ -254,6 +254,12 @@ public class UserServiceImpl implements UserService
         }
     }
 
+    @Override
+    @Transactional
+    public Optional<UserEntity> findByUser(String user) {
+        return userRepository.fetchByUser(user);
+    }
+
     public boolean validateGeneratedAccountNumber(final AccountNumber accountNumber){
         if(accountNumber.isValid()){
             // If the account number doesn't exist in the database, then return true

@@ -63,5 +63,7 @@ public interface UserService extends ServiceDAOModel<UserEntity>
     void registerUser(UserDTO userDTO);
 
     AccountNumber generateAccountNumber(String user);
+
+    Optional<UserEntity> findByUser(String user);
 }
 
