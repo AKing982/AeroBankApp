@@ -1,5 +1,6 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.account.AccountType;
 import com.example.aerobankapp.entity.AccountSecurityEntity;
 import com.example.aerobankapp.repositories.AccountSecurityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
     @Override
     public Optional<AccountSecurityEntity> findAllById(Long id) {
         return Optional.empty();
+    }
+
+    @Override
+    public AccountSecurityEntity buildSecurityEntity(AccountType accountType) {
+        return null;
     }
 
     @Override

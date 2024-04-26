@@ -5,6 +5,7 @@ import com.example.aerobankapp.dto.RegistrationDTO;
 import com.example.aerobankapp.exceptions.InvalidUserStringException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.exceptions.NullAccountInfoException;
+import com.example.aerobankapp.exceptions.NullRegistrationDTOException;
 import com.example.aerobankapp.model.AccountNumber;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,14 +33,20 @@ class RegistrationSubmitterImplTest {
     @Mock
     private UserService userService;
 
-    @Mock
+    @Autowired
     private AccountService accountService;
 
-    @Mock
+    @Autowired
     private AccountSecurityService accountSecurityService;
 
-    @Mock
+    @Autowired
     private AccountPropertiesService accountPropertiesService;
+
+    @Autowired
+    private AccountCodeCreator accountCodeCreator;
+
+    @Autowired
+    private AccountCodeService accountCodeService;
 
     private RegistrationDTO registrationDTO;
 
@@ -47,7 +54,7 @@ class RegistrationSubmitterImplTest {
 
     @BeforeEach
     void setUp() {
-        registrationSubmitter = new RegistrationSubmitterImpl(userService, accountService, accountSecurityService, accountPropertiesService);
+        registrationSubmitter = new RegistrationSubmitterImpl(userService, accountService, accountSecurityService, accountPropertiesService, accountCodeCreator, accountCodeService);
 
         registrationDTO = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", new ArrayList<>(), new ArrayList<>(), "5988", true, "Halflifer45");
     }
@@ -133,6 +140,16 @@ class RegistrationSubmitterImplTest {
         assertEquals(accountInfoDTOList, actualAccounts);
         assertEquals(1, actualAccounts.size());
     }
+
+    @Test
+    public void testGetUserDTOFromRegistration_NullRegistration(){
+        assertThrows(NullRegistrationDTOException.class, () -> {
+            registrationSubmitter.getUserDTOFromRegistration(null);
+        });
+    }
+
+    @Test
+    public void testGetUserDTOFromRegistration_
 
     @AfterEach
     void tearDown() {

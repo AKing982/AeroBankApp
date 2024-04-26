@@ -12,6 +12,7 @@ import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidUserStringException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.exceptions.NullAccountInfoException;
+import com.example.aerobankapp.exceptions.NullRegistrationDTOException;
 import com.example.aerobankapp.model.AccountNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +34,22 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
     private final AccountService accountService;
     private final AccountSecurityService accountSecurityService;
     private final AccountPropertiesService accountPropertiesService;
+    private final AccountCodeCreator accountCodeCreator;
+    private final AccountCodeService accountCodeService;
     private final Logger LOGGER = LoggerFactory.getLogger(RegistrationSubmitterImpl.class);
 
     @Autowired
-    public RegistrationSubmitterImpl(UserService userService, AccountService accountService, AccountSecurityService accountSecurityService, AccountPropertiesService accountPropertiesService) {
+    public RegistrationSubmitterImpl(UserService userService, AccountService accountService,
+                                     AccountSecurityService accountSecurityService,
+                                     AccountPropertiesService accountPropertiesService,
+                                     AccountCodeCreator accountCodeCreator,
+                                     AccountCodeService accountCodeService) {
         this.userService = userService;
         this.accountService = accountService;
         this.accountSecurityService = accountSecurityService;
         this.accountPropertiesService = accountPropertiesService;
+        this.accountCodeCreator = accountCodeCreator;
+        this.accountCodeService = accountCodeService;
     }
 
 
@@ -77,6 +86,9 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
 
     @Override
     public Optional<UserDTO> getUserDTOFromRegistration(RegistrationDTO registrationDTO) {
+        if(registrationDTO == null){
+            throw new NullRegistrationDTOException("Unable to create User Object from null Registration...");
+        }
         return Optional.empty();
     }
 

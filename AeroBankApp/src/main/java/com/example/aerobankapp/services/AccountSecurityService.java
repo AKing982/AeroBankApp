@@ -1,5 +1,6 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.account.AccountType;
 import com.example.aerobankapp.entity.AccountSecurityEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
@@ -20,6 +21,8 @@ public interface AccountSecurityService extends ServiceDAOModel<AccountSecurityE
 
     @Override
     Optional<AccountSecurityEntity> findAllById(Long id);
+
+    AccountSecurityEntity buildSecurityEntity(AccountType accountType);
 
     @Override
     List<AccountSecurityEntity> findByUserName(String user);
