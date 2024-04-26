@@ -27,6 +27,7 @@ function ReviewAndSubmitRegistration({formData}){
             username: formData.username,
             email: formData.email,
             PIN: formData.pin,
+            role: formData.role,
             password: formData.password,
             isAdmin: formData.isAdmin,
             accounts: formData.accounts,
@@ -85,8 +86,15 @@ function ReviewAndSubmitRegistration({formData}){
                     <ListItemText primary="Username" secondary={`${formData.username}`}/>
                 </ListItem>
                 <ListItem>
-                    <ListItemText primary="Email" secondary={formData.email} />
+                    <ListItemText primary="Email" secondary={`${formData.email}`} />
                 </ListItem>
+                <ListItem>
+                    <ListItemText primary="PIN" secondary={`${formData.pin}`}/>
+                </ListItem>
+                <ListItem>
+                    <ListItemText primary="Role" secondary={`${formData.role}`}/>
+                </ListItem>
+
                 <Typography variant="subtitle1" sx={{ mt: 2 }}>
                     Account Review:
                 </Typography>

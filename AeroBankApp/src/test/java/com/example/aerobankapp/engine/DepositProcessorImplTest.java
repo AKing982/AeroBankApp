@@ -81,7 +81,7 @@ class DepositProcessorImplTest
     void setUp()
     {
         MockitoAnnotations.openMocks(this);
-        accountSecurityService = new AccountSecurityServiceImpl(accountSecurityRepository);
+        //accountSecurityService = new AccountSecurityServiceImpl(accountSecurityRepository);
         depositProcessor = new DepositProcessorImpl(depositService, accountService, accountSecurityService, notificationService, calculationEngine, userLogService,balanceHistoryService, encryptionService);
     }
 

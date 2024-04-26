@@ -1,7 +1,9 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.account.AccountType;
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.AccountSecurityEntity;
+import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.math.BigDecimal;
@@ -16,18 +18,22 @@ public interface AccountSecurityService extends ServiceDAOModel<AccountSecurityE
     @Override
     void save(AccountSecurityEntity obj);
 
+    void saveAll(List<AccountSecurityEntity> accountSecurityEntities);
+
     @Override
     void delete(AccountSecurityEntity obj);
 
     @Override
     Optional<AccountSecurityEntity> findAllById(Long id);
 
-    AccountSecurityEntity buildSecurityEntity(AccountType accountType);
+    AccountSecurityEntity buildSecurityEntity(AccountEntity account);
 
     @Override
     List<AccountSecurityEntity> findByUserName(String user);
 
     BigDecimal getMinimumBalanceRequirementsByAcctID(int acctID);
+
+    List<AccountSecurityEntity> getAccountSecurityEntityListFromAccounts(List<AccountEntity> accountEntities);
     int getTransactionVelocityLimitByAcctID(int acctID);
     boolean IsWithdrawEnabledByAcctID(int acctID);
     boolean IsDepositEnabledByAcctID(int acctID);

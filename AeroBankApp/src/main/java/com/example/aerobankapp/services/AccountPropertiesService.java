@@ -8,4 +8,6 @@ import java.util.List;
 public interface AccountPropertiesService extends ServiceDAOModel<AccountPropertiesEntity>
 {
     List<AccountPropertiesEntity> getAccountPropertiesByAcctID(int acctID);
+
+    void saveAll(List<AccountPropertiesEntity> accountPropertiesEntities);
 }

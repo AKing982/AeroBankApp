@@ -5,6 +5,7 @@ import com.example.aerobankapp.dto.AccountInfoDTO;
 import com.example.aerobankapp.dto.RegistrationDTO;
 import com.example.aerobankapp.dto.SecurityQuestionsDTO;
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.AccountSecurityEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.AccountCode;
@@ -16,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -115,27 +114,50 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
         userService.registerUser(user);
 
         // Build the AccountEntityList
-        List<AccountEntity> accountEntities = convertAccountDTOToEntityList(accountInfoDTOS);
+        List<AccountEntity> accountEntities = convertAccountDTOToEntityList(accountInfoDTOS, user);
 
-        // Create the Account Codes for each account
+        // Persist the accountList
+        accountService.saveAll(accountEntities);
 
-        // Persist the accountLists
+        // Retrieve the AccountID's for the account's just saved to the database
+        Set<Integer> accountIDSet = getAccountIDSet(accountEntities);
 
         // Create the AccountSecurity objects for each account
+        List<AccountSecurityEntity> accountSecurityEntities = accountSecurityService.getAccountSecurityEntityListFromAccounts(accountEntities);
+
+        // Save the AccountSecurity objects
+        accountSecurityService.saveAll(accountSecurityEntities);
 
         // Create the AccountProperties objects for each account
     }
 
-    private List<AccountEntity> convertAccountDTOToEntityList(List<AccountInfoDTO> accountInfoDTOS){
+
+    private Set<Integer> getAccountIDSet(List<AccountEntity> accountEntities){
+        return accountEntities.stream()
+                .filter(Objects::nonNull)
+                .map(AccountEntity::getAcctID)
+                .collect(Collectors.toSet());
+    }
+
+    private List<AccountEntity> convertAccountDTOToEntityList(List<AccountInfoDTO> accountInfoDTOS, User user){
+        List<AccountEntity> accountEntities = new ArrayList<>();
         if(accountInfoDTOS.isEmpty()){
             throw new NonEmptyListRequiredException("Caught empty list of Account data.");
         }
 
-        return accountInfoDTOS.stream()
-                .filter(Objects::nonNull)
-                .filter(this::isAnyFieldNull)
-                .map(accountService::buildAccountEntity)
-                .toList();
+        for(AccountInfoDTO accountInfoDTO : accountInfoDTOS){
+            if(accountInfoDTO != null){
+                if(!isAnyFieldNull(accountInfoDTO)){
+                    AccountCode accountCode = getGeneratedAccountCode(user, accountInfoDTO);
+                    if(accountCode != null){
+                        String formattedAccountCode = accountCodeCreator.formatAccountCode(accountCode);
+                        AccountEntity account = accountService.buildAccountEntity(accountInfoDTO, formattedAccountCode);
+                        accountEntities.add(account);
+                    }
+                }
+            }
+        }
+        return accountEntities;
     }
 
 
@@ -179,6 +201,7 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
                 .pinNumber(registrationDTO.PIN())
                 .isAdmin(registrationDTO.isAdmin())
                 .username(registrationDTO.username())
+                .role(registrationDTO.role())
                 .build();
     }
 

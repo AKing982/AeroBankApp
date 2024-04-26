@@ -16,6 +16,7 @@ export default function RegistrationForm()
         password: '',
         confirmPassword: '',
         pin: '',
+        role:'',
         securityQuestions: [],
         isAdmin: false,
         accounts: []

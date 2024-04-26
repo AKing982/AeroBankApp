@@ -31,6 +31,7 @@ public class RegistrationController
     public ResponseEntity<?> sendRegistrationRequest(@Valid @RequestBody RegistrationDTO request)
     {
         LOGGER.info("Registration Request Info: " + request.toString());
+        registrationSubmitter.register(request);
         return ResponseEntity.ok("Registration Saved successfully.");
     }
 

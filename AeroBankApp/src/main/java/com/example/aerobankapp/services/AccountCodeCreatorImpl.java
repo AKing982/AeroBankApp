@@ -39,6 +39,7 @@ public class AccountCodeCreatorImpl implements AccountCodeCreator
         UserEntity userEntity = getUserEntityByUserName(user.getUsername().trim());
 
         int userID = getUserIDFromUserEntity(userEntity);
+        LOGGER.info("Account Type: " + accountInfoDTO.accountType());
         AccountType accountType = getAccountTypeFromStringType(accountInfoDTO.accountType());
 
         int twoDigitYear = getTwoDigitYearSegment(getYearFromCurrentDate());
@@ -83,7 +84,7 @@ public class AccountCodeCreatorImpl implements AccountCodeCreator
     }
 
     private AccountType getAccountTypeFromStringType(String type){
-        return AccountType.valueOf(type);
+        return AccountType.getInstance(type);
     }
 
     private int getUserIDFromUserEntity(UserEntity user){

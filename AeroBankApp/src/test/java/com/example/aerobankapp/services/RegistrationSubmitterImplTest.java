@@ -6,6 +6,7 @@ import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.AccountNumber;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.model.UserDTO;
+import com.example.aerobankapp.workbench.utilities.Role;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ class RegistrationSubmitterImplTest {
     void setUp() {
         registrationSubmitter = new RegistrationSubmitterImpl(userService, accountService, accountSecurityService, accountPropertiesService, accountCodeCreator, accountCodeService);
 
-        registrationDTO = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", new ArrayList<>(), new ArrayList<>(), "5988", true, "Halflifer45");
+        registrationDTO = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", new ArrayList<>(), new ArrayList<>(), "5988", true, Role.ADMIN,"Halflifer45");
     }
 
     @Test
@@ -120,7 +121,7 @@ class RegistrationSubmitterImplTest {
 
         AccountInfoDTO accountInfoDTO = new AccountInfoDTO("Alex's Checking", null, null);
         List<AccountInfoDTO> accountInfoDTOList = List.of(accountInfoDTO);
-        RegistrationDTO registrationDTO1 = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", accountInfoDTOList, new ArrayList<>(), "5988", true, "Halflifer45!");
+        RegistrationDTO registrationDTO1 = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", accountInfoDTOList, new ArrayList<>(), "5988", true, Role.ADMIN, "Halflifer45!");
 
         assertThrows(NullAccountInfoException.class, () -> {
             registrationSubmitter.getListOfAccountInfos(registrationDTO1);
@@ -131,7 +132,7 @@ class RegistrationSubmitterImplTest {
     public void testGetListOfAccountInfos_ListWithNonNullData(){
         AccountInfoDTO accountInfoDTO = new AccountInfoDTO("Alex's Checking", "Checking", new BigDecimal("6789"));
         List<AccountInfoDTO> accountInfoDTOList = List.of(accountInfoDTO);
-        RegistrationDTO registrationDTO1 = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", accountInfoDTOList, new ArrayList<>(), "5988", true, "Halflifer45!");
+        RegistrationDTO registrationDTO1 = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", accountInfoDTOList, new ArrayList<>(), "5988", true, Role.ADMIN, "Halflifer45!");
 
         List<AccountInfoDTO> actualAccounts = registrationSubmitter.getListOfAccountInfos(registrationDTO1);
 
@@ -153,7 +154,7 @@ class RegistrationSubmitterImplTest {
         AccountInfoDTO accountInfoDTO = new AccountInfoDTO("Alex's Checking", "Checking", new BigDecimal("6789"));
         List<AccountInfoDTO> accountInfoDTOList = List.of(accountInfoDTO);
 
-        RegistrationDTO registrationDTO1 = new RegistrationDTO("", "", "", "", accountInfoDTOList, new ArrayList<>(), "5988", true, "");
+        RegistrationDTO registrationDTO1 = new RegistrationDTO("", "", "", "", accountInfoDTOList, new ArrayList<>(), "5988", true, Role.ADMIN, "");
 
         assertThrows(InvalidRegistrationParamsException.class, () -> {
             registrationSubmitter.buildUser(registrationDTO1);
@@ -165,7 +166,7 @@ class RegistrationSubmitterImplTest {
         AccountInfoDTO accountInfoDTO = new AccountInfoDTO("Alex's Checking", "Checking", new BigDecimal("6789"));
         List<AccountInfoDTO> accountInfoDTOList = List.of(accountInfoDTO);
 
-        RegistrationDTO registrationDTO1 = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", accountInfoDTOList, new ArrayList<>(), "5988", true, "Halflifer45!");
+        RegistrationDTO registrationDTO1 = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", accountInfoDTOList, new ArrayList<>(), "5988", true, Role.ADMIN,"Halflifer45!");
 
         assertThrows(UserAlreadyExistsException.class, () -> {
             registrationSubmitter.buildUser(registrationDTO1);
@@ -177,7 +178,7 @@ class RegistrationSubmitterImplTest {
         AccountInfoDTO accountInfoDTO = new AccountInfoDTO("Adams's Checking", "Checking", new BigDecimal("6789"));
         List<AccountInfoDTO> accountInfoDTOList = List.of(accountInfoDTO);
 
-        RegistrationDTO registrationDTO1 = new RegistrationDTO("Adam", "West", "AWest32", "awest@outlook.com", accountInfoDTOList, new ArrayList<>(), "2223", false, "Gamer10");
+        RegistrationDTO registrationDTO1 = new RegistrationDTO("Adam", "West", "AWest32", "awest@outlook.com", accountInfoDTOList, new ArrayList<>(), "2223", false, Role.ADMIN, "Halflifer45!");
 
         User userDTO = User.builder()
                 .username("AWest32")

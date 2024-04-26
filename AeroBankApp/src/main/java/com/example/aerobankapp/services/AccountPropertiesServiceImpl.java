@@ -49,4 +49,9 @@ public class AccountPropertiesServiceImpl implements AccountPropertiesService
     public List<AccountPropertiesEntity> getAccountPropertiesByAcctID(int acctID) {
         return null;
     }
+
+    @Override
+    public void saveAll(List<AccountPropertiesEntity> accountPropertiesEntities) {
+        accountPropertiesRepository.saveAll(accountPropertiesEntities);
+    }
 }

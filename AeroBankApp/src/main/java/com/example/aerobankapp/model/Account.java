@@ -19,6 +19,8 @@ public class Account
     private BigDecimal interest;
     private String accountName;
     private String accountCode;
+    private boolean isRentAccount;
+    private boolean isMortgageAccount;
     private AccountType accountType;
     private LocalDateTime creationDate;
 

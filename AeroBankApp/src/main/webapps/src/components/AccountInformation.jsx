@@ -28,6 +28,13 @@ export default function AccountInformation({activeStep, handleStepChange, accoun
         setIsNextButtonEnabled(isEnabled);
     }, [accountInfo]);
 
+    const accountTypes = [
+        {code: "01", name: "CHECKING"},
+        {code: "02", name: "SAVINGS"},
+        {code: "03", name: "RENT"},
+        {code: "04", name: "INVESTMENT"}
+    ];
+
 
     const handleNextButtonClick = (e) => {
         e.preventDefault();
@@ -92,11 +99,9 @@ export default function AccountInformation({activeStep, handleStepChange, accoun
                             onChange={handleAccountInfoChange}
                             required
                         >
-                            <MenuItem value="Checking">Checking</MenuItem>
-                            <MenuItem value="Savings">Savings</MenuItem>
-                            <MenuItem value="Investment">Investment</MenuItem>
-                            <MenuItem value="Rent">Rent</MenuItem>
-                            {/* Add more account types as needed */}
+                            {accountTypes.map((type) => (
+                                <MenuItem key={type.code} value={type.code}>{type.name}</MenuItem>
+                                ))}
                         </Select>
                     </FormControl>
                     <Button

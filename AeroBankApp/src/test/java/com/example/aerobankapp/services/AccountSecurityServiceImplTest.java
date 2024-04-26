@@ -26,7 +26,7 @@ class AccountSecurityServiceImplTest
 
     @BeforeEach
     void setUp() {
-        accountSecurityService = new AccountSecurityServiceImpl(accountSecurityRepository);
+       // accountSecurityService = new AccountSecurityServiceImpl(accountSecurityRepository);
     }
 
     @Test

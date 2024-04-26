@@ -173,11 +173,7 @@ public class UserServiceImpl implements UserService
 
     @Override
     public boolean userNameExists(String user) {
-        int count = userRepository.userExists(user);
-        if(count == 1){
-            return true;
-        }
-        return false;
+        return userRepository.userExists(user) == 1;
     }
 
     @Override
@@ -191,10 +187,10 @@ public class UserServiceImpl implements UserService
     public UserEntity buildUserEntity(User userDTO, AccountNumber accountNumber){
 
         String user = userDTO.getUsername();
-        if(userRepository.userExists(user) != 1){
+        if(userNameExists(user)){
             throw new UserExistsException("User already exists in the database: " + user);
         }
-
+        aeroLogger.info("User Role: " + userDTO.getRole());
         return UserEntity.builder()
                 .firstName(userDTO.getFirstName())
                 .lastName(userDTO.getLastName())
@@ -262,15 +258,21 @@ public class UserServiceImpl implements UserService
     }
 
     public boolean validateGeneratedAccountNumber(final AccountNumber accountNumber){
-        if(accountNumber.isValid()){
+        if(!accountNumber.isValid()){
             // If the account number doesn't exist in the database, then return true
-            String accountNumberAsStr = accountNumber.getAccountNumberToString();
-            boolean accountNumberExistsInDatabase = userRepository.doesAccountNumberExist(accountNumberAsStr);
-            if(accountNumberExistsInDatabase){
-                return true;
-            }
+            aeroLogger.info("Invalid Account Number.");
+            return false;
         }
-        return false;
+
+        // Convert account number to string as it will be stored or checked in the database.
+        String accountNumberAsStr = accountNumber.getAccountNumberToString();
+
+        // Check if the account number already exists in the database.
+        boolean accountNumberExistsInDatabase = userRepository.doesAccountNumberExist(accountNumberAsStr);
+        aeroLogger.info("Account Number Exists: " + accountNumberExistsInDatabase);
+
+        // The account number is valid only if it does NOT exist in the database (ensuring uniqueness).
+        return !accountNumberExistsInDatabase;
     }
 
 

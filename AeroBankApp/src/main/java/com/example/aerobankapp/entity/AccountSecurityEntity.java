@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 
 @Entity
 @Builder
+@Getter
+@Setter
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name="accountSecurity")

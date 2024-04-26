@@ -6,6 +6,7 @@ import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.exceptions.ZeroBalanceException;
+import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.AccountRepository;
@@ -245,6 +246,11 @@ public class AccountServiceImpl implements AccountService
          return accountRepository.fetchLatestAccountID();
     }
 
+    @Override
+    public void saveAll(List<AccountEntity> accountEntities) {
+        accountRepository.saveAll(accountEntities);
+    }
+
     private boolean doesAccountCodeExist(String acctCode)
     {
         int count = accountRepository.doesAccountCodeExist(acctCode);
@@ -258,7 +264,7 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
-    public AccountEntity buildAccountEntity(final AccountInfoDTO accountInfoDTO){
+    public AccountEntity buildAccountEntity(final AccountInfoDTO accountInfoDTO, final String accountCode){
         AccountEntity account = new AccountEntity();
 
         final BigDecimal DEFAULT_INTEREST = new BigDecimal("1.67");
@@ -279,13 +285,40 @@ public class AccountServiceImpl implements AccountService
         account.setHasMortgage(false);
         account.setAccountName(accountInfoDTO.accountName());
         account.setAccountType(accountInfoDTO.accountType());
-        account.setBalance(account.getBalance());
+        account.setBalance(accountInfoDTO.initialBalance());
         account.setHasDividend(true);
-        account.setAccountCode();
+        account.setAccountCode(accountCode);
         account.setInterest(DEFAULT_INTEREST);
         return account;
     }
 
+    @Override
+    public AccountEntity buildAccountEntityByAccountModel(Account account) {
+        int acctID = account.getAccountID();
+
+        // Check to see if an account exists with the above ID
+        Optional<AccountEntity> accountEntityOptional = accountRepository.findById(acctID);
+
+        // If No account is found, throw an exception
+        if(accountEntityOptional.isEmpty()){
+            throw new AccountIDNotFoundException("Account with ID: " + acctID + " not found.");
+        }
+        return buildAccount(account);
+    }
+
+    private AccountEntity buildAccount(Account account){
+        return AccountEntity.builder()
+                .accountType(account.getAccountType().getCode())
+                .accountCode(account.getAccountCode())
+                .acctID(account.getAccountID())
+                .balance(account.getBalance())
+                .interest(account.getInterest())
+                .accountName(account.getAccountName())
+                .isRentAccount(account.isRentAccount())
+                .hasMortgage(account.isMortgageAccount())
+                .userID(account.getUserID())
+                .build();
+    }
 
     public boolean isInvalidUserID(int userID)
     {

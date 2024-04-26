@@ -1,4 +1,14 @@
-import {Alert, Button, FormControlLabel, Snackbar, Switch, TextField, Typography} from "@mui/material";
+import {
+    Alert,
+    Button,
+    FormControl,
+    FormControlLabel,
+    InputLabel, MenuItem, Select,
+    Snackbar,
+    Switch,
+    TextField,
+    Typography
+} from "@mui/material";
 import {Container} from "@mui/system";
 import {useEffect, useState} from "react";
 import PasswordField from "./PasswordField";
@@ -20,6 +30,14 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
     }, [formData]); // Re-evaluate whenever formData changes
 
 
+  // Assuming roles are fetched or defined statically
+    const roles = [
+        { code: 'USER', name: 'USER' },
+        { code: 'TELLER', name: 'TELLER' },
+        { code: 'MANAGER', name: 'MANAGER' },
+        { code: 'AUDITOR', name: 'AUDITOR' },
+        { code: 'ADMIN', name: 'ADMIN' }
+    ];
     const handleNextButtonClick = (e) => {
         e.preventDefault();
 
@@ -109,6 +127,12 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
                     required
                 />
                 <PasswordField
+                    label="PIN"
+                    name="pin"
+                    value={formData.pin}
+                    onChange={handleFormDataChange}
+                    />
+                <PasswordField
                     label="Password"
                     name="password"
                     value={formData.password}
@@ -120,6 +144,23 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
                     value={formData.confirmPassword}
                     onChange={handleFormDataChange}
                 />
+                {/* Role Selection */}
+                <FormControl fullWidth margin="normal">
+                    <InputLabel id="role-select-label">Role</InputLabel>
+                    <Select
+                        labelId="role-select-label"
+                        id="role-select"
+                        value={formData.role}
+                        label="Role"
+                        onChange={handleFormDataChange}
+                        name="role"
+                        required
+                    >
+                        {roles.map((role) => (
+                            <MenuItem key={role.code} value={role.code}>{role.name}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 <FormControlLabel
                     control={
                         <Switch
