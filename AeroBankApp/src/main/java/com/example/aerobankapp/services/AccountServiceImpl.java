@@ -1,10 +1,13 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.dto.AccountInfoDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.exceptions.ZeroBalanceException;
+import com.example.aerobankapp.model.AccountCode;
+import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.AccountRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -234,6 +237,12 @@ public class AccountServiceImpl implements AccountService
     @Override
     public int getAccountIDByAccountName(final String accountName) {
         return accountRepository.findAccountIDByAccountName(accountName);
+    }
+
+    @Override
+    @Transactional
+    public int getLatestAccountID() {
+         return accountRepository.fetchLatestAccountID();
     }
 
     private boolean doesAccountCodeExist(String acctCode)

@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.entity.AccountCodeEntity;
+import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.repositories.AccountCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,16 @@ public class AccountCodeServiceImpl implements AccountCodeService
 
     @Override
     public AccountCodeEntity buildAccountCodeEntity(AccountCodeDTO accountCodeDTO) {
+        return null;
+    }
+
+    @Override
+    public String getAccountCodeAsString(AccountCode accountCode) {
+        return null;
+    }
+
+    @Override
+    public String getFirstInitialByAcctCodeID(Long id) {
         return null;
     }
 }

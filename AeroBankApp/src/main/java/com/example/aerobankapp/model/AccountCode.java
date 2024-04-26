@@ -17,6 +17,10 @@ public class AccountCode
     private int year;
     private int sequence;
 
+    public AccountCode(){
+
+    }
+
     public AccountCode(String firstInitial, String lastInitial, int userID, AccountType accountType, int year, int sequence) {
         this.firstInitial = firstInitial;
         this.lastInitial = lastInitial;

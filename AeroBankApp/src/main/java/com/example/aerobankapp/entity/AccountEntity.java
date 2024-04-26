@@ -19,6 +19,7 @@ public class AccountEntity
 {
 
     @Id
+    @Column(name="acctID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int acctID;
 

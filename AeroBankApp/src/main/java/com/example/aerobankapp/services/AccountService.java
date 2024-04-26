@@ -1,9 +1,12 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.dto.AccountCodeDTO;
+import com.example.aerobankapp.dto.AccountInfoDTO;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.ServiceDAOModel;
+import com.example.aerobankapp.model.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -61,4 +64,5 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
 
     int getAccountIDByAccountName(String accountName);
 
+    int getLatestAccountID();
 }

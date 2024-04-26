@@ -3,6 +3,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.entity.AccountCodeEntity;
+import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
 import java.util.List;
@@ -26,4 +27,9 @@ public interface AccountCodeService extends ServiceDAOModel<AccountCodeEntity>
     List<AccountCodeEntity> findByUserName(String user);
 
     AccountCodeEntity buildAccountCodeEntity(AccountCodeDTO accountCodeDTO);
+
+    String getAccountCodeAsString(AccountCode accountCode);
+
+    String getFirstInitialByAcctCodeID(Long id);
+
 }

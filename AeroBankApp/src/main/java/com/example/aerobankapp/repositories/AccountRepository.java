@@ -79,4 +79,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
 
     @Query("SELECT a.acctID FROM AccountEntity a WHERE a.userID=:userID")
     List<Integer> getListOfAccountIDsByUserID(@Param("userID") int userID);
+
+    @Query("SELECT MAX(a.acctID) AS latestAccountID FROM AccountEntity a")
+    int fetchLatestAccountID();
 }
