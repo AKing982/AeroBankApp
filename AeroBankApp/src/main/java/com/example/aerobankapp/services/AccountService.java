@@ -65,4 +65,6 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
     int getAccountIDByAccountName(String accountName);
 
     int getLatestAccountID();
+
+    AccountEntity buildAccountEntity(AccountInfoDTO accountInfoDTO);
 }

@@ -257,6 +257,7 @@ public class AccountServiceImpl implements AccountService
         return accountCount > 1;
     }
 
+    @Override
     public AccountEntity buildAccountEntity(final AccountInfoDTO accountInfoDTO){
         AccountEntity account = new AccountEntity();
 
@@ -280,7 +281,7 @@ public class AccountServiceImpl implements AccountService
         account.setAccountType(accountInfoDTO.accountType());
         account.setBalance(account.getBalance());
         account.setHasDividend(true);
-        //account.setAccountCode();
+        account.setAccountCode();
         account.setInterest(DEFAULT_INTEREST);
         return account;
     }

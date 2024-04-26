@@ -2,11 +2,10 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.dto.AccountInfoDTO;
 import com.example.aerobankapp.dto.RegistrationDTO;
-import com.example.aerobankapp.exceptions.InvalidUserStringException;
-import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
-import com.example.aerobankapp.exceptions.NullAccountInfoException;
-import com.example.aerobankapp.exceptions.NullRegistrationDTOException;
+import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.AccountNumber;
+import com.example.aerobankapp.model.User;
+import com.example.aerobankapp.model.UserDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -30,7 +30,7 @@ class RegistrationSubmitterImplTest {
     @InjectMocks
     private RegistrationSubmitterImpl registrationSubmitter;
 
-    @Mock
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -144,12 +144,67 @@ class RegistrationSubmitterImplTest {
     @Test
     public void testGetUserDTOFromRegistration_NullRegistration(){
         assertThrows(NullRegistrationDTOException.class, () -> {
-            registrationSubmitter.getUserDTOFromRegistration(null);
+            registrationSubmitter.getUserFromRegistration(null);
         });
     }
 
     @Test
-    public void testGetUserDTOFromRegistration_
+    public void testGetUserDTOFromRegistration_InvalidUserData(){
+        AccountInfoDTO accountInfoDTO = new AccountInfoDTO("Alex's Checking", "Checking", new BigDecimal("6789"));
+        List<AccountInfoDTO> accountInfoDTOList = List.of(accountInfoDTO);
+
+        RegistrationDTO registrationDTO1 = new RegistrationDTO("", "", "", "", accountInfoDTOList, new ArrayList<>(), "5988", true, "");
+
+        assertThrows(InvalidRegistrationParamsException.class, () -> {
+            registrationSubmitter.buildUser(registrationDTO1);
+        });
+    }
+
+    @Test
+    public void testBuildUserDTO_ValidUserData_UserAlreadyExists(){
+        AccountInfoDTO accountInfoDTO = new AccountInfoDTO("Alex's Checking", "Checking", new BigDecimal("6789"));
+        List<AccountInfoDTO> accountInfoDTOList = List.of(accountInfoDTO);
+
+        RegistrationDTO registrationDTO1 = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", accountInfoDTOList, new ArrayList<>(), "5988", true, "Halflifer45!");
+
+        assertThrows(UserAlreadyExistsException.class, () -> {
+            registrationSubmitter.buildUser(registrationDTO1);
+        });
+    }
+
+    @Test
+    public void testBuildUserDTO_ValidUserData_NonExistingUser(){
+        AccountInfoDTO accountInfoDTO = new AccountInfoDTO("Adams's Checking", "Checking", new BigDecimal("6789"));
+        List<AccountInfoDTO> accountInfoDTOList = List.of(accountInfoDTO);
+
+        RegistrationDTO registrationDTO1 = new RegistrationDTO("Adam", "West", "AWest32", "awest@outlook.com", accountInfoDTOList, new ArrayList<>(), "2223", false, "Gamer10");
+
+        User userDTO = User.builder()
+                .username("AWest32")
+                .firstName("Adam")
+                .lastName("West")
+                .email("awest@outlook.com")
+                .pinNumber("2223")
+                .password("Gamer10")
+                .isAdmin(false)
+                .build();
+
+        User actual = registrationSubmitter.buildUser(registrationDTO1);
+
+        assertNotNull(actual);
+        assertEquals(userDTO.getUsername(), actual.getUsername());
+        assertEquals(userDTO.getFirstName(), actual.getFirstName());
+        assertEquals(userDTO.getEmail(), actual.getEmail());
+        assertEquals(userDTO.isAdmin(), actual.isAdmin());
+    }
+
+    @Test
+    public void testAssertUserAlreadyExists_ValidUser(){
+        final String user = "AKing94";
+
+        assertTrue(registrationSubmitter.assertUserAlreadyExists(user));
+    }
+
 
     @AfterEach
     void tearDown() {

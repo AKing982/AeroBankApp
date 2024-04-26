@@ -6,8 +6,8 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 
-@Builder
-@AllArgsConstructor
+@Builder(access = AccessLevel.PUBLIC)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor
 @Getter
 @Setter

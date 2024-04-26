@@ -5,6 +5,7 @@ import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.AccountNumber;
 import com.example.aerobankapp.model.ServiceDAOModel;
+import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.workbench.utilities.Role;
 import jakarta.persistence.NoResultException;
@@ -60,7 +61,7 @@ public interface UserService extends ServiceDAOModel<UserEntity>
 
     boolean doesAccountNumberExist(String accountNumber);
 
-    void registerUser(UserDTO userDTO);
+    void registerUser(User user);
 
     AccountNumber generateAccountNumber(String user);
 

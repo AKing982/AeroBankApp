@@ -2,7 +2,10 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.account.AccountType;
 import com.example.aerobankapp.dto.AccountInfoDTO;
+
 import com.example.aerobankapp.model.AccountCode;
+import com.example.aerobankapp.model.AccountNumber;
+import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.workbench.utilities.Role;
 import jakarta.validation.constraints.Null;
@@ -76,7 +79,8 @@ class AccountCodeCreatorImplTest {
 
     @Test
     public void testGenerateAccountCode_ValidParameters(){
-        UserDTO userDTO = new UserDTO("Alex", "King", "AKing94", "alex@utahkings.com", "Halflifer45!", "5988", true, Role.ADMIN);
+        AccountNumber accountNumber = new AccountNumber(48, 22, 42);
+        User userDTO = new User("Alex", "King", "AKing94", "alex@utahkings.com", "Halflifer45!", "5988", true, Role.ADMIN, accountNumber);
         AccountInfoDTO accountInfoDTO = new AccountInfoDTO("Alex Checking", AccountType.CHECKING.name(), new BigDecimal("5678"));
 
         AccountCode accountCode = new AccountCode("A", "K", 1, AccountType.CHECKING, 24, 6);

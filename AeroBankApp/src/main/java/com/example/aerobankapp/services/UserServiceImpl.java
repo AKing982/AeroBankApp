@@ -6,6 +6,7 @@ import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.AccountNumber;
+import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.utilities.Role;
@@ -187,9 +188,9 @@ public class UserServiceImpl implements UserService
         return false;
     }
 
-    public UserEntity buildUserEntity(UserDTO userDTO, AccountNumber accountNumber){
+    public UserEntity buildUserEntity(User userDTO, AccountNumber accountNumber){
 
-        String user = userDTO.getUserName();
+        String user = userDTO.getUsername();
         if(userRepository.userExists(user) != 1){
             throw new UserExistsException("User already exists in the database: " + user);
         }
@@ -198,7 +199,7 @@ public class UserServiceImpl implements UserService
                 .firstName(userDTO.getFirstName())
                 .lastName(userDTO.getLastName())
                 .email(userDTO.getEmail())
-                .username(userDTO.getUserName())
+                .username(userDTO.getUsername())
                 .pinNumber(userDTO.getPinNumber())
                 .password(userDTO.getPassword())
                 .isAdmin(userDTO.isAdmin())
@@ -209,15 +210,15 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public void registerUser(UserDTO userDTO) {
-        if (userDTO == null) {
-            throw new InvalidUserDTOException("Invalid UserDTO caught.");
+    public void registerUser(User user) {
+        if (user == null) {
+            throw new InvalidUserDTOException("Invalid User caught.");
         }
         // Get the Generated AccountNumber
-        AccountNumber generatedAccountNumber = generateAccountNumber(userDTO.getUserName());
+        AccountNumber generatedAccountNumber = generateAccountNumber(user.getUsername());
 
         // Build the User Entity
-        UserEntity userEntity = buildUserEntity(userDTO, generatedAccountNumber);
+        UserEntity userEntity = buildUserEntity(user, generatedAccountNumber);
 
         // Save the User Entity
         userRepository.save(userEntity);

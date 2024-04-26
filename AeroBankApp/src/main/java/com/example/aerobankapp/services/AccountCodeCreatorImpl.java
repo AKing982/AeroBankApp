@@ -2,10 +2,11 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.account.AccountType;
 import com.example.aerobankapp.dto.AccountInfoDTO;
+import com.example.aerobankapp.dto.UserDTO;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.UserNotFoundException;
 import com.example.aerobankapp.model.AccountCode;
-import com.example.aerobankapp.model.UserDTO;
+import com.example.aerobankapp.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +29,14 @@ public class AccountCodeCreatorImpl implements AccountCodeCreator
     }
 
     @Override
-    public AccountCode generateAccountCode(UserDTO userDTO, AccountInfoDTO accountInfoDTO) {
+    public AccountCode generateAccountCode(User user, AccountInfoDTO accountInfoDTO) {
         // Fetch the first initial of the first Name
-        String firstInitial = getStartingInitialByName(userDTO.getFirstName());
+        String firstInitial = getStartingInitialByName(user.getFirstName());
 
         // Fetch the last initial of the last name
-        String lastInitial = getStartingInitialByName(userDTO.getLastName());
+        String lastInitial = getStartingInitialByName(user.getLastName());
 
-        UserEntity userEntity = getUserEntityByUserName(userDTO.getUserName().trim());
+        UserEntity userEntity = getUserEntityByUserName(user.getUsername().trim());
 
         int userID = getUserIDFromUserEntity(userEntity);
         AccountType accountType = getAccountTypeFromStringType(accountInfoDTO.accountType());
