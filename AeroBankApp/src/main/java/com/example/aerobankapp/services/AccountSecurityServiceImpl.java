@@ -55,12 +55,12 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
     @Override
     public AccountSecurityEntity buildSecurityEntity(AccountEntity account) {
         AccountSecurityEntity accountSecurityEntity = new AccountSecurityEntity();
-        AccountType accountType = AccountType.valueOf(account.getAccountType());
+        AccountType accountType = AccountType.getInstance(account.getAccountType());
         return buildAccountSecurityEntityProperties(account);
     }
 
     public AccountSecurityEntity buildAccountSecurityEntityProperties(AccountEntity account){
-        AccountType accountType = AccountType.valueOf(account.getAccountType());
+        AccountType accountType = AccountType.getInstance(account.getAccountType());
         AccountSecurityEntity accountSecurity = new AccountSecurityEntity();
 
         // Convert the Account object to an account Entity
@@ -77,6 +77,7 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
                         true,
                         true,
                         false,
+                        10,
                         new BigDecimal("120.000"),
                         true, account);
             }
@@ -91,6 +92,7 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
                         true,
                         true,
                         true,
+                        5,
                         new BigDecimal("300.000"),
                         true, account);
             }
@@ -105,6 +107,7 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
                         true,
                         true,
                         true,
+                        11,
                         new BigDecimal("1215.000"),
                         true,
                         account);
@@ -120,6 +123,7 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
                         true,
                         false,
                         false,
+                        2,
                         new BigDecimal("8500.000"),
                         false, account);
             }
@@ -140,7 +144,7 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
     }
 
     private AccountSecurityEntity buildEntity(boolean isEnabled, boolean isAccountLocked, int depositLimit, int withdrawLimit, int transferLimit, boolean depositEnabled, boolean withdrawEnabled, boolean transferEnabled,
-                                              boolean interestEnabled, boolean feesEnabled, BigDecimal minimumBalance, boolean autoPayOn, AccountEntity account){
+                                              boolean interestEnabled, boolean feesEnabled, int transferVelocityLimit, BigDecimal minimumBalance, boolean autoPayOn, AccountEntity account){
         AccountSecurityEntity accountSecurity = new AccountSecurityEntity();
         accountSecurity.setEnabled(isEnabled);
         accountSecurity.setAccountLocked(isAccountLocked);
@@ -151,7 +155,8 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
         accountSecurity.setInterestEnabled(interestEnabled);
         accountSecurity.setMinimumBalance(minimumBalance);
         accountSecurity.setTransferLimit(transferLimit);
-        accountSecurity.setAutoPay_enabled(autoPayOn);
+        accountSecurity.setAutoPayEnabled(autoPayOn);
+        accountSecurity.setTransactionVelocityLimit(transferVelocityLimit);
         accountSecurity.setTransferEnabled(transferEnabled);
         accountSecurity.setWithdrawEnabled(withdrawEnabled);
         accountSecurity.setAccount(account);

@@ -54,8 +54,8 @@ public class AccountSecurityEntity
     @Column(name="isAccountLocked")
     private boolean isAccountLocked;
 
-    @Column(name="autoPay_enabled")
-    private boolean autoPay_enabled;
+    @Column(name="autoPayEnabled")
+    private boolean autoPayEnabled;
 
     @Column(name="minimumBalance")
     @DecimalMin("0.00")

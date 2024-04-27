@@ -4,9 +4,7 @@ import com.example.aerobankapp.account.Account;
 import com.example.aerobankapp.dto.AccountInfoDTO;
 import com.example.aerobankapp.dto.RegistrationDTO;
 import com.example.aerobankapp.dto.SecurityQuestionsDTO;
-import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.entity.AccountSecurityEntity;
-import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.User;
@@ -29,6 +27,8 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
     private final AccountPropertiesService accountPropertiesService;
     private final AccountCodeCreator accountCodeCreator;
     private final AccountCodeService accountCodeService;
+
+    private final AccountUsersEntityService accountUsersEntityService;
     private final Logger LOGGER = LoggerFactory.getLogger(RegistrationSubmitterImpl.class);
 
     @Autowired
@@ -36,13 +36,15 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
                                      AccountSecurityService accountSecurityService,
                                      AccountPropertiesService accountPropertiesService,
                                      AccountCodeCreator accountCodeCreator,
-                                     AccountCodeService accountCodeService) {
+                                     AccountCodeService accountCodeService,
+                                     AccountUsersEntityService accountUsersEntityService) {
         this.userService = userService;
         this.accountService = accountService;
         this.accountSecurityService = accountSecurityService;
         this.accountPropertiesService = accountPropertiesService;
         this.accountCodeCreator = accountCodeCreator;
         this.accountCodeService = accountCodeService;
+        this.accountUsersEntityService = accountUsersEntityService;
     }
 
 
@@ -113,8 +115,15 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
         // Register the user
         userService.registerUser(user);
 
+        // Grab the userID from the registered userName
+
+        int userID = userService.getUserIDByUserName(user.getUsername());
+        Optional<UserEntity> userEntity = userService.findById(userID);
+
+        UserEntity userEntity1 = userEntity.get();
+
         // Build the AccountEntityList
-        List<AccountEntity> accountEntities = convertAccountDTOToEntityList(accountInfoDTOS, user);
+        List<AccountEntity> accountEntities = convertAccountDTOToEntityList(accountInfoDTOS, user, userID);
 
         // Persist the accountList
         accountService.saveAll(accountEntities);
@@ -129,6 +138,17 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
         accountSecurityService.saveAll(accountSecurityEntities);
 
         // Create the AccountProperties objects for each account
+        List<AccountPropertiesEntity> accountPropertiesEntities = accountPropertiesService.getListOfAccountPropertiesFromAccountEntity(accountEntities);
+
+        accountPropertiesService.saveAll(accountPropertiesEntities);
+
+        // Create a AccountUsersEntity
+        List<AccountUserEntity> accountUserEntityList = accountUsersEntityService.getAccountUserEntityList(accountEntities, userEntity1);
+
+        LOGGER.info("Account Users Entity List Size: " + accountUserEntityList.size());
+
+        // Persist the AccountUsersEntity
+        accountUsersEntityService.saveAll(accountUserEntityList);
     }
 
 
@@ -139,7 +159,7 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
                 .collect(Collectors.toSet());
     }
 
-    private List<AccountEntity> convertAccountDTOToEntityList(List<AccountInfoDTO> accountInfoDTOS, User user){
+    private List<AccountEntity> convertAccountDTOToEntityList(List<AccountInfoDTO> accountInfoDTOS, User user, int userID){
         List<AccountEntity> accountEntities = new ArrayList<>();
         if(accountInfoDTOS.isEmpty()){
             throw new NonEmptyListRequiredException("Caught empty list of Account data.");
@@ -151,7 +171,7 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
                     AccountCode accountCode = getGeneratedAccountCode(user, accountInfoDTO);
                     if(accountCode != null){
                         String formattedAccountCode = accountCodeCreator.formatAccountCode(accountCode);
-                        AccountEntity account = accountService.buildAccountEntity(accountInfoDTO, formattedAccountCode);
+                        AccountEntity account = accountService.buildAccountEntity(accountInfoDTO, formattedAccountCode, userID);
                         accountEntities.add(account);
                     }
                 }

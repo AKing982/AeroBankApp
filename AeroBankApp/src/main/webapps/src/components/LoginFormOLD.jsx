@@ -239,7 +239,6 @@ export default function LoginFormOLD()
                     navigateToHomePage();
 
                     setLoginAttempts(1);
-
                     // Create a User Log instance
                     console.log('Creating User Log for userID: ', userID);
                     sendUserLogRequest(userID, 1, 1);

@@ -113,6 +113,7 @@ public class AccountServiceImpl implements AccountService
     @Override
     public BigDecimal getTotalAccountBalances(String user)
     {
+        LOGGER.info("Getting Total Balances for User: " + user);
         BigDecimal totalBalances = accountRepository.getTotalAccountBalances(user);
         if(totalBalances == null)
         {
@@ -264,7 +265,7 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
-    public AccountEntity buildAccountEntity(final AccountInfoDTO accountInfoDTO, final String accountCode){
+    public AccountEntity buildAccountEntity(final AccountInfoDTO accountInfoDTO, final String accountCode, int userID){
         AccountEntity account = new AccountEntity();
 
         final BigDecimal DEFAULT_INTEREST = new BigDecimal("1.67");
@@ -289,6 +290,7 @@ public class AccountServiceImpl implements AccountService
         account.setHasDividend(true);
         account.setAccountCode(accountCode);
         account.setInterest(DEFAULT_INTEREST);
+        account.setUserID(userID);
         return account;
     }
 
@@ -316,7 +318,7 @@ public class AccountServiceImpl implements AccountService
                 .accountName(account.getAccountName())
                 .isRentAccount(account.isRentAccount())
                 .hasMortgage(account.isMortgageAccount())
-                .userID(account.getUserID())
+            //    .userID(account.getUserID())
                 .build();
     }
 

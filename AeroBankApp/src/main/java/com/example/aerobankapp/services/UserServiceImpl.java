@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,11 +38,14 @@ public class UserServiceImpl implements UserService
     private EntityManager entityManager;
     private Logger aeroLogger = LoggerFactory.getLogger(UserServiceImpl.class);
 
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Autowired
     public UserServiceImpl(UserRepository repository, EntityManager manager)
     {
         this.userRepository = repository;
         this.entityManager = manager;
+        this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
     }
 
     @Override
@@ -196,13 +200,22 @@ public class UserServiceImpl implements UserService
                 .lastName(userDTO.getLastName())
                 .email(userDTO.getEmail())
                 .username(userDTO.getUsername())
-                .pinNumber(userDTO.getPinNumber())
-                .password(userDTO.getPassword())
+                .pinNumber(getEncryptedPinNumber(userDTO.getPinNumber()))
+                .password(getEncryptedPassword(userDTO.getPassword()))
                 .isAdmin(userDTO.isAdmin())
                 .isEnabled(true)
                 .accountNumber(accountNumber.getAccountNumberToString())
                 .role(userDTO.getRole())
                 .build();
+    }
+
+    private String getEncryptedPinNumber(String pin){
+        return bCryptPasswordEncoder.encode(pin);
+    }
+
+
+    private String getEncryptedPassword(String password){
+        return bCryptPasswordEncoder.encode(password);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.aerobankapp.embeddables;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
@@ -14,7 +15,10 @@ import java.util.Objects;
 @Embeddable
 public class AccountUserEmbeddable implements Serializable {
 
+    @Column(name="acctID")
     private int acctID;
+
+    @Column(name="userID")
     private int userID;
 
     @Override

@@ -7,7 +7,7 @@ public class PasswordEncoderUtil
     public static void main(String[] args)
     {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String rawPassword = "89-48-42";
+        String rawPassword = "gamer10";
         String encoded = encoder.encode(rawPassword);
         System.out.println(encoded);
     }

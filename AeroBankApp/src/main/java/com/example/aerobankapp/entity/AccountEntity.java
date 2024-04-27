@@ -1,6 +1,7 @@
 package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.account.AccountType;
+import com.example.aerobankapp.embeddables.AccountUserEmbeddable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +20,6 @@ public class AccountEntity
 {
 
     @Id
-    @Column(name="acctID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int acctID;
 

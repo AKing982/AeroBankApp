@@ -69,7 +69,7 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
 
     void saveAll(List<AccountEntity> accountEntities);
 
-    AccountEntity buildAccountEntity(AccountInfoDTO accountInfoDTO, String accountCode);
+    AccountEntity buildAccountEntity(AccountInfoDTO accountInfoDTO, String accountCode, int userID);
 
     AccountEntity buildAccountEntityByAccountModel(Account account);
 }

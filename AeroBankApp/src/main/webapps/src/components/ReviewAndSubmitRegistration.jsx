@@ -1,4 +1,4 @@
-import {Button, Divider, List, ListItem, ListItemText, Typography} from "@mui/material";
+import {Button, CircularProgress, Divider, List, ListItem, ListItemText, Typography} from "@mui/material";
 import {Box, Container} from "@mui/system";
 import {Fragment, useEffect, useState} from "react";
 import React from 'react';
@@ -11,13 +11,26 @@ function ReviewAndSubmitRegistration({formData}){
 
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         console.log('Submitted');
-
+        setIsLoading(true);
         const registrationRequest = buildRegistrationRequest(formData);
         console.log('Registration Request: ', registrationRequest);
 
-        sendRegistrationToServer(registrationRequest);
+        const response = await sendRegistrationToServer(registrationRequest);
+        console.log('Registration response status: ', response);
+        if(response){
+            console.log('Preparing to navigate...');
+            setTimeout(() => {
+                console.log('Navigating to home page...');
+                setIsLoading(false);
+                navigate('/');
+            }, 6000);
+        }else{
+            console.log('registration failed...');
+            setIsLoading(false);
+        }
     }
 
     const buildRegistrationRequest = (formData) => {
@@ -41,9 +54,12 @@ function ReviewAndSubmitRegistration({formData}){
         }
         setIsLoading(true);
         try{
+            console.log('Sending request to server...');
             const response = await axios.post(`http://localhost:8080/AeroBankApp/api/registration/register`, request);
+            console.log('Server responded with status: ', response.status);
             if(response.status === 200 || response.status === 201){
                 console.log('Registration Saved successfully.');
+                return true;
             }else{
                 throw new Error(`Unexpected status response: ${response.status}`);
             }
@@ -62,10 +78,11 @@ function ReviewAndSubmitRegistration({formData}){
                 // An error occurred in setting up the request
                 console.log('Error', error.message);
             }
+            return false;
         }finally{
             setIsLoading(false);
         }
-    }
+    };
 
     console.log('Form Accounts: ', formData.accounts);
     console.log('Security Questions: ', formData.securityQuestions);
@@ -136,9 +153,15 @@ function ReviewAndSubmitRegistration({formData}){
                     )}
                 </Box>
             </List>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-                Submit All Information
-            </Button>
+            {isLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100px' }}>
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <Button variant="contained" color="primary" onClick={handleSubmit}>
+                    Submit All Information
+                </Button>
+            )}
         </Container>
     );
 }
