@@ -12,6 +12,7 @@ import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {Box} from "@mui/system";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import {useState} from "react";
+import axios from "axios";
 
 function TransactionSummaryFilters({ applyFilters }){
     const [filters, setFilters] = useState({
@@ -37,6 +38,34 @@ function TransactionSummaryFilters({ applyFilters }){
         }
     });
 
+    const [loading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const transactionTypes = [
+        { value: 'DEPOSIT', label: 'Deposit' },
+        { value: 'WITHDRAW', label: 'Withdraw' },
+        { value: 'PURCHASE', label: 'Purchase' },
+        { value: 'TRANSFER', label: 'Transfer' }
+    ];
+
+    const transactionStatusTypes = [
+        {value: 'PENDING', label: 'Pending'},
+        {value: 'COMPLETED', label: 'Completed'},
+        {value: 'FAILED', label: 'Failed'},
+        {value: 'CANCELLED', label: 'Cancelled'}
+    ];
+
+    const transactionFilterType = {
+        DESCRIPTION: 'Description',
+        DATE: 'Date',
+        TRANSACTION_TYPE: 'TransactionType',
+        STATUS: 'Status',
+        USERNAME: 'UserName',
+        ACCOUNT_ID: 'AccountID',
+        AMOUNT_RANGE: 'AmountRange'
+    };
+
+
     const handleInputChange = (event) => {
         const { name, value, checked, type } = event.target;
         if (type === 'checkbox') {
@@ -57,7 +86,55 @@ function TransactionSummaryFilters({ applyFilters }){
     };
 
     const handleSubmit = () => {
-        applyFilters(filters);
+        const request = buildFilterRequest();
+        sendFilterRequestToServer(request);
+       // applyFilters(filters);
+    };
+
+    const buildFilterRequest = () => {
+        return {
+            description: filters.description,
+            minAmount: filters.minAmount,
+            maxAmount: filters.maxAmount,
+            transactionType: filters.transactionType,
+            status: filters.status,
+            accountID: filters.accountID,
+            username: filters.username,
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+            scheduledTime: filters.scheduledTime
+        };
+    };
+
+
+    const sendFilterRequestToServer = async(request) => {
+
+        console.log('Request: ', request);
+        try{
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/transactionHistory/save`, request)
+            if(response.status === 200 || response.status === 201){
+                console.log('Response from server was successful');
+                console.log('Filters: ', filters);
+                applyFilters(filters);
+            }else{
+                console.error('Failed to save filters, response status: ', response.status);
+                setError('Failed to save filters.');
+            }
+
+        }catch(error){
+            console.error('Error occurred while saving filters:', error.message); // Error: log error message
+            if (error.response) {
+                console.error('Error details:', {
+                    data: error.response.data,
+                    status: error.response.status,
+                    headers: error.response.headers
+                }); // Error: log detailed error response from server
+            }
+            setError('An error occurred while saving filters.');
+        }finally{
+            console.log('Filter request processing complete.');
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -113,9 +190,11 @@ function TransactionSummaryFilters({ applyFilters }){
                                 onChange={handleInputChange}
                                 name="transactionType"
                             >
-                                <MenuItem value="withdraw">Withdraw</MenuItem>
-                                <MenuItem value="deposit">Deposit</MenuItem>
-                                <MenuItem value="transfer">Transfer</MenuItem>
+                                {transactionTypes.map((type) => (
+                                    <MenuItem key={type.value} value={type.value}>
+                                        {type.label}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                     )}
@@ -132,9 +211,11 @@ function TransactionSummaryFilters({ applyFilters }){
                                 onChange={handleInputChange}
                                 name="status"
                             >
-                                <MenuItem value="pending">Pending</MenuItem>
-                                <MenuItem value="completed">Completed</MenuItem>
-                                <MenuItem value="cancelled">Cancelled</MenuItem>
+                                {transactionStatusTypes.map((type) => (
+                                    <MenuItem key={type.value} value={type.value}>
+                                        {type.label}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                     )}

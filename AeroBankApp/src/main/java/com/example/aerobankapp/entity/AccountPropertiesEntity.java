@@ -21,9 +21,6 @@ public class AccountPropertiesEntity {
     @Column(name="acct_color")
     private String acct_color;
 
-    @Column(name="image_name")
-    private String image_name;
-
     @Column(name="image_url")
     private String image_url;
 
