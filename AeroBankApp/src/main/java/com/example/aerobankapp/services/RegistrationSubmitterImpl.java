@@ -27,7 +27,6 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
     private final AccountPropertiesService accountPropertiesService;
     private final AccountCodeCreator accountCodeCreator;
     private final AccountCodeService accountCodeService;
-
     private final AccountUsersEntityService accountUsersEntityService;
     private final Logger LOGGER = LoggerFactory.getLogger(RegistrationSubmitterImpl.class);
 

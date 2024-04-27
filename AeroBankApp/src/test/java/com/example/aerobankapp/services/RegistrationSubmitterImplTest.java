@@ -49,13 +49,16 @@ class RegistrationSubmitterImplTest {
     @Autowired
     private AccountCodeService accountCodeService;
 
+    @Autowired
+    private AccountUsersEntityService accountUsersEntityService;
+
     private RegistrationDTO registrationDTO;
 
 
 
     @BeforeEach
     void setUp() {
-        registrationSubmitter = new RegistrationSubmitterImpl(userService, accountService, accountSecurityService, accountPropertiesService, accountCodeCreator, accountCodeService);
+        registrationSubmitter = new RegistrationSubmitterImpl(userService, accountService, accountSecurityService, accountPropertiesService, accountCodeCreator, accountCodeService, accountUsersEntityService);
 
         registrationDTO = new RegistrationDTO("Alex", "King", "AKing94", "alex@utahkings.com", new ArrayList<>(), new ArrayList<>(), "5988", true, Role.ADMIN,"Halflifer45");
     }
