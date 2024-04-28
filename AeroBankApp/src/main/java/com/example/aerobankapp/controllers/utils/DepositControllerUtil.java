@@ -43,7 +43,7 @@ public class DepositControllerUtil
                 .selectedTime(deposits.getScheduledTime())
                 .amount(deposits.getAmount())
                 .description(deposits.getDescription())
-                .accountCode(deposits.getAccount().getAccountCode())
+                //  .accountCode(deposits.getAccount().getAccountCode())
                 .accountID(deposits.getAccount().getAcctID())
                 .scheduledDate(deposits.getScheduledDate())
                 .build();

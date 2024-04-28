@@ -17,11 +17,18 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Long>
 {
-    @Query("SELECT e.acctID FROM AccountEntity e JOIN e.users u WHERE u.accountNumber LIKE %:acctNum% AND e.accountCode LIKE %:acctCode%")
-    Integer findAccountIDByAcctCodeAndAccountNumber(@Param("acctNum") String accountNumber, @Param("acctCode") String acctCode);
+  //  @Query("SELECT e.acctID FROM AccountEntity e JOIN e.users u WHERE u.accountNumber LIKE %:acctNum% AND e.ac LIKE %:acctCode%")
+   // Integer findAccountIDByAcctCodeAndAccountNumber(@Param("acctNum") String accountNumber, @Param("acctCode") String acctCode);
 
     @Query("SELECT a FROM AccountEntity a WHERE a.acctID=:id")
     Optional<AccountEntity> findById(@Param("id") int acctID);
+
+    @Query("SELECT CONCAT(ac.first_initial_segment, ac.accountType) AS shortSegment " +
+            "FROM AccountEntity a " +
+            "JOIN a.accountCode ac " +
+            "JOIN ac.user u " +
+            "WHERE u.username = :userName")
+    List<String> getAccountCodeShortSegmentByUser(@Param("userName") String user);
 
 
     @Query("SELECT a FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
@@ -33,7 +40,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("SELECT a FROM AccountEntity a JOIN a.users u WHERE a.accountCode=:acctCode AND u.accountNumber=:acctNum")
     int getAccountIDByAcctCodeAndAccountNumber(@Param("acctCode") String acctCode, @Param("acctNum") String acctNumber);
 
-    @Query("SELECT e FROM AccountEntity e WHERE e.accountCode =:acctCode AND e.userID =:userID")
+    @Query("SELECT e FROM AccountEntity e JOIN e.user u WHERE e.accountCode =:acctCode AND u.userID =:userID")
     List<AccountEntity> findByAccountCodeAndUserID(@Param("acctCode") String acctCode, @Param("userID") int userID);
 
     @Query("SELECT SUM(a.balance) FROM AccountEntity a JOIN a.users u WHERE u.username = :username")
@@ -48,13 +55,13 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("SELECT a.accountCode FROM AccountEntity a JOIN a.users u WHERE u.accountNumber=:acctNum")
     List<String> findAccountCodesByAccountNumber(@Param("acctNum") String acctNum);
 
-    @Query("SELECT e.balance FROM AccountEntity e WHERE e.accountCode =:acctCode AND e.userID =:userID")
+    @Query("SELECT e.balance FROM AccountEntity e JOIN e.user u WHERE e.accountCode =:acctCode AND u.userID =:userID")
     BigDecimal findBalanceByAccountCodeAndUserID(@Param("acctCode") String acctCode, @Param("userID") int userID);
 
-    @Query("SELECT a.acctID FROM AccountEntity a WHERE a.userID =:userID AND a.accountCode =:acctCode")
+    @Query("SELECT a.acctID FROM AccountEntity a JOIN a.user u WHERE u.userID =:userID AND a.accountCode =:acctCode")
     Integer getAccountIDByAcctCodeAndUserID(@Param("userID") int userID, @Param("acctCode") String acctCode);
 
-    @Query("SELECT a FROM AccountEntity a WHERE a.userID=:userID")
+    @Query("SELECT a FROM AccountEntity a JOIN a.user u WHERE u.userID=:userID")
     List<AccountEntity> findAccountsByUserID(@Param("userID") int userID);
 
     @Modifying
@@ -63,7 +70,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
 
     @Query("SELECT ts.accountEntity.acctID, COUNT(ts) AS NumberOfTransactions " +
            "FROM TransactionStatementEntity ts " +
-            "WHERE ts.accountEntity.userID=:userID " +
+            "WHERE ts.accountEntity.user.userID=:userID " +
            "GROUP BY ts.accountEntity.acctID " +
            "ORDER BY NumberOfTransactions DESC")
     Page<Object[]> findAccountWithMostTransactionsByUserID(@Param("userID") int userID, Pageable pageable);
@@ -76,10 +83,9 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
 
     @Query("SELECT a.acctID FROM AccountEntity a WHERE a.accountName=:name")
     int findAccountIDByAccountName(@Param("name") String accountName);
-
-    @Query("SELECT a.acctID FROM AccountEntity a WHERE a.userID=:userID")
+    @Query("SELECT a.acctID FROM AccountEntity a JOIN a.user u WHERE u.userID=:userID")
     List<Integer> getListOfAccountIDsByUserID(@Param("userID") int userID);
 
     @Query("SELECT MAX(a.acctID) AS latestAccountID FROM AccountEntity a")
-    int fetchLatestAccountID();
+    Integer fetchLatestAccountID();
 }

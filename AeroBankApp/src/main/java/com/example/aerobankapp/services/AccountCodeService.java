@@ -3,6 +3,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.entity.AccountCodeEntity;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
@@ -17,6 +18,8 @@ public interface AccountCodeService extends ServiceDAOModel<AccountCodeEntity>
     @Override
     void save(AccountCodeEntity obj);
 
+    void saveAll(List<AccountCodeEntity> accountCodeEntities);
+
     @Override
     void delete(AccountCodeEntity obj);
 
@@ -26,9 +29,15 @@ public interface AccountCodeService extends ServiceDAOModel<AccountCodeEntity>
     @Override
     List<AccountCodeEntity> findByUserName(String user);
 
-    AccountCodeEntity buildAccountCodeEntity(AccountCodeDTO accountCodeDTO);
+    AccountCodeEntity buildAccountCodeEntity(AccountCode accountCodeDTO, UserEntity user);
+
+    List<AccountCodeEntity> getAccountCodeEntityList(List<AccountCode> accountCodes, UserEntity user);
 
     String getAccountCodeAsString(AccountCode accountCode);
+
+    String getAccountCodeShortSegment(int account_segment);
+
+    String getAccountCodeShortSegmentByUser(String user);
 
     String getFirstInitialByAcctCodeID(Long id);
 

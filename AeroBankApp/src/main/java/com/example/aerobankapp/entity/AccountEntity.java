@@ -23,14 +23,17 @@ public class AccountEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int acctID;
 
-    @Column(name="accountCode")
-    private String accountCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="accountCodeID")
+    private AccountCodeEntity accountCode;
 
-    @Column(name="userID")
-    private int userID;
+    @ManyToOne
+    @JoinColumn(name="userID")
+    private UserEntity user;
 
-    @Column(name="aSecID")
-    private int aSecID;
+    @ManyToOne
+    @JoinColumn(name="aSecID")
+    private AccountSecurityEntity accountSecurity;
 
     @Column(name="accountName")
     private String accountName;

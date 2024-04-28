@@ -55,16 +55,16 @@ class AccountControllerTest {
     public void whenGetUserAccounts_thenReturnListofAccounts() throws Exception
     {
         AccountEntity accountEntity = AccountEntity.builder()
-                .accountCode("A1")
+                //.accountCode("A1")
                 .accountType("Checking")
                 .isRentAccount(false)
-                .userID(1)
+                //.userID(1)
                 .acctID(1)
                 .balance(new BigDecimal("4500"))
                 .hasDividend(false)
                 .hasMortgage(false)
                 .interest(new BigDecimal("1.67"))
-                .aSecID(0)
+               // .aSecID(0)
                 .build();
 
         List<AccountEntity> accountEntityList = Collections.singletonList(accountEntity);
@@ -95,7 +95,7 @@ class AccountControllerTest {
 
         for (AccountEntity entity : entityList) {
             BigDecimal balance = entity.getBalance();
-            String acctCode = entity.getAccountCode();
+           // String acctCode = entity.getAccountCode();
             String accountName = entity.getAccountName();
 
             // Lookup account properties using AccountEntity ID
@@ -104,6 +104,7 @@ class AccountControllerTest {
 
             String acctImage = prop != null ? prop.getImage_url() : null; // Use image_url as acctImage
 
+            String acctCode = "";
             AccountResponse accountResponse = new AccountResponse(
                     acctCode, balance, pending, available, accountName, acctColor, acctImage);
             accountResponseList.add(accountResponse);

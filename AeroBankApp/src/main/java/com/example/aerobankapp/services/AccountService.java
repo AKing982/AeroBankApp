@@ -2,7 +2,10 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.dto.AccountInfoDTO;
+import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.AccountSecurityEntity;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.AccountCode;
@@ -69,7 +72,9 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
 
     void saveAll(List<AccountEntity> accountEntities);
 
-    AccountEntity buildAccountEntity(AccountInfoDTO accountInfoDTO, String accountCode, int userID);
+    List<String> getAccountCodeShortSegmentByUser(String user);
 
-    AccountEntity buildAccountEntityByAccountModel(Account account);
+    AccountEntity buildAccountEntity(AccountInfoDTO accountInfoDTO, AccountCodeEntity accountCode,UserEntity user);
+
+    AccountEntity buildAccountEntityByAccountModel(Account account, AccountCodeEntity accountCode, UserEntity user);
 }

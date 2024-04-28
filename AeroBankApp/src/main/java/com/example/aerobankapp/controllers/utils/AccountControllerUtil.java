@@ -1,5 +1,6 @@
 package com.example.aerobankapp.controllers.utils;
 
+import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.AccountNotificationEntity;
 import com.example.aerobankapp.entity.AccountPropertiesEntity;
@@ -59,8 +60,8 @@ public class AccountControllerUtil {
         List<AccountCodeResponse> accountCodeResponses = new ArrayList<>();
         for(AccountEntity accountEntity : accountEntities)
         {
-            AccountCodeResponse accountCodeResponse = new AccountCodeResponse(accountEntity.getAccountCode());
-            accountCodeResponses.add(accountCodeResponse);
+          //  AccountCodeResponse accountCodeResponse = new AccountCodeResponse(accountEntity.getAccountCode());
+          //  accountCodeResponses.add(accountCodeResponse);
         }
         return accountCodeResponses;
     }
@@ -87,7 +88,7 @@ public class AccountControllerUtil {
         return new AccountNotificationResponse(notificationID, acctID, title, message, priority, isRead, isSevere, category);
     }
 
-    public static List<AccountResponse> getAccountResponseList(List<AccountPropertiesEntity> accountProperties, List<AccountEntity> entityList, BigDecimal pending, BigDecimal available)
+    public static List<AccountResponse> getAccountResponseList(List<AccountPropertiesEntity> accountProperties, List<String> accountCodeShortSegments, List<AccountEntity> entityList, BigDecimal pending, BigDecimal available)
     {
         List<AccountResponse> accountResponseList = new ArrayList<>();
 
@@ -99,20 +100,23 @@ public class AccountControllerUtil {
             }
         }
 
-        for (AccountEntity entity : entityList) {
+        for (int i = 0; i < entityList.size(); i++) {
+            AccountEntity entity = entityList.get(i);
+            String acctCodeSegment = accountCodeShortSegments.get(i);  // Corresponding short segment
+
             int acctID = entity.getAcctID();
             BigDecimal balance = entity.getBalance();
-            String acctCode = entity.getAccountCode();
             String accountName = entity.getAccountName();
 
             // Lookup account properties using AccountEntity ID
             AccountPropertiesEntity prop = propertiesMap.get(entity.getAcctID());
             String acctColor = prop != null ? prop.getAcct_color() : null;
             String acctImage = prop != null ? prop.getImage_url() : null; // Use image_url as acctImage
-            LOGGER.info("Account Color: " + acctColor);
-            LOGGER.info("Account Image: " + acctImage);
-            AccountResponse accountResponse = new AccountResponse(acctID,
-                    acctCode, balance, pending, available, accountName, acctColor, acctImage);
+
+            // Log information about the account
+            LOGGER.info("Account ID: " + acctID + ", Color: " + acctColor + ", Image: " + acctImage);
+
+            AccountResponse accountResponse = new AccountResponse(acctID, acctCodeSegment, balance, pending, available, accountName, acctColor, acctImage);
             accountResponseList.add(accountResponse);
         }
 

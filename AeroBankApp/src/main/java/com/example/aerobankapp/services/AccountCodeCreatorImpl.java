@@ -13,7 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class AccountCodeCreatorImpl implements AccountCodeCreator
@@ -49,6 +53,18 @@ public class AccountCodeCreatorImpl implements AccountCodeCreator
 
         // Return the account code
         return new AccountCode(firstInitial, lastInitial, userID, accountType,twoDigitYear, sequenceNum);
+    }
+
+    @Override
+    public List<AccountCode> generateListOfAccountCodes(User user, List<AccountInfoDTO> accountInfoDTOS) {
+       List<AccountCode> accountCodes = new ArrayList<>();
+       for(AccountInfoDTO accountInfoDTO : accountInfoDTOS){
+           if(accountInfoDTO != null){
+               AccountCode accountCode = generateAccountCode(user, accountInfoDTO);
+               accountCodes.add(accountCode);
+           }
+       }
+       return accountCodes;
     }
 
     @Override

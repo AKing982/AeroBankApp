@@ -459,7 +459,7 @@ class DepositProcessorImplTest
     private DepositsEntity createDepositsEntity(ScheduleType scheduleType, String description, String acctCode, int acctID, int userID,
                                                 BigDecimal amount, LocalDate scheduledDate, LocalTime timeScheduled){
         DepositsEntity depositsEntity = new DepositsEntity();
-        depositsEntity.setAccount(AccountEntity.builder().accountCode(acctCode).acctID(acctID).build());
+       // depositsEntity.setAccount(AccountEntity.builder().accountCode(acctCode).acctID(acctID).build());
         depositsEntity.setDepositID(1);
         depositsEntity.setUser(UserEntity.builder().userID(userID).build());
         depositsEntity.setPosted(LocalDate.now());
@@ -491,7 +491,7 @@ class DepositProcessorImplTest
         deposit.setScheduleInterval(depositsEntity.getScheduleInterval());
         deposit.setDateScheduled(depositsEntity.getScheduledDate());
         deposit.setDescription(depositsEntity.getDescription());
-        deposit.setAcctCode(depositsEntity.getAccount().getAccountCode());
+     //   deposit.setAcctCode(depositsEntity.getAccount().getAccountCode());
         deposit.setUserID(depositsEntity.getUser().getUserID());
         deposit.setAmount(depositsEntity.getAmount());
         deposit.setTimeScheduled(depositsEntity.getScheduledTime());

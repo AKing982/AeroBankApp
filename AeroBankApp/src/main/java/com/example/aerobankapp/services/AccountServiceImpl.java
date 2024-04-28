@@ -2,7 +2,10 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.dto.AccountInfoDTO;
+import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.AccountSecurityEntity;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.exceptions.ZeroBalanceException;
@@ -133,7 +136,8 @@ public class AccountServiceImpl implements AccountService
         if(acctCode.isEmpty() || accountNumber.isEmpty()){
             throw new IllegalArgumentException("Caught empty AccountCode or AccountNumber.");
         }
-        return accountRepository.findAccountIDByAcctCodeAndAccountNumber(accountNumber, acctCode);
+        // return accountRepository.findAccountIDByAcctCodeAndAccountNumber(accountNumber, acctCode);
+        return 0;
     }
 
     @Override
@@ -244,12 +248,21 @@ public class AccountServiceImpl implements AccountService
     @Override
     @Transactional
     public int getLatestAccountID() {
+        Integer maxAcctID = accountRepository.fetchLatestAccountID();
+        if(maxAcctID == null){
+            return 0;
+        }
          return accountRepository.fetchLatestAccountID();
     }
 
     @Override
     public void saveAll(List<AccountEntity> accountEntities) {
         accountRepository.saveAll(accountEntities);
+    }
+
+    @Override
+    public List<String> getAccountCodeShortSegmentByUser(String user) {
+        return accountRepository.getAccountCodeShortSegmentByUser(user);
     }
 
     private boolean doesAccountCodeExist(String acctCode)
@@ -265,7 +278,7 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
-    public AccountEntity buildAccountEntity(final AccountInfoDTO accountInfoDTO, final String accountCode, int userID){
+    public AccountEntity buildAccountEntity(final AccountInfoDTO accountInfoDTO, AccountCodeEntity accountCode, UserEntity user){
         AccountEntity account = new AccountEntity();
 
         final BigDecimal DEFAULT_INTEREST = new BigDecimal("1.67");
@@ -290,12 +303,12 @@ public class AccountServiceImpl implements AccountService
         account.setHasDividend(true);
         account.setAccountCode(accountCode);
         account.setInterest(DEFAULT_INTEREST);
-        account.setUserID(userID);
+        account.setUser(user);
         return account;
     }
 
     @Override
-    public AccountEntity buildAccountEntityByAccountModel(Account account) {
+    public AccountEntity buildAccountEntityByAccountModel(Account account, AccountCodeEntity accountCode, UserEntity user) {
         int acctID = account.getAccountID();
 
         // Check to see if an account exists with the above ID
@@ -305,20 +318,20 @@ public class AccountServiceImpl implements AccountService
         if(accountEntityOptional.isEmpty()){
             throw new AccountIDNotFoundException("Account with ID: " + acctID + " not found.");
         }
-        return buildAccount(account);
+        return buildAccount(account, accountCode, user);
     }
 
-    private AccountEntity buildAccount(Account account){
+    private AccountEntity buildAccount(Account account, AccountCodeEntity accountCode, UserEntity user){
         return AccountEntity.builder()
                 .accountType(account.getAccountType().getCode())
-                .accountCode(account.getAccountCode())
+                .accountCode(accountCode)
                 .acctID(account.getAccountID())
                 .balance(account.getBalance())
                 .interest(account.getInterest())
                 .accountName(account.getAccountName())
                 .isRentAccount(account.isRentAccount())
                 .hasMortgage(account.isMortgageAccount())
-            //    .userID(account.getUserID())
+                .user(user)
                 .build();
     }
 

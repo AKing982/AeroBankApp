@@ -17,14 +17,14 @@ public class AccountMapperUtil {
     {
         return AccountDTO.builder()
                 .accountName(accountEntity.getAccountName())
-                .accountCode(accountEntity.getAccountCode())
+           //     .accountCode(accountEntity.getAccountCode())
                 .balance(accountEntity.getBalance())
                 .interest(accountEntity.getInterest())
-                .userID(accountEntity.getUserID())
+             //   .userID(accountEntity.getUserID())
                 .isRentAccount(accountEntity.isRentAccount())
                 .hasMortgage(accountEntity.isHasMortgage())
                 .hasDividend(accountEntity.isHasDividend())
-                .aSecID(accountEntity.getASecID())
+              //  .aSecID(accountEntity.getASecID())
                 .accountType(AccountType.valueOf(accountEntity.getAccountType()))
               //  .users(accountEntity.getUsers().stream().map(UserMapperHelper::convertToDTO).collect(Collectors.toSet()))
                 .build();

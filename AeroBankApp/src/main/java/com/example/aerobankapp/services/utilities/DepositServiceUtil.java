@@ -19,7 +19,7 @@ public final class DepositServiceUtil
     {
         return DepositsEntity.builder()
                 .depositID(depositDTO.getDepositID())
-                .account(AccountEntity.builder().accountCode(depositDTO.getAccountCode()).acctID(depositDTO.getAccountID()).build())
+              //  .account(AccountEntity.builder().accountCode(depositDTO.getAccountCode()).acctID(depositDTO.getAccountID()).build())
                 .description(depositDTO.getDescription())
                 .amount(depositDTO.getAmount())
                 .scheduleInterval(depositDTO.getScheduleInterval())

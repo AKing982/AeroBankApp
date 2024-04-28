@@ -121,14 +121,18 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
 
         UserEntity userEntity1 = userEntity.get();
 
+        // Get the list of AccountCodes
+        List<AccountCode> accountCodes = accountCodeCreator.generateListOfAccountCodes(user, accountInfoDTOS);
+
+        List<AccountCodeEntity> accountCodeEntities = accountCodeService.getAccountCodeEntityList(accountCodes, userEntity1);
+
+        accountCodeService.saveAll(accountCodeEntities);
+
         // Build the AccountEntityList
-        List<AccountEntity> accountEntities = convertAccountDTOToEntityList(accountInfoDTOS, user, userID);
+        List<AccountEntity> accountEntities = convertAccountDTOToEntityList(accountCodeEntities, accountInfoDTOS,userEntity1);
 
         // Persist the accountList
         accountService.saveAll(accountEntities);
-
-        // Retrieve the AccountID's for the account's just saved to the database
-        Set<Integer> accountIDSet = getAccountIDSet(accountEntities);
 
         // Create the AccountSecurity objects for each account
         List<AccountSecurityEntity> accountSecurityEntities = accountSecurityService.getAccountSecurityEntityListFromAccounts(accountEntities);
@@ -148,6 +152,8 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
 
         // Persist the AccountUsersEntity
         accountUsersEntityService.saveAll(accountUserEntityList);
+
+
     }
 
 
@@ -158,21 +164,23 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
                 .collect(Collectors.toSet());
     }
 
-    private List<AccountEntity> convertAccountDTOToEntityList(List<AccountInfoDTO> accountInfoDTOS, User user, int userID){
+    private List<AccountEntity> convertAccountDTOToEntityList(List<AccountCodeEntity> accountCodeEntities, List<AccountInfoDTO> accountInfoDTOS,UserEntity user){
         List<AccountEntity> accountEntities = new ArrayList<>();
-        if(accountInfoDTOS.isEmpty()){
+        if (accountInfoDTOS.isEmpty() || accountCodeEntities.isEmpty()) {
             throw new NonEmptyListRequiredException("Caught empty list of Account data.");
         }
+        if (accountInfoDTOS.size() != accountCodeEntities.size()) {
+            throw new IllegalArgumentException("The sizes of account info DTOs, account code entities, and account security entities must match.");
+        }
 
-        for(AccountInfoDTO accountInfoDTO : accountInfoDTOS){
-            if(accountInfoDTO != null){
-                if(!isAnyFieldNull(accountInfoDTO)){
-                    AccountCode accountCode = getGeneratedAccountCode(user, accountInfoDTO);
-                    if(accountCode != null){
-                        String formattedAccountCode = accountCodeCreator.formatAccountCode(accountCode);
-                        AccountEntity account = accountService.buildAccountEntity(accountInfoDTO, formattedAccountCode, userID);
-                        accountEntities.add(account);
-                    }
+        for (int i = 0; i < accountInfoDTOS.size(); i++) {
+            AccountInfoDTO accountInfoDTO = accountInfoDTOS.get(i);
+            AccountCodeEntity accountCodeEntity = accountCodeEntities.get(i);
+
+            if (accountInfoDTO != null && accountCodeEntity != null) {
+                if (!isAnyFieldNull(accountInfoDTO)) {
+                    AccountEntity account = accountService.buildAccountEntity(accountInfoDTO, accountCodeEntity, user);
+                    accountEntities.add(account);
                 }
             }
         }

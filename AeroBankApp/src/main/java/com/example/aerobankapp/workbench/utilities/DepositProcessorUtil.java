@@ -25,7 +25,7 @@ public class DepositProcessorUtil
         deposit.setScheduleInterval(depositsEntity.getScheduleInterval());
         deposit.setDateScheduled(depositsEntity.getScheduledDate());
         deposit.setDescription(depositsEntity.getDescription());
-        deposit.setAcctCode(depositsEntity.getAccount().getAccountCode());
+      //  deposit.setAcctCode(depositsEntity.getAccount().getAccountCode());
         deposit.setUserID(depositsEntity.getUser().getUserID());
         deposit.setAmount(depositsEntity.getAmount());
         deposit.setTimeScheduled(depositsEntity.getScheduledTime());

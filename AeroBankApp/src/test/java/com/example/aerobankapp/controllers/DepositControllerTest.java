@@ -92,7 +92,7 @@ class DepositControllerTest {
 
         AccountEntity mockAccount = AccountEntity.builder()
                 .isRentAccount(false)
-                .accountCode("A1")
+               // .accountCode("A1")
                 .hasMortgage(false)
                 .interest(new BigDecimal("2.67"))
                 .accountName("Alex Checking")

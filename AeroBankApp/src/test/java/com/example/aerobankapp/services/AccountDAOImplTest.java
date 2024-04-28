@@ -66,11 +66,11 @@ class AccountDAOImplTest
                 .accountType("Checking")
                 .isRentAccount(false)
                 .acctID(1)
-                .accountCode("A1")
+               // .accountCode("A1")
                 .hasDividend(false)
                 .balance(new BigDecimal("1205"))
                 .interest(new BigDecimal("0.00"))
-                .userID(1)
+              //  .userID(1)
                 .hasMortgage(false)
                 .build();
 

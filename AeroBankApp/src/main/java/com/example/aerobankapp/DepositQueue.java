@@ -65,7 +65,7 @@ public class DepositQueue implements QueueModel<Deposit>
                 .posted(deposit.getPosted())
                 .scheduleInterval(deposit.getScheduleInterval())
                 .user(UserEntity.builder().userID(1).build())
-                .account(AccountEntity.builder().accountCode(deposit.getAcctCode()).build())
+             //   .account(AccountEntity.builder().accountCode(deposit.getAcctCode()).build())
                 .build();
     }
 

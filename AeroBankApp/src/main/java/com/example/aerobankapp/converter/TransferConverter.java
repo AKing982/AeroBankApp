@@ -20,7 +20,7 @@ public class TransferConverter implements EntityToModelConverter<TransferEntity,
         transfer.setDescription(entity.getDescription());
         transfer.setPosted(LocalDate.now());
         transfer.setToAccountID(entity.getToAccount().getAcctID());
-        transfer.setToAccountCode(entity.getToAccount().getAccountCode());
+       // transfer.setToAccountCode(entity.getToAccount().getAccountCode());
         transfer.setToAccountNumber(entity.getToUser().getAccountNumber());
         return transfer;
     }

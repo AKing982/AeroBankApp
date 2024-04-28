@@ -500,7 +500,7 @@ class DepositEngineTest {
     private DepositsEntity createDepositsEntity(ScheduleType scheduleType, String description, String acctCode, int acctID, int userID,
                                                 BigDecimal amount, LocalDate scheduledDate, LocalTime timeScheduled){
         DepositsEntity depositsEntity = new DepositsEntity();
-        depositsEntity.setAccount(AccountEntity.builder().accountCode(acctCode).acctID(acctID).build());
+       // depositsEntity.setAccount(AccountEntity.builder().accountCode(acctCode).acctID(acctID).build());
         depositsEntity.setDepositID(1);
         depositsEntity.setUser(UserEntity.builder().userID(userID).build());
         depositsEntity.setPosted(LocalDate.now());
@@ -532,7 +532,7 @@ class DepositEngineTest {
         deposit.setScheduleInterval(depositsEntity.getScheduleInterval());
         deposit.setDateScheduled(depositsEntity.getScheduledDate());
         deposit.setDescription(depositsEntity.getDescription());
-        deposit.setAcctCode(depositsEntity.getAccount().getAccountCode());
+      //  deposit.setAcctCode(depositsEntity.getAccount().getAccountCode());
         deposit.setUserID(depositsEntity.getUser().getUserID());
         deposit.setAmount(depositsEntity.getAmount());
         deposit.setTimeScheduled(depositsEntity.getScheduledTime());
@@ -545,7 +545,7 @@ class DepositEngineTest {
         DepositsEntity depositsEntity = new DepositsEntity();
         depositsEntity.setScheduledDate(deposit.getDateScheduled());
         depositsEntity.setUser(UserEntity.builder().userID(deposit.getUserID()).build());
-        depositsEntity.setAccount(AccountEntity.builder().acctID(deposit.getAccountID()).accountCode(deposit.getAcctCode()).build());
+      //  depositsEntity.setAccount(AccountEntity.builder().acctID(deposit.getAccountID()).accountCode(deposit.getAcctCode()).build());
         depositsEntity.setDepositID(deposit.getDepositID());
         depositsEntity.setAmount(deposit.getAmount());
         depositsEntity.setDescription(deposit.getDescription());
