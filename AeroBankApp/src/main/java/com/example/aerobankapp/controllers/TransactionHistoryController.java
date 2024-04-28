@@ -20,7 +20,6 @@ import java.util.List;
 public class TransactionHistoryController {
 
     private final TransactionHistoryService transactionHistoryService;
-
     private final Logger LOGGER = LoggerFactory.getLogger(TransactionHistoryController.class);
 
     @Autowired
