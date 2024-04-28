@@ -5,7 +5,10 @@ import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
+import com.example.aerobankapp.exceptions.InvalidUserStringException;
+import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.repositories.AccountRepository;
+import com.example.aerobankapp.repositories.AccountSecurityRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
@@ -54,6 +57,9 @@ class AccountDAOImplTest
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private AccountSecurityRepository accountSecurityRepository;
+
     private AccountEntity accountEntity;
 
 
@@ -74,7 +80,7 @@ class AccountDAOImplTest
                 .hasMortgage(false)
                 .build();
 
-        accountDAO = new AccountServiceImpl(entityManager,accountRepository);
+        accountDAO = new AccountServiceImpl(entityManager,accountRepository, accountSecurityRepository);
     }
 
     @Test
@@ -375,6 +381,37 @@ class AccountDAOImplTest
 
         assertEquals(1, actual);
         assertEquals(2, accountDAO.getAccountIDByAccountCodeAndAccountNumber("A2", acctNumber));
+    }
+
+    @Test
+    public void testGetAccountCodeShortSegmentByUser_EmptyUserString(){
+        final String user = "";
+        assertThrows(InvalidUserStringException.class, () -> {
+            accountDAO.getAccountCodeShortSegmentByUser(user);
+        });
+    }
+
+    @Test
+    public void testGetAccountCodeShortSegmentByUser_ValidUser_DNE(){
+        final String user = "AWest332";
+        assertThrows(NonEmptyListRequiredException.class, () -> {
+            accountDAO.getAccountCodeShortSegmentByUser(user);
+        });
+    }
+
+    @Test
+    public void testGetAccountCodeShortSegmentByUser_ValidUser_Exists(){
+        final String user = "AKing94";
+
+        List<String> rawAccountCodesSegments = List.of("A1", "A2", "A3");
+        List<String> actualSegments = accountDAO.getAccountCodeShortSegmentByUser(user);
+
+        assertNotNull(actualSegments);
+        assertEquals(3, actualSegments.size());
+        for(int i = 0; i < rawAccountCodesSegments.size(); i++){
+            assertEquals(rawAccountCodesSegments.get(i), actualSegments.get(i));
+        }
+
     }
 
 

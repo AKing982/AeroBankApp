@@ -100,69 +100,35 @@ public class RegistrationSubmitterImpl implements RegistrationSubmitter
     public void register(RegistrationDTO registrationDTO) {
 
         // Retrieve the User Data from the registration
-        Optional<User> userData = getUserFromRegistration(registrationDTO);
-
-        // Retrieve the Account Data
-        List<AccountInfoDTO> accountInfoDTOS = getListOfAccountInfos(registrationDTO);
-
-        // Retrieve the security questions
-        List<SecurityQuestionsDTO> securityQuestionsDTOS = getSecurityQuestionsFromRegistration(registrationDTO);
-
-        // Retrieve the User
-        User user = userData.orElse(null);
+        User user = getUserFromRegistration(registrationDTO)
+                .orElseThrow(() -> new IllegalArgumentException("User data is incomplete."));
 
         // Register the user
         userService.registerUser(user);
 
-        // Grab the userID from the registered userName
-
-        int userID = userService.getUserIDByUserName(user.getUsername());
-        Optional<UserEntity> userEntity = userService.findById(userID);
-
-        UserEntity userEntity1 = userEntity.get();
-
+        // Retrieve the UserEntity based on the username
+        UserEntity userEntity = userService.findByUser(user.getUsername())
+                .orElseThrow(() -> new IllegalStateException("User registration failed; user could not be retrieved post-registration."));
+        // Retrieve the Account Data
+        List<AccountInfoDTO> accountInfoDTOS = getListOfAccountInfos(registrationDTO);
         // Get the list of AccountCodes
         List<AccountCode> accountCodes = accountCodeCreator.generateListOfAccountCodes(user, accountInfoDTOS);
-
-        List<AccountCodeEntity> accountCodeEntities = accountCodeService.getAccountCodeEntityList(accountCodes, userEntity1);
-
+        List<AccountCodeEntity> accountCodeEntities = accountCodeService.getAccountCodeEntityList(accountCodes, userEntity);
+        // Save all AccountCodeEntities
         accountCodeService.saveAll(accountCodeEntities);
 
-        // Build the AccountEntityList
-        List<AccountEntity> accountEntities = convertAccountDTOToEntityList(accountCodeEntities, accountInfoDTOS,userEntity1);
-
-        // Persist the accountList
-        accountService.saveAll(accountEntities);
-
-        // Create the AccountSecurity objects for each account
-        List<AccountSecurityEntity> accountSecurityEntities = accountSecurityService.getAccountSecurityEntityListFromAccounts(accountEntities);
-
-        // Save the AccountSecurity objects
-        accountSecurityService.saveAll(accountSecurityEntities);
-
-        // Create the AccountProperties objects for each account
+        // Process accounts and their security using the consolidated service method
+        List<AccountEntity> accountEntities = accountService.processAccountAndSecurity(accountCodeEntities, accountInfoDTOS, userEntity);
         List<AccountPropertiesEntity> accountPropertiesEntities = accountPropertiesService.getListOfAccountPropertiesFromAccountEntity(accountEntities);
-
         accountPropertiesService.saveAll(accountPropertiesEntities);
-
-        // Create a AccountUsersEntity
-        List<AccountUserEntity> accountUserEntityList = accountUsersEntityService.getAccountUserEntityList(accountEntities, userEntity1);
+        List<AccountUserEntity> accountUserEntityList = accountUsersEntityService.getAccountUserEntityList(accountEntities, userEntity);
 
         LOGGER.info("Account Users Entity List Size: " + accountUserEntityList.size());
 
         // Persist the AccountUsersEntity
         accountUsersEntityService.saveAll(accountUserEntityList);
-
-
     }
 
-
-    private Set<Integer> getAccountIDSet(List<AccountEntity> accountEntities){
-        return accountEntities.stream()
-                .filter(Objects::nonNull)
-                .map(AccountEntity::getAcctID)
-                .collect(Collectors.toSet());
-    }
 
     private List<AccountEntity> convertAccountDTOToEntityList(List<AccountCodeEntity> accountCodeEntities, List<AccountInfoDTO> accountInfoDTOS,UserEntity user){
         List<AccountEntity> accountEntities = new ArrayList<>();

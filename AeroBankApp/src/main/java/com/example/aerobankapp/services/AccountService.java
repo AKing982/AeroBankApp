@@ -76,5 +76,7 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
 
     AccountEntity buildAccountEntity(AccountInfoDTO accountInfoDTO, AccountCodeEntity accountCode,UserEntity user);
 
+    List<AccountEntity> processAccountAndSecurity(List<AccountCodeEntity> accountCodeEntities, List<AccountInfoDTO> accountInfoDTOS, UserEntity user);
+
     AccountEntity buildAccountEntityByAccountModel(Account account, AccountCodeEntity accountCode, UserEntity user);
 }

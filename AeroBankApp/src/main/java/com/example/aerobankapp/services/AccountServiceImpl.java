@@ -6,13 +6,12 @@ import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.AccountSecurityEntity;
 import com.example.aerobankapp.entity.UserEntity;
-import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
-import com.example.aerobankapp.exceptions.InvalidUserIDException;
-import com.example.aerobankapp.exceptions.ZeroBalanceException;
+import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.AccountRepository;
+import com.example.aerobankapp.repositories.AccountSecurityRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -32,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static com.example.aerobankapp.services.utilities.AccountSecurityServiceUtil.buildSecurityEntity;
+
 @Service
 @Getter
 @Setter
@@ -40,13 +41,15 @@ public class AccountServiceImpl implements AccountService
     @PersistenceContext
     private final EntityManager entityManager;
     private final AccountRepository accountRepository;
+    private final AccountSecurityRepository accountSecurityRepository;
     private Logger LOGGER = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     @Autowired
-    public AccountServiceImpl(EntityManager entityManager, AccountRepository accountRepository)
+    public AccountServiceImpl(EntityManager entityManager, AccountRepository accountRepository, AccountSecurityRepository accountSecurityRepository)
     {
         this.entityManager = entityManager;
         this.accountRepository = accountRepository;
+        this.accountSecurityRepository = accountSecurityRepository;
     }
 
     @Override
@@ -262,7 +265,45 @@ public class AccountServiceImpl implements AccountService
 
     @Override
     public List<String> getAccountCodeShortSegmentByUser(String user) {
-        return accountRepository.getAccountCodeShortSegmentByUser(user);
+        if(user.isEmpty()){
+            throw new InvalidUserStringException("Unable to retrieve short segments for user: " + user);
+        }
+        List<String> rawAccountCodeShortSegments = accountRepository.getAccountCodeShortSegmentByUser(user);
+        if(rawAccountCodeShortSegments.isEmpty()){
+            throw new NonEmptyListRequiredException("Found empty list of account short segments..");
+        }
+
+        // Filter out the zeroes in the accountCode segment
+        return filterOutZeroParameter(rawAccountCodeShortSegments);
+    }
+
+    private List<String> filterOutZeroParameter(List<String> unfilteredSegments){
+        List<String> segments = new ArrayList<>();
+        for(String segment : unfilteredSegments){
+            if(!segment.isEmpty()){
+                String filtered = getFilterZeroParameterString(segment);
+                segments.add(filtered);
+            }
+        }
+        return segments;
+    }
+
+    private String getFilterZeroParameterString(String segment){
+        StringBuilder filteredString = new StringBuilder();
+        for(int i = 0; i < segment.length(); i++){
+            char c = segment.charAt(i);
+            if(c == '0' && i > 0 && i < segment.length() - 1){
+                char prev = segment.charAt(i - 1);
+                char next = segment.charAt(i + 1);
+
+                // is the zero between a letter or digit
+                if(Character.isLetter(prev) && Character.isDigit(next)){
+                    continue;
+                }
+            }
+            filteredString.append(c);
+        }
+        return filteredString.toString();
     }
 
     private boolean doesAccountCodeExist(String acctCode)
@@ -275,6 +316,37 @@ public class AccountServiceImpl implements AccountService
     {
         int accountCount = accountRepository.doesAccountIDExist(acctID);
         return accountCount > 1;
+    }
+
+    @Transactional
+    public List<AccountEntity> processAccountAndSecurity(List<AccountCodeEntity> accountCodeEntities, List<AccountInfoDTO> accountInfoDTOS, UserEntity user){
+        List<AccountEntity> accountEntities = new ArrayList<>();
+        for (int i = 0; i < accountInfoDTOS.size(); i++) {
+            AccountInfoDTO accountInfoDTO = accountInfoDTOS.get(i);
+            AccountCodeEntity accountCode = accountCodeEntities.get(i);
+            AccountEntity account = buildAccountEntity(accountInfoDTO, accountCode, user);
+            accountRepository.saveAndFlush(account); // Ensure account is persisted before linking security
+
+            AccountSecurityEntity accountSecurity = buildSecurityEntity(account);
+            accountSecurityRepository.save(accountSecurity); // Persist and flush security entity
+
+            account.setAccountSecurity(accountSecurity);
+            accountRepository.save(account); // Save the account again with the security link
+
+            accountEntities.add(account);
+        }
+
+        LOGGER.info("Processed {} accounts with detailed security settings.", accountEntities.size());
+        return accountEntities;
+    }
+
+    private void setupAccountSecurity(AccountEntity account) {
+        AccountSecurityEntity accountSecurity = new AccountSecurityEntity();
+        accountSecurity.setAccount(account);
+        accountSecurity.setEnabled(true);  // Set other properties as needed
+        accountSecurityRepository.save(accountSecurity);
+        account.setAccountSecurity(accountSecurity);  // Link security details back to the account
+        accountRepository.save(account);  // Save the account again if needed
     }
 
     @Override
@@ -320,6 +392,7 @@ public class AccountServiceImpl implements AccountService
         }
         return buildAccount(account, accountCode, user);
     }
+
 
     private AccountEntity buildAccount(Account account, AccountCodeEntity accountCode, UserEntity user){
         return AccountEntity.builder()

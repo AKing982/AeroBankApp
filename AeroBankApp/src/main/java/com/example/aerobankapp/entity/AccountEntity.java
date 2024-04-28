@@ -31,7 +31,7 @@ public class AccountEntity
     @JoinColumn(name="userID")
     private UserEntity user;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="aSecID")
     private AccountSecurityEntity accountSecurity;
 

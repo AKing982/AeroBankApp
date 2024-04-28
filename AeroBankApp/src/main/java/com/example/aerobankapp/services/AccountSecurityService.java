@@ -26,7 +26,6 @@ public interface AccountSecurityService extends ServiceDAOModel<AccountSecurityE
     @Override
     Optional<AccountSecurityEntity> findAllById(Long id);
 
-    AccountSecurityEntity buildSecurityEntity(AccountEntity account);
 
     @Override
     List<AccountSecurityEntity> findByUserName(String user);
