@@ -220,7 +220,7 @@ class AccountDAOImplTest
     @WithMockUser
     public void testGetAccountIDByAcctCodeAndUserID_ValidUser() throws AccountIDNotFoundException {
         int userID = 1;
-        String acctCode = "A1";
+        Long acctCode = 1L;
         TypedQuery<Integer> mockedQuery = mock(TypedQuery.class);
 
         when(entityManager.createQuery(anyString(), eq(Integer.class))).thenReturn(mockedQuery);
@@ -238,7 +238,7 @@ class AccountDAOImplTest
     public void testGetAccountIDByAcctCodeAndUserID_InvalidUserID()
     {
         int userID = 0;
-        String acctCode = "A1";
+        Long acctCode = 1L;
         TypedQuery<Integer> mockedQuery = mock(TypedQuery.class);
         TypedQuery<Long> longTypedQuery = mock(TypedQuery.class);
 
@@ -262,7 +262,7 @@ class AccountDAOImplTest
     public void testGetAccountIDByAcctCodeAndUserID_InvalidAccountCode()
     {
         int userID = 1;
-        String acctCode = "A5";
+        Long acctCode = -1L;
         TypedQuery<Integer> mockQuery = mock(TypedQuery.class);
         TypedQuery<Long> longTypedQuery = mock(TypedQuery.class);
 
@@ -364,23 +364,23 @@ class AccountDAOImplTest
 
     @Test
     public void testGetAccountIDByAcctCodeAndAcctNumber_EmptyParameters(){
-        final String acctCode = "";
+        final Long acctCodeID = -1L;
         final String acctNumber = "";
 
         assertThrows(IllegalArgumentException.class, () -> {
-            accountDAO.getAccountIDByAccountCodeAndAccountNumber(acctCode, acctNumber);
+            accountDAO.getAccountIDByAccountCodeAndAccountNumber(acctCodeID, acctNumber);
         });
     }
 
     @Test
     public void testGetAccountIDByAcctCodeAndAcctNumber_ValidParameters(){
-        final String acctCode = "A1";
+        final Long acctCodeID = 1L;
         final String acctNumber = "89-42-48";
 
-        int actual = accountDAO.getAccountIDByAccountCodeAndAccountNumber(acctCode, acctNumber);
+        int actual = accountDAO.getAccountIDByAccountCodeAndAccountNumber(acctCodeID, acctNumber);
 
         assertEquals(1, actual);
-        assertEquals(2, accountDAO.getAccountIDByAccountCodeAndAccountNumber("A2", acctNumber));
+        assertEquals(2, accountDAO.getAccountIDByAccountCodeAndAccountNumber(acctCodeID, acctNumber));
     }
 
     @Test

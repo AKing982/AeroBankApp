@@ -46,15 +46,15 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
 
     Long getNumberOfAccounts(String user);
 
-    int getAccountIDByAccountCodeAndAccountNumber(String acctCode, String accountNumber);
+    int getAccountIDByAccountCodeAndAccountNumber(Long acctCodeID, String accountNumber);
 
     List<String> getListOfAccountCodes(String user);
 
     int getAccountIDByAcctCodeAndAccountNumber(String acctCode, String accountNumber);
 
-    List<String> getAccountCodeListByAccountNumber(String accountNumber);
+    List<String> getAccountNamesWithAcctSegmentByAccountNumber(String accountNumber);
 
-    int getAccountIDByAcctCodeAndUserID(int userID, String acctCode);
+    int getAccountIDByAcctCodeAndUserID(int userID, Long acctCode);
 
     Integer getAccountWithMostTransactionsByUserID(int userID);
 
@@ -73,6 +73,8 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
     void saveAll(List<AccountEntity> accountEntities);
 
     List<String> getAccountCodeShortSegmentByUser(String user);
+
+    List<Integer> getListOfAccountCodeIDsByAcctNumber(String accountNumber);
 
     AccountEntity buildAccountEntity(AccountInfoDTO accountInfoDTO, AccountCodeEntity accountCode,UserEntity user);
 

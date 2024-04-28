@@ -45,7 +45,7 @@ export default function AccountListView({updateAccountID})
 {
     const [accountData, setAccountData] = useState([]);
     const [accountProperties, setAccountProperties] = useState([]);
-    const [selectedAccount, setSelectedAccount] = useState('');
+    const [selectedAccount, setSelectedAccount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [fullName, setFullName] = useState('');
     const [notifications, setNotifications] = useState([]);
@@ -108,11 +108,11 @@ export default function AccountListView({updateAccountID})
     })
 
     const fetchAccountID = () => {
-        const accountCode = selectedAccount;
+        const accountCodeID = selectedAccount;
 
         const currentUserID = sessionStorage.getItem('userID');
-        console.log('Selected Account Code from Fetch: ', accountCode);
-        axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${currentUserID}/${accountCode}`)
+        console.log('Selected Account Code from Fetch: ', accountCodeID);
+        axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${currentUserID}/${accountCodeID}`)
             .then(response => {
                     const accountID = response.data.accountID;
                     console.log('AccountID Response: ', accountID);
@@ -207,10 +207,10 @@ export default function AccountListView({updateAccountID})
     }
 
 
-    const handleAccountButtonClick = (accountCode) => {
-       setSelectedAccount(accountCode);
-       storeAccountCode(accountCode);
-       console.log("Selected AccountCode: ", accountCode);
+    const handleAccountButtonClick = (accountCodeID) => {
+       setSelectedAccount(accountCodeID);
+       storeAccountCode(accountCodeID);
+       console.log("Selected AccountCode: ", accountCodeID);
     };
 
     return (
@@ -225,7 +225,9 @@ export default function AccountListView({updateAccountID})
                         return (
                             <Account
                                 key={account.id}
-                                accountCode={account.accountCode}
+                                acctID={account.acctID}
+                                accountCode={account.shortSegment}
+                                acctCodeID={account.acctCodeID}
                                 balance={account.balance}
                                 pending={account.pendingAmount}
                                 accountName={account.accountName}
@@ -236,7 +238,7 @@ export default function AccountListView({updateAccountID})
                                 notifications={accountNotifications}
                                 onNotificationClick={(event) => handleNotificationClick(event)}
                                 color={account.acctColor}
-                                isSelected={selectedAccount === account.accountCode}
+                                isSelected={selectedAccount === account.acctID}
                             />
                         );
                     })}

@@ -14,7 +14,8 @@ import java.math.BigDecimal;
 public class AccountResponse implements Serializable
 {
     private int acctID;
-    private String accountCode;
+    private Long acctCodeID;
+    private String shortSegment;
     private BigDecimal balance;
     private BigDecimal pendingAmount;
     private BigDecimal availableAmount;
@@ -23,9 +24,9 @@ public class AccountResponse implements Serializable
     private String acctImage;
     private AccountNotification accountNotification;
 
-    public AccountResponse(String acctCode, BigDecimal bal, BigDecimal pending, BigDecimal available, String accountName, String acctColor, String acctImage)
+    public AccountResponse(String shortCode, BigDecimal bal, BigDecimal pending, BigDecimal available, String accountName, String acctColor, String acctImage)
     {
-        this.accountCode = acctCode;
+        this.shortSegment = shortCode;
         this.balance = bal;
         this.pendingAmount = pending;
         this.availableAmount = available;
@@ -34,9 +35,10 @@ public class AccountResponse implements Serializable
         this.acctImage = acctImage;
     }
 
-    public AccountResponse(int acctID, String accountCode, BigDecimal balance, BigDecimal pendingAmount, BigDecimal availableAmount, String accountName, String acctColor, String acctImage) {
+    public AccountResponse(int acctID, Long acctCodeID, String shortCode, BigDecimal balance, BigDecimal pendingAmount, BigDecimal availableAmount, String accountName, String acctColor, String acctImage) {
         this.acctID = acctID;
-        this.accountCode = accountCode;
+        this.acctCodeID = acctCodeID;
+        this.shortSegment = shortCode;
         this.balance = balance;
         this.pendingAmount = pendingAmount;
         this.availableAmount = availableAmount;
@@ -45,8 +47,8 @@ public class AccountResponse implements Serializable
         this.acctImage = acctImage;
     }
 
-    public AccountResponse(String accountCode, BigDecimal balance, BigDecimal pendingAmount, BigDecimal availableAmount, String accountName, String acctColor, String acctImage, AccountNotification accountNotification) {
-        this.accountCode = accountCode;
+    public AccountResponse(String shortCode, BigDecimal balance, BigDecimal pendingAmount, BigDecimal availableAmount, String accountName, String acctColor, String acctImage, AccountNotification accountNotification) {
+        this.shortSegment = shortCode;
         this.balance = balance;
         this.pendingAmount = pendingAmount;
         this.availableAmount = availableAmount;
@@ -58,6 +60,6 @@ public class AccountResponse implements Serializable
 
     public AccountResponse(String accountCode)
     {
-        this.accountCode = accountCode;
+        this.shortSegment = accountCode;
     }
 }

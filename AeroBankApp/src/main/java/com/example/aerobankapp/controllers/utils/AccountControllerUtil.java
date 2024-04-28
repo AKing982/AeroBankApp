@@ -4,6 +4,7 @@ import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.AccountNotificationEntity;
 import com.example.aerobankapp.entity.AccountPropertiesEntity;
+import com.example.aerobankapp.workbench.AccountCodeIDResponse;
 import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import com.example.aerobankapp.workbench.AccountNotificationResponse;
 import com.example.aerobankapp.workbench.utilities.AccountNameResponse;
@@ -42,6 +43,17 @@ public class AccountControllerUtil {
             accountNameResponses.add(accountNameResponse);
         }
         return accountNameResponses;
+    }
+
+    public static List<AccountCodeIDResponse> getAccountCodeIDResponseList(List<Integer> accountCodeIDs){
+        List<AccountCodeIDResponse> accountCodeIDResponses = new ArrayList<>();
+        for(Integer accountCodeID : accountCodeIDs){
+            if(accountCodeID != null){
+                AccountCodeIDResponse accountCodeIDResponse = new AccountCodeIDResponse(accountCodeID);
+                accountCodeIDResponses.add(accountCodeIDResponse);
+            }
+        }
+        return accountCodeIDResponses;
     }
 
 
@@ -105,6 +117,7 @@ public class AccountControllerUtil {
             String acctCodeSegment = accountCodeShortSegments.get(i);  // Corresponding short segment
 
             int acctID = entity.getAcctID();
+            Long acctCodeID = entity.getAccountCode().getAcctCodeID();
             BigDecimal balance = entity.getBalance();
             String accountName = entity.getAccountName();
 
@@ -116,7 +129,7 @@ public class AccountControllerUtil {
             // Log information about the account
             LOGGER.info("Account ID: " + acctID + ", Color: " + acctColor + ", Image: " + acctImage);
 
-            AccountResponse accountResponse = new AccountResponse(acctID, acctCodeSegment, balance, pending, available, accountName, acctColor, acctImage);
+            AccountResponse accountResponse = new AccountResponse(acctID, acctCodeID, acctCodeSegment, balance, pending, available, accountName, acctColor, acctImage);
             accountResponseList.add(accountResponse);
         }
 

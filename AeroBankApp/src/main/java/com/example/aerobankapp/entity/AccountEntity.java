@@ -2,6 +2,9 @@ package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.account.AccountType;
 import com.example.aerobankapp.embeddables.AccountUserEmbeddable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class AccountEntity
 {
 
@@ -25,6 +29,7 @@ public class AccountEntity
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="accountCodeID")
+    @JsonIgnore
     private AccountCodeEntity accountCode;
 
     @ManyToOne
@@ -58,6 +63,10 @@ public class AccountEntity
 
     @ManyToMany(mappedBy = "accounts")
     private Set<UserEntity> users = new HashSet<>();
+
+    @OneToMany(mappedBy="accountEntity")
+    @JsonBackReference
+    private Set<TransactionStatementEntity> transactions;
 
     public AccountEntity(int acctID, String accountType)
     {

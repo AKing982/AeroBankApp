@@ -184,14 +184,14 @@ class AccountControllerTest {
     @ParameterizedTest
     @WithMockUser
     @CsvSource({
-            "1, A1, 1",
-            "1, A2, 2",
-            "2, B1, 4",
-            "1, A3, 3",
-            "-1, A4, -1", // Assuming -1 indicates an error/invalid response
+            "1, 1L, 1",
+            "1, 2L, 2",
+            "2, 4L, 4",
+            "1, 3L, 3",
+            "-1, 4L, -1", // Assuming -1 indicates an error/invalid response
             "1, , -1"
     })
-    public void testGetAccountIDByUserIDAndAccountCode_VariousInputs(int userID, String accountCode, int expectedAccountID) throws Exception {
+    public void testGetAccountIDByUserIDAndAccountCode_VariousInputs(int userID, Long accountCode, int expectedAccountID) throws Exception {
         if (expectedAccountID != -1) {
             when(accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode)).thenReturn(expectedAccountID);
         }

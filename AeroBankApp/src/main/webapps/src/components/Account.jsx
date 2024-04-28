@@ -42,7 +42,7 @@ const testNotifications = [
     }
 ];
 
-export default function Account({ color, accountCode, accountName, balance, pending, available, notifications, onNotificationClick, notificationCount, onAccountClick, isSelected, backgroundImageUrl})
+export default function Account({ color, accountCode, acctID, acctCodeID, accountName, balance, pending, available, notifications, onNotificationClick, notificationCount, onAccountClick, isSelected, backgroundImageUrl})
 {
     const [newNotificationCount, setNewNotificationCount] = useState(notifications.length);
 
@@ -51,7 +51,7 @@ export default function Account({ color, accountCode, accountName, balance, pend
     }
 
     const handleClick = () => {
-        onAccountClick(accountCode);
+        onAccountClick(acctID);
     };
 
     const handleKeyPress = (event) => {

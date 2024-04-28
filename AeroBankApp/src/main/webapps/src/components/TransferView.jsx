@@ -42,7 +42,7 @@ export default function TransferView()
     const [selectedToUserName, setSelectedToUserName] = useState('');
     const [selectedAccountNumber, setSelectedAccountNumber] = useState('');
     const [accountNumberExists, setAccountNumberExists] = useState(false);
-    const [selectedToAccountCode, setSelectedToAccountCode] = useState('');
+    const [selectedToAccountCodeID, setSelectedToAccountCodeID] = useState(0);
     const [accountCodeList, setAccountCodeList] = useState([]);
     const [isLoadingAccountCodes, setIsLoadingAccountCodes] = useState(false);
     const [accountCodeUserList, setAccountCodeUserList] = useState([]);
@@ -116,14 +116,31 @@ export default function TransferView()
         buildAndSendRequestToServer(isUserToUser);
     };
 
+    const parseSelectedAccountCodeToAccountID = (selectedAccountCode) => {
+        let pattern =  /XXXX(\d+)$/;
+        let matchResult = selectedAccountCode.match(pattern);
+        let selectedAcctID = 0;
+        if(matchResult){
+            let digits = matchResult[1];
+            selectedAcctID = digits[digits.length - 1];
+            console.log('selectedAcctID: ', selectedAcctID);
+            return selectedAcctID;
+        }
+        return selectedAcctID;
+    }
+
     const buildAndSendRequestToServer = async (type) => {
+        let selectedToAccountID = parseSelectedAccountCodeToAccountID(selectedToAccountCodeID);
         if(type){
             if(searchType === 'username'){
-                const userToUserWithUserIDRequest = await createUserToUserUserIDTransferRequest(fromAccount, amount, selectedToUserName, selectedToAccountCode, description, transferDate, transferTime, TransferType.USER_TO_USER);
+                console.log('SelectedToAccountCodeID: ', selectedToAccountCodeID);
+
+                const userToUserWithUserIDRequest = await createUserToUserUserIDTransferRequest(fromAccount, amount, selectedToUserName, selectedToAccountID, description, transferDate, transferTime, TransferType.USER_TO_USER);
                 sendTransferRequestToServer(userToUserWithUserIDRequest);
             }
             if(searchType === 'accountNumber'){
-                const userToUserRequest =  await createUserToUserTransferRequest(fromAccount, amount, selectedAccountNumber, selectedToAccountCode, description, transferDate, transferTime, TransferType.USER_TO_USER);
+                console.log('SelectedToAccountCodeID: ', selectedToAccountCodeID);
+                const userToUserRequest =  await createUserToUserTransferRequest(fromAccount, amount, selectedAccountNumber, selectedToAccountID, description, transferDate, transferTime, TransferType.USER_TO_USER);
                 sendTransferRequestToServer(userToUserRequest);
             }
         }else{
@@ -160,10 +177,10 @@ export default function TransferView()
         }
     };
 
-    const createUserToUserUserIDTransferRequest = async (fromAccount, transferAmount, username, accountCode, description, transferDate, transferTime, isUserToUser) => {
+    const createUserToUserUserIDTransferRequest = async (fromAccount, transferAmount, username, accountCodeID, description, transferDate, transferTime, isUserToUser) => {
         const toUserID = await fetchToUserID(username);
         const fromAcctID = await fetchFromAccountID(fromAccount);
-        const toAcctID = await fetchAccountIDByAccountCodeAndUserID(accountCode, toUserID);
+        const toAcctID = await fetchAccountIDByAccountCodeAndUserID(accountCodeID, toUserID);
 
         return {
             fromAccountID: fromAcctID,
@@ -181,11 +198,11 @@ export default function TransferView()
         }
     };
 
-    const createUserToUserTransferRequest = async (fromAccount, transferAmount, accountNumber, accountCode, description, transferDate, transferTime, isUserToUser) => {
+    const createUserToUserTransferRequest = async (fromAccount, transferAmount, accountNumber, accountCodeID, description, transferDate, transferTime, isUserToUser) => {
 
         const accountID = await fetchFromAccountID(fromAccount);
         const toUserID = await fetchToUserIDByAccountNumber(accountNumber);
-        const toAcctID = await fetchAccountIDByAccountCodeAndUserID(accountCode, toUserID);
+        const toAcctID = await fetchAccountIDByAccountCodeAndUserID(accountCodeID, toUserID);
 
         return {
             fromAccountID: accountID,
@@ -235,12 +252,12 @@ export default function TransferView()
         }
     };
 
-    const fetchAccountIDByAccountCodeAndUserID = async (acctCode, userID) => {
-        if(!acctCode || !userID){
+    const fetchAccountIDByAccountCodeAndUserID = async (acctCodeID, userID) => {
+        if(!acctCodeID || !userID){
             return;
         }
         try{
-            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${userID}/${acctCode}`)
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/${userID}/${acctCodeID}`)
             if(response.status === 200){
                 return response.data.accountID;
             }
@@ -322,7 +339,7 @@ export default function TransferView()
             const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/codes/${accountNumber}`, {
                 timeout: 4000
             });
-            console.log('ToAccountCode List: ', response.data);
+            console.log('ToAccountCodeID List: ', response.data);
             if(Array.isArray(response.data) && response.data.length > 0){
                 setAccountCodeList(response.data);
             }
@@ -503,7 +520,7 @@ export default function TransferView()
                                 onChange={(e) => {setSearchType(e.target.value);
                                     if(e.target.value === 'username'){
                                         setSelectedAccountNumber('');
-                                        setSelectedToAccountCode('');
+                                        setSelectedToAccountCodeID(0);
                                 }else{
                                         setSelectedToUserName('');
                                         setAccountCodeList([]);
@@ -535,8 +552,8 @@ export default function TransferView()
                                     <FormControl fullWidth style={{ marginBottom: '20px' }}>
                                         <InputLabel>Recipient's Account Codes</InputLabel>
                                         <Select
-                                            value={selectedToAccountCode}
-                                            onChange={(e) => setSelectedToAccountCode(e.target.value)}
+                                            value={selectedToAccountCodeID}
+                                            onChange={(e) => setSelectedToAccountCodeID(e.target.value)}
                                             displayEmpty
                                         >
                                             {isLoadingAccountCodes ? (
@@ -571,8 +588,8 @@ export default function TransferView()
                                     <FormControl fullWidth style={{ marginBottom: '20px' }}>
                                         <InputLabel>Recipient's Account Codes</InputLabel>
                                         <Select
-                                            value={selectedToAccountCode}
-                                            onChange={(e) => setSelectedToAccountCode(e.target.value)}
+                                            value={selectedToAccountCodeID}
+                                            onChange={(e) => setSelectedToAccountCodeID(e.target.value)}
                                             displayEmpty
                                         >
                                             {isLoadingAccountCodes ? (

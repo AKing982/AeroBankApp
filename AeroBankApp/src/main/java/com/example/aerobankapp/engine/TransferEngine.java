@@ -122,10 +122,10 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
         return userIDs;
     }
 
-    private int getAccountIDByAcctCodeAndAcctNumber(final String acctCode, final String acctNum){
+    private int getAccountIDByAcctCodeAndAcctNumber(final Long acctCodeID, final String acctNum){
         LOGGER.info("AccountNumber: " + acctNum);
-        LOGGER.info("AccountCode: " + acctCode);
-        return getAccountService().getAccountIDByAccountCodeAndAccountNumber(acctCode, acctNum);
+        LOGGER.info("AccountCodeID: " + acctCodeID);
+        return getAccountService().getAccountIDByAccountCodeAndAccountNumber(acctCodeID, acctNum);
     }
 
     protected Set<Integer> retrieveToAccountIDSetByAcctCodeAndAccountNumber(final List<Transfer> transfers){
@@ -135,8 +135,8 @@ public class TransferEngine extends TransactionEngine<Transfer, TransferBalanceS
                 if(transfer != null){
                     String accountNumber = getAccountNumberFromTransfer(transfer);
                     String accountCode = getAccountCodeFromTransfer(transfer);
-                    int accountID = getAccountIDByAcctCodeAndAcctNumber(accountCode, accountNumber);
-                    accountIDs.add(accountID);
+                    //int accountID = getAccountIDByAcctCodeAndAcctNumber(accountCode, accountNumber);
+                  //  accountIDs.add(accountID);
                 }
             }
         }

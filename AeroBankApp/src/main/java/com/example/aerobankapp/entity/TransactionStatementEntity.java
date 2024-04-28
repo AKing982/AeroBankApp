@@ -1,5 +1,7 @@
 package com.example.aerobankapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +13,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TransactionStatementEntity {
 
     @Id
@@ -19,6 +22,7 @@ public class TransactionStatementEntity {
 
     @ManyToOne
     @JoinColumn(name="acctID")
+    @JsonBackReference
     private AccountEntity accountEntity;
 
     @Column(name="description")

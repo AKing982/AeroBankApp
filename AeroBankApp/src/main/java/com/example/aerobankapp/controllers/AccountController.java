@@ -9,10 +9,7 @@ import com.example.aerobankapp.services.AccountCodeService;
 import com.example.aerobankapp.services.AccountNotificationService;
 import com.example.aerobankapp.services.AccountPropertiesService;
 import com.example.aerobankapp.services.AccountServiceImpl;
-import com.example.aerobankapp.workbench.AccountIDResponse;
-import com.example.aerobankapp.workbench.AccountNotificationCategory;
-import com.example.aerobankapp.workbench.AccountNotificationResponse;
-import com.example.aerobankapp.workbench.NotificationRequest;
+import com.example.aerobankapp.workbench.*;
 import com.example.aerobankapp.workbench.utilities.AccountCreationRequest;
 import com.example.aerobankapp.workbench.utilities.AccountNameResponse;
 import com.example.aerobankapp.workbench.utilities.BalanceRequest;
@@ -75,9 +72,18 @@ public class AccountController {
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
     public ResponseEntity<?> fetchAccountCodesByAccountNumber(@PathVariable String accountNumber){
-        List<String> accountCodes = accountDAO.getAccountCodeListByAccountNumber(accountNumber);
+        List<String> accountCodes = accountDAO.getAccountNamesWithAcctSegmentByAccountNumber(accountNumber);
         List<AccountCodeResponse> accountCodeResponseList = getAccountCodesAsResponse(accountCodes);
         return ResponseEntity.ok(accountCodeResponseList);
+    }
+
+    @GetMapping("/codes/list/{accountNumber}")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public ResponseEntity<?> fetchAccountCodeIDListByAccountNumber(@PathVariable String accountNumber){
+        List<Integer> accountCodeIds = accountDAO.getListOfAccountCodeIDsByAcctNumber(accountNumber);
+        List<AccountCodeIDResponse> accountCodeIDResponses = getAccountCodeIDResponseList(accountCodeIds);
+        return ResponseEntity.ok(accountCodeIDResponses);
     }
 
     @GetMapping("/list/{userID}")
@@ -123,16 +129,16 @@ public class AccountController {
         return ResponseEntity.ok(new AccountIDResponse(accountID));
     }
 
-    @GetMapping("/{userID}/{accountCode}")
+    @GetMapping("/{userID}/{accountCodeID}")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    public ResponseEntity<?> getAccountIDByUserIDAndAccountCode(@PathVariable int userID, @PathVariable String accountCode)
+    public ResponseEntity<?> getAccountIDByUserIDAndAccountCode(@PathVariable int userID, @PathVariable Long accountCodeID)
     {
-        if(accountCode == null || accountDAO.isInvalidUserID(userID) || isInvalidAccountCode(accountCode))
+        if(accountCodeID < 1L || accountDAO.isInvalidUserID(userID))
         {
             return ResponseEntity.badRequest().body("Invalid User ID or accountCode");
         }
-        int receivedAccountID = accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode);
+        int receivedAccountID = accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCodeID);
         if(receivedAccountID <= 0)
         {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid AccountID found.");

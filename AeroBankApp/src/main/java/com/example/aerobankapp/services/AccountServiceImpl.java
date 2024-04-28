@@ -135,38 +135,32 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
-    public int getAccountIDByAccountCodeAndAccountNumber(String acctCode, String accountNumber) {
-        if(acctCode.isEmpty() || accountNumber.isEmpty()){
+    public int getAccountIDByAccountCodeAndAccountNumber(Long acctCodeID, String accountNumber) {
+        if(acctCodeID < 0 || accountNumber.isEmpty()){
             throw new IllegalArgumentException("Caught empty AccountCode or AccountNumber.");
         }
-        // return accountRepository.findAccountIDByAcctCodeAndAccountNumber(accountNumber, acctCode);
-        return 0;
+         return accountRepository.getAccountIDByAcctCodeAndAccountNumber(acctCodeID,accountNumber);
     }
 
     @Override
     public List<String> getListOfAccountCodes(String user) {
-        List<String> accountCodesList = accountRepository.findAccountCodesByUserName(user);
-        return accountRepository.findAccountCodesByUserName(user);
+        List<String> accountCodesList = accountRepository.findAccountNameWithAcctCodeByUserName(user);
+        return accountRepository.findAccountNameWithAcctCodeByUserName(user);
     }
 
     @Override
     public int getAccountIDByAcctCodeAndAccountNumber(String acctCode, String accountNumber) {
-        if(!acctCode.isEmpty() || !accountNumber.isEmpty()){
-            return accountRepository.getAccountIDByAcctCodeAndAccountNumber(acctCode, accountNumber);
-        }
         return 0;
     }
 
     @Override
-    public List<String> getAccountCodeListByAccountNumber(String accountNumber) {
-        return accountRepository.findAccountCodesByAccountNumber(accountNumber);
+    public List<String> getAccountNamesWithAcctSegmentByAccountNumber(String accountNumber) {
+        return accountRepository.findAccountNamesWithAcctSegmentByAccountNumber(accountNumber);
     }
 
     @Override
-    public int getAccountIDByAcctCodeAndUserID(int userID, String acctCode) {
-        if (!doesAccountCodeExist(acctCode)) {
-            throw new IllegalArgumentException("Account Code does not exist.");
-        }
+    public int getAccountIDByAcctCodeAndUserID(int userID, Long acctCode) {
+
         if (isInvalidUserID(userID)) {
             throw new IllegalArgumentException("Invalid User ID");
         }
@@ -275,6 +269,11 @@ public class AccountServiceImpl implements AccountService
 
         // Filter out the zeroes in the accountCode segment
         return filterOutZeroParameter(rawAccountCodeShortSegments);
+    }
+
+    @Override
+    public List<Integer> getListOfAccountCodeIDsByAcctNumber(String accountNumber) {
+        return accountRepository.findAccountCodeIDListByAccountNumber(accountNumber);
     }
 
     private List<String> filterOutZeroParameter(List<String> unfilteredSegments){
