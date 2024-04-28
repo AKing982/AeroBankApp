@@ -4,6 +4,10 @@ import {Fragment, useEffect, useState} from "react";
 import React from 'react';
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import Dialog from "@mui/material/Dialog";
 
 function ReviewAndSubmitRegistration({formData}){
 
@@ -162,6 +166,21 @@ function ReviewAndSubmitRegistration({formData}){
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
+            <Dialog
+                open={showBackdrop}
+                onClose={() => setShowBackDrop(false)}  // Optionally allow closing by clicking outside the dialog
+                aria-labelledby="registration-dialog-title"
+                aria-describedby="registration-dialog-description"
+            >
+                <DialogTitle id="registration-dialog-title">{"Registration in Progress"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="registration-dialog-description">
+                        Registration is being submitted...
+                    </DialogContentText>
+                    <CircularProgress color="inherit" />
+                </DialogContent>
+            </Dialog>
+
             {/* Button is always visible and interactive */}
             <Button variant="contained" color="primary" onClick={handleSubmit}>
                 Submit All Information

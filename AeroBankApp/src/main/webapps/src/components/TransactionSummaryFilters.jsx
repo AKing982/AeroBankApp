@@ -14,6 +14,17 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import {useState} from "react";
 import axios from "axios";
 
+const transactionFilterType = {
+    description: 'DESCRIPTION',
+    dates: 'DATES',
+    transactionType: 'TRANSACTION_TYPE',
+    status: 'STATUS',
+    scheduledTime: 'SCHEDULED_TIME',
+    username: 'USERNAME',
+    accountID: 'ACCOUNT_ID',
+    amountRange: 'AMOUNT_RANGE'
+};
+
 function TransactionSummaryFilters({ applyFilters }){
     const [filters, setFilters] = useState({
         description: '',
@@ -26,16 +37,20 @@ function TransactionSummaryFilters({ applyFilters }){
         accountID: '',
         minAmount: '',
         maxAmount: '',
-        enabledFilters: {
-            description: false,
-            dates: false,
-            transactionType: false,
-            status: false,
-            scheduledTime: false,
-            username: false,
-            accountID: false,
-            amountRange: false
-        }
+        enabledFilters: Object.keys(transactionFilterType).reduce((acc, key)=> {
+            acc[transactionFilterType[key]] = false;
+            return acc;
+        }, {})
+        // enabledFilters: {
+        //     description: false,
+        //     dates: false,
+        //     transactionType: false,
+        //     status: false,
+        //     scheduledTime: false,
+        //     username: false,
+        //     accountID: false,
+        //     amountRange: false
+        // }
     });
 
     const [loading, setIsLoading] = useState(false);
@@ -55,15 +70,19 @@ function TransactionSummaryFilters({ applyFilters }){
         {value: 'CANCELLED', label: 'Cancelled'}
     ];
 
-    const transactionFilterType = {
-        DESCRIPTION: 'Description',
-        DATE: 'Date',
-        TRANSACTION_TYPE: 'TransactionType',
-        STATUS: 'Status',
-        USERNAME: 'UserName',
-        ACCOUNT_ID: 'AccountID',
-        AMOUNT_RANGE: 'AmountRange'
+    const buildDescriptionAndStartDateRequest = (description, startDate) => {
+
     };
+
+    const buildDescriptionAndStatusRequest = (description, status) => {
+
+    };
+
+    const buildDescriptionAndUserNameRequest = (description, username) => {
+
+    };
+
+
 
 
     const handleInputChange = (event) => {
@@ -81,15 +100,61 @@ function TransactionSummaryFilters({ applyFilters }){
         }
     };
 
+    const enableAllFilters = () => {
+        setFilters(prev => ({
+            ...prev,
+            enabledFilters: Object.keys(prev.enabledFilters).reduce((acc, key) => {
+                acc[key] = true;
+                return acc;
+            }, {})
+        }));
+    };
+
+    const disableAllFilters = () => {
+        setFilters(prev => ({
+            ...prev,
+            enabledFilters: Object.keys(prev.enabledFilters).reduce((acc, key) => {
+                acc[key] = false;
+                return acc;
+            }, {})
+        }));
+    };
+
     const handleDateChange = (field, value) => {
         setFilters(prev => ({ ...prev, [field]: value }));
     };
 
     const handleSubmit = () => {
-        const request = buildFilterRequest();
+
+        const enabledTypes = Object.entries(filters.enabledFilters).reduce((acc, [key, enabled]) => {
+            if (enabled) {
+                acc.push(transactionFilterType[key]); // Ensure this maps to string values correctly
+            }
+            return acc;
+        }, []);
+
+        const request = buildRequest(enabledTypes);
         sendFilterRequestToServer(request);
        // applyFilters(filters);
     };
+
+    const buildRequest = (enabledTypes) => {
+        console.log("Enabled Types:", enabledTypes); // Debug: Check the content of enabledTypes
+
+        return {
+            filterType: enabledTypes,
+            description: filters.description || null,
+            startDate: filters.startDate ? filters.startDate.toISOString().split('T')[0] : null,
+            endDate: filters.endDate ? filters.endDate.toISOString().split('T')[0] : null,
+            transactionType: filters.transactionType || null, // Set null if empty
+            status: filters.status || null,
+            scheduledTime: filters.scheduledTime ? filters.scheduledTime.toISOString() : null,
+            username: filters.username || null,
+            accountID: filters.accountID || null,
+            minAmount: filters.minAmount || null,
+            maxAmount: filters.maxAmount || null
+        };
+    }
 
     const buildFilterRequest = () => {
         return {
@@ -111,7 +176,11 @@ function TransactionSummaryFilters({ applyFilters }){
 
         console.log('Request: ', request);
         try{
-            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/transactionHistory/save`, request)
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/transactionHistory/save`, request, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
             if(response.status === 200 || response.status === 201){
                 console.log('Response from server was successful');
                 console.log('Filters: ', filters);
