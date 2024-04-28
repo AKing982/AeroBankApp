@@ -1,3 +1,4 @@
+
 package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
