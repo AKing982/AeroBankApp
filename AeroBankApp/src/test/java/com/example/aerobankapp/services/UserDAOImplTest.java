@@ -2,6 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
+import com.example.aerobankapp.workbench.generator.AccountNumberGenerator;
 import com.example.aerobankapp.workbench.utilities.Role;
 import com.example.aerobankapp.workbench.utilities.UserType;
 import jakarta.persistence.EntityManager;
@@ -35,12 +36,15 @@ class UserDAOImplTest
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AccountNumberGenerator accountNumberGenerator;
+
     private UserEntity user;
 
     @BeforeEach
     void setUp()
     {
-        userDAO = new UserServiceImpl(userRepository, entityManager);
+        userDAO = new UserServiceImpl(userRepository, accountNumberGenerator, entityManager);
     }
 
     @Test

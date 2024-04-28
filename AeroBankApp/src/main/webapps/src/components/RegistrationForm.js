@@ -59,7 +59,7 @@ export default function RegistrationForm()
 
 
     return (
-        <Container maxWidth={false} style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', padding: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '130vh'}}>
+        <Container maxWidth={false} style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', padding: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '180vh'}}>
             <Box sx={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2, padding: 3 }}>
                 <Typography variant="h4" gutterBottom>
                     Registration

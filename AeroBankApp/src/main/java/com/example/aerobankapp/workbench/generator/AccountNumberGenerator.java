@@ -1,21 +1,8 @@
 package com.example.aerobankapp.workbench.generator;
 
-import com.example.aerobankapp.account.AccountType;
-import com.example.aerobankapp.model.UserDTO;
-import com.example.aerobankapp.workbench.model.AccountNumber;
-import com.example.aerobankapp.workbench.utilities.UserType;
+import com.example.aerobankapp.model.AccountNumber;
 
-public class AccountNumberGenerator implements Generator<AccountNumber>
+public interface AccountNumberGenerator
 {
-    private UserDTO user;
-    private UserType userType;
-    private AccountType accountType;
-
-    @Override
-    public AccountNumber generate()
-    {
-        AccountNumber accountNumber = null;
-        return accountNumber;
-
-    }
+    AccountNumber generateAccountNumber(String user);
 }

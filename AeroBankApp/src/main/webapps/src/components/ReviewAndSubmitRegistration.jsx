@@ -1,4 +1,4 @@
-import {Button, CircularProgress, Divider, List, ListItem, ListItemText, Typography} from "@mui/material";
+import {Backdrop, Button, CircularProgress, Divider, List, ListItem, ListItemText, Typography} from "@mui/material";
 import {Box, Container} from "@mui/system";
 import {Fragment, useEffect, useState} from "react";
 import React from 'react';
@@ -8,29 +8,35 @@ import axios from "axios";
 function ReviewAndSubmitRegistration({formData}){
 
     const [isLoading, setIsLoading] = useState(false);
-
+    const [showBackdrop, setShowBackDrop] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('Submitted');
         setIsLoading(true);
+        setShowBackDrop(true);
         const registrationRequest = buildRegistrationRequest(formData);
         console.log('Registration Request: ', registrationRequest);
 
-        const response = await sendRegistrationToServer(registrationRequest);
-        console.log('Registration response status: ', response);
-        if(response){
-            console.log('Preparing to navigate...');
-            setTimeout(() => {
-                console.log('Navigating to home page...');
-                setIsLoading(false);
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        try {
+            // Wait for 6000 ms before making the request
+            await delay(6000);
+            const response = await sendRegistrationToServer(registrationRequest);
+
+            if(response){
+                console.log('Preparing to navigate...');
                 navigate('/');
-            }, 6000);
-        }else{
-            console.log('registration failed...');
+            }
+        } catch (error) {
+            console.error("Network Error: ", error);
+        } finally {
             setIsLoading(false);
+            setShowBackDrop(false);
         }
+
     }
 
     const buildRegistrationRequest = (formData) => {
@@ -52,7 +58,6 @@ function ReviewAndSubmitRegistration({formData}){
         if(!request){
             return;
         }
-        setIsLoading(true);
         try{
             console.log('Sending request to server...');
             const response = await axios.post(`http://localhost:8080/AeroBankApp/api/registration/register`, request);
@@ -79,8 +84,6 @@ function ReviewAndSubmitRegistration({formData}){
                 console.log('Error', error.message);
             }
             return false;
-        }finally{
-            setIsLoading(false);
         }
     };
 
@@ -153,15 +156,16 @@ function ReviewAndSubmitRegistration({formData}){
                     )}
                 </Box>
             </List>
-            {isLoading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100px' }}>
-                    <CircularProgress />
-                </Box>
-            ) : (
-                <Button variant="contained" color="primary" onClick={handleSubmit}>
-                    Submit All Information
-                </Button>
-            )}
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
+                open={showBackdrop}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            {/* Button is always visible and interactive */}
+            <Button variant="contained" color="primary" onClick={handleSubmit}>
+                Submit All Information
+            </Button>
         </Container>
     );
 }
