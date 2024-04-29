@@ -14,7 +14,7 @@ import {
     CardContent,
     CircularProgress, Grid,
     IconButton,
-    InputAdornment, Link,
+    InputAdornment,
     TextField,
     Typography
 } from "@mui/material";
@@ -23,6 +23,7 @@ import {Visibility, VisibilityOff} from "@mui/icons-material";
 import backgroundImage from './images/pexels-julius-silver-753325.jpg';
 import Logo from './images/aerobank3.jpg'
 import axios from "axios";
+import {Link} from 'react-router-dom';
 
 export default function LoginFormOLD()
 {
@@ -430,10 +431,15 @@ export default function LoginFormOLD()
                                         },
                                     }}
                                 />
-                                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-                                    <Button variant="outlined" onClick={navigateToRegister}>
+                                <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                    <Button variant="outlined" onClick={navigateToRegister} sx={{mb: 1}}>
                                         Register
                                     </Button>
+                                    <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
+                                        <Link to="/forgot-password" style={{ textDecoration: 'none', color: 'secondary.main' }}>
+                                            Forgot Password?
+                                        </Link>
+                                    </Typography>
                                     <Button
                                         type="submit"
                                         variant="contained"
