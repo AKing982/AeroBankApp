@@ -435,7 +435,7 @@ export default function LoginFormOLD()
                                     <Button variant="outlined" onClick={navigateToRegister} sx={{mb: 1}}>
                                         Register
                                     </Button>
-                                    <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
+                                    <Typography variant="h6" sx={{ mb: 2, textAlign: 'center' }}>
                                         <Link to="/forgot-password" style={{ textDecoration: 'none', color: 'secondary.main' }}>
                                             Forgot Password?
                                         </Link>
