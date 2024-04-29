@@ -3,11 +3,13 @@ package com.example.aerobankapp.configuration;
 import com.example.aerobankapp.email.EmailConfig;
 import com.example.aerobankapp.email.EmailService;
 import com.example.aerobankapp.email.EmailServiceImpl;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Configuration
+@ConfigurationProperties(prefix="mail.smtp")
 public class EmailTestConfig
 {
     @Bean
