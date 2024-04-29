@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 
 import java.util.Arrays;
@@ -20,26 +22,30 @@ import java.util.concurrent.CompletableFuture;
 public class EmailServiceImpl implements EmailService
 {
     private final EmailConfig emailConfig;
+    private final SpringTemplateEngine springTemplateEngine;
     private Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     @Autowired
-    public EmailServiceImpl(EmailConfig config)
+    public EmailServiceImpl(EmailConfig config, SpringTemplateEngine springTemplateEngine)
     {
         Objects.requireNonNull(config, "Config cannot be null");
         this.emailConfig = config;
+        this.springTemplateEngine = springTemplateEngine;
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> sendEmail(String toEmail, String fromEmail, String body, String subject)
+    public CompletableFuture<Boolean> sendEmail(String toEmail, String fromEmail, String templateName, Context context, String subject)
     {
         try
         {
             Session session1 = createSession();
             LOGGER.info("Sending to: {}", toEmail);
             LOGGER.info("Sender Email: {}", fromEmail);
-            MimeMessage mimeMessage = createMessage(session1, toEmail.trim(), fromEmail.trim(), body, subject);
 
+            String body = springTemplateEngine.process(templateName, context);
+
+            MimeMessage mimeMessage = createMessage(session1, toEmail.trim(), fromEmail.trim(), body, subject);
             Transport.send(mimeMessage);
 
             LOGGER.info("Email sent successfully to {}", toEmail);
@@ -100,7 +106,7 @@ public class EmailServiceImpl implements EmailService
         message.setFrom(new InternetAddress(fromEmail));
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
         message.setSubject(subject);
-        message.setText(body);
+        message.setContent(body, "text/html");
         return message;
     }
 

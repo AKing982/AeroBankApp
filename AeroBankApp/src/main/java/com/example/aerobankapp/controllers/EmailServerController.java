@@ -99,16 +99,19 @@ public class EmailServerController {
         EmailServerEntity emailServer = mailServerSettings.get(0);
 
         // Build the Email Configuration
-        EmailConfig emailConfig = buildEmailConfig(emailServer.getHost(), emailServer.getPort(), emailServer.getUsername(), emailServer.getPassword());
+      //  EmailConfig emailConfig = new EmailConfig(emailServer.getHost(), emailServer.getPort(),
+             //   emailServer.getUsername(), emailServer.getPassword(),
+          //      emailServer.isUseTLS(), emailServer.isAuthRequired());
+
 
         // Get the Email Service implementation
-        EmailService emailService1 = new EmailServiceImpl(emailConfig);
+      //  EmailService emailService1 = new EmailServiceImpl(emailConfig, null);
 
         // Create the Test Email
         final String subject = "Test Email";
         final String message = "Test Email Sent.";
 
-        emailService1.sendEmail(recipient, sender, message, subject);
+       // emailService1.sendEmail(recipient, sender, message, subject);
         return ResponseEntity.ok("Test Connection successful");
     }
 

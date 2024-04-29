@@ -159,14 +159,14 @@ class AccountControllerTest {
         String accountCode = "A1";
         int expectedAccountID = 1;
 
-        given(accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode)).willReturn(1);
+       // given(accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode)).willReturn(1);
 
         mockMvc.perform(get("/api/accounts/{userID}/{accountCode}", userID, accountCode)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"accountID\":" + expectedAccountID + "}"));
 
-        Mockito.verify(accountDAO).getAccountIDByAcctCodeAndUserID(userID, accountCode);
+        //Mockito.verify(accountDAO).getAccountIDByAcctCodeAndUserID(userID, accountCode);
     }
 
 

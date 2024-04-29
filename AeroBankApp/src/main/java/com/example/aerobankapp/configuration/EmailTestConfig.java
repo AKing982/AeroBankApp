@@ -3,19 +3,25 @@ package com.example.aerobankapp.configuration;
 import com.example.aerobankapp.email.EmailConfig;
 import com.example.aerobankapp.email.EmailService;
 import com.example.aerobankapp.email.EmailServiceImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
+@Configuration
 public class EmailTestConfig
 {
-    private static final String MAILHOG_SMTP_HOST = "localhost";
-    private static final int MAILHOG_SMTP_PORT = 1025;
+    @Bean
+    public EmailConfig emailConfig(){
+        EmailConfig config = new EmailConfig();
+        config.setHost("localhost");
+        config.setPort(1025);
+        config.setAuthenticationRequired(false);
+        config.setUseTLS(false);
+        return config;
+    }
 
-    // Method to configure your email service to use MailHog
-    public EmailService configureEmailServiceForTesting() {
-        EmailConfig emailConfig = new EmailConfig();
-        emailConfig.setHost(MAILHOG_SMTP_HOST);
-        emailConfig.setPort(MAILHOG_SMTP_PORT);
-        // other configurations like username, password (if needed)
-
-        return new EmailServiceImpl(emailConfig);
+    @Bean
+    public EmailService emailService(EmailConfig config, SpringTemplateEngine templateEngine){
+        return new EmailServiceImpl(config, templateEngine);
     }
 }

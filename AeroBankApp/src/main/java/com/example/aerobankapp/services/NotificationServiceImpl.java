@@ -95,7 +95,7 @@ public class NotificationServiceImpl implements NotificationService {
         EmailConfig emailConfig = buildEmailConfig(emailServer);
 
         // Get the Email Service implementation
-        EmailService emailService = new EmailServiceImpl(emailConfig);
+     //   EmailService emailService = new EmailServiceImpl(emailConfig);
 
         // Extract the details from the email notification
         String message = emailNotification.message();
@@ -106,7 +106,7 @@ public class NotificationServiceImpl implements NotificationService {
         LocalDateTime sent = emailNotification.sent();
 
         // Send the email
-        emailService.sendEmail(recipient, sender, message, subject);
+      //  emailService.sendEmail(recipient, sender, message, subject);
     }
 
     private EmailConfig buildEmailConfig(EmailServerEntity emailServer)

@@ -33,6 +33,6 @@ public class EmailNotificationImpl extends Notifications
     @Override
     public void sendNotification()
     {
-        emailSender.sendEmail(email.getToEmail(), email.getSenderEmail(), email.getSubject(), email.getBody());
+      //  emailSender.sendEmail(email.getToEmail(), email.getSenderEmail(), email.getSubject(), email.getBody());
     }
 }
