@@ -184,6 +184,24 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
+    //TODO: UNIT TEST THIS METHOD
+    public boolean doesNewPasswordMatchCurrentPassword(String user, String newPassword){
+        if(user.isEmpty() || newPassword.isEmpty()){
+            aeroLogger.error("UserName or password is empty.");
+            return false;
+        }
+        String currentEncodedPassword = userRepository.findUsersCurrentPassword(user);
+        aeroLogger.info("Current Password: " + currentEncodedPassword);
+        if(currentEncodedPassword == null || currentEncodedPassword.isEmpty()){
+            aeroLogger.info("No Current password found.");
+            return false;
+        }
+        boolean isMatch = bCryptPasswordEncoder.matches(newPassword, currentEncodedPassword);
+        aeroLogger.info("Password's Match: " + isMatch);
+        return isMatch;
+    }
+
+    @Override
     public boolean doesAccountNumberExist(final String accountNumber) {
         if(!accountNumber.isEmpty()){
             return userRepository.doesAccountNumberExist(accountNumber);
@@ -237,8 +255,9 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public void updateUserPassword(String password) {
-
+    @Transactional
+    public void updateUserPassword(String password, String user) {
+        userRepository.updateUserPassword(password, user);
     }
 
     @Override

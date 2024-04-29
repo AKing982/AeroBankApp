@@ -70,4 +70,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>
     @Query("SELECT u FROM UserEntity u WHERE u.username=:user")
     Optional<UserEntity> fetchByUser(@Param("user") String user);
 
+    @Query("SELECT u.password FROM UserEntity u WHERE u.username=:user")
+    String findUsersCurrentPassword(@Param("user") String user);
+
 }

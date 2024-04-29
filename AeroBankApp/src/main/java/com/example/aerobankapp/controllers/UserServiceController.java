@@ -7,6 +7,7 @@ import com.example.aerobankapp.services.UserServiceImpl;
 import com.example.aerobankapp.workbench.UserBooleanResponse;
 import com.example.aerobankapp.workbench.UserNameResponse;
 import com.example.aerobankapp.workbench.utilities.*;
+import com.example.aerobankapp.workbench.utilities.response.PasswordVerificationResponse;
 import com.example.aerobankapp.workbench.utilities.response.UserServiceResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.testfx.framework.junit5.TestFx;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +115,36 @@ public class UserServiceController {
         return ResponseEntity.ok(userID);
     }
 
+    @PutMapping("/update-password")
+    @PreAuthorize("isAuthenticated()")
+    //TODO: UNIT TEST THIS METHOD
+    public ResponseEntity<?> updateUserPassword(@RequestBody ResetRequest request){
+        String username = request.getUser();
+        String password = request.getPassword();
+        LOGGER.info("Reset Request: " + request.toString());
+        String encryptedPassword = bCryptPasswordEncoder.encode(password);
+        try{
+            userService.updateUserPassword(encryptedPassword, username);
+            return ResponseEntity.ok("User: " + username + " password has been successfully updated.");
+        }catch(Exception e){
+            LOGGER.error("There was an error updating the password for user: " + username + "due to: " + e.getMessage());
+        }
+        return ResponseEntity.badRequest().body("Unable to update user's password.");
+    }
+
+    //TODO: UNIT TEST METHOD
+    @PostMapping("/verify-password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> verifyPasswordsMatch(@RequestBody PasswordVerificationRequest passwordVerificationRequest){
+        String newPassword = passwordVerificationRequest.newPassword();
+        String user = passwordVerificationRequest.user();
+        if(newPassword.isEmpty() || user.isEmpty()){
+            return ResponseEntity.badRequest().body("Request parameters are found empty.");
+        }
+        boolean passwordsMatch = userService.doesNewPasswordMatchCurrentPassword(user, newPassword);
+        return ResponseEntity.ok(new PasswordVerificationResponse(passwordsMatch));
+    }
+
     @GetMapping("/name/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponse> getUsersFullName(@PathVariable int id)
@@ -125,6 +157,8 @@ public class UserServiceController {
 
         return ResponseEntity.ok(new UserResponse(first_name, last_name));
     }
+
+
 
     private UserDTO convertToUserDTO(UserEntity userEntity)
     {

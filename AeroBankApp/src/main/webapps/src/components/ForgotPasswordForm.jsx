@@ -1,9 +1,15 @@
 import {Box, Container} from "@mui/system";
-import {Button, TextField, Typography} from "@mui/material";
+import {Alert, Button, IconButton, InputAdornment, Snackbar, TextField, Typography} from "@mui/material";
 import backgroundImage from './images/pexels-julius-silver-753325.jpg';
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import React, {useState} from "react";
 import axios from "axios";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
 
 export default function ForgotPasswordForm()
 {
@@ -19,6 +25,20 @@ export default function ForgotPasswordForm()
     const [isUsernameVerified, setIsUsernameVerified] = useState(false);
     const [generatedValidationCode, setGeneratedValidationCode] = useState('');
     const [isVerificationCodeValid, setIsVerificationCodeValid] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackBarSeverity, setSnackBarSeverity] = useState('error');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [dialogBtnTitle, setDialogBtnTitle] = useState('');
+    const [dialogMessage, setDialogMessage] = useState('');
+    const [dialogTitle, setDialogTitle] = useState('');
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
 
 
     // Search the database for the username and if it exists allow the user to continue to the next segment
@@ -59,12 +79,29 @@ export default function ForgotPasswordForm()
     };
 
     const sendPasswordResetToServer = async (newPassword) => {
-        try {
-            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/users/`)
-        }catch(error){
 
+        const request = buildPasswordResetRequest(newPassword, username);
+
+        try {
+            const response = await axios.put(`http://localhost:8080/AeroBankApp/api/users/update-password`, request);
+            if(response.status === 200 || response.status === 201){
+                return true;
+            }else{
+                console.log('Failed to sent password reset request to the server, status: ', response.status);
+                return false;
+            }
+        }catch(error){
+            console.error('There was an error sending the password reset: ', error);
+            return false;
         }
     }
+
+    const buildPasswordResetRequest = (password, user) => {
+        return {
+            user: user,
+            password: password
+        };
+    };
 
     const sendValidationCodeToEmail = async (code, email) => {
         try {
@@ -88,10 +125,11 @@ export default function ForgotPasswordForm()
 
     const checkValidationCode = (code, verificationCode) => {
         console.log("Entered Code: ", code);
+        console.log("Entered Code Type: ", typeof(code));
         console.log("Verification Code: ", verificationCode);
-        if(code === verificationCode){
-            return true;
-        }
+        let verificationCodeAsStr = String(verificationCode);
+        console.log("Verification Code Type: ", typeof(verificationCode));
+        return code === verificationCodeAsStr;
     };
 
     const verifyUsername = async () => {
@@ -114,6 +152,54 @@ export default function ForgotPasswordForm()
     const handleVerification = async () => {
         // Placeholder for verification logic
         setShowPasswordFields(true); // Assume verification was successful
+    };
+
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
+    const toggleNewPasswordVisibility = () => {
+        setShowNewPassword(!showNewPassword);
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
+    const handleDialogButtonClick = () => {
+        // Close the dialog
+        setOpenDialog(false);
+
+        // Navigate to the login page
+        navigate('/');
+    };
+
+    const validateNewPassword = async (password) => {
+
+        const request = buildPasswordVerificationRequest(password);
+        try {
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/users/verify-password`, request)
+            if(response.status === 200 || response.status === 201){
+                return response.data.matches;
+            }
+        }catch(error){
+            console.error('An error occurred while validating password match: ', error);
+        }
+    };
+
+    const buildPasswordVerificationRequest = (newPassword) => {
+        return {
+            user: username,
+            newPassword: newPassword
+        };
+    };
+
+    const handleCloseSnackBar = () => {
+        setOpenSnackbar(false);
     };
 
 
@@ -143,6 +229,7 @@ export default function ForgotPasswordForm()
             }
         } else if (showVerificationField && !isVerificationCodeValid) {
             const codeIsValid = checkValidationCode(verificationCode, generatedValidationCode);
+            console.log('Code is valid: ', codeIsValid);
             if (codeIsValid) {
                 setIsVerificationCodeValid(true);
                 setShowPasswordFields(true);
@@ -150,15 +237,44 @@ export default function ForgotPasswordForm()
                 console.error('Invalid verification code');
             }
         } else if (isVerificationCodeValid) {
-            if (newPassword === confirmPassword) {
-                console.log("Password reset request submitted with:", { username, newPassword });
-                navigate('/'); // Redirect to login after successful password reset
+            const currentMatchesExistingPassword = await validateNewPassword(newPassword)
+            if (newPassword === confirmPassword && !currentMatchesExistingPassword) {
+                const passwordResetSuccess = await sendPasswordResetToServer(newPassword);
+                if(passwordResetSuccess){
+                    setOpenDialog(true);
+                    setDialogTitle("Password Reset Successfully");
+                    setDialogMessage("Your password has been successfully reset. Please log in with your new password to continue.");
+                    setDialogBtnTitle("Go to Login");
+                    console.log("Password reset request submitted with:", { username, newPassword });
+                    handleDialogButtonClick();
+                  //  setTimeout(() => navigate('/'), 2000); // Redirect to login after successful password reset
+                }else{
+                    setOpenDialog(true);
+                    setDialogTitle("Reset Failed");
+                    setDialogMessage("Failed to reset your password. Please try again or contact support if the problem persists.");
+                    setDialogBtnTitle("Try Again");
+                    return;
+                }
+            } else if(newPassword !== confirmPassword){
+                setOpenDialog(true);
+                setDialogTitle("Password Mismatch");
+                setDialogMessage("The new password and confirm password do not match. Please try again.");
+                setDialogBtnTitle("Try Again");
+                return; // Stop further execution.
+
             } else {
+                setOpenDialog(true);
+                setDialogTitle("Use a different Password");
+                setDialogMessage("Your new password cannot be the same as your current password. Please choose a different password to ensure your account security.");
+                setDialogBtnTitle("Try again.");
+                return;
+             //   setOpenSnackbar(true);
+              //  setSnackbarMessage("Password already exists in the database.");
                 console.error("Passwords do not match");
             }
+
         }
     };
-
     return (
         <Container component="main" maxWidth="false" sx={{
             height: '100vh',
@@ -187,22 +303,23 @@ export default function ForgotPasswordForm()
                     Forgot Password
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="username"
-                        label="Username"
-                        name="username"
-                        autoComplete="username"
-                        multiline
-                        rows={1}
-                        autoFocus
-                        value={username}
-                        onChange={(e) => setUserName(e.target.value)}
-                        disabled={isUsernameVerified}
-                    />
-                    {showVerificationField && (
+                    {!showVerificationField && !isVerificationCodeValid && (
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="username"
+                            label="Username"
+                            name="username"
+                            multiline
+                            rows={1}
+                            autoComplete="username"
+                            autoFocus
+                            value={username}
+                            onChange={(e) => setUserName(e.target.value)}
+                        />
+                    )}
+                    {showVerificationField && !isVerificationCodeValid && (
                         <TextField
                             margin="normal"
                             required
@@ -210,12 +327,11 @@ export default function ForgotPasswordForm()
                             id="verificationCode"
                             label="Verification Code"
                             name="verificationCode"
-                            autoComplete="off"
                             multiline
                             rows={1}
+                            autoComplete="off"
                             value={verificationCode}
                             onChange={(e) => setVerificationCode(e.target.value)}
-                            disabled={isVerificationCodeValid}
                         />
                     )}
                     {isVerificationCodeValid && (
@@ -226,11 +342,33 @@ export default function ForgotPasswordForm()
                                 fullWidth
                                 id="newPassword"
                                 label="New Password"
-                                type="password"
-                                multiline
-                                rows={1}
+                                type={showNewPassword ? 'text' : 'password'}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
+                                sx={{ fieldset: { height: 55 } }}
+                                InputProps={{
+                                    style: {
+                                        alignItems: 'center'
+                                    },
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={toggleNewPasswordVisibility}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                inputProps={{
+                                    style: {
+                                        height: '40px',
+                                        padding: '10px',
+                                    },
+                                }}
                             />
                             <TextField
                                 margin="normal"
@@ -238,11 +376,33 @@ export default function ForgotPasswordForm()
                                 fullWidth
                                 id="confirmPassword"
                                 label="Confirm Password"
-                                multiline
-                                rows={1}
-                                type="password"
+                                type={showConfirmPassword ? 'text' : 'password'}
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
+                                sx={{ fieldset: { height: 55 } }}
+                                InputProps={{
+                                    style: {
+                                        alignItems: 'center'
+                                    },
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={toggleConfirmPasswordVisibility}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                inputProps={{
+                                    style: {
+                                        height: '40px',
+                                        padding: '10px',
+                                    },
+                                }}
                             />
                         </>
                     )}
@@ -267,6 +427,34 @@ export default function ForgotPasswordForm()
                     </Box>
                 </Box>
             </Box>
+            {/*<Snackbar*/}
+            {/*    open={openSnackbar}*/}
+            {/*    autoHideDuration={6000}*/}
+            {/*    onClose={handleCloseSnackBar}*/}
+            {/*    message="Alert"*/}
+            {/*    >*/}
+            {/*    <Alert onClose={handleCloseSnackBar} severity={snackBarSeverity} variant="filled" sx={{width: '100%'}}>*/}
+            {/*        {snackbarMessage}*/}
+            {/*    </Alert>*/}
+            {/*</Snackbar>*/}
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{dialogTitle}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {dialogMessage}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">
+                        {dialogBtnTitle}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }

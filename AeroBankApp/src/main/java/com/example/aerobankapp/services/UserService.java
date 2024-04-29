@@ -59,11 +59,13 @@ public interface UserService extends ServiceDAOModel<UserEntity>
 
     boolean userNameExists(String user);
 
+    boolean doesNewPasswordMatchCurrentPassword(String user, String newPassword);
+
     boolean doesAccountNumberExist(String accountNumber);
 
     void registerUser(User user);
 
-    void updateUserPassword(String password);
+    void updateUserPassword(String password, String user);
 
     AccountNumber generateAccountNumber(String user);
 
