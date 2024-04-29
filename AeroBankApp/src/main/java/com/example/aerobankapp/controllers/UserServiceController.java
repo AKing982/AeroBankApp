@@ -4,6 +4,7 @@ import com.example.aerobankapp.dto.UserDTO;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.UserServiceImpl;
+import com.example.aerobankapp.workbench.UserBooleanResponse;
 import com.example.aerobankapp.workbench.UserNameResponse;
 import com.example.aerobankapp.workbench.utilities.*;
 import com.example.aerobankapp.workbench.utilities.response.UserServiceResponse;
@@ -52,6 +53,20 @@ public class UserServiceController {
         List<UserDTO> userDTOList = getUserDTOList(userEntities);
 
         return ResponseEntity.ok(userDTOList);
+    }
+
+    @GetMapping("/find/{username}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> verifyUserExists(@PathVariable String username){
+        boolean exists = userService.userNameExists(username);
+        return ResponseEntity.ok(new UserBooleanResponse(exists));
+    }
+
+    @GetMapping("/email/{username}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserEmailResponse> fetchUserEmail(@PathVariable String username){
+        String email = userService.getEmailByUserName(username);
+        return ResponseEntity.ok(new UserEmailResponse(email));
     }
 
     @GetMapping("/user-names-list")
