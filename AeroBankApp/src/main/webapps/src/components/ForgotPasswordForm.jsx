@@ -38,7 +38,7 @@ export default function ForgotPasswordForm()
         try {
             const response = await axios.get(`http://localhost:8080/AeroBankApp/api/validationCode/generate`)
             if(response.status === 200 || response.status === 201){
-                setGeneratedValidationCode(response.data);
+                return response.data;
             }
 
         }catch(error){
@@ -58,9 +58,17 @@ export default function ForgotPasswordForm()
         }
     };
 
+    const sendPasswordResetToServer = async (newPassword) => {
+        try {
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/users/`)
+        }catch(error){
+
+        }
+    }
+
     const sendValidationCodeToEmail = async (code, email) => {
         try {
-            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/email/send-verification-email`, {
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/validationCode/send-verification-email`, {
                 email: email, // Email address to which the verification code is sent
                 code: code   // Verification code to include in the email
             });
@@ -78,8 +86,10 @@ export default function ForgotPasswordForm()
         }
     };
 
-    const checkValidationCode = async (code) => {
-        if(code.equals(verificationCode)){
+    const checkValidationCode = (code, verificationCode) => {
+        console.log("Entered Code: ", code);
+        console.log("Verification Code: ", verificationCode);
+        if(code === verificationCode){
             return true;
         }
     };
@@ -132,7 +142,7 @@ export default function ForgotPasswordForm()
                 console.error('Username does not exist');
             }
         } else if (showVerificationField && !isVerificationCodeValid) {
-            const codeIsValid = await checkValidationCode(verificationCode, generatedValidationCode);
+            const codeIsValid = checkValidationCode(verificationCode, generatedValidationCode);
             if (codeIsValid) {
                 setIsVerificationCodeValid(true);
                 setShowPasswordFields(true);
@@ -142,7 +152,7 @@ export default function ForgotPasswordForm()
         } else if (isVerificationCodeValid) {
             if (newPassword === confirmPassword) {
                 console.log("Password reset request submitted with:", { username, newPassword });
-                navigate('/login'); // Redirect to login after successful password reset
+                navigate('/'); // Redirect to login after successful password reset
             } else {
                 console.error("Passwords do not match");
             }

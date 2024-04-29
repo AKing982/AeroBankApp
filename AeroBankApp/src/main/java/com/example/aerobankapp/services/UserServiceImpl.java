@@ -237,6 +237,11 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
+    public void updateUserPassword(String password) {
+
+    }
+
+    @Override
     public AccountNumber generateAccountNumber(String user) {
         return accountNumberGenerator.generateAccountNumber(user);
     }

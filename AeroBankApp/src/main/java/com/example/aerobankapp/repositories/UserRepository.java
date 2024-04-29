@@ -39,6 +39,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>
     @PreAuthorize("hasRole('ADMIN')")
     void updateUser(@Param("id") int id, @Param("username") String username, @Param("email") String email, @Param("role") Role role, @Param("password") String password, @Param("pinNumber") String pinNumber, @Param("firstName") String firstName, @Param("lastName") String lastName);
 
+    @Modifying
+    @Query("UPDATE UserEntity u SET u.password=:pass WHERE u.username=:user")
+    void updateUserPassword(@Param("pass") String password, @Param("user") String username);
+
     @Query("SELECT e.role FROM UserEntity e WHERE e.username=:user")
     Role getUserRole(@Param("user") String username);
 
