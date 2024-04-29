@@ -161,17 +161,6 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
                         ))}
                     </Select>
                 </FormControl>
-                <FormControlLabel
-                    control={
-                        <Switch
-                            checked={formData.isAdmin}
-                            onChange={handleSwitchChange}
-                            name="isAdmin"
-                            color="primary"
-                        />
-                    }
-                    label="Administrator"
-                />
                 <Button
                     type="submit"
                     variant="contained"
