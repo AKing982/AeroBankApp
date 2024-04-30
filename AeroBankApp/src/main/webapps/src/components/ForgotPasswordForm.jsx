@@ -35,6 +35,7 @@ export default function ForgotPasswordForm()
     const [dialogBtnTitle, setDialogBtnTitle] = useState('');
     const [dialogMessage, setDialogMessage] = useState('');
     const [dialogTitle, setDialogTitle] = useState('');
+    const [dialogAction, setDialogAction] = useState(() => () => setOpenDialog(false));
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
@@ -171,11 +172,11 @@ export default function ForgotPasswordForm()
     };
 
     const handleDialogButtonClick = () => {
-        // Close the dialog
-        setOpenDialog(false);
-
         // Navigate to the login page
         navigate('/');
+
+        // Close the dialog
+        setOpenDialog(false);
     };
 
     const validateNewPassword = async (password) => {
@@ -200,6 +201,30 @@ export default function ForgotPasswordForm()
 
     const handleCloseSnackBar = () => {
         setOpenSnackbar(false);
+    };
+
+    const handleGoToLogin = () => {
+        navigate('/');  // Navigate to login page
+    };
+
+    const validatePasswordMeetsRequirements = (password) => {
+        const hasMinLength = newPassword.length >= 8;
+        const hasUpper = /[A-Z]/;
+        const hasLower = /[a-z]/;
+        const hasNumber = /\d/;
+        const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/;
+
+        if(password.length < hasMinLength){
+            setDialogTitle("Weak Password");
+            setDialogMessage(`Password must be at least ${hasMinLength} characters long.`);
+            return false;
+        }
+        if(!hasNumber.test(password) || !hasUpper.test(password) || !hasLower.test(password) || !hasSpecial.test(password)){
+            setDialogTitle("Weak Password");
+            setDialogMessage("Password must include uppercase letters, lowercase letters, numbers, and special characters.");
+            return false;
+        }
+       return true;
     };
 
 
@@ -234,27 +259,47 @@ export default function ForgotPasswordForm()
                 setIsVerificationCodeValid(true);
                 setShowPasswordFields(true);
             } else {
+                setOpenDialog(true);
+                setDialogTitle("Verification Failed");
+                setDialogMessage("We couldn’t verify your code. Please check your email and make sure it’s correct.");
+                setDialogBtnTitle("Try Again");
                 console.error('Invalid verification code');
             }
         } else if (isVerificationCodeValid) {
-            const currentMatchesExistingPassword = await validateNewPassword(newPassword)
-            if (newPassword === confirmPassword && !currentMatchesExistingPassword) {
-                const passwordResetSuccess = await sendPasswordResetToServer(newPassword);
-                if(passwordResetSuccess){
+
+            if (newPassword === confirmPassword) {
+                if(!validatePasswordMeetsRequirements(newPassword)){
                     setOpenDialog(true);
-                    setDialogTitle("Password Reset Successfully");
-                    setDialogMessage("Your password has been successfully reset. Please log in with your new password to continue.");
-                    setDialogBtnTitle("Go to Login");
-                    console.log("Password reset request submitted with:", { username, newPassword });
-                    handleDialogButtonClick();
-                  //  setTimeout(() => navigate('/'), 2000); // Redirect to login after successful password reset
-                }else{
-                    setOpenDialog(true);
-                    setDialogTitle("Reset Failed");
-                    setDialogMessage("Failed to reset your password. Please try again or contact support if the problem persists.");
                     setDialogBtnTitle("Try Again");
+                    setOpenDialog(true);  // Show the dialog with the error
                     return;
                 }
+                const currentMatchesExistingPassword = await validateNewPassword(newPassword);
+                if(!currentMatchesExistingPassword){
+                    const passwordResetSuccess = await sendPasswordResetToServer(newPassword);
+                    if(passwordResetSuccess){
+                        console.log('Password reset was a success');
+                        setOpenDialog(true);
+                        setDialogTitle("Password Reset Successfully");
+                        setDialogMessage("Your password has been successfully reset. Please log in with your new password to continue.");
+                        setDialogBtnTitle("Go to Login");
+                        setTimeout(() => navigate('/'), 6000);
+                    }else{
+                        setOpenDialog(true);
+                        setDialogTitle("Reset Failed");
+                        setDialogMessage("Failed to reset your password. Please try again or contact support if the problem persists.");
+                        setDialogBtnTitle("Try Again");
+                        setDialogAction(() => handleCloseDialog());
+                        return;
+                    }
+                }else{
+                    setOpenDialog(true);
+                    setDialogTitle("Use a different Password");
+                    setDialogMessage("Your new password cannot be the same as your current password. Please choose a different password to ensure your account security.");
+                    setDialogBtnTitle("Try again.");
+                    return;
+                }
+
             } else if(newPassword !== confirmPassword){
                 setOpenDialog(true);
                 setDialogTitle("Password Mismatch");
@@ -262,15 +307,6 @@ export default function ForgotPasswordForm()
                 setDialogBtnTitle("Try Again");
                 return; // Stop further execution.
 
-            } else {
-                setOpenDialog(true);
-                setDialogTitle("Use a different Password");
-                setDialogMessage("Your new password cannot be the same as your current password. Please choose a different password to ensure your account security.");
-                setDialogBtnTitle("Try again.");
-                return;
-             //   setOpenSnackbar(true);
-              //  setSnackbarMessage("Password already exists in the database.");
-                console.error("Passwords do not match");
             }
 
         }
@@ -450,7 +486,7 @@ export default function ForgotPasswordForm()
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog} color="primary">
+                    <Button onClick={dialogAction} color="primary">
                         {dialogBtnTitle}
                     </Button>
                 </DialogActions>
