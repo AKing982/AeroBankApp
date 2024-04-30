@@ -208,7 +208,7 @@ export default function ForgotPasswordForm()
     };
 
     const validatePasswordMeetsRequirements = (password) => {
-        const hasMinLength = newPassword.length >= 8;
+        const hasMinLength = password.length >= 8;
         const hasUpper = /[A-Z]/;
         const hasLower = /[a-z]/;
         const hasNumber = /\d/;

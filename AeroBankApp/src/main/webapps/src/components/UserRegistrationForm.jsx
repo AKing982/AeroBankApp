@@ -74,7 +74,6 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
         }
     }
 
-
     return(
         <Container maxWidth="sm">
             <Typography variant="h6" align="center" gutterBottom>
