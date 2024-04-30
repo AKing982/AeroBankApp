@@ -31,62 +31,64 @@ function renderRow({index, style, users, onUserClick})
 export default function UserList({onUserSelect})
 {
     const [users, setUsers] = useState([]);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const renderSkeletons = () => {
-        return Array.from(new Array(10)).map((_, index) => (
+    const renderSkeletons = () => (
+        Array.from(new Array(10)).map((_, index) => (
             <ListItem key={index} style={{ padding: '10px' }}>
                 <Skeleton variant="text" width={360} height={30} />
             </ListItem>
-        ));
+        ))
+    );
+
+    const saveSelectedUser = (username) => {
+        sessionStorage.setItem('selectedListUser', username);
     };
 
-    const saveSelectedUser = (user) => {
-        sessionStorage.setItem('Selected List User: ', user);
-    }
-
-    const handleUserClick = (user) => {
-        console.log('Selected User: ', user);
-        setSelectedUser(user);
-        if(onUserSelect)
-        {
-            onUserSelect(user);
-        }
-        saveSelectedUser(user);
-    }
+    const handleUserClick = (username) => {
+        console.log('Selected User:', username);
+        onUserSelect && onUserSelect(username);
+        saveSelectedUser(username);
+    };
 
     useEffect(() => {
-        setIsLoading(true);
-        const timeoutId = setTimeout(() => {
-            axios.get('http://localhost:8080/AeroBankApp/api/users/user-names-list')
-                .then(response => {
-                    console.log("Users: ", response.data.users);
-                    setUsers(response.data);
-                })
-                .catch(error => {
-                    console.error('There has been a problem with your fetch operation: ', error);
-                })
-                .finally(() => {
-                    setIsLoading(false);
-                })
-        }, 4000);
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/AeroBankApp/api/users/user-names-list');
+                console.log("Users:", response.data);
+                setUsers(response.data || []);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-        return () => clearTimeout(timeoutId);
-
+        fetchUsers();
     }, []);
+
+    const renderRow = ({ index, style }) => (
+        <ListItem
+            button
+            style={style}
+            key={index}
+            onClick={() => handleUserClick(users[index].username)}
+        >
+            {users[index].username}
+        </ListItem>
+    );
 
     if (isLoading) {
         return (
             <div style={{
-                border: '1px solid #ccc', // Changed for a lighter border color
+                border: '1px solid #ccc',
                 width: 'fit-content',
-                borderRadius: '8px', // Rounded corners
-                overflow: 'hidden', // Ensures the border encompasses the list
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', // Adds a subtle shadow
-                backgroundColor: '#f9f9f9', // Light background color for the container
-                margin: '20px', // Adds margin around the component
-                 }}>
+                borderRadius: '8px',
+                overflow: 'hidden',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                backgroundColor: '#f9f9f9',
+                margin: '20px',
+            }}>
                 <List>
                     {renderSkeletons()}
                 </List>
@@ -96,13 +98,13 @@ export default function UserList({onUserSelect})
 
     return (
         <div style={{
-            border: '1px solid #ccc', // Changed for a lighter border color
+            border: '1px solid #ccc',
             width: 'fit-content',
-            borderRadius: '8px', // Rounded corners
-            overflow: 'hidden', // Ensures the border encompasses the list
-            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', // Adds a subtle shadow
-            backgroundColor: '#00000', // Light background color for the container
-            margin: '20px', // Adds margin around the component
+            borderRadius: '8px',
+            overflow: 'hidden',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+            backgroundColor: '#f2f2f2',
+            margin: '20px',
         }}>
             <FixedSizeList
                 height={400}
@@ -110,11 +112,8 @@ export default function UserList({onUserSelect})
                 itemSize={46}
                 itemCount={users.length}
                 overscanCount={5}
-                style={{
-                    backgroundColor: '#f2f2f2', // Background color for the list
-                }}
             >
-                {props => renderRow({ ...props, users, onUserClick: handleUserClick })}
+                {renderRow}
             </FixedSizeList>
         </div>
     );

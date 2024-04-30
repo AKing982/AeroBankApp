@@ -12,298 +12,179 @@ import axios from "axios";
 import SaveUserDialog from "./SaveUserDialog";
 import NumberField from "./NumberField";
 import AccountTypeSelect from "./AccountTypeSelect";
- import {Alert, Snackbar} from "@mui/material";
+ import {Alert, Button, FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, TextField} from "@mui/material";
+ import DialogTitle from "@mui/material/DialogTitle";
+ import DialogContent from "@mui/material/DialogContent";
+ import Dialog from "@mui/material/Dialog";
+ import DialogActions from "@mui/material/DialogActions";
+ import {Box} from "@mui/system";
 
 export default function UserSetupSettings()
 {
-    const [firstName, setFirstName] = useState(null);
-    const [lastName, setLastName] = useState(null);
-    const [username, setUserName] = useState(null);
-    const [email, setEmail] = useState(null);
-    const [pinNumber, setPinNumber] = useState(null);
-    const [accountNumber, setAccountNumber] = useState('');
-    const [isAdmin, setIsAdmin] = useState(null);
-    const [password, setPassword] = useState(null);
-    const [confirmPassword, setConfirmPassword] = useState(null);
-    const [branch, setBranch] = useState(null);
-    const [role, setRole] = useState(null);
-    const [validPasswords, setValidPasswords] = useState(false);
-    const [userData, setUserData] = useState([]);
-    const [saveClicked, setSaveClicked] = useState(null);
+    const [userDetails, setUserDetails] = useState({
+        firstName: '',
+        lastName: '',
+        username: '',
+        email: '',
+        pinNumber: '',
+        password: '',
+        confirmPassword: '',
+        role: 'User'
+    });
+
+    const [userValidation, setUserValidation] = useState({
+        validPasswords: false,
+        snackbarOpen: false,
+        snackbarSeverity: 'error',
+        snackbarMessage: ''
+    });
+
     const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-    const [accountName, setAccountName] = useState(null);
-    const [balance, setBalance] = useState(null);
-    const [accountType, setAccountType] = useState(null);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [snackbarOpen, setSnackBarOpen] = useState(false);
-    const [snackBarSeverity, setSnackBarSeverity] = useState('error');
-    const [snackBarMessage, setSnackBarMessage] = useState('');
 
-
-    const user = sessionStorage.getItem('username');
-
-    const handleFirstNameChange = (event) => {
-        setFirstName(event.target.value);
-    }
-
-    const handleLastNameChange = (event) => {
-        setLastName(event.target.value);
-    }
-
-    const handleUserNameChange = (event) => {
-        setUserName(event.target.value);
-    }
-
-    const handleUserSelection = (user) => {
-        setSelectedUser(user);
-        console.log('User Selected in UserList: ', user);
-
-        fetchUserDetails(user);
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setUserDetails(prevDetails => ({
+            ...prevDetails,
+            [name]: value
+        }));
     };
 
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
-    }
+    const handleSaveUser = () => {
+        // Add logic to handle user save
+    };
 
-    const handlePINChange = (event) => {
-        setPinNumber(event.target.value);
-    }
-
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
-    }
-
-    const handleAccountTypeChange = (event) => {
-        setAccountType(event.target.value);
-    }
-
-    const handleRoleChange = (event) => {
-        console.log("role: ", event.target.value);
-        setRole(event.target.value);
-    }
-
-    const handleConfirmPasswordChange = (event) => {
-        setConfirmPassword(event.target.value);
-    }
-
-    const handleValidatePasswordFields = () => {
-        if(password !== confirmPassword)
-        {
-            setValidPasswords(true);
-        }
-    }
-
-    const handleCloseSnackBar = (event, reason) => {
-        if(reason === 'clickaway')
-        {
-            return;
-        }
-        setSnackBarOpen(false);
-    }
-
-    function fetchUserAccountNumber(user)
-    {
-        return axios.get(`http://localhost:8080/AeroBankApp/api/users/account/${user}`)
-            .then(response => {
-                console.log('Fetching User Account Number : ', response.data.accountNumber);
-                return response.data.accountNumber;
-            })
-            .catch(error => {
-                console.error('Error fetching Account Number: ', error);
-                return null;
+    const fetchUserData = async (username) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/users/${username}`);
+            const userData = response.data[0];
+            console.log('User Data: ', userData);
+            console.log("First Name: ", userData.firstName);
+            console.log("Last Name: ", userData.lastName);
+            console.log("UserName: ", userData.username);
+            setUserDetails({
+                firstName: userData.firstName || '',
+                lastName: userData.lastName || '',
+                username: userData.userName || '',
+                email: userData.email || '',
+                role: userData.role || 'User'
             });
-
-    }
-
-    function fetchUserDetails(user)
-    {
-        return axios.get(`http://localhost:8080/AeroBankApp/api/users/${user}`)
-            .then(response => {
-                console.log('Response Object: ', response.data);
-                const firstItem = response.data[0];
-                setEmail(firstItem.email);
-                setRole(firstItem.role);
-                setUserName(firstItem.userName);
-                setPinNumber(firstItem.pinNumber);
-                setFirstName(firstItem.firstName);
-                setLastName(firstItem.lastName);
-            })
-            .catch(error => {
-                console.error('Error fetching User Details: ', error);
-            });
-
-    }
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+        }
+    };
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/AeroBankApp/api/users/${user}`)
-            .then(response => {
-                console.log(response.data);
-                setUserData(response.data);
-            })
-            .catch(error => {
-                console.log('There was an error: ', error);
-            })
-    }, []);
-
-    function sendSavedUser(userDataRequest)
-    {
-        return axios.post(`http://localhost:8080/AeroBankApp/api/users/save`, userDataRequest)
-            .then(response => {
-                console.log('Saving user to database successfully.');
-                setSnackBarOpen(true);
-                setSnackBarSeverity('success');
-                setSnackBarMessage('Data was saved successfully.');
-            })
-            .catch(error => {
-                console.error('Error sending POST request...');
-                setSnackBarOpen(true);
-                setSnackBarSeverity('error');
-                setSnackBarMessage('There was an issue saving the user to the database...');
-            });
-    }
-
-    function validateInput(firstName, lastName, userName, email, pin, password, confirmPassword, role)
-    {
-
-    }
-
-    const handleSaveButtonClick = async () => {
-
-        console.log('Password Matches Confirm Password: ', password === confirmPassword);
-        if(password !== confirmPassword)
-        {
-            setSnackBarOpen(true);
-            setSnackBarSeverity('error');
-            setSnackBarMessage("Password's don't match.");
-        }
-        else
-        {
-            let accountNumber = await fetchUserAccountNumber(user);
-
-            let userID = sessionStorage.getItem('userID');
-
-            const userData = {
-                userID: userID,
-                firstName: firstName,
-                lastName: lastName,
-                user: username,
-                email: email,
-                pin: pinNumber,
-                pass: password,
-                role: role,
-                accountNumber: accountNumber
-            };
-
-            console.log('User Data: ', userData);
-
-            sendSavedUser(userData);
-        }
-
-        // Fetch the accountNumber
-
-    }
-
-
-    const parseRoleForPost = (role) => {
-        let modifiedRole = null;
-        if(role === 10)
-        {
-            setRole('USER');
-        }
-        else if(role === 20)
-        {
-            setRole('ADMIN');
-        }
-        else if(role === 30)
-        {
-            modifiedRole = 'MANAGER';
-        }
-        return modifiedRole;
-    }
-
-    const handleDialogOpen = () => {
-        setSaveDialogOpen(true);
-    }
-
-    const handleAccept = () => {
-        setSaveClicked(true);
-        setSaveDialogOpen(false);
-    }
-
-    const handleDialogClose = () => {
-        setSaveDialogOpen(false);
-    }
-
-    const saveNewUser = (event) => {
-        setRole(event.data.role);
-        setEmail(event.data.email)
-    }
-
+        console.log("Updated User Details: ", userDetails);
+    }, [userDetails]);
 
     return (
-        <div className="user-setup-container">
-            <header className="user-setup-header">
-            </header>
-            <div className="user-setup-left">
-                <div className="user-setup-form-group">
-                    <div className="user-setup-firstName">
-                        <label htmlFor="setup-firstName" className="setup-firstName-label">First Name: </label>
-                        <UserTextField label="First Name" value={firstName} onChange={handleFirstNameChange} />
-                    </div>
-                    <div className="user-setup-lastName">
-                        <label htmlFor="setup-lastName" className="setup-lastName-label">Last Name: </label>
-                        <UserTextField label="Last Name" value={lastName} onChange={handleLastNameChange}/>
-                    </div>
-                    <div className="user-setup-username">
-                        <label htmlFor="setup-username" className="user-setup-username-label">User Name: </label>
-                        <UserTextField label="User Name" value={username} onChange={handleUserNameChange}/>
-                    </div>
-                    <div className="user-setup-email">
-                        <label htmlFor="setup-email" className="user-setup-email-label">Email: </label>
-                        <UserTextField label="Email" value={email} onChange={handleEmailChange}/>
-                    </div>
-                    <div className="user-setup-pinNumber">
-                        <label htmlFor="user-setup-PIN" className="setup-PIN-label">PIN: </label>
-                        <PinNumberField value={pinNumber} onChange={handlePINChange} label="PIN" />
-                    </div>
-                    <div className="user-setup-password">
-                        <label htmlFor="setup-password" className="setup-password-label">Password: </label>
-                        <PasswordField label="Password" value={password} onChange={handlePasswordChange} isValidPassword={handleValidatePasswordFields} />
-                    </div>
-                    <div className="user-setup-confirm-password">
-                        <label htmlFor="confirm-pass" className="confirm-password-label" >Confirm Password: </label>
-                        <PasswordField label="Confirm Password" value={confirmPassword} onChange={handleConfirmPasswordChange}/>
-                    </div>
-                    <div className="user-setup-role-combobox">
-                        <label htmlFor="role-combo" className="user-setup-role-label">Select Role: </label>
-                        <RoleSelectBox value={role} onChange={handleRoleChange}/>
-                    </div>
-                    <div className="user-setup-save-button">
-                        <BasicButton submit={handleSaveButtonClick} text="Save"/>
-                    </div>
-                    <SaveUserDialog open={saveDialogOpen} handleClose={handleDialogClose} handleAccept={handleAccept} />
-                </div>
-                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackBar}>
-                    <Alert onClose={handleCloseSnackBar} variant="filled" severity={snackBarSeverity}>
-                        {snackBarMessage}
-                    </Alert>
-                </Snackbar>
-                <div className="user-setup-right">
-                    <div className="user-setup-list">
-                        <label htmlFor="Current Users" className="current-users-label">Current Users</label>
-                        <UserList onUserSelect={handleUserSelection}/>
-                        <div className="user-setup-buttons">
-                            <BasicButton submit={handleSaveButtonClick} text="Add User"/>
-                            <BasicButton submit={handleSaveButtonClick} text="Delete User"/>
-                            <BasicButton submit={handleSaveButtonClick} text="Create Account Number"/>
-                        </div>
-
-                    </div>
-                </div>
-                <div className="user-setup-footer">
-                </div>
-                </div>
-
-        </div>
+        <Grid container spacing={2}>
+            <Grid item xs={12} md={8}>
+                <TextField
+                    label="First Name"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={userDetails.firstName}
+                    onChange={handleChange}
+                    name="firstName"
+                />
+                <TextField
+                    label="Last Name"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={userDetails.lastName}
+                    onChange={handleChange}
+                    name="lastName"
+                />
+                <TextField
+                    label="Username"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={userDetails.username}
+                    onChange={handleChange}
+                    name="username"
+                />
+                <TextField
+                    label="Email"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={userDetails.email}
+                    onChange={handleChange}
+                    name="email"
+                />
+                <TextField
+                    label="PIN Number"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={userDetails.pinNumber}
+                    onChange={handleChange}
+                    type="password"
+                    name="pinNumber"
+                />
+                <TextField
+                    label="Password"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={userDetails.password}
+                    onChange={handleChange}
+                    type="password"
+                    name="password"
+                />
+                <TextField
+                    label="Confirm Password"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={userDetails.confirmPassword}
+                    onChange={handleChange}
+                    type="password"
+                    name="confirmPassword"
+                />
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Role</InputLabel>
+                    <Select
+                        label="Role"
+                        value={userDetails.role}
+                        onChange={handleChange}
+                        name="role"
+                    >
+                        <MenuItem value="ADMIN">Admin</MenuItem>
+                        <MenuItem value="USER">User</MenuItem>
+                        <MenuItem value="AUDITOR">Auditor</MenuItem>
+                    </Select>
+                </FormControl>
+                <Button variant="contained" color="primary" onClick={handleSaveUser}>Save</Button>
+            </Grid>
+            <Grid item xs={12} md={4}>
+                <UserList onUserSelect={(user) => fetchUserData(user)} />
+                <Box display="flex" justifyContent="center" mt={2} gap={2} sx={{ transform: 'translateX(-40px)' }}>
+                    <Button variant="contained" onClick={() => {/* logic to add user */}}>Add User</Button>
+                    <Button variant="contained" sx={{ backgroundColor: 'red', '&:hover': { backgroundColor: 'darkred' } }} onClick={() => {/* logic to remove user */}}>Remove User</Button>
+                </Box>
+            </Grid>
+            <Snackbar open={userValidation.snackbarOpen} autoHideDuration={6000} onClose={() => setUserValidation({ ...userValidation, snackbarOpen: false })}>
+                <Alert severity={userValidation.snackbarSeverity}>
+                    {userValidation.snackbarMessage}
+                </Alert>
+            </Snackbar>
+            <Dialog open={saveDialogOpen} onClose={() => setSaveDialogOpen(false)}>
+                <DialogTitle>{"Confirm Save"}</DialogTitle>
+                <DialogContent>
+                    <p>Are you sure you want to save these details?</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setSaveDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleSaveUser} autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </Grid>
     );
 }
