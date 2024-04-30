@@ -10,9 +10,15 @@ import {
     Typography
 } from "@mui/material";
 import {Container} from "@mui/system";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import PasswordField from "./PasswordField";
 import Password from "./Password";
+import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import Dialog from "@mui/material/Dialog";
 
 function UserRegistrationForm({activeStep, handleStepChange, formData, handleFormDataChange, handleSwitchChange}){
 
@@ -21,6 +27,15 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
     const [snackBarMessage, setSnackBarMessage] = useState('');
     const [snackBarSeverity, setSnackBarSeverity] = useState('error');
     const [isNextButtonEnabled, setIsNextButtonEnabled] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [dialogBtnTitle, setDialogBtnTitle] = useState('');
+    const [dialogMessage, setDialogMessage] = useState('');
+    const [dialogTitle, setDialogTitle] = useState('');
+    const [dialogAction, setDialogAction] = useState(() => () => setOpenDialog(false));
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
 
     useEffect(() => {
         const { firstName, lastName, username, email, password, confirmPassword } = formData;
@@ -62,17 +77,46 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
 
     const validatePasswordFields = (password, confirmPassword) => {
         if(password === confirmPassword){
-            setIsPasswordsValid(true);
-            setOpenSnackBar(true);
-            setSnackBarMessage("Password's match");
-            setSnackBarSeverity('success');
+            if(!validatePasswordMeetsRequirements(password))
+            {
+                setOpenDialog(true);
+                setDialogBtnTitle("Try Again");
+                return;
+            }else{
+                setIsPasswordsValid(true);
+            }
         }else{
             setIsPasswordsValid(false);
-            setOpenSnackBar(true);
-            setSnackBarMessage("Password's don't match.");
-            setSnackBarSeverity('error');
+            setOpenDialog(true);
+            setDialogTitle("Password Mismatch");
+            setDialogMessage("The password and confirm password do not match. Please try again.");
+            setDialogBtnTitle("Try Again");
+           // setOpenSnackBar(true);
+           // setSnackBarMessage("Password's don't match.");
+           // setSnackBarSeverity('error');
         }
-    }
+    };
+
+    const validatePasswordMeetsRequirements = (password) => {
+        const hasMinLength = password.length >= 8;
+        const hasUpper = /[A-Z]/;
+        const hasLower = /[a-z]/;
+        const hasNumber = /\d/;
+        const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/;
+
+        if(password.length < hasMinLength){
+            setDialogTitle("Weak Password");
+            setDialogMessage(`Password must be at least ${hasMinLength} characters long.`);
+            return false;
+        }
+        if(!hasNumber.test(password) || !hasUpper.test(password) || !hasLower.test(password) || !hasSpecial.test(password)){
+            setDialogTitle("Weak Password");
+            setDialogMessage("Password must include uppercase letters, lowercase letters, numbers, and special characters.");
+            return false;
+        }
+        return true;
+    };
+
 
     return(
         <Container maxWidth="sm">
@@ -125,24 +169,6 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
                     margin="normal"
                     required
                 />
-                <PasswordField
-                    label="PIN"
-                    name="pin"
-                    value={formData.pin}
-                    onChange={handleFormDataChange}
-                    />
-                <PasswordField
-                    label="Password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleFormDataChange}
-                />
-                <PasswordField
-                    label="Confirm Password"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleFormDataChange}
-                />
                 {/* Role Selection */}
                 <FormControl fullWidth margin="normal">
                     <InputLabel id="role-select-label">Role</InputLabel>
@@ -160,6 +186,26 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
                         ))}
                     </Select>
                 </FormControl>
+                <PasswordField
+                    label="PIN"
+                    name="pin"
+                    value={formData.pin}
+                    onChange={handleFormDataChange}
+                    />
+                <PasswordField
+                    label="Password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleFormDataChange}
+                />
+                <PasswordField
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleFormDataChange}
+                    helperText="A strong password includes letters, numbers, and special characters."
+                />
+                <PasswordStrengthIndicator password={formData.password} />
                 <Button
                     type="submit"
                     variant="contained"
@@ -172,16 +218,34 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
                     Next
                 </Button>
             </form>
-            <Snackbar
-                open={openSnackBar}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                message="Password's don't match"
+            {/*<Snackbar*/}
+            {/*    open={openSnackBar}*/}
+            {/*    autoHideDuration={6000}*/}
+            {/*    onClose={handleCloseSnackbar}*/}
+            {/*    message="Password's don't match"*/}
+            {/*>*/}
+            {/*    <Alert onClose={handleCloseSnackbar} severity={snackBarSeverity} variant="filled" sx={{width: '100%'}}>*/}
+            {/*        {snackBarMessage}*/}
+            {/*    </Alert>*/}
+            {/*</Snackbar>*/}
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
             >
-                <Alert onClose={handleCloseSnackbar} severity={snackBarSeverity} variant="filled" sx={{width: '100%'}}>
-                    {snackBarMessage}
-                </Alert>
-            </Snackbar>
+                <DialogTitle id="alert-dialog-title">{dialogTitle}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {dialogMessage}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={dialogAction} color="primary">
+                        {dialogBtnTitle}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }

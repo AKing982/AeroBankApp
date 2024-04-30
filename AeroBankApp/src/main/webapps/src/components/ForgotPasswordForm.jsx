@@ -10,6 +10,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
+import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 
 export default function ForgotPasswordForm()
 {
@@ -250,6 +251,10 @@ export default function ForgotPasswordForm()
                     console.error('User email not found');
                 }
             } else {
+                setOpenDialog(true);
+                setDialogTitle("UserName Not Found");
+                setDialogMessage("We couldn't find the username in our system. Please try again with another user.");
+                setDialogBtnTitle("Try again.");
                 console.error('Username does not exist');
             }
         } else if (showVerificationField && !isVerificationCodeValid) {
@@ -271,7 +276,6 @@ export default function ForgotPasswordForm()
                 if(!validatePasswordMeetsRequirements(newPassword)){
                     setOpenDialog(true);
                     setDialogBtnTitle("Try Again");
-                    setOpenDialog(true);  // Show the dialog with the error
                     return;
                 }
                 const currentMatchesExistingPassword = await validateNewPassword(newPassword);
@@ -281,9 +285,9 @@ export default function ForgotPasswordForm()
                         console.log('Password reset was a success');
                         setOpenDialog(true);
                         setDialogTitle("Password Reset Successfully");
-                        setDialogMessage("Your password has been successfully reset. Please log in with your new password to continue.");
-                        setDialogBtnTitle("Go to Login");
-                        setTimeout(() => navigate('/'), 6000);
+                        setDialogMessage("Your password has been successfully reset. Please wait while we redirect you to the login page.");
+                        setDialogBtnTitle("Go to login.");
+                        setDialogAction(() => handleGoToLogin());
                     }else{
                         setOpenDialog(true);
                         setDialogTitle("Reset Failed");
@@ -415,6 +419,7 @@ export default function ForgotPasswordForm()
                                 type={showConfirmPassword ? 'text' : 'password'}
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
+                                helperText="A strong password includes letters, numbers, and special characters."
                                 sx={{ fieldset: { height: 55 } }}
                                 InputProps={{
                                     style: {
@@ -440,6 +445,7 @@ export default function ForgotPasswordForm()
                                     },
                                 }}
                             />
+                            <PasswordStrengthIndicator password={newPassword} />
                         </>
                     )}
                     <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
