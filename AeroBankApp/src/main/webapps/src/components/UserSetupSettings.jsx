@@ -1,4 +1,4 @@
- import {useEffect, useState} from "react";
+ import React, {useEffect, useState} from "react";
 import UserTextField from "./UserTextField";
 import DBPasswordField from "./DBPasswordField";
 import PinNumberField from "./PinNumberField";
@@ -12,12 +12,24 @@ import axios from "axios";
 import SaveUserDialog from "./SaveUserDialog";
 import NumberField from "./NumberField";
 import AccountTypeSelect from "./AccountTypeSelect";
- import {Alert, Button, FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, TextField} from "@mui/material";
+ import {
+    Alert,
+    Button,
+    FormControl,
+    Grid, IconButton,
+     InputAdornment,
+    InputLabel,
+    MenuItem,
+    Select,
+    Snackbar,
+    TextField
+} from "@mui/material";
  import DialogTitle from "@mui/material/DialogTitle";
  import DialogContent from "@mui/material/DialogContent";
  import Dialog from "@mui/material/Dialog";
  import DialogActions from "@mui/material/DialogActions";
  import {Box} from "@mui/system";
+ import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 export default function UserSetupSettings()
 {
@@ -31,6 +43,10 @@ export default function UserSetupSettings()
         confirmPassword: '',
         role: 'User'
     });
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [showPinNumber, setShowPinNumber] = useState(false);
 
     const [userValidation, setUserValidation] = useState({
         validPasswords: false,
@@ -49,9 +65,26 @@ export default function UserSetupSettings()
         }));
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    }
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    }
+
+    const togglePinNumberVisibility = () => {
+        setShowPinNumber(!showPinNumber);
+    }
+
     const handleSaveUser = () => {
         // Add logic to handle user save
     };
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
 
     const fetchUserData = async (username) => {
         try {
@@ -79,11 +112,13 @@ export default function UserSetupSettings()
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={3}>
                 <TextField
                     label="First Name"
                     variant="outlined"
                     fullWidth
+                    multiline
+                    rows={1}
                     margin="normal"
                     value={userDetails.firstName}
                     onChange={handleChange}
@@ -93,6 +128,8 @@ export default function UserSetupSettings()
                     label="Last Name"
                     variant="outlined"
                     fullWidth
+                    multiline
+                    rows={1}
                     margin="normal"
                     value={userDetails.lastName}
                     onChange={handleChange}
@@ -102,6 +139,8 @@ export default function UserSetupSettings()
                     label="Username"
                     variant="outlined"
                     fullWidth
+                    multiline
+                    rows={1}
                     margin="normal"
                     value={userDetails.username}
                     onChange={handleChange}
@@ -110,6 +149,8 @@ export default function UserSetupSettings()
                 <TextField
                     label="Email"
                     variant="outlined"
+                    multiline
+                    rows={1}
                     fullWidth
                     margin="normal"
                     value={userDetails.email}
@@ -117,7 +158,7 @@ export default function UserSetupSettings()
                     name="email"
                 />
                 <TextField
-                    label="PIN Number"
+                    label="PIN"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -125,6 +166,30 @@ export default function UserSetupSettings()
                     onChange={handleChange}
                     type="password"
                     name="pinNumber"
+                    sx={{ fieldset: { height: 55 } }}
+                    InputProps={{
+                        style: {
+                            alignItems: 'center'
+                        },
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={togglePinNumberVisibility}
+                                    onMouseDown={handleMouseDownPassword}
+                                    edge="end"
+                                >
+                                    {showPinNumber ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                    inputProps={{
+                        style: {
+                            height: '30px',
+                            padding: '10px',
+                        },
+                    }}
                 />
                 <TextField
                     label="Password"
@@ -135,6 +200,30 @@ export default function UserSetupSettings()
                     onChange={handleChange}
                     type="password"
                     name="password"
+                    sx={{ fieldset: { height: 55 } }}
+                    InputProps={{
+                        style: {
+                            alignItems: 'center'
+                        },
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={togglePasswordVisibility}
+                                    onMouseDown={handleMouseDownPassword}
+                                    edge="end"
+                                >
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                    inputProps={{
+                        style: {
+                            height: '30px',
+                            padding: '10px',
+                        },
+                    }}
                 />
                 <TextField
                     label="Confirm Password"
@@ -145,6 +234,30 @@ export default function UserSetupSettings()
                     onChange={handleChange}
                     type="password"
                     name="confirmPassword"
+                    sx={{ fieldset: { height: 55 } }}
+                    InputProps={{
+                        style: {
+                            alignItems: 'center'
+                        },
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={toggleConfirmPasswordVisibility}
+                                    onMouseDown={handleMouseDownPassword}
+                                    edge="end"
+                                >
+                                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                    inputProps={{
+                        style: {
+                            height: '30px',
+                            padding: '10px',
+                        },
+                    }}
                 />
                 <FormControl fullWidth margin="normal">
                     <InputLabel>Role</InputLabel>
@@ -163,7 +276,7 @@ export default function UserSetupSettings()
             </Grid>
             <Grid item xs={12} md={4}>
                 <UserList onUserSelect={(user) => fetchUserData(user)} />
-                <Box display="flex" justifyContent="center" mt={2} gap={2} sx={{ transform: 'translateX(-40px)' }}>
+                <Box display="flex" justifyContent="center" mt={2} gap={2} width="100%">
                     <Button variant="contained" onClick={() => {/* logic to add user */}}>Add User</Button>
                     <Button variant="contained" sx={{ backgroundColor: 'red', '&:hover': { backgroundColor: 'darkred' } }} onClick={() => {/* logic to remove user */}}>Remove User</Button>
                 </Box>
