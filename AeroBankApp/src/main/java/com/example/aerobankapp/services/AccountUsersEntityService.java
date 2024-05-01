@@ -13,5 +13,9 @@ public interface AccountUsersEntityService extends ServiceDAOModel<AccountUserEn
 
     AccountUserEntity buildAccountUserEntity(AccountEntity accountEntity, UserEntity user);
 
+    List<AccountUserEntity> getAccountUserEntityListByUserID(int userID);
+
     List<AccountUserEntity> getAccountUserEntityList(List<AccountEntity> accountEntities, UserEntity user);
+
+    void deleteAll(List<AccountUserEntity> accountUserEntities);
 }

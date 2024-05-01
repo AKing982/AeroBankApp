@@ -11,7 +11,11 @@ public interface AccountPropertiesService extends ServiceDAOModel<AccountPropert
 {
     List<AccountPropertiesEntity> getAccountPropertiesByAcctID(int acctID);
 
+    List<AccountPropertiesEntity> getAccountPropertiesByUserID(int userID);
+
     void saveAll(List<AccountPropertiesEntity> accountPropertiesEntities);
+
+    void deleteAll(List<AccountPropertiesEntity> accountPropertiesEntities);
 
     AccountPropertiesEntity buildAccountPropertiesEntity(AccountEntity accountEntity);
 

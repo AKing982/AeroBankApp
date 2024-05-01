@@ -18,18 +18,11 @@ public class AccountDataManager extends AbstractDataManager
 {
     private final AccountCodeCreator accountCodeCreator;
 
-    @Autowired
-    public AccountDataManager(UserService userService,
-                              AccountService accountService,
-                              AccountSecurityService accountSecurityService,
-                              AccountPropertiesService accountPropertiesService,
-                              AccountCodeService accountCodeService,
-                              AccountUsersEntityService accountUsersEntityService,
-                              UserLogService userLogService,
-                              AccountCodeCreator accountCodeCreator) {
-        super(userService, accountService, accountSecurityService, accountPropertiesService, accountCodeService, accountUsersEntityService, userLogService);
+    public AccountDataManager(UserService userService, AccountService accountService, AccountSecurityService accountSecurityService, AccountPropertiesService accountPropertiesService, AccountNotificationService accountNotificationService, AccountCodeService accountCodeService, AccountUsersEntityService accountUsersEntityService, UserLogService userLogService, AccountCodeCreator accountCodeCreator) {
+        super(userService, accountService, accountSecurityService, accountPropertiesService, accountNotificationService, accountCodeService, accountUsersEntityService, userLogService);
         this.accountCodeCreator = accountCodeCreator;
     }
+
 
     /**
      * This method will be used for creating the account code during the

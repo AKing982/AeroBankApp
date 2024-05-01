@@ -1,10 +1,10 @@
 package com.example.aerobankapp.workbench.data;
 
 import com.example.aerobankapp.dto.UserDTO;
-import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.entity.UserEntity;
-import com.example.aerobankapp.entity.UserLogEntity;
+import com.example.aerobankapp.entity.*;
+import com.example.aerobankapp.exceptions.InvalidUserDataException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
+import com.example.aerobankapp.exceptions.UserAlreadyExistsException;
 import com.example.aerobankapp.exceptions.UserNotFoundException;
 import com.example.aerobankapp.model.AccountNumber;
 import com.example.aerobankapp.model.User;
@@ -29,12 +29,13 @@ public class UserDataManagerImpl extends AbstractDataManager
     @Autowired
     public UserDataManagerImpl(UserService userService, AccountService accountService, AccountSecurityService accountSecurityService,
                                AccountPropertiesService accountPropertiesService,
+                               AccountNotificationService accountNotificationService,
                                AccountCodeService accountCodeService,
                                AccountUsersEntityService accountUsersEntityService,
                                UserLogService userLogService,
                                AccountNumberGenerator accountNumberGenerator)
     {
-        super(userService, accountService, accountSecurityService, accountPropertiesService, accountCodeService, accountUsersEntityService, userLogService);
+        super(userService, accountService, accountSecurityService, accountPropertiesService, accountNotificationService, accountCodeService, accountUsersEntityService, userLogService);
         this.accountNumberGenerator = accountNumberGenerator;
         this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
     }
@@ -48,42 +49,69 @@ public class UserDataManagerImpl extends AbstractDataManager
    }
 
    public List<AccountEntity> getAccountsByUserID(int userID){
-        if(userID < 1){
-            throw new InvalidUserIDException("Caught invalid UserID: " + userID);
-        }
+        assertUserIDNonZero(userID);
         List<AccountEntity> accountEntities = accountService.getListOfAccountsByUserID(userID);
         return accountEntities;
    }
 
+   public List<AccountNotificationEntity> getAccountNotificationsByUserID(int userID){
+        assertUserIDNonZero(userID);
+        List<AccountNotificationEntity> accountNotificationEntities = accountNotificationService.getAccountNotificationsByUserID(userID);
+        return accountNotificationEntities;
+   }
+
+   public List<AccountSecurityEntity> getUserAccountSecurityList(int userID){
+        assertUserIDNonZero(userID);
+        return accountSecurityService.getAccountSecurityListByUserID(userID);
+   }
+
+   public List<AccountPropertiesEntity> getUserAccountPropertiesList(int userID){
+        assertUserIDNonZero(userID);
+        return accountPropertiesService.getAccountPropertiesByUserID(userID);
+   }
+
+   public List<AccountUserEntity> getAccountUserList(int userID){
+        assertUserIDNonZero(userID);
+        return accountUsersEntityService.getAccountUserEntityListByUserID(userID);
+   }
+
    public List<UserLogEntity> getUserLogsByUserID(int userID){
-        if(userID < 1){
-            throw new InvalidUserIDException("Caught invalid userID: " + userID);
-        }
+        assertUserIDNonZero(userID);
         return null;
    }
 
    public UserEntity findUser(int id){
-        return null;
+        assertUserIDNonZero(id);
+        Optional<UserEntity> userEntity = userService.findById(id);
+        if(userEntity.isPresent()){
+            return userEntity.get();
+        }else{
+            throw new UserNotFoundException("No User Found with ID: " + id);
+        }
    }
 
     public UserEntity buildUserEntity(User user, AccountNumber accountNumber){
-        return null;
+        if(user == null || accountNumber == null){
+            throw new InvalidUserDataException("Unable to build user entity from null user param or account number param.");
+        }
+        return getUserEntityBuilder(user, accountNumber);
     }
 
-    private UserEntity getUserEntityBuilder(UserDTO user, AccountNumber accountNumber){
+    private UserEntity getUserEntityBuilder(User user, AccountNumber accountNumber){
         return UserEntity.builder()
-                .firstName(user.firstName())
-                .lastName(user.lastName())
-                .username(user.userName())
-                .email(user.email())
-                .password(user.password())
-                .pinNumber(user.pinNumber())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .pinNumber(user.getPinNumber())
+                .role(user.getRole())
                 .accountNumber(accountNumber.getAccountNumberToString())
                 .isEnabled(true)
                 .build();
     }
 
-    public UserEntity buildSimpleUserEntity(User user, int currentUserID){
+    public UserEntity buildSimpleUserEntity(User user){
         return UserEntity.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
@@ -93,19 +121,13 @@ public class UserDataManagerImpl extends AbstractDataManager
                 .pinNumber(getEncryptedString(user.getPinNumber()))
                 .accountNumber(user.getAccountNumber().getAccountNumberToString())
                 .isEnabled(true)
-                .userID(currentUserID)
+                .role(user.getRole())
+                .userID(user.getUserID())
                 .build();
     }
 
-    public boolean updateUser(UserEntity user){
-        try
-        {
-            userService.update(user);
-            return true;
-
-        }catch(Exception e){
-            return false;
-        }
+    public void updateUser(UserEntity user){
+        userService.update(user);
     }
 
     public void saveUser(UserEntity user){
@@ -118,31 +140,100 @@ public class UserDataManagerImpl extends AbstractDataManager
 
     public boolean createUser(User user)
     {
-       return false;
+        assertUserParameterNotNull(user);
+        // Check if the user already exists
+        boolean exists = userService.userNameExists(user.getUsername());
+        if(exists){
+            LOGGER.info("User: " + user.getUsername() + " already exists.");
+            return false;
+        }
+        try
+        {
+            AccountNumber accountNumber = buildAccountNumber(user.getUsername());
+            UserEntity userEntity = buildUserEntity(user, accountNumber);
+            saveUser(userEntity);
+            return true;
+
+        }catch(Exception e){
+            LOGGER.error("There was an error creating user: " + user.getUsername() + " due to : " + e.getMessage());
+            return false;
+        }
     }
 
-    public Integer modifyUser(User user){
+    public boolean modifyUser(User user){
+        assertUserParameterNotNull(user);
+        // Retrieve existing user data by the userID
+        try{
+            // Build a new UserEntity based off the User
+            UserEntity modifiedUserEntity = buildSimpleUserEntity(user);
 
-        // Retrieve existing user data by the username
-        Optional<UserEntity> optionalUserEntity = userService.findByUser(user.getUsername());
-        if(optionalUserEntity.isPresent()){
-            UserEntity userEntity = optionalUserEntity.get();
+            // Persist the modified entity with an update
+            updateUser(modifiedUserEntity);
+            return true;
 
-            // get the userID
-            int userID = userEntity.getUserID();
-
-            // Convert the User model to an Entity
-            UserEntity user1 = buildSimpleUserEntity(user, userID);
-
-            // persist the updated properties
-            updateUser(user1);
+        }catch(Exception e){
+            LOGGER.error("There was an error while updating the user: " + e.getMessage());
+            return false;
         }
-        return 0;
+
+    }
+
+    private void assertUserParameterNotNull(User user){
+        if(user == null){
+            throw new InvalidUserDataException("Unable to create new user from null User parameter...");
+        }
+    }
+
+    private void assertUserIDNonZero(int userID){
+        if(userID < 1){
+            throw new InvalidUserIDException("Invalid UserID caught: " + userID);
+        }
     }
 
     public boolean cascadeDeleteAllUserData(int userID){
-        return false;
+        assertUserIDNonZero(userID);
+        // Obtain User Entity data from the user ID
+        try{
+
+            UserEntity user = findUser(userID);
+
+            // Obtain the Account Entity data
+            List<AccountEntity> accountEntities = getAccountsByUserID(userID);
+
+            // Obtain the Account Security data
+            List<AccountSecurityEntity> accountSecurityEntities = getUserAccountSecurityList(userID);
+
+            // Obtain the Account Properties data
+            List<AccountPropertiesEntity> accountPropertiesEntities = getUserAccountPropertiesList(userID);
+
+            List<AccountUserEntity> accountUserEntities = getAccountUserList(userID);
+
+            List<AccountNotificationEntity> accountNotificationEntities = getAccountNotificationsByUserID(userID);
+
+            deleteData(user, accountUserEntities, accountPropertiesEntities, accountNotificationEntities, accountSecurityEntities, accountEntities);
+            return true;
+
+        }catch(Exception e)
+        {
+            LOGGER.error("An error has occurred while deleting the user: " + e.getMessage());
+            return false;
+        }
     }
+
+    private void deleteData(UserEntity user, List<AccountUserEntity> accountUserEntities,
+                            List<AccountPropertiesEntity> accountPropertiesEntities,
+                            List<AccountNotificationEntity> accountNotificationEntities,
+                            List<AccountSecurityEntity> accountSecurityEntities, 
+                            List<AccountEntity> accountEntities) {
+        // Obtain the User Log Data
+        userService.delete(user);
+        accountUsersEntityService.deleteAll(accountUserEntities);
+        accountPropertiesService.deleteAll(accountPropertiesEntities);
+        accountNotificationService.deleteAll(accountNotificationEntities);
+        accountSecurityService.deleteAll(accountSecurityEntities);
+        accountService.deleteAll(accountEntities);
+    }
+
 
     public boolean deleteUser(int userID){
         return false;

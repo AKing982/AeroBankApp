@@ -30,6 +30,8 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
     @Override
     void delete(AccountEntity obj);
 
+    void deleteAll(List<AccountEntity> accountEntities);
+
     @Override
     Optional<AccountEntity> findAllById(Long id);
 

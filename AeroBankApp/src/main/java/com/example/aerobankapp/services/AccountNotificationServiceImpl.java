@@ -46,6 +46,8 @@ public class AccountNotificationServiceImpl implements AccountNotificationServic
         accountNotificationRepository.delete(obj);
     }
 
+
+
     @Override
     public Optional<AccountNotificationEntity> findAllById(Long id) {
         return Optional.empty();
@@ -118,6 +120,11 @@ public class AccountNotificationServiceImpl implements AccountNotificationServic
     }
 
     @Override
+    public List<AccountNotificationEntity> getAccountNotificationsByUserID(int userID) {
+        return accountNotificationRepository.findAccountNotificationEntitiesByUserID(userID);
+    }
+
+    @Override
     public List<AccountNotificationEntity> getAccountNotificationsByCategory(AccountNotificationCategory category) {
         if(category == null){
             throw new NullAccountNotificationCategoryException("Caught Null Category.");
@@ -151,5 +158,10 @@ public class AccountNotificationServiceImpl implements AccountNotificationServic
     @Transactional
     public void updateAccountNotificationAsRead(int acctID, Long notificationID) {
         accountNotificationRepository.updateAccountNotificationAsRead(acctID, notificationID);
+    }
+
+    @Override
+    public void deleteAll(List<AccountNotificationEntity> accountNotificationEntities) {
+        accountNotificationRepository.deleteAll(accountNotificationEntities);
     }
 }

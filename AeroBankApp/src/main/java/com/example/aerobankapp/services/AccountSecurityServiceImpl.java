@@ -50,6 +50,11 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
     }
 
     @Override
+    public void deleteAll(List<AccountSecurityEntity> accountSecurityEntities) {
+        accountSecurityRepository.deleteAll(accountSecurityEntities);
+    }
+
+    @Override
     public Optional<AccountSecurityEntity> findAllById(Long id) {
         return Optional.empty();
     }
@@ -77,6 +82,11 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
     @Override
     public BigDecimal getMinimumBalanceRequirementsByAcctID(int acctID) {
         return accountSecurityRepository.getMinimumBalanceRequirementsByAcctID(acctID);
+    }
+
+    @Override
+    public List<AccountSecurityEntity> getAccountSecurityListByUserID(int userID) {
+        return accountSecurityRepository.findAccountSecurityListByUserID(userID);
     }
 
     @Override

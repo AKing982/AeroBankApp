@@ -35,6 +35,9 @@ public interface AccountNotificationRepository extends JpaRepository<AccountNoti
     @Query("SELECT e FROM AccountNotificationEntity e WHERE e.accountNotificationCategory=:category")
     List<AccountNotificationEntity> findAccountNotificationsByCategory(@Param("category")AccountNotificationCategory category);
 
+    @Query("SELECT an FROM AccountNotificationEntity an JOIN an.account a WHERE a.user.userID=:userID")
+    List<AccountNotificationEntity> findAccountNotificationEntitiesByUserID(@Param("userID") int userID);
+
     @Query("SELECT e FROM AccountNotificationEntity e WHERE e.account.acctID=:acctID AND e.accountNotificationCategory=:category")
     List<AccountNotificationEntity> findAccountNotificationsByAcctAndCategory(@Param("acctID") int acctID, @Param("category") AccountNotificationCategory category);
 

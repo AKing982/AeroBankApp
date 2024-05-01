@@ -56,8 +56,18 @@ public class AccountPropertiesServiceImpl implements AccountPropertiesService
     }
 
     @Override
+    public List<AccountPropertiesEntity> getAccountPropertiesByUserID(int userID) {
+        return accountPropertiesRepository.findAccountPropertiesEntitiesByUserID(userID);
+    }
+
+    @Override
     public void saveAll(List<AccountPropertiesEntity> accountPropertiesEntities) {
         accountPropertiesRepository.saveAll(accountPropertiesEntities);
+    }
+
+    @Override
+    public void deleteAll(List<AccountPropertiesEntity> accountPropertiesEntities) {
+        accountPropertiesRepository.deleteAll(accountPropertiesEntities);
     }
 
     @Override

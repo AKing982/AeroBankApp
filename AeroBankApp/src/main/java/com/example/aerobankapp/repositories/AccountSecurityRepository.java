@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Repository
 public interface AccountSecurityRepository extends JpaRepository<AccountSecurityEntity, Long>
@@ -23,6 +24,9 @@ public interface AccountSecurityRepository extends JpaRepository<AccountSecurity
 
     @Query("SELECT e.depositLimit FROM AccountSecurityEntity e WHERE e.account.acctID=:acctID")
     int getDepositLimitByAcctID(@Param("acctID") int acctID);
+
+    @Query("SELECT ac FROM AccountEntity e JOIN e.accountSecurity ac WHERE e.user.userID=:userID")
+    List<AccountSecurityEntity> findAccountSecurityListByUserID(@Param("userID") int userID);
 
     @Modifying
     @Query("UPDATE AccountSecurityEntity e SET e.isEnabled=:enabled, e.depositLimit=:deposit, e.withdrawLimit=:withdraw, e.transactionVelocityLimit=:velocity, e.isWithdrawEnabled=:withdrawEnabled, e.isDepositEnabled=:depositEnabled, e.isTransferEnabled=:isTransferEnabled, e.isPurchaseEnabled=:purchaseEnabled, e.isAccountLocked=:accountLocked WHERE e.accountSecurityID=:id")

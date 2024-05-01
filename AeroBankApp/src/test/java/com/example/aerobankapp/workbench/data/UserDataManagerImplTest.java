@@ -1,11 +1,15 @@
 package com.example.aerobankapp.workbench.data;
 
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.UserLogEntity;
+import com.example.aerobankapp.exceptions.InvalidUserDataException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.model.AccountNumber;
+import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.generator.AccountNumberGenerator;
+import com.example.aerobankapp.workbench.utilities.Role;
 import com.example.aerobankapp.workbench.utilities.response.PasswordVerificationResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +53,9 @@ class UserDataManagerImplTest {
     private AccountPropertiesService accountPropertiesService;
 
     @Autowired
+    private AccountNotificationService accountNotificationService;
+
+    @Autowired
     private AccountCodeService accountCodeService;
 
     @Autowired
@@ -65,7 +72,7 @@ class UserDataManagerImplTest {
 
     @BeforeEach
     void setUp() {
-        userDataManager = new UserDataManagerImpl(userService, accountService, accountSecurityService, accountPropertiesService, accountCodeService, accountUsersEntityService, userLogService, accountNumberGenerator);
+        userDataManager = new UserDataManagerImpl(userService, accountService, accountSecurityService, accountPropertiesService,accountNotificationService, accountCodeService, accountUsersEntityService, userLogService, accountNumberGenerator);
     }
 
     static Stream<Arguments> provideUsernamesAndAccountNumbers() {
@@ -84,17 +91,19 @@ class UserDataManagerImplTest {
     void testBuildAccountNumber(String username, AccountNumber expectedAccountNumber) {
 
         // Arrange
-      //  when(accountNumberGenerator.generateAccountNumber(username)).thenReturn(expectedAccountNumber);
+       // when(accountNumberGenerator.generateAccountNumber(username)).thenReturn(expectedAccountNumber);
 
         // Act
         AccountNumber result = userDataManager.buildAccountNumber(username);
         String actualStr = result.getAccountNumberToString();
+        System.out.println("Actual: " + actualStr);
         String expectedStr = expectedAccountNumber.getAccountNumberToString();
+        System.out.println("Expected: " + expectedStr);
 
         // Assert
         assertNotNull(result, "Account number should not be null");
         assertEquals(expectedStr, actualStr, "Generated account number should match expected");
-      //  verify(accountNumberGenerator).generateAccountNumber(username); // Ensure our generator is called correctly
+   //     verify(accountNumberGenerator).generateAccountNumber(username); // Ensure our generator is called correctly
     }
 
     @Test
@@ -144,6 +153,121 @@ class UserDataManagerImplTest {
         assertFalse(userLogEntities.isEmpty());
         assertEquals(1, userLogEntities.size());
     }
+
+    @Test
+    public void testBuildUserEntity_NullUserOrNullAccountNumber(){
+        assertThrows(InvalidUserDataException.class, () -> {
+            userDataManager.buildUserEntity(null, null);
+        });
+
+        assertThrows(InvalidUserDataException.class, () -> {
+            userDataManager.buildUserEntity(null, new AccountNumber(22, 22, 22));
+        });
+    }
+
+    @Test
+    public void testBuildUserEntity_ValidUser_ValidAccountNumber(){
+        User user = User.builder()
+                .username("AKing94")
+                .email("alex@utahkings.com")
+                .firstName("Alex")
+                .lastName("King")
+                .password("Halflifer45!")
+                .pinNumber("5988")
+                .role(Role.ADMIN)
+                .build();
+
+        AccountNumber accountNumber = new AccountNumber(22, 42, 24);
+        UserEntity actualUserEntity = userDataManager.buildUserEntity(user, accountNumber);
+
+        assertNotNull(actualUserEntity);
+        assertEquals(user.getUsername(), actualUserEntity.getUsername());
+        assertEquals(user.getFirstName(), actualUserEntity.getFirstName());
+        assertEquals(accountNumber.getAccountNumberToString(), actualUserEntity.getAccountNumber());
+    }
+
+    @Test
+    public void testCreateUser_NullUser(){
+        assertThrows(InvalidUserDataException.class, () -> {
+            userDataManager.createUser(null);
+        });
+    }
+
+    @Test
+    public void testCreateUser_ValidUser(){
+        User user = User.builder()
+                .username("BAdams223")
+                .email("badams@outlook.com")
+                .firstName("Ben")
+                .lastName("Adams")
+                .password("password")
+                .pinNumber("2222")
+                .role(Role.ADMIN)
+                .build();
+
+        boolean isCreated = userDataManager.createUser(user);
+
+        assertTrue(isCreated);
+    }
+
+    @Test
+    public void testCreateUser_UserAlreadyExists(){
+        User user = User.builder()
+                .username("AKing94")
+                .email("alex@utahkings.com")
+                .firstName("Alex")
+                .lastName("King")
+                .password("Halflifer45!")
+                .pinNumber("2222")
+                .role(Role.ADMIN)
+                .build();
+
+        boolean isCreated = userDataManager.createUser(user);
+
+        assertFalse(isCreated);
+    }
+
+    @Test
+    public void testModifyUser_NullUser(){
+        assertThrows(InvalidUserDataException.class, () -> {
+            userDataManager.modifyUser(null);
+        });
+    }
+
+    @Test
+    public void testModifyingUser_ValidUser(){
+        AccountNumber accountNumber = new AccountNumber(89, 42, 48);
+        User user = User.builder()
+                .username("AKing94")
+                .userID(1)
+                .email("alex@utahkings.com")
+                .firstName("Alex")
+                .lastName("King")
+                .password("Halflifer45!")
+                .pinNumber("5988")
+                .accountNumber(accountNumber)
+                .role(Role.ADMIN)
+                .build();
+
+        boolean isModified = userDataManager.modifyUser(user);
+        assertTrue(isModified);
+    }
+
+    @Test
+    public void testCascadeDeleteAllUserData_InvalidUserID(){
+        assertThrows(InvalidUserIDException.class, () -> {
+            userDataManager.cascadeDeleteAllUserData(INVALID_USERID);
+        });
+    }
+
+    @Test
+    public void testCascadeDeleteAllUserData_ValidUserID(){
+        boolean isDeleted = userDataManager.cascadeDeleteAllUserData(3);
+
+        assertTrue(isDeleted);
+    }
+
+
 
     @AfterEach
     void tearDown() {

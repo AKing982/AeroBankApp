@@ -23,6 +23,8 @@ public interface AccountSecurityService extends ServiceDAOModel<AccountSecurityE
     @Override
     void delete(AccountSecurityEntity obj);
 
+    void deleteAll(List<AccountSecurityEntity> accountSecurityEntities);
+
     @Override
     Optional<AccountSecurityEntity> findAllById(Long id);
 
@@ -31,6 +33,8 @@ public interface AccountSecurityService extends ServiceDAOModel<AccountSecurityE
     List<AccountSecurityEntity> findByUserName(String user);
 
     BigDecimal getMinimumBalanceRequirementsByAcctID(int acctID);
+
+    List<AccountSecurityEntity> getAccountSecurityListByUserID(int userID);
 
     List<AccountSecurityEntity> getAccountSecurityEntityListFromAccounts(List<AccountEntity> accountEntities);
     int getTransactionVelocityLimitByAcctID(int acctID);

@@ -40,6 +40,10 @@ public class AccountEntity
     @JoinColumn(name="aSecID")
     private AccountSecurityEntity accountSecurity;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="accountPropsID")
+    private AccountPropertiesEntity accountProperties;
+
     @Column(name="accountName")
     private String accountName;
 

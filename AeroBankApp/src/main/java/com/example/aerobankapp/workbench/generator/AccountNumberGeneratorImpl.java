@@ -75,7 +75,7 @@ public class AccountNumberGeneratorImpl implements AccountNumberGenerator
                     return accountNumber;
                 }
             }else{
-                throw new InvalidAccountSegmentException("Found invalid account segment.");
+                throw new InvalidAccountSegmentException("Found invalid account segment less than required length.");
             }
             // use the validation method to verify account number doesn't already exist in the database.
             // If the Account Number is not valid, simply return null

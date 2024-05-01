@@ -34,7 +34,7 @@ public class AccountUsersEntityServiceImpl implements AccountUsersEntityService
 
     @Override
     public void delete(AccountUserEntity obj) {
-
+        accountUsersRepository.delete(obj);
     }
 
     @Override
@@ -66,6 +66,11 @@ public class AccountUsersEntityServiceImpl implements AccountUsersEntityService
     }
 
     @Override
+    public List<AccountUserEntity> getAccountUserEntityListByUserID(int userID) {
+        return accountUsersRepository.findAccountUserEntitiesByUserID(userID);
+    }
+
+    @Override
     public List<AccountUserEntity> getAccountUserEntityList(List<AccountEntity> accountEntities, UserEntity user) {
         List<AccountUserEntity> accountUserEntityList = new ArrayList<>();
         for(AccountEntity accountEntity : accountEntities){
@@ -75,5 +80,10 @@ public class AccountUsersEntityServiceImpl implements AccountUsersEntityService
             }
         }
         return accountUserEntityList;
+    }
+
+    @Override
+    public void deleteAll(List<AccountUserEntity> accountUserEntities) {
+        accountUsersRepository.deleteAll(accountUserEntities);
     }
 }

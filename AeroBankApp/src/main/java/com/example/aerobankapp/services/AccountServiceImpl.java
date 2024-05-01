@@ -75,6 +75,11 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    public void deleteAll(List<AccountEntity> accountEntities) {
+        accountRepository.deleteAll(accountEntities);
+    }
+
+    @Override
     public Optional<AccountEntity> findAllById(Long id) {
         return getAccountRepository().findById(id);
     }

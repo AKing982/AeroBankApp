@@ -34,6 +34,7 @@ import AccountTypeSelect from "./AccountTypeSelect";
 export default function UserSetupSettings()
 {
     const [userDetails, setUserDetails] = useState({
+        userID: 0,
         firstName: '',
         lastName: '',
         username: '',
@@ -95,6 +96,7 @@ export default function UserSetupSettings()
             console.log("Last Name: ", userData.lastName);
             console.log("UserName: ", userData.username);
             setUserDetails({
+                userID: userData.userID,
                 firstName: userData.firstName || '',
                 lastName: userData.lastName || '',
                 username: userData.userName || '',
@@ -106,12 +108,17 @@ export default function UserSetupSettings()
         }
     };
 
-    const sendDeleteRequestToServer = async (username) => {
+    const sendDeleteRequestToServer = async (userID) => {
         try {
-            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/settings/`)
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/settings/delete-user/${userID}`)
+            if(response.status === 200 || response.status === 201){
+                console.log('Delete request was successful.');
+            }else{
+                console.log('Delete request failed with status: ', response.status);
+            }
 
         }catch(error){
-
+            console.error('There was an error while sending the delete request to the server: ', error);
         }
     }
 
@@ -287,7 +294,7 @@ export default function UserSetupSettings()
                 <UserList onUserSelect={(user) => fetchUserData(user)} />
                 <Box display="flex" justifyContent="center" mt={2} gap={2} width="100%">
                     <Button variant="contained" onClick={() => {/* logic to add user */}}>Add User</Button>
-                    <Button variant="contained" sx={{ backgroundColor: 'red', '&:hover': { backgroundColor: 'darkred' } }} onClick={() => {/* logic to remove user */}}>Remove User</Button>
+                    <Button variant="contained" sx={{ backgroundColor: 'red', '&:hover': { backgroundColor: 'darkred' } }} onClick={() => sendDeleteRequestToServer(userDetails.userID)}>Remove User</Button>
                 </Box>
             </Grid>
             <Snackbar open={userValidation.snackbarOpen} autoHideDuration={6000} onClose={() => setUserValidation({ ...userValidation, snackbarOpen: false })}>
