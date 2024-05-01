@@ -56,6 +56,9 @@ public class UserDataManagerImpl extends AbstractDataManager
    }
 
    public List<UserLogEntity> getUserLogsByUserID(int userID){
+        if(userID < 1){
+            throw new InvalidUserIDException("Caught invalid userID: " + userID);
+        }
         return null;
    }
 

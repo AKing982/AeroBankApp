@@ -1,6 +1,7 @@
 package com.example.aerobankapp.workbench.data;
 
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.model.AccountNumber;
 import com.example.aerobankapp.services.*;
@@ -58,6 +59,8 @@ class UserDataManagerImplTest {
 
     @Autowired
     private AccountNumberGenerator accountNumberGenerator;
+
+    private int INVALID_USERID = -1;
 
 
     @BeforeEach
@@ -122,6 +125,24 @@ class UserDataManagerImplTest {
         assertNotNull(accountEntities);
         assertTrue(accountEntities.isEmpty());
         assertEquals(0, accountEntities.size());
+    }
+
+    @Test
+    public void testGetUserLogsByUserID_InvalidUserID(){
+        assertThrows(InvalidUserIDException.class, () -> {
+            userDataManager.getUserLogsByUserID(INVALID_USERID);
+        });
+    }
+
+    @Test
+    public void testGetUserLogsByUserID_ValidUserID(){
+        final int userID = 1;
+
+        List<UserLogEntity> userLogEntities = userDataManager.getUserLogsByUserID(userID);
+
+        assertNotNull(userLogEntities);
+        assertFalse(userLogEntities.isEmpty());
+        assertEquals(1, userLogEntities.size());
     }
 
     @AfterEach
