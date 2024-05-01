@@ -1,5 +1,8 @@
 package com.example.aerobankapp;
 
+import com.example.aerobankapp.model.AccountNumber;
+import com.example.aerobankapp.workbench.generator.AccountNumberGenerator;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -9,7 +12,10 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+
+import java.util.Scanner;
 
 @SpringBootApplication
 @EntityScan(basePackages = "com.example.aerobankapp.entity")

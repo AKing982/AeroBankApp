@@ -10,6 +10,7 @@ import lombok.Setter;
 @Builder
 public class User
 {
+    private int userID;
     private String firstName;
     private String lastName;
     private String username;
@@ -21,6 +22,32 @@ public class User
     private AccountNumber accountNumber;
 
     public User(String firstName, String lastName, String username, String email, String password, String pinNumber, boolean isAdmin, Role role, AccountNumber accountNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.pinNumber = pinNumber;
+        this.isAdmin = isAdmin;
+        this.role = role;
+        this.accountNumber = accountNumber;
+    }
+
+    /**
+     * This constructor is to be used in updating user properties
+     * @param userID
+     * @param firstName
+     * @param lastName
+     * @param username
+     * @param email
+     * @param password
+     * @param pinNumber
+     * @param isAdmin
+     * @param role
+     * @param accountNumber
+     */
+    public User(int userID, String firstName, String lastName, String username, String email, String password, String pinNumber, boolean isAdmin, Role role, AccountNumber accountNumber) {
+        this.userID = userID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;

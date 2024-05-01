@@ -97,6 +97,25 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
         }
     };
 
+    const validateUserNameMeetsRequirements = (username) => {
+        const minLength = username.length >= 8;
+        const hasUpper = /[A-Z]/;
+        const hasLower = /[a-z]/;
+        const hasNumber = /\d/;
+        const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/;
+
+        if(username.length < minLength){
+            setDialogTitle("Weak Username");
+            setDialogMessage(`User Name must be at least ${minLength} characters long.`);
+            return false;
+        }
+        if(!hasNumber.test(username) && !hasUpper.test(username) && !hasLower.test(username) && hasSpecial.test(username)){
+            setDialogTitle("Weak User Name");
+            setDialogMessage("User Name must include uppercase letters, lowercase letters, numbers and no special characters.");
+            return;
+        }
+    };
+
     const validatePasswordMeetsRequirements = (password) => {
         const hasMinLength = password.length >= 8;
         const hasUpper = /[A-Z]/;

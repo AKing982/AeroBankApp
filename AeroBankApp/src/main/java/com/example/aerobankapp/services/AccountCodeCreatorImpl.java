@@ -52,7 +52,11 @@ public class AccountCodeCreatorImpl implements AccountCodeCreator
         int sequenceNum = getSequenceNumber();
 
         // Return the account code
-        return new AccountCode(firstInitial, lastInitial, userID, accountType,twoDigitYear, sequenceNum);
+        return getAccountCodeForm(firstInitial, lastInitial, userID, accountType, twoDigitYear, sequenceNum);
+    }
+
+    private AccountCode getAccountCodeForm(String first, String last, int userID, AccountType accountType, int year, int accountID){
+        return new AccountCode(first, last, userID, accountType, year, accountID);
     }
 
     @Override

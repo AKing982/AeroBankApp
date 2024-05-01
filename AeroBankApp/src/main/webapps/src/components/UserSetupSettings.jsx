@@ -17,13 +17,13 @@ import AccountTypeSelect from "./AccountTypeSelect";
     Button,
     FormControl,
     Grid, IconButton,
-     InputAdornment,
+    InputAdornment,
     InputLabel,
     MenuItem,
     Select,
     Snackbar,
-    TextField
-} from "@mui/material";
+    TextField, Typography
+ } from "@mui/material";
  import DialogTitle from "@mui/material/DialogTitle";
  import DialogContent from "@mui/material/DialogContent";
  import Dialog from "@mui/material/Dialog";
@@ -105,6 +105,15 @@ export default function UserSetupSettings()
             console.error('Error fetching user details:', error);
         }
     };
+
+    const sendDeleteRequestToServer = async (username) => {
+        try {
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/settings/`)
+
+        }catch(error){
+
+        }
+    }
 
     useEffect(() => {
         console.log("Updated User Details: ", userDetails);

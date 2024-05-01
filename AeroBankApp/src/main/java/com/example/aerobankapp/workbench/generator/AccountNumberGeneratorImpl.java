@@ -1,6 +1,7 @@
 package com.example.aerobankapp.workbench.generator;
 
 import com.example.aerobankapp.exceptions.AccountGenerationException;
+import com.example.aerobankapp.exceptions.InvalidAccountSegmentException;
 import com.example.aerobankapp.exceptions.InvalidUserStringException;
 import com.example.aerobankapp.model.AccountNumber;
 import com.example.aerobankapp.repositories.UserRepository;
@@ -43,6 +44,10 @@ public class AccountNumberGeneratorImpl implements AccountNumberGenerator
         return !exists;
     }
 
+    public boolean validateSegmentsParts(int part){
+        return String.valueOf(part).length() == 2;
+    }
+
     @Override
     public AccountNumber generateAccountNumber(String user) {
         if(user.isEmpty()){
@@ -64,12 +69,15 @@ public class AccountNumberGeneratorImpl implements AccountNumberGenerator
             aeroLogger.info("segment 3: " + part3);
 
             // Create the Account Number
-            AccountNumber accountNumber = new AccountNumber(part1, part2, part3);
-
-            // use the validation method to verify account number doesn't already exist in the database.
-            if(validateGeneratedAccountNumber(accountNumber)){
-                return accountNumber;
+            if (validateSegmentsParts(part1) && validateSegmentsParts(part2) && validateSegmentsParts(part3)) {
+                AccountNumber accountNumber = new AccountNumber(part1, part2, part3);
+                if(validateGeneratedAccountNumber(accountNumber)){
+                    return accountNumber;
+                }
+            }else{
+                throw new InvalidAccountSegmentException("Found invalid account segment.");
             }
+            // use the validation method to verify account number doesn't already exist in the database.
             // If the Account Number is not valid, simply return null
             throw new AccountGenerationException("Generated AccountNumber is invalid or already exists.");
 
