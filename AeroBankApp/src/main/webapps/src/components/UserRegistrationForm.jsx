@@ -56,10 +56,15 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
     const handleNextButtonClick = (e) => {
         e.preventDefault();
 
-        validatePasswordFields(formData.password, formData.confirmPassword);
+        const passwordsMatch = validatePasswordFields(formData.password, formData.confirmPassword);
+        const isUserNameValid = validateUserNameMeetsRequirements(formData.username);
+        console.log('UserName Valid: ', isUserNameValid);
         console.log("Password's match: ", isPasswordsValid);
-        if(isPasswordsValid){
+
+        if(isUserNameValid && passwordsMatch){
             handleStepChange(activeStep + 1);
+        }else{
+            console.log("Validation Failed");
         }
     };
 
@@ -76,44 +81,43 @@ function UserRegistrationForm({activeStep, handleStepChange, formData, handleFor
     }
 
     const validatePasswordFields = (password, confirmPassword) => {
-        if(password === confirmPassword){
-            if(!validatePasswordMeetsRequirements(password))
-            {
-                setOpenDialog(true);
-                setDialogBtnTitle("Try Again");
-                return;
-            }else{
-                setIsPasswordsValid(true);
-            }
-        }else{
-            setIsPasswordsValid(false);
+        // First, check if passwords match
+        if (password !== confirmPassword) {
+            setIsPasswordsValid(false); // Update state to reflect invalid status
             setOpenDialog(true);
             setDialogTitle("Password Mismatch");
             setDialogMessage("The password and confirm password do not match. Please try again.");
             setDialogBtnTitle("Try Again");
-           // setOpenSnackBar(true);
-           // setSnackBarMessage("Password's don't match.");
-           // setSnackBarSeverity('error');
+            return false; // Return false indicating validation failed
         }
+        // Next, check if the password meets the required complexity
+        else if (!validatePasswordMeetsRequirements(password)) {
+            setOpenDialog(true);
+            setDialogBtnTitle("Try Again");
+            setDialogTitle("Weak Password");
+            setDialogMessage("Your password must meet the complexity requirements.");
+            return false; // Return false indicating validation failed
+        }
+
+        // If all checks pass
+        setIsPasswordsValid(true); // Update state to reflect valid status
+        return true; // Return true indicating validation passed
     };
 
     const validateUserNameMeetsRequirements = (username) => {
         const minLength = username.length >= 8;
         const hasUpper = /[A-Z]/;
         const hasLower = /[a-z]/;
-        const hasNumber = /\d/;
+        const hasNumber = /(\d.*\d)/;
         const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/;
 
-        if(username.length < minLength){
-            setDialogTitle("Weak Username");
-            setDialogMessage(`User Name must be at least ${minLength} characters long.`);
+        if(username.length < minLength || !hasNumber.test(username) || !hasUpper.test(username) || !hasLower.test(username) || hasSpecial.test(username)){
+            setOpenDialog(true);
+            setDialogTitle("Weak User Name");
+            setDialogMessage("User Name must include uppercase letters, lowercase letters, a minimum of 2 digits and no special characters.");
             return false;
         }
-        if(!hasNumber.test(username) && !hasUpper.test(username) && !hasLower.test(username) && hasSpecial.test(username)){
-            setDialogTitle("Weak User Name");
-            setDialogMessage("User Name must include uppercase letters, lowercase letters, numbers and no special characters.");
-            return;
-        }
+        return true;
     };
 
     const validatePasswordMeetsRequirements = (password) => {

@@ -39,6 +39,7 @@ public class AccountNotificationServiceImpl implements AccountNotificationServic
     }
 
     @Override
+    @Transactional
     public void delete(AccountNotificationEntity obj) {
         if(obj == null){
             throw new NullAccountNotificationException("Unable to delete Null notification.");

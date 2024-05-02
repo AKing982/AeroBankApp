@@ -85,6 +85,7 @@ public class AccountUsersEntityServiceImpl implements AccountUsersEntityService
     }
 
     @Override
+    @Transactional
     public void deleteAll(List<AccountUserEntity> accountUserEntities) {
         accountUsersRepository.deleteAll(accountUserEntities);
     }

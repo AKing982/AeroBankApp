@@ -85,6 +85,11 @@ public class UserLogServiceImpl implements UserLogService
     }
 
     @Override
+    public List<UserLogEntity> getUserLogListByUserID(int userID) {
+        return userLogRepository.findUserLogEntitiesByUserID(userID);
+    }
+
+    @Override
     public Optional<UserLogEntity> findUserLogEntriesByActiveStateAndUserID(boolean isActive, int userID) {
         if(userID < 1){
             throw new InvalidUserIDException("Invalid UserID Found.");

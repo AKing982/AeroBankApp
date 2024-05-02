@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.example.aerobankapp.services.utilities.AccountSecurityServiceUtil.buildSecurityEntity;
 
@@ -46,13 +47,14 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
     }
 
     @Override
+    @Transactional
     public void delete(AccountSecurityEntity obj) {
         accountSecurityRepository.delete(obj);
     }
 
     @Override
     @Transactional
-    public void deleteAll(List<AccountSecurityEntity> accountSecurityEntities) {
+    public void deleteAll(Set<AccountSecurityEntity> accountSecurityEntities) {
         accountSecurityRepository.deleteAll(accountSecurityEntities);
     }
 

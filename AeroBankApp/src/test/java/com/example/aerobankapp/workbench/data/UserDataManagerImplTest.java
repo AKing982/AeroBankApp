@@ -10,6 +10,7 @@ import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.generator.AccountNumberGenerator;
 import com.example.aerobankapp.workbench.utilities.Role;
+import com.example.aerobankapp.workbench.utilities.dbUtils.DatabaseUtilities;
 import com.example.aerobankapp.workbench.utilities.response.PasswordVerificationResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,12 +68,15 @@ class UserDataManagerImplTest {
     @Autowired
     private AccountNumberGenerator accountNumberGenerator;
 
+    @Autowired
+    private DatabaseUtilities databaseUtilities;
+
     private int INVALID_USERID = -1;
 
 
     @BeforeEach
     void setUp() {
-        userDataManager = new UserDataManagerImpl(userService, accountService, accountSecurityService, accountPropertiesService,accountNotificationService, accountCodeService, accountUsersEntityService, userLogService, accountNumberGenerator);
+        userDataManager = new UserDataManagerImpl(userService, accountService, accountSecurityService, accountPropertiesService,accountNotificationService, accountCodeService, accountUsersEntityService, userLogService, accountNumberGenerator, databaseUtilities);
     }
 
     static Stream<Arguments> provideUsernamesAndAccountNumbers() {

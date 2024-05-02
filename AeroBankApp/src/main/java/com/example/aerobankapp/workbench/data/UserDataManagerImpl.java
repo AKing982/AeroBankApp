@@ -10,12 +10,16 @@ import com.example.aerobankapp.model.AccountNumber;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.generator.AccountNumberGenerator;
+import com.example.aerobankapp.workbench.utilities.dbUtils.DatabaseUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +29,7 @@ public class UserDataManagerImpl extends AbstractDataManager
 {
     private final AccountNumberGenerator accountNumberGenerator;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final DatabaseUtilities databaseUtilities;
     private final Logger LOGGER = LoggerFactory.getLogger(UserDataManagerImpl.class);
 
     @Autowired
@@ -34,11 +39,13 @@ public class UserDataManagerImpl extends AbstractDataManager
                                AccountCodeService accountCodeService,
                                AccountUsersEntityService accountUsersEntityService,
                                UserLogService userLogService,
-                               AccountNumberGenerator accountNumberGenerator)
+                               AccountNumberGenerator accountNumberGenerator,
+                               DatabaseUtilities databaseUtilities)
     {
         super(userService, accountService, accountSecurityService, accountPropertiesService, accountNotificationService, accountCodeService, accountUsersEntityService, userLogService);
         this.accountNumberGenerator = accountNumberGenerator;
         this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        this.databaseUtilities = databaseUtilities;
     }
 
     public AccountNumber buildAccountNumber(String user){
@@ -77,6 +84,15 @@ public class UserDataManagerImpl extends AbstractDataManager
                .map(Object::toString)
                .collect(Collectors.joining(", ")));
         return accountPropertiesService.getAccountPropertiesByUserID(userID);
+   }
+
+   public List<AccountCodeEntity> getUserAccountCodeList(int userID){
+        assertUserIDNonZero(userID);
+        List<AccountCodeEntity> accountCodeEntities = accountCodeService.getAccountCodesListByUserID(userID);
+       LOGGER.info("Account Code Entities: " + accountCodeEntities.stream()
+               .map(Object::toString)
+               .collect(Collectors.joining(", ")));
+       return accountCodeEntities;
    }
 
    public List<AccountUserEntity> getAccountUserList(int userID){
@@ -206,20 +222,7 @@ public class UserDataManagerImpl extends AbstractDataManager
 
             UserEntity user = findUser(userID);
 
-            // Obtain the Account Entity data
-            List<AccountEntity> accountEntities = getAccountsByUserID(userID);
-
-            // Obtain the Account Security data
-            List<AccountSecurityEntity> accountSecurityEntities = getUserAccountSecurityList(userID);
-
-            // Obtain the Account Properties data
-            List<AccountPropertiesEntity> accountPropertiesEntities = getUserAccountPropertiesList(userID);
-
-            List<AccountUserEntity> accountUserEntities = getAccountUserList(userID);
-
-            List<AccountNotificationEntity> accountNotificationEntities = getAccountNotificationsByUserID(userID);
-
-            deleteData(user, accountUserEntities, accountPropertiesEntities, accountNotificationEntities, accountSecurityEntities, accountEntities);
+            deleteData(user);
             return true;
 
         }catch(Exception e)
@@ -229,33 +232,122 @@ public class UserDataManagerImpl extends AbstractDataManager
         }
     }
 
-    private void deleteData(UserEntity user, List<AccountUserEntity> accountUserEntities,
-                            List<AccountPropertiesEntity> accountPropertiesEntities,
-                            List<AccountNotificationEntity> accountNotificationEntities,
-                            List<AccountSecurityEntity> accountSecurityEntities, 
-                            List<AccountEntity> accountEntities) {
+    public void deleteAccounts(UserEntity user){
+        List<AccountEntity> accountEntities = accountService.getListOfAccountsByUserID(user.getUserID());
+        for(AccountEntity accountEntity : accountEntities){
+            deleteAccount(accountEntity);
+            LOGGER.info("Deleted account ID: {}", accountEntity.getAcctID());
+        }
+    }
+
+    public void deleteAccount(AccountEntity account){
+        accountSecurityService.deleteAll(account.getSecurities());
+        accountPropertiesService.deleteAll(account.getAccountPropertiesEntities());
+
+        accountService.delete(account);
+    }
+
+    public void handleAccountUserEntityDeletion(UserEntity user){
+
+        // Delete AccountUser entities
+        accountUsersEntityService.getAccountUserEntityListByUserID(user.getUserID())
+                .forEach(accountUserEntity -> {
+                    accountUsersEntityService.delete(accountUserEntity);
+                    LOGGER.info("Deleted account user entity for user ID: {}", user.getUserID());
+                });
+        LOGGER.info("Deleted all account user entities.");
+    }
+
+    public void handleAccountNotificationDeletion(UserEntity user){
+        // Follow similar patterns for other entities
+        accountNotificationService.getAccountNotificationsByUserID(user.getUserID())
+                .forEach(notification -> {
+                    accountNotificationService.delete(notification);
+                    LOGGER.info("Deleted account notification entity for user ID: {}", user.getUserID());
+                });
+
+        LOGGER.info("Deleted all account notification entities.");
+    }
+
+    public void handleAccountPropertiesDeletion(UserEntity user){
+        // Continue with other services
+        accountPropertiesService.getAccountPropertiesByUserID(user.getUserID())
+                .forEach(prop -> {
+                    accountPropertiesService.delete(prop);
+                    LOGGER.info("Deleted account property entity for user ID: {}", user.getUserID());
+                });
+
+        LOGGER.info("Deleted all account properties entities.");
+    }
+
+    public void handleAccountSecurityDeletion(UserEntity user){
+
+        accountSecurityService.getAccountSecurityListByUserID(user.getUserID())
+                .forEach(security -> {
+                    accountSecurityService.delete(security);
+                    LOGGER.info("Deleted account security entity for user ID: {}", user.getUserID());
+                });
+        LOGGER.info("Deleted all account security entities.");
+    }
+
+    public void handleAccountDeletion(UserEntity user){
+        accountService.getListOfAccountsByUserID(user.getUserID())
+                .forEach(account -> {
+                    accountService.delete(account);
+                    LOGGER.info("Deleted account entity for user ID: {}", user.getUserID());
+                });
+
+        LOGGER.info("Deleted all account entities.");
+    }
+
+    public void handleAccountCodeDeletion(UserEntity user){
+        accountCodeService.getAccountCodesListByUserID(user.getUserID())
+                .forEach(code -> {
+                    accountCodeService.delete(code);
+                    LOGGER.info("Deleted account code entity for user ID: {}", user.getUserID());
+                });
+        LOGGER.info("Deleted all account code entities.");
+    }
+
+    public void handleUserLogDeletion(UserEntity user){
+        userLogService.getUserLogListByUserID(user.getUserID())
+                .forEach(log -> {
+                    userLogService.delete(log);
+                    LOGGER.info("Deleted User Log entities for userID: {}", user.getUserID());
+                });
+        LOGGER.info("Deleted All userLog entities.");
+    }
+
+    public void handleUserDeletion(UserEntity user){
+        userService.delete(user);
+        LOGGER.info("Deleted user entity for user ID: {}", user.getUserID());
+    }
+
+    public void deleteData(UserEntity user) {
 
         try{
             LOGGER.info("Starting to delete all user-related data for user ID: {}", user.getUserID());
 
+            // Delete AccountUser entities
+            handleAccountUserEntityDeletion(user);
 
-            accountUsersEntityService.deleteAll(accountUserEntities);
-            LOGGER.info("Deleted all account user entities.");
+            handleAccountNotificationDeletion(user);
 
-            accountPropertiesService.deleteAll(accountPropertiesEntities);
-            LOGGER.info("Deleted all account properties entities.");
+            handleAccountPropertiesDeletion(user);
 
-            accountNotificationService.deleteAll(accountNotificationEntities);
-            LOGGER.info("Deleted all account notification entities.");
+            handleAccountSecurityDeletion(user);
 
-            accountSecurityService.deleteAll(accountSecurityEntities);
-            LOGGER.info("Deleted all account security entities.");
+            handleAccountDeletion(user);
 
-            accountService.deleteAll(accountEntities);
-            LOGGER.info("Deleted all account entities.");
+            handleAccountCodeDeletion(user);
 
-            userService.delete(user);
-            LOGGER.info("Deleted user entity.");
+            deleteAccounts(user);
+
+            handleUserLogDeletion(user);
+
+            handleUserDeletion(user);
+
+            databaseUtilities.resetAutoIncrementsForTables();
 
             LOGGER.info("Successfully deleted all data for user ID: {}", user.getUserID());
 

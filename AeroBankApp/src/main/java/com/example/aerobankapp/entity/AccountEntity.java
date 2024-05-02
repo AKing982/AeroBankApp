@@ -72,6 +72,13 @@ public class AccountEntity
     @JsonBackReference
     private Set<TransactionStatementEntity> transactions;
 
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AccountSecurityEntity> securities;
+
+    @OneToMany(mappedBy="account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AccountPropertiesEntity> accountPropertiesEntities;
+
+
     public AccountEntity(int acctID, String accountType)
     {
         this.acctID = acctID;

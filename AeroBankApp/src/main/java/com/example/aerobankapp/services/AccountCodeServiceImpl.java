@@ -7,6 +7,7 @@ import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.repositories.AccountCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,13 @@ public class AccountCodeServiceImpl implements AccountCodeService
 
     @Override
     public void delete(AccountCodeEntity obj) {
+        accountCodeRepository.delete(obj);
+    }
 
+    @Override
+    @Transactional
+    public void deleteAll(List<AccountCodeEntity> accountCodeEntities) {
+        accountCodeRepository.deleteAll(accountCodeEntities);
     }
 
     @Override
@@ -51,6 +58,11 @@ public class AccountCodeServiceImpl implements AccountCodeService
     @Override
     public List<AccountCodeEntity> findByUserName(String user) {
         return null;
+    }
+
+    @Override
+    public List<AccountCodeEntity> getAccountCodesListByUserID(int userID) {
+        return accountCodeRepository.findAccountCodeEntitiesByUserID(userID);
     }
 
     @Override

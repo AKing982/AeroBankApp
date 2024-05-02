@@ -9,6 +9,7 @@ import com.example.aerobankapp.model.ServiceDAOModel;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface AccountSecurityService extends ServiceDAOModel<AccountSecurityEntity>
 {
@@ -23,7 +24,7 @@ public interface AccountSecurityService extends ServiceDAOModel<AccountSecurityE
     @Override
     void delete(AccountSecurityEntity obj);
 
-    void deleteAll(List<AccountSecurityEntity> accountSecurityEntities);
+    void deleteAll(Set<AccountSecurityEntity> accountSecurityEntities);
 
     @Override
     Optional<AccountSecurityEntity> findAllById(Long id);

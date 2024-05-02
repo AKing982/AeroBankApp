@@ -57,6 +57,12 @@ export default function UserSetupSettings()
     });
 
     const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+    const [dialogBtnTitle, setDialogBtnTitle] = useState('');
+    const [dialogMessage, setDialogMessage] = useState('');
+    const [dialogTitle, setDialogTitle] = useState('');
+    const [openDialog, setOpenDialog] = useState(false);
+    const [dialogAction, setDialogAction] = useState(() => () => setOpenDialog(false));
+
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -108,17 +114,42 @@ export default function UserSetupSettings()
         }
     };
 
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+
+    const handleOpenRemoveDialog = () => {
+        setDialogTitle("Confirm Deletion");
+        setDialogMessage(`Are you sure you want to delete the user ${userDetails.username}? This action cannot be undone.`);
+        setDialogBtnTitle("Delete");
+        setOpenDialog(true);
+        setDialogAction(() => () => sendDeleteRequestToServer(userDetails.userID));
+    };
+
+
     const sendDeleteRequestToServer = async (userID) => {
         try {
             const response = await axios.delete(`http://localhost:8080/AeroBankApp/api/settings/delete-user/${userID}`)
             if(response.status === 200 || response.status === 201){
                 console.log('Delete request was successful.');
+                setOpenDialog(false);
+                setUserValidation({
+                    snackbarOpen: true,
+                    snackbarMessage: `User ${userDetails.username} was successfully deleted.`,
+                    snackbarSeverity: 'success'
+                });
+
             }else{
                 console.log('Delete request failed with status: ', response.status);
             }
 
         }catch(error){
             console.error('There was an error while sending the delete request to the server: ', error);
+            setUserValidation({
+                snackbarOpen: true,
+                snackbarMessage: 'Failed to delete the user. Please try again.',
+                snackbarSeverity: 'error'
+            });
         }
     }
 
@@ -294,7 +325,7 @@ export default function UserSetupSettings()
                 <UserList onUserSelect={(user) => fetchUserData(user)} />
                 <Box display="flex" justifyContent="center" mt={2} gap={2} width="100%">
                     <Button variant="contained" onClick={() => {/* logic to add user */}}>Add User</Button>
-                    <Button variant="contained" sx={{ backgroundColor: 'red', '&:hover': { backgroundColor: 'darkred' } }} onClick={() => sendDeleteRequestToServer(userDetails.userID)}>Remove User</Button>
+                    <Button variant="contained" sx={{ backgroundColor: 'red', '&:hover': { backgroundColor: 'darkred' } }} onClick={handleOpenRemoveDialog}>Remove User</Button>
                 </Box>
             </Grid>
             <Snackbar open={userValidation.snackbarOpen} autoHideDuration={6000} onClose={() => setUserValidation({ ...userValidation, snackbarOpen: false })}>
@@ -302,15 +333,15 @@ export default function UserSetupSettings()
                     {userValidation.snackbarMessage}
                 </Alert>
             </Snackbar>
-            <Dialog open={saveDialogOpen} onClose={() => setSaveDialogOpen(false)}>
-                <DialogTitle>{"Confirm Save"}</DialogTitle>
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>{dialogTitle}</DialogTitle>
                 <DialogContent>
-                    <p>Are you sure you want to save these details?</p>
+                    {dialogMessage}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setSaveDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={handleSaveUser} autoFocus>
-                        Confirm
+                    <Button onClick={handleCloseDialog}>Cancel</Button>
+                    <Button onClick={dialogAction} color="primary" autoFocus>
+                        {dialogBtnTitle}
                     </Button>
                 </DialogActions>
             </Dialog>

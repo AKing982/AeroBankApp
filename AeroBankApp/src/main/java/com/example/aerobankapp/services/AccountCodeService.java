@@ -23,11 +23,15 @@ public interface AccountCodeService extends ServiceDAOModel<AccountCodeEntity>
     @Override
     void delete(AccountCodeEntity obj);
 
+    void deleteAll(List<AccountCodeEntity> accountCodeEntities);
+
     @Override
     Optional<AccountCodeEntity> findAllById(Long id);
 
     @Override
     List<AccountCodeEntity> findByUserName(String user);
+
+    List<AccountCodeEntity> getAccountCodesListByUserID(int userID);
 
     AccountCodeEntity buildAccountCodeEntity(AccountCode accountCodeDTO, UserEntity user);
 

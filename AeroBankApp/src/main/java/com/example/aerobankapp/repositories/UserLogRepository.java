@@ -25,6 +25,9 @@ public interface UserLogRepository extends JpaRepository<UserLogEntity, Long>
     @Query("SELECT e FROM UserLogEntity e WHERE e.id=:id AND e.lastLogin=:lastLogin")
     List<UserLogEntity> getUserLogsByLastLogin(@Param("id") Long id, @Param("lastLogin")LocalDateTime time);
 
+    @Query("SELECT e FROM UserLogEntity e WHERE e.userEntity.userID=:userID")
+    List<UserLogEntity> findUserLogEntitiesByUserID(@Param("userID") int userID);
+
     @Query("UPDATE UserLogEntity e SET e.lastLogout=:logout WHERE e.id=:id")
     @Modifying(clearAutomatically = true)
     void updateLastLogout(@Param("logout") LocalDateTime time, @Param("id") Long id);

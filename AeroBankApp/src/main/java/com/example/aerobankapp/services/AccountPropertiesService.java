@@ -6,6 +6,7 @@ import com.example.aerobankapp.model.ServiceDAOModel;
 import com.example.aerobankapp.workbench.utilities.color.AccountPropertiesSelectorImpl;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AccountPropertiesService extends ServiceDAOModel<AccountPropertiesEntity>
 {
@@ -15,7 +16,7 @@ public interface AccountPropertiesService extends ServiceDAOModel<AccountPropert
 
     void saveAll(List<AccountPropertiesEntity> accountPropertiesEntities);
 
-    void deleteAll(List<AccountPropertiesEntity> accountPropertiesEntities);
+    void deleteAll(Set<AccountPropertiesEntity> accountPropertiesEntities);
 
     AccountPropertiesEntity buildAccountPropertiesEntity(AccountEntity accountEntity);
 

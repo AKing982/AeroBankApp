@@ -20,7 +20,7 @@ public class AccountSecurityEntity
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long accountSecurityID;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="acctID", unique = true, nullable = false)
     private AccountEntity account;
 
@@ -72,7 +72,7 @@ public class AccountSecurityEntity
     public String toString() {
         return "AccountSecurityEntity{" +
                 "accountSecurityID=" + accountSecurityID +
-                ", account=" + account +
+                ", account=" + account.toString() +
                 ", isEnabled=" + isEnabled +
                 ", depositLimit=" + depositLimit +
                 ", withdrawLimit=" + withdrawLimit +

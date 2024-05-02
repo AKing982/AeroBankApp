@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AccountPropertiesServiceImpl implements AccountPropertiesService
@@ -36,6 +37,7 @@ public class AccountPropertiesServiceImpl implements AccountPropertiesService
     }
 
     @Override
+    @Transactional
     public void delete(AccountPropertiesEntity obj) {
         accountPropertiesRepository.delete(obj);
     }
@@ -57,6 +59,7 @@ public class AccountPropertiesServiceImpl implements AccountPropertiesService
     }
 
     @Override
+    @Transactional
     public List<AccountPropertiesEntity> getAccountPropertiesByUserID(int userID) {
         return accountPropertiesRepository.findAccountPropertiesEntitiesByUserID(userID);
     }
@@ -68,7 +71,7 @@ public class AccountPropertiesServiceImpl implements AccountPropertiesService
 
     @Override
     @Transactional
-    public void deleteAll(List<AccountPropertiesEntity> accountPropertiesEntities) {
+    public void deleteAll(Set<AccountPropertiesEntity> accountPropertiesEntities) {
         accountPropertiesRepository.deleteAll(accountPropertiesEntities);
     }
 

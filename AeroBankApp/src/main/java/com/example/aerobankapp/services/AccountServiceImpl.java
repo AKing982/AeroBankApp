@@ -66,6 +66,7 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    @Transactional
     public void delete(AccountEntity obj)
     {
         if(obj != null)
@@ -193,6 +194,7 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    @Transactional
     public List<AccountEntity> getListOfAccountsByUserID(int userID) {
         if(userID > 0){
             return accountRepository.findAccountsByUserID(userID);
