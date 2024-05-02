@@ -20,7 +20,7 @@ public class AccountSecurityEntity
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long accountSecurityID;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="acctID", unique = true, nullable = false)
     private AccountEntity account;
 
@@ -68,6 +68,25 @@ public class AccountSecurityEntity
     @Column(name="interestEnabled")
     private boolean interestEnabled;
 
-
-
+    @Override
+    public String toString() {
+        return "AccountSecurityEntity{" +
+                "accountSecurityID=" + accountSecurityID +
+                ", account=" + account +
+                ", isEnabled=" + isEnabled +
+                ", depositLimit=" + depositLimit +
+                ", withdrawLimit=" + withdrawLimit +
+                ", transferLimit=" + transferLimit +
+                ", transactionVelocityLimit=" + transactionVelocityLimit +
+                ", isWithdrawEnabled=" + isWithdrawEnabled +
+                ", isDepositEnabled=" + isDepositEnabled +
+                ", isTransferEnabled=" + isTransferEnabled +
+                ", isPurchaseEnabled=" + isPurchaseEnabled +
+                ", isAccountLocked=" + isAccountLocked +
+                ", autoPayEnabled=" + autoPayEnabled +
+                ", minimumBalance=" + minimumBalance +
+                ", feesEnabled=" + feesEnabled +
+                ", interestEnabled=" + interestEnabled +
+                '}';
+    }
 }

@@ -25,4 +25,13 @@ public class AccountPropertiesEntity {
     @Column(name="image_url")
     private String image_url;
 
+    @Override
+    public String toString() {
+        return "AccountPropertiesEntity{" +
+                "accountPropsID=" + accountPropsID +
+                ", account=" + account +
+                ", acct_color='" + acct_color + '\'' +
+                ", image_url='" + image_url + '\'' +
+                '}';
+    }
 }

@@ -161,6 +161,7 @@ public class AccountNotificationServiceImpl implements AccountNotificationServic
     }
 
     @Override
+    @Transactional
     public void deleteAll(List<AccountNotificationEntity> accountNotificationEntities) {
         accountNotificationRepository.deleteAll(accountNotificationEntities);
     }

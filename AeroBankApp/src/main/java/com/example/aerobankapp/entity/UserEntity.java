@@ -98,4 +98,21 @@ public class UserEntity
         accountEntity.getUsers().remove(this);
     }
 
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "userID=" + userID +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", pinNumber='" + pinNumber + '\'' +
+                ", accountNumber='" + accountNumber + '\'' +
+                ", isAdmin=" + isAdmin +
+                ", isEnabled=" + isEnabled +
+                ", accounts=" + accounts +
+                ", role=" + role +
+                '}';
+    }
 }

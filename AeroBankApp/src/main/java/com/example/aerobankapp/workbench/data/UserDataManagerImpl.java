@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class UserDataManagerImpl extends AbstractDataManager
@@ -62,11 +63,19 @@ public class UserDataManagerImpl extends AbstractDataManager
 
    public List<AccountSecurityEntity> getUserAccountSecurityList(int userID){
         assertUserIDNonZero(userID);
+        List<AccountSecurityEntity> accountSecurityEntities = accountSecurityService.getAccountSecurityListByUserID(userID);
+       LOGGER.info("Account Security Entities: " + accountSecurityEntities.stream()
+               .map(Object::toString)
+               .collect(Collectors.joining(", ")));
         return accountSecurityService.getAccountSecurityListByUserID(userID);
    }
 
    public List<AccountPropertiesEntity> getUserAccountPropertiesList(int userID){
         assertUserIDNonZero(userID);
+        List<AccountPropertiesEntity> accountPropertiesEntities = accountPropertiesService.getAccountPropertiesByUserID(userID);
+       LOGGER.info("Account Property Entities: " + accountPropertiesEntities.stream()
+               .map(Object::toString)
+               .collect(Collectors.joining(", ")));
         return accountPropertiesService.getAccountPropertiesByUserID(userID);
    }
 
@@ -225,13 +234,35 @@ public class UserDataManagerImpl extends AbstractDataManager
                             List<AccountNotificationEntity> accountNotificationEntities,
                             List<AccountSecurityEntity> accountSecurityEntities, 
                             List<AccountEntity> accountEntities) {
-        // Obtain the User Log Data
-        userService.delete(user);
-        accountUsersEntityService.deleteAll(accountUserEntities);
-        accountPropertiesService.deleteAll(accountPropertiesEntities);
-        accountNotificationService.deleteAll(accountNotificationEntities);
-        accountSecurityService.deleteAll(accountSecurityEntities);
-        accountService.deleteAll(accountEntities);
+
+        try{
+            LOGGER.info("Starting to delete all user-related data for user ID: {}", user.getUserID());
+
+
+            accountUsersEntityService.deleteAll(accountUserEntities);
+            LOGGER.info("Deleted all account user entities.");
+
+            accountPropertiesService.deleteAll(accountPropertiesEntities);
+            LOGGER.info("Deleted all account properties entities.");
+
+            accountNotificationService.deleteAll(accountNotificationEntities);
+            LOGGER.info("Deleted all account notification entities.");
+
+            accountSecurityService.deleteAll(accountSecurityEntities);
+            LOGGER.info("Deleted all account security entities.");
+
+            accountService.deleteAll(accountEntities);
+            LOGGER.info("Deleted all account entities.");
+
+            userService.delete(user);
+            LOGGER.info("Deleted user entity.");
+
+            LOGGER.info("Successfully deleted all data for user ID: {}", user.getUserID());
+
+        }catch(Exception e){
+            LOGGER.error("Error deleting data for user ID {}: {}", user.getUserID(), e.getMessage(), e);
+            throw e; //
+        }
     }
 
 

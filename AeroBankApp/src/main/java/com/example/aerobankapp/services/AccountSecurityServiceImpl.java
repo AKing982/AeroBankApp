@@ -8,6 +8,7 @@ import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.repositories.AccountSecurityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class AccountSecurityServiceImpl implements AccountSecurityService
     }
 
     @Override
+    @Transactional
     public void deleteAll(List<AccountSecurityEntity> accountSecurityEntities) {
         accountSecurityRepository.deleteAll(accountSecurityEntities);
     }

@@ -75,6 +75,7 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    @Transactional
     public void deleteAll(List<AccountEntity> accountEntities) {
         accountRepository.deleteAll(accountEntities);
     }

@@ -110,7 +110,7 @@ export default function UserSetupSettings()
 
     const sendDeleteRequestToServer = async (userID) => {
         try {
-            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/settings/delete-user/${userID}`)
+            const response = await axios.delete(`http://localhost:8080/AeroBankApp/api/settings/delete-user/${userID}`)
             if(response.status === 200 || response.status === 201){
                 console.log('Delete request was successful.');
             }else{

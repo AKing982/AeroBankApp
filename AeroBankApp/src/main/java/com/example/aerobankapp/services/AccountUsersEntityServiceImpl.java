@@ -7,6 +7,7 @@ import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.AccountUsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class AccountUsersEntityServiceImpl implements AccountUsersEntityService
     }
 
     @Override
+    @Transactional
     public void delete(AccountUserEntity obj) {
         accountUsersRepository.delete(obj);
     }
