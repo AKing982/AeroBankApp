@@ -123,13 +123,14 @@ export default function AccountTransferList() {
             <Paper style={{ width: 200, height: 230, overflow: 'auto', marginTop: 8 }}>
                 <List dense component="div" role="list">
                     {items.map((account) => {
-                        const labelId = `transfer-list-item-${account.id}-label`;
+                        if(!account) return null;
+                        const labelId = `transfer-list-item-${account.acctID}-label`;
 
                         return (
-                            <ListItem key={account.id} role="listitem" button onClick={handleToggle(account.id)}>
+                            <ListItem key={account.acctID} role="listitem" button onClick={handleToggle(account.acctID)}>
                                 <ListItemIcon>
                                     <Checkbox
-                                        checked={checked.indexOf(account.id) !== -1}
+                                        checked={checked.indexOf(account.acctID) !== -1}
                                         tabIndex={-1}
                                         disableRipple
                                         inputProps={{ 'aria-labelledby': labelId }}
