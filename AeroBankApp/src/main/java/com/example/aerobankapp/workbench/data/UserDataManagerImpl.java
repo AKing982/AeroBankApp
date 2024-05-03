@@ -323,29 +323,33 @@ public class UserDataManagerImpl extends AbstractDataManager
         LOGGER.info("Deleted user entity for user ID: {}", user.getUserID());
     }
 
+    public void performDeleteOperations(UserEntity user){
+        handleAccountUserEntityDeletion(user);
+
+        handleAccountNotificationDeletion(user);
+
+        handleAccountPropertiesDeletion(user);
+
+        handleAccountSecurityDeletion(user);
+
+        handleAccountDeletion(user);
+
+        handleAccountCodeDeletion(user);
+
+        deleteAccounts(user);
+
+        handleUserLogDeletion(user);
+
+        handleUserDeletion(user);
+    }
+
     public void deleteData(UserEntity user) {
 
         try{
             LOGGER.info("Starting to delete all user-related data for user ID: {}", user.getUserID());
 
             // Delete AccountUser entities
-            handleAccountUserEntityDeletion(user);
-
-            handleAccountNotificationDeletion(user);
-
-            handleAccountPropertiesDeletion(user);
-
-            handleAccountSecurityDeletion(user);
-
-            handleAccountDeletion(user);
-
-            handleAccountCodeDeletion(user);
-
-            deleteAccounts(user);
-
-            handleUserLogDeletion(user);
-
-            handleUserDeletion(user);
+            performDeleteOperations(user);
 
             databaseUtilities.resetAutoIncrementsForTables();
 

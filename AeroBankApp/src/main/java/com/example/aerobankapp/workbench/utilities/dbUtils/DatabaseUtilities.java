@@ -22,7 +22,7 @@ public class DatabaseUtilities
     }
 
     @Transactional
-    public boolean resetAutoIncrementsForTables() {
+    public void resetAutoIncrementsForTables() {
         try {
             // Reset auto increment for the 'account' table
             Integer maxAccountId = jdbcTemplate.queryForObject("SELECT MAX(acctID) FROM account", Integer.class);
@@ -51,11 +51,8 @@ public class DatabaseUtilities
             LOGGER.info("Successfully reset AUTO INCREMENT for users table.");
 
             // Add similar blocks for other tables as needed
-
-            return true;
         } catch (Exception e) {
             LOGGER.error("Error resetting auto increments: " + e.getMessage());
-            return false;
         }
     }
 

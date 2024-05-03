@@ -110,7 +110,7 @@ function TransactionSummary(){
                 minHeight: '100vh',
                 padding: '20px'
             }}>
-                <Typography variant="h4" align="center" gutterBottom>Transaction Summary</Typography>
+                <Typography variant="h4" align="center" gutterBottom>Transaction Analytics</Typography>
                 <Grid container spacing={2} justifyContent="center">
                     <Grid item xs={12} md={10}>
                         <Accordion>
