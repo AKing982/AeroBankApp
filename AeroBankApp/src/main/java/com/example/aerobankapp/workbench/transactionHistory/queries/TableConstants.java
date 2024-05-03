@@ -19,7 +19,7 @@ public enum TableConstants
         this.code = code;
     }
 
-    public TableConstants getInstance(String code){
+    public static TableConstants getInstance(String code){
         return switch (code) {
             case "Deposit" -> DEPOSITS;
             case "Withdraw" -> WITHDRAWAL;

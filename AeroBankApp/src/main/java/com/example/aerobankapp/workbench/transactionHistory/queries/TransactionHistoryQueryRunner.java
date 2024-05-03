@@ -1,6 +1,5 @@
 package com.example.aerobankapp.workbench.transactionHistory.queries;
 
-import com.example.aerobankapp.model.HistoryQuery;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
@@ -22,9 +21,7 @@ public class TransactionHistoryQueryRunner implements Runnable
         this.entityManager = entityManager;
     }
 
-    public List<HistoryQuery> getHistoryQuerySet(){
-        return null;
-    }
+
 
     @Override
     public void run() {
