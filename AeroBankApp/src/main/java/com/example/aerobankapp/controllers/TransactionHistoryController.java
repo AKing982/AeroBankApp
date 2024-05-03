@@ -3,6 +3,7 @@ package com.example.aerobankapp.controllers;
 import com.example.aerobankapp.dto.TransactionHistoryDTO;
 import com.example.aerobankapp.model.TransactionHistory;
 import com.example.aerobankapp.services.TransactionHistoryService;
+import com.example.aerobankapp.workbench.transactionHistory.TransactionHistoryParser;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import java.util.List;
 public class TransactionHistoryController {
 
     private final TransactionHistoryService transactionHistoryService;
+    private TransactionHistoryParser transactionHistoryParser;
     private final Logger LOGGER = LoggerFactory.getLogger(TransactionHistoryController.class);
 
     @Autowired
@@ -31,6 +33,7 @@ public class TransactionHistoryController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> sendTransactionHistoryRequest(@RequestBody TransactionHistoryDTO transactionHistoryDTO){
         LOGGER.info("TransactionHistory request: " + transactionHistoryDTO);
+        transactionHistoryParser = new TransactionHistoryParser(transactionHistoryDTO);
 
         return ResponseEntity.ok("Successfully sent transaction history request");
     }
