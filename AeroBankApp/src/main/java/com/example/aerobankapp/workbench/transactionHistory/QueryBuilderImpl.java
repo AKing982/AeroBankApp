@@ -57,7 +57,8 @@ public class QueryBuilderImpl implements QueryBuilder
             conditions.add("e.description LIKE :descr");
         }
         if(criteria.description() != null && !criteria.description().isEmpty() && criteria.startDate() != null){
-            conditions.add("e.description LIKE :descr AND e.scheduledDate :startDate");
+            conditions.add("e.description LIKE :descr");
+            conditions.add("AND e.scheduledDate :startDate");
         }
         if(!conditions.isEmpty()){
             conditions.add(0, "WHERE");
