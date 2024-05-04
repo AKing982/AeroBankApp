@@ -140,9 +140,10 @@ function TransactionSummaryFilters({ applyFilters}){
 
     const buildRequest = (enabledTypes) => {
         console.log("Enabled Types:", enabledTypes); // Debug: Check the content of enabledTypes
-
+        let userID = sessionStorage.getItem('userID');
         return {
             filterType: enabledTypes,
+            userID: userID,
             description: filters.description || null,
             startDate: filters.startDate ? filters.startDate.toISOString().split('T')[0] : null,
             endDate: filters.endDate ? filters.endDate.toISOString().split('T')[0] : null,

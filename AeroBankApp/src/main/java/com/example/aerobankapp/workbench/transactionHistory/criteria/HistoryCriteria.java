@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record HistoryCriteria(String description, BigDecimal minAmount,
+public record HistoryCriteria(int userID, String description, BigDecimal minAmount,
                               BigDecimal maxAmount, LocalDate startDate, LocalDate endDate,
                               LocalTime scheduledTime, TransferType transferType,
                               TransactionStatus status, TransactionType transactionType)

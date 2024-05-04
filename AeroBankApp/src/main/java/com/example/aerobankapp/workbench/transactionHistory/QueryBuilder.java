@@ -12,4 +12,6 @@ public interface QueryBuilder
     List<String> buildQueryConditions(HistoryCriteria criteria, StringBuilder query);
 
     StringBuilder buildTableStatement(TransactionType transactionType);
+
+    void revised(HistoryCriteria criteria, List<String> conditions, StringBuilder query);
 }

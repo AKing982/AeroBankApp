@@ -197,7 +197,7 @@ export default function TransactionSummaryTable() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = rows.map((n) => n.name);
+            const newSelected = rows.map((n) => n.description);
             setSelected(newSelected);
             return;
         }

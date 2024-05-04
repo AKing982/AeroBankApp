@@ -10,7 +10,9 @@ public enum TransactionType {
 
     PURCHASE("Purchase"),
 
-    TRANSFER("Transfer");
+    TRANSFER("Transfer"),
+
+    NONE("");
 
     private String code;
 

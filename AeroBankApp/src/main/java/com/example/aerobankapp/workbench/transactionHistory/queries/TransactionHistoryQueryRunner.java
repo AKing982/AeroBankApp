@@ -40,6 +40,7 @@ public class TransactionHistoryQueryRunner
         TypedQuery<?> query = entityManager.createQuery(jpqlQuery, determineEntityClass(criteria.transactionType()));
 
         setQueryParameters(query, criteria);
+        query.setParameter("userID", criteria.userID());
         String sqlQuery = query.unwrap(org.hibernate.query.Query.class).getQueryString();
         LOGGER.info("Full Query: " + sqlQuery);
         return query.getResultList();
@@ -73,5 +74,6 @@ public class TransactionHistoryQueryRunner
         if (criteria.status() != null) {
             query.setParameter("status", criteria.status());
         }
+
     }
 }

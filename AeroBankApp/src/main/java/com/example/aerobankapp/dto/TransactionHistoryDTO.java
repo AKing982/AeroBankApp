@@ -13,6 +13,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 public record TransactionHistoryDTO( @JsonProperty("filterType") List<String> filterType,
+                                     @JsonProperty("userID") int userID,
                                      @JsonProperty("description") String description,
                                      @JsonProperty("startDate") @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") LocalDate startDate,
                                      @JsonProperty("endDate") @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") LocalDate endDate,
