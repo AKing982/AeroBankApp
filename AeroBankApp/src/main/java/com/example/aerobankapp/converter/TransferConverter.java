@@ -16,7 +16,7 @@ public class TransferConverter implements EntityToModelConverter<TransferEntity,
         transfer.setFromAccountID(entity.getFromAccount().getAcctID());
         transfer.setFromUserID(entity.getFromUser().getUserID());
         transfer.setToUserID(entity.getToUser().getUserID());
-        transfer.setAmount(entity.getTransferAmount());
+        transfer.setAmount(entity.getAmount());
         transfer.setDescription(entity.getDescription());
         transfer.setPosted(LocalDate.now());
         transfer.setToAccountID(entity.getToAccount().getAcctID());

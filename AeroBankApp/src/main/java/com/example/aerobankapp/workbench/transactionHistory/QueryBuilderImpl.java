@@ -88,7 +88,7 @@ public class QueryBuilderImpl implements QueryBuilder
                 conditions.add("AND e.amount =:maxAmount");
             }
             if(criteria.minAmount() != null && criteria.maxAmount() == null){
-                conditions.add("AND e.amount =:minAmount");
+                conditions.add("e.amount =:minAmount");
             }
             if(criteria.status() != null){
                 conditions.add("AND e.status =:status");

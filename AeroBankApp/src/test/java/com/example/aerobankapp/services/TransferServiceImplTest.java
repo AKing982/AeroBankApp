@@ -276,7 +276,7 @@ class TransferServiceImplTest {
         TransferEntity transferEntity = new TransferEntity();
         transferEntity.setTransferID(id);
         transferEntity.setTransferType(transferType);
-        transferEntity.setTransferAmount(amount);
+        transferEntity.setAmount(amount);
         transferEntity.setDescription(description);
         transferEntity.setFromUser(UserEntity.builder().userID(fromUserID).build());
         transferEntity.setToUser(UserEntity.builder().userID(toUserID).build());

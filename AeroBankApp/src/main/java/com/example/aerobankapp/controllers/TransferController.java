@@ -60,7 +60,7 @@ public class TransferController
         TransferEntity transfer = new TransferEntity();
         transfer.setTransferID(transferDTO.transferID()); // Make sure getters are properly named
         transfer.setDescription(transferDTO.transferDescription());
-        transfer.setTransferAmount(transferDTO.transferAmount());
+        transfer.setAmount(transferDTO.transferAmount());
         transfer.setScheduledDate(transferDTO.transferDate());
         transfer.setScheduledTime(transferDTO.transferTime());
 

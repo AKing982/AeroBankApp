@@ -478,7 +478,7 @@ class TransferEngineTest {
         transfer.setFromAccountID(entity.getFromAccount().getAcctID());
         transfer.setFromUserID(entity.getFromUser().getUserID());
         transfer.setToUserID(entity.getToUser().getUserID());
-        transfer.setAmount(entity.getTransferAmount());
+        transfer.setAmount(entity.getAmount());
         transfer.setDescription(entity.getDescription());
         transfer.setPosted(LocalDate.now());
         transfer.setToAccountID(entity.getToAccount().getAcctID());
@@ -490,7 +490,7 @@ class TransferEngineTest {
     private TransferEntity convertTransferToEntity(Transfer transferEntity){
         TransferEntity entity = new TransferEntity();
         entity.setTransferID(transferEntity.getTransferID());
-        entity.setTransferAmount(transferEntity.getAmount());
+        entity.setAmount(transferEntity.getAmount());
         entity.setTransferType(transferEntity.getTransferType());
         entity.setStatus(TransactionStatus.PENDING);
         entity.setToUser(UserEntity.builder().userID(transferEntity.getToUserID()).build());
@@ -515,7 +515,7 @@ class TransferEngineTest {
         TransferEntity transferEntity = new TransferEntity();
         transferEntity.setTransferID(id);
         transferEntity.setTransferType(transferType);
-        transferEntity.setTransferAmount(amount);
+        transferEntity.setAmount(amount);
         transferEntity.setDescription(description);
         transferEntity.setFromUser(UserEntity.builder().userID(fromUserID).build());
         transferEntity.setToUser(UserEntity.builder().userID(toUserID).build());

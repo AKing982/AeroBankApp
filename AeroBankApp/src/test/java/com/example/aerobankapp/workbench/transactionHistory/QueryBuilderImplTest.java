@@ -50,7 +50,7 @@ class QueryBuilderImplTest {
     public void shouldAddWithdrawEntityTableWithWithdrawType(){
         TransactionType transactionType = TransactionType.WITHDRAW;
 
-        StringBuilder expected = new StringBuilder("SELECT e FROM WithdrawEntity e");
+        StringBuilder expected = new StringBuilder("SELECT e FROM WithdrawEntity e ");
         StringBuilder actual = queryBuilder.buildTableStatement(transactionType);
 
         assertEquals(expected.toString(), actual.toString());
@@ -60,7 +60,7 @@ class QueryBuilderImplTest {
     public void shouldAddTransferEntityTableWithTransferType(){
         TransactionType transactionType = TransactionType.TRANSFER;
 
-        StringBuilder expected = new StringBuilder("SELECT e FROM TransferEntity e");
+        StringBuilder expected = new StringBuilder("SELECT e FROM TransferEntity e ");
         StringBuilder actual = queryBuilder.buildTableStatement(transactionType);
 
         assertEquals(expected.toString(), actual.toString());
@@ -68,7 +68,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void testShouldReturnEmptyConditionsForEmptyCriteria(){
-        HistoryCriteria historyCriteria = new HistoryCriteria(null, null, null, null, null, null, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria(null, null, null, null, null, null, null, null, null);
         List<String> conditions = queryBuilder.buildQueryConditions(historyCriteria, query);
         assertTrue(conditions.isEmpty());
         assertTrue(query.toString().isEmpty());
@@ -76,7 +76,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void shouldAddDescriptionCondition(){
-        HistoryCriteria historyCriteria = new HistoryCriteria("test", null, null, null, null, null, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria("test", null, null, null, null, null, null, null, null);
         List<String> conditions = queryBuilder.buildQueryConditions(historyCriteria, query);
         assertTrue(conditions.contains("e.description LIKE :descr"),"Conditions should contain description condition");
         assertTrue(query.toString().contains("e.description LIKE :descr"));
@@ -84,7 +84,7 @@ class QueryBuilderImplTest {
 
     @Test
     void shouldAppendWhereToQueryIfConditionsExist() {
-        HistoryCriteria criteria = new HistoryCriteria("test", null, null, null, null, null, null);
+        HistoryCriteria criteria = new HistoryCriteria("test", null, null, null, null, null, null, null, null);
         queryBuilder.buildQueryConditions(criteria, query);
         assertTrue(query.toString().startsWith("WHERE"), "Query should start with WHERE when conditions exist");
     }
@@ -93,7 +93,7 @@ class QueryBuilderImplTest {
     @Test
     public void testBuildQueryConditions_DescriptionAndElseBlank(){
         StringBuilder query = new StringBuilder();
-        HistoryCriteria historyCriteria = new HistoryCriteria("Test", null, null, null, null, null, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria("Test", null, null, null, null, null, null, null, null);
 
         // Expected condition strings
         List<String> expectedConditions = List.of("WHERE", "e.description LIKE :descr");
@@ -114,7 +114,7 @@ class QueryBuilderImplTest {
     @Test
     public void shouldAddDescriptionAndStartDateConditions(){
 
-        HistoryCriteria historyCriteria = new HistoryCriteria("test", null, null, LocalDate.of(2024, 5, 5), null, null, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria("test", null, null, LocalDate.of(2024, 5, 5), null, null, null, null, null);
 
         List<String> expectedConditions = List.of("WHERE", "e.description LIKE :descr", "AND e.scheduledDate =:startDate");
         List<String> actualConditions = queryBuilder.buildQueryConditions(historyCriteria, query);
@@ -133,7 +133,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void shouldAddDescriptionAndStartDateAndEndDateConditions(){
-        HistoryCriteria historyCriteria = new HistoryCriteria("test", null, null, LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 15), null, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria("test", null, null, LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 15), null, null, null,null);
         List<String> expectedConditions = List.of("WHERE", "e.description LIKE :descr", "AND e.scheduledDate BETWEEN :startDate AND :endDate");
         List<String> actualConditions = queryBuilder.buildQueryConditions(historyCriteria, query);
         System.out.println(actualConditions);
@@ -149,7 +149,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void shouldAddDescriptionAndStatusAndStartAndEndDateConditions(){
-        HistoryCriteria historyCriteria = new HistoryCriteria("test", null, null, LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 15), TransactionStatus.PENDING, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria("test", null, null, LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 15), null, null, TransactionStatus.PENDING, null);
         List<String> expectedConditions = List.of("WHERE", "e.description LIKE :descr", "AND e.scheduledDate BETWEEN :startDate AND :endDate", "AND e.status =:status");
         List<String> actualConditions = queryBuilder.buildQueryConditions(historyCriteria, query);
         assertNotNull(actualConditions);
@@ -165,7 +165,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void shouldAddDescriptionAndStartAndEndDateAndMinAmountConditions(){
-        HistoryCriteria historyCriteria = new HistoryCriteria("test", new BigDecimal("100.00"), null, LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 15), null, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria("test", new BigDecimal("100.00"), null, LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 15), null, null, null,null);
         List<String> expectedConditions = List.of("WHERE", "e.description LIKE :descr", "AND e.scheduledDate BETWEEN :startDate AND :endDate", "AND e.amount := minAmount");
         List<String> actualConditions = queryBuilder.buildQueryConditions(historyCriteria, query);
         System.out.println(actualConditions);
@@ -183,7 +183,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void shouldAddDescriptionAndStartAndEndDateAndMinAndMaxAmountConditions(){
-        HistoryCriteria historyCriteria = new HistoryCriteria("test", new BigDecimal("100.00"), new BigDecimal("500.00"), LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 15), null, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria("test", new BigDecimal("100.00"), new BigDecimal("500.00"), LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 15), null, null, null,null);
         List<String> expectedConditions = List.of("WHERE", "e.description LIKE :descr", "AND e.scheduledDate BETWEEN :startDate AND :endDate", "AND (e.amount >= :minAmount AND e.amount <= :maxAmount)");
         List<String> actualConditions = queryBuilder.buildQueryConditions(historyCriteria, query);
         System.out.println(actualConditions);
@@ -200,7 +200,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void shouldAddStartAndEndDateAndMinAndMaxAmountConditions(){
-        HistoryCriteria historyCriteria = new HistoryCriteria("", new BigDecimal("100.00"), new BigDecimal("500.00"), LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 15), null, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria("", new BigDecimal("100.00"), new BigDecimal("500.00"), LocalDate.of(2024, 5, 4), LocalDate.of(2024, 5, 15), null, null, null,null);
         List<String> expectedConditions = List.of("WHERE", "e.scheduledDate BETWEEN :startDate AND :endDate", "AND (e.amount >= :minAmount AND e.amount <= :maxAmount)");
         List<String> actualConditions = queryBuilder.buildQueryConditions(historyCriteria, query);
         System.out.println(actualConditions);
@@ -216,7 +216,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void shouldAddStartDateAndMaxAmountConditions(){
-        HistoryCriteria historyCriteria = new HistoryCriteria("", null, new BigDecimal("500.000"), LocalDate.of(2024, 5, 4), null, null, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria("", null, new BigDecimal("500.000"), LocalDate.of(2024, 5, 4), null, null, null, null, null);
         List<String> expectedConditions = List.of("WHERE", "e.scheduledDate =:startDate", "AND e.amount =:maxAmount");
         List<String> actualConditions = queryBuilder.buildQueryConditions(historyCriteria, query);
 
@@ -232,7 +232,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void shouldAddMinAmountAndStatusConditions(){
-        HistoryCriteria historyCriteria = new HistoryCriteria("", new BigDecimal("120.00"), null, null, null, TransactionStatus.PENDING, null);
+        HistoryCriteria historyCriteria = new HistoryCriteria("", new BigDecimal("120.00"), null, null, null,null,null,  TransactionStatus.PENDING,null);
         List<String> expectedConditions = List.of("WHERE", "e.amount =:minAmount", "AND e.status =:status");
         List<String> actualConditions = queryBuilder.buildQueryConditions(historyCriteria, query);
 
@@ -248,7 +248,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void testGetQueryFromHistoryCriteria(){
-        HistoryCriteria historyCriteria = new HistoryCriteria("", new BigDecimal("120.00"), null, null, null, TransactionStatus.PENDING, TransactionType.WITHDRAW);
+        HistoryCriteria historyCriteria = new HistoryCriteria("", new BigDecimal("120.00"), null, null, null, null, null, TransactionStatus.PENDING, TransactionType.WITHDRAW);
 
         String expectedQuery = "SELECT e FROM WithdrawEntity e WHERE e.amount =:minAmount AND e.status =:status";
         String actualQuery = queryBuilder.getQueryFromHistoryCriteria(historyCriteria);
@@ -258,7 +258,7 @@ class QueryBuilderImplTest {
 
     @Test
     public void testGetQueryFromHistoryCriteria_DescriptionAndStartAndEndDateDepositTable(){
-        HistoryCriteria historyCriteria = new HistoryCriteria("test", null, null, LocalDate.of(2024, 5, 3), LocalDate.of(2024, 5, 15), null, TransactionType.DEPOSIT);
+        HistoryCriteria historyCriteria = new HistoryCriteria("test", null, null, LocalDate.of(2024, 5, 3), LocalDate.of(2024, 5, 15), null, null, null, TransactionType.DEPOSIT);
 
         String expectedQuery = "SELECT e FROM DepositsEntity e WHERE e.description LIKE :descr AND e.scheduledDate BETWEEN :startDate AND :endDate";
         String actualQuery = queryBuilder.getQueryFromHistoryCriteria(historyCriteria);

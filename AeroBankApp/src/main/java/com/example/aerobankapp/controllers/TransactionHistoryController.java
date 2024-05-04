@@ -38,7 +38,7 @@ public class TransactionHistoryController {
     public ResponseEntity<?> sendTransactionHistoryRequest(@RequestBody TransactionHistoryDTO transactionHistoryDTO){
         LOGGER.info("TransactionHistory request: " + transactionHistoryDTO);
         transactionHistoryParser = new TransactionHistoryParser(transactionHistoryDTO);
-        HistoryCriteria historyCriteria = new HistoryCriteria(transactionHistoryDTO.description(), transactionHistoryDTO.minAmount(), transactionHistoryDTO.maxAmount(), transactionHistoryDTO.startDate(), transactionHistoryDTO.endDate(), transactionHistoryDTO.status(), transactionHistoryDTO.transactionType());
+        HistoryCriteria historyCriteria = new HistoryCriteria(transactionHistoryDTO.description(), transactionHistoryDTO.minAmount(), transactionHistoryDTO.maxAmount(), transactionHistoryDTO.startDate(), transactionHistoryDTO.endDate(), transactionHistoryDTO.scheduledTime(), null, transactionHistoryDTO.status(), transactionHistoryDTO.transactionType());
 
         List<?> queryList = transactionHistoryQueryRunner.runQuery(historyCriteria);
 

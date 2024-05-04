@@ -44,8 +44,8 @@ public class TransferEntity
     @JsonBackReference
     private AccountEntity toAccount;
 
-    @Column(name="transferAmount")
-    private BigDecimal transferAmount;
+    @Column(name="amount")
+    private BigDecimal amount;
 
     @Column(name="description")
     private String description;
@@ -78,7 +78,7 @@ public class TransferEntity
                 ", fromUser=" + fromUser +
                 ", fromAccount=" + fromAccount +
                 ", toAccount=" + toAccount +
-                ", transferAmount=" + transferAmount +
+                ", amount=" + amount +
                 ", description='" + description + '\'' +
                 ", scheduledDate=" + scheduledDate +
                 ", scheduledTime=" + scheduledTime +
