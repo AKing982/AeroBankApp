@@ -15,7 +15,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {alpha} from "@mui/material/styles";
 import {rows} from "./EnhancedTable";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import TransactionSummaryFilters from "./TransactionSummaryFilters";
 import Dialog from "@mui/material/Dialog";
 
@@ -53,31 +53,31 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
-        id: 'name',
+        id: 'description',
         numeric: false,
         disablePadding: true,
         label: 'Description',
     },
     {
-        id: 'calories',
+        id: 'amount',
         numeric: true,
         disablePadding: false,
         label: 'Amount',
     },
     {
-        id: 'fat',
+        id: 'scheduledDate',
         numeric: true,
         disablePadding: false,
         label: 'Date Scheduled',
     },
     {
-        id: 'carbs',
+        id: 'scheduledTime',
         numeric: true,
         disablePadding: false,
         label: 'Time Scheduled',
     },
     {
-        id: 'protein',
+        id: 'status',
         numeric: true,
         disablePadding: false,
         label: 'Status',
@@ -175,7 +175,8 @@ export default function TransactionSummaryTable() {
     const [dense, setDense] = useState(false);
     const [filterModalOpen, setFilterModalOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
-
+    const [rows, setRows] = useState([]); // Assume initial empty or fetched from somewhere else
+    const [allData, setAllData] = useState([]); // This holds all unfiltered data
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -185,6 +186,13 @@ export default function TransactionSummaryTable() {
 
     const handleFilterClick = () => {
         setDialogOpen(true);
+    };
+
+    // Set rows directly from the filters applied
+    const applyFilters = (filteredData) => {
+        console.log('Filters: ', filteredData);
+        setRows(filteredData);
+        handleCloseDialog();
     };
 
     const handleSelectAllClick = (event) => {
@@ -255,41 +263,43 @@ export default function TransactionSummaryTable() {
                             rowCount={rows.length}
                         />
                         <TableBody>
-                            {stableSort(rows, getComparator(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row, index) => {
-                                    const isItemSelected = isSelected(row.name);
+                            {rows.length > 0 ? (
+                                rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                                    const isItemSelected = isSelected(row.description);
                                     const labelId = `enhanced-table-checkbox-${index}`;
-
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={(event) => handleClick(event, row.name)}
+                                            onClick={(event) => handleClick(event, row.description)}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
-                                            key={row.name}
+                                            key={row.description}
                                             selected={isItemSelected}
                                         >
                                             <TableCell padding="checkbox">
                                                 <Checkbox
-                                                    color="primary"
                                                     checked={isItemSelected}
                                                     inputProps={{ 'aria-labelledby': labelId }}
                                                 />
                                             </TableCell>
                                             <TableCell component="th" id={labelId} scope="row" padding="none">
-                                                {row.name}
+                                                {row.description}
                                             </TableCell>
-                                            <TableCell align="right">{row.calories}</TableCell>
-                                            <TableCell align="right">{row.fat}</TableCell>
-                                            <TableCell align="right">{row.carbs}</TableCell>
-                                            <TableCell align="right">{row.protein}</TableCell>
+                                            <TableCell align="right">{row.amount}</TableCell>
+                                            <TableCell align="right">{row.scheduledDate}</TableCell>
+                                            <TableCell align="right">{row.scheduledTime}</TableCell>
+                                            <TableCell align="right">{row.status}</TableCell>
                                         </TableRow>
                                     );
-                                })}
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                                })
+                            ) : (
+                                <TableRow style={{ height: 53 * rowsPerPage }}>
+                                    <TableCell colSpan={6} align="center">No data available</TableCell>
+                                </TableRow>
+                            )}
+                            {emptyRows > 0 && rows.length > 0 && (
+                                <TableRow style={{ height: 53 * emptyRows }}>
                                     <TableCell colSpan={6} />
                                 </TableRow>
                             )}
@@ -319,12 +329,10 @@ export default function TransactionSummaryTable() {
                     <Typography id="filter-dialog-title" variant="h6" component="h2">
                         Filters
                     </Typography>
-                    <TransactionSummaryFilters applyFilters={(filters) => {
-                        console.log('Filters applied:', filters);
-                        handleCloseDialog(); // Close dialog after applying filters
-                    }} />
+                    <TransactionSummaryFilters applyFilters={applyFilters} />
                 </Box>
             </Dialog>
         </Box>
     );
+
 }

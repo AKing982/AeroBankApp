@@ -25,7 +25,7 @@ const transactionFilterType = {
     amountRange: 'AMOUNT_RANGE'
 };
 
-function TransactionSummaryFilters({ applyFilters }){
+function TransactionSummaryFilters({ applyFilters}){
     const [filters, setFilters] = useState({
         description: '',
         startDate: null,
@@ -184,7 +184,8 @@ function TransactionSummaryFilters({ applyFilters }){
             if(response.status === 200 || response.status === 201){
                 console.log('Response from server was successful');
                 console.log('Filters: ', filters);
-                applyFilters(filters);
+                console.log('Filter Response: ', response.data);
+                applyFilters(response.data);
             }else{
                 console.error('Failed to save filters, response status: ', response.status);
                 setError('Failed to save filters.');

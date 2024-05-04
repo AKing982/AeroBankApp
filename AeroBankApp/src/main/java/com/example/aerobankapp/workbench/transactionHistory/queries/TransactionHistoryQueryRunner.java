@@ -27,17 +27,11 @@ public class TransactionHistoryQueryRunner
     @PersistenceContext
     private EntityManager entityManager;
     private QueryBuilder queryBuilder;
-    private HistoryCriteria historyCriteria;
-
     private Logger LOGGER = LoggerFactory.getLogger(TransactionHistoryQueryRunner.class);
 
     public TransactionHistoryQueryRunner(EntityManager entityManager, QueryBuilder queryBuilder){
         this.entityManager = entityManager;
         this.queryBuilder = queryBuilder;
-    }
-
-    public void setCriteria(HistoryCriteria criteria){
-        historyCriteria = criteria;
     }
 
     public List<?> runQuery(HistoryCriteria criteria){
