@@ -100,6 +100,14 @@ function TransactionSummary(){
         
     }
 
+    const fetchTableData = () => {
+        try{
+
+        }catch(error){
+
+        }
+    };
+
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>

@@ -1,6 +1,8 @@
 package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.scheduler.ScheduleType;
+import com.example.aerobankapp.workbench.utilities.TransactionStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -27,10 +29,12 @@ public class DepositsEntity extends AbstractTransactionEntityModel
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="userID")
+    @JsonBackReference
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="acctID")
+    @JsonBackReference
     private AccountEntity account;
 
     @Column(name="amount", nullable = false)
@@ -52,6 +56,10 @@ public class DepositsEntity extends AbstractTransactionEntityModel
 
     @Column(name="scheduledDate")
     private LocalDate scheduledDate;
+
+    @Column(name="status")
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus status;
 
     @Column(name="posted")
     private LocalDate posted;

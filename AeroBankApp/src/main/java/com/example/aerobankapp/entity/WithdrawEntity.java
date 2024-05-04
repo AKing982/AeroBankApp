@@ -2,12 +2,15 @@ package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.workbench.utilities.Status;
+import com.example.aerobankapp.workbench.utilities.TransactionStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,10 +30,12 @@ public class WithdrawEntity
 
     @ManyToOne
     @JoinColumn(name="userID")
+    @JsonBackReference
     private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name="fromAcctID")
+    @JsonBackReference
     private AccountEntity account;
 
     @Column(name="description")
@@ -56,6 +61,6 @@ public class WithdrawEntity
 
     @Column(name="status")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private TransactionStatus status;
 
 }

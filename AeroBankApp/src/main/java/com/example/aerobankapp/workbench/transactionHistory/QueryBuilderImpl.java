@@ -2,13 +2,13 @@ package com.example.aerobankapp.workbench.transactionHistory;
 
 import com.example.aerobankapp.exceptions.NullHistoryCriteriaException;
 import com.example.aerobankapp.workbench.transactionHistory.criteria.HistoryCriteria;
-import com.example.aerobankapp.workbench.transactionHistory.queries.QueryConstants;
 import com.example.aerobankapp.workbench.transactions.TransactionType;
-import org.hibernate.query.internal.ScrollableResultsIterator;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class QueryBuilderImpl implements QueryBuilder
 {
 
@@ -20,24 +20,25 @@ public class QueryBuilderImpl implements QueryBuilder
         StringBuilder queryWithTable = buildTableStatement(historyCriteria.transactionType());
 
         List<String> queryConditions = buildQueryConditions(historyCriteria, queryWithTable);
-        return "";
+        return queryWithTable.toString();
     }
 
 
     public StringBuilder buildTableStatement(TransactionType transactionType){
-        StringBuilder query = new StringBuilder("SELECT e FROM");
+        StringBuilder query = new StringBuilder("SELECT e FROM ");
+
         switch(transactionType){
             case DEPOSIT:
                 query.append("DepositsEntity e");
+                query.append(" ");
                 break;
             case WITHDRAW:
                 query.append("WithdrawEntity e");
+                query.append(" ");
                 break;
             case TRANSFER:
                 query.append("TransferEntity e");
-                break;
-            case PURCHASE:
-                query.append("PurchaseEntity e");
+                query.append(" ");
                 break;
             default:
                 throw new IllegalArgumentException("Invalid TransactionType found.");
@@ -52,14 +53,67 @@ public class QueryBuilderImpl implements QueryBuilder
         }
 
         List<String> conditions = new ArrayList<>();
+        // The query will start with a description
         if(criteria.description() != null && !criteria.description().isEmpty()){
-          //  conditions.add("WHERE");
             conditions.add("e.description LIKE :descr");
+            if(criteria.startDate() != null && criteria.endDate() == null){
+                conditions.add("AND e.scheduledDate =:startDate");
+            }
+            if(criteria.endDate() != null && criteria.startDate() != null){
+                conditions.add("AND e.scheduledDate BETWEEN :startDate AND :endDate");
+            }
+            if(criteria.status() != null){
+                conditions.add("AND e.status =:status");
+            }
+            if(criteria.minAmount() != null && criteria.maxAmount() == null){
+                conditions.add("AND e.amount =:minAmount");
+            }
+            if(criteria.minAmount() != null && criteria.maxAmount() != null){
+                conditions.add("AND (e.amount >= :minAmount AND e.amount <= :maxAmount)");
+            }
         }
-        if(criteria.description() != null && !criteria.description().isEmpty() && criteria.startDate() != null){
-            conditions.add("e.description LIKE :descr");
-            conditions.add("AND e.scheduledDate :startDate");
+        // If the description is empty, run the following
+        else{
+            if(criteria.startDate() != null && criteria.endDate() != null){
+                conditions.add("e.scheduledDate BETWEEN :startDate AND :endDate");
+            }
+            if(criteria.startDate() != null && criteria.endDate() == null){
+                conditions.add("e.scheduledDate =:startDate");
+            }
+            if(criteria.minAmount() != null && criteria.maxAmount() != null){
+                conditions.add("AND (e.amount >= :minAmount AND e.amount <= :maxAmount)");
+            }
+
+            if(criteria.minAmount() == null && criteria.maxAmount() != null){
+                conditions.add("AND e.amount =:maxAmount");
+            }
+            if(criteria.minAmount() != null && criteria.maxAmount() == null){
+                conditions.add("AND e.amount =:minAmount");
+            }
+            if(criteria.status() != null){
+                conditions.add("AND e.status =:status");
+            }
         }
+//        if(criteria.description() != null && !criteria.description().isEmpty()){
+//            conditions.add("e.description LIKE :descr");
+//        }
+//        if(criteria.endDate() != null && criteria.startDate() != null){
+//            conditions.add("AND e.scheduledDate BETWEEN :startDate AND :endDate");
+//        }
+//        if(criteria.startDate() != null && criteria.endDate() == null){
+//            conditions.add("AND e.scheduledDate :startDate");
+//        }
+//        if(criteria.status() != null){
+//            conditions.add("AND e.status =:status");
+//        }
+//        if(criteria.maxAmount() != null && criteria.minAmount() != null){
+//            conditions.add("AND (e.amount >= :minAmount AND e.amount <= :maxAmount)");
+//        }
+//        if(criteria.minAmount() != null && criteria.maxAmount() == null){
+//            conditions.add("AND e.amount =:minAmount");
+//        }
+
+
         if(!conditions.isEmpty()){
             conditions.add(0, "WHERE");
             query.append(String.join(" ", conditions));

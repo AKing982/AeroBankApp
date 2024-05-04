@@ -8,6 +8,7 @@ import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.TransferService;
 import com.example.aerobankapp.services.UserService;
+import com.example.aerobankapp.workbench.utilities.TransactionStatus;
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -60,8 +61,8 @@ public class TransferController
         transfer.setTransferID(transferDTO.transferID()); // Make sure getters are properly named
         transfer.setDescription(transferDTO.transferDescription());
         transfer.setTransferAmount(transferDTO.transferAmount());
-        transfer.setTransferDate(transferDTO.transferDate());
-        transfer.setTransferTime(transferDTO.transferTime());
+        transfer.setScheduledDate(transferDTO.transferDate());
+        transfer.setScheduledTime(transferDTO.transferTime());
 
         // Fetch and set the user entities
         UserEntity toUser = userService.findById(transferDTO.toUserID())
@@ -82,7 +83,7 @@ public class TransferController
 
         transfer.setNotificationEnabled(transferDTO.notificationEnabled());
         transfer.setDate_posted(LocalDate.now());
-        transfer.setStatus(TransferStatus.PENDING);
+        transfer.setStatus(TransactionStatus.PENDING);
         transfer.setTransferType(transferDTO.transferType());
         LOGGER.info("Transfer Type: " + transfer.getTransferType());
 

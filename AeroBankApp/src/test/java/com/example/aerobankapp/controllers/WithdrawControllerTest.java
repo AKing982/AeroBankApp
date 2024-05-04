@@ -5,6 +5,7 @@ import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.WithdrawEntity;
 import com.example.aerobankapp.services.WithdrawService;
 import com.example.aerobankapp.workbench.utilities.Status;
+import com.example.aerobankapp.workbench.utilities.TransactionStatus;
 import lombok.With;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -243,7 +244,7 @@ class WithdrawControllerTest {
         withdrawEntity.setAmount(amount);
         withdrawEntity.setDescription(description);
         withdrawEntity.setPosted(LocalDate.now());
-        withdrawEntity.setStatus(Status.ACTIVE);
+        withdrawEntity.setStatus(TransactionStatus.PENDING);
         return withdrawEntity;
     }
 

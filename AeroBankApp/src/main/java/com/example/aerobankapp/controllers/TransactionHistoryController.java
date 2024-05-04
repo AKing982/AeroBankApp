@@ -4,6 +4,8 @@ import com.example.aerobankapp.dto.TransactionHistoryDTO;
 import com.example.aerobankapp.model.TransactionHistory;
 import com.example.aerobankapp.services.TransactionHistoryService;
 import com.example.aerobankapp.workbench.transactionHistory.TransactionHistoryParser;
+import com.example.aerobankapp.workbench.transactionHistory.criteria.HistoryCriteria;
+import com.example.aerobankapp.workbench.transactionHistory.queries.TransactionHistoryQueryRunner;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +24,13 @@ public class TransactionHistoryController {
 
     private final TransactionHistoryService transactionHistoryService;
     private TransactionHistoryParser transactionHistoryParser;
+    private TransactionHistoryQueryRunner transactionHistoryQueryRunner;
     private final Logger LOGGER = LoggerFactory.getLogger(TransactionHistoryController.class);
 
     @Autowired
-    public TransactionHistoryController(TransactionHistoryService transactionHistoryService){
+    public TransactionHistoryController(TransactionHistoryService transactionHistoryService, TransactionHistoryQueryRunner transactionHistoryQueryRunner){
         this.transactionHistoryService = transactionHistoryService;
+        this.transactionHistoryQueryRunner = transactionHistoryQueryRunner;
     }
 
     @PostMapping("/save")
@@ -34,8 +38,11 @@ public class TransactionHistoryController {
     public ResponseEntity<?> sendTransactionHistoryRequest(@RequestBody TransactionHistoryDTO transactionHistoryDTO){
         LOGGER.info("TransactionHistory request: " + transactionHistoryDTO);
         transactionHistoryParser = new TransactionHistoryParser(transactionHistoryDTO);
+        HistoryCriteria historyCriteria = new HistoryCriteria(transactionHistoryDTO.description(), transactionHistoryDTO.minAmount(), transactionHistoryDTO.maxAmount(), transactionHistoryDTO.startDate(), transactionHistoryDTO.endDate(), transactionHistoryDTO.status(), transactionHistoryDTO.transactionType());
 
-        return ResponseEntity.ok("Successfully sent transaction history request");
+        List<?> queryList = transactionHistoryQueryRunner.runQuery(historyCriteria);
+
+        return ResponseEntity.ok(queryList);
     }
 
 }

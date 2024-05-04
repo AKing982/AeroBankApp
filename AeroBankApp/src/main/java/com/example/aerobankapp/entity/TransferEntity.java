@@ -1,8 +1,10 @@
 package com.example.aerobankapp.entity;
 
+import com.example.aerobankapp.workbench.utilities.TransactionStatus;
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
 import com.example.aerobankapp.workbench.utilities.TransferType;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,10 +36,12 @@ public class TransferEntity
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="fromAccountID", referencedColumnName = "acctID")
+    @JsonBackReference
     private AccountEntity fromAccount;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="toAccountID", referencedColumnName = "acctID")
+    @JsonBackReference
     private AccountEntity toAccount;
 
     @Column(name="transferAmount")
@@ -46,11 +50,11 @@ public class TransferEntity
     @Column(name="description")
     private String description;
 
-    @Column(name="transferDate")
-    private LocalDate transferDate;
+    @Column(name="scheduledDate")
+    private LocalDate scheduledDate;
 
-    @Column(name="transferTime")
-    private LocalTime transferTime;
+    @Column(name="scheduledTime")
+    private LocalTime scheduledTime;
 
     @Column(name="transferType")
     @Enumerated(EnumType.STRING)
@@ -58,7 +62,7 @@ public class TransferEntity
 
     @Enumerated(EnumType.STRING)
     @Column(name="status")
-    private TransferStatus status;
+    private TransactionStatus status;
 
     @Column(name="date_posted")
     private LocalDate date_posted;
@@ -76,10 +80,11 @@ public class TransferEntity
                 ", toAccount=" + toAccount +
                 ", transferAmount=" + transferAmount +
                 ", description='" + description + '\'' +
-                ", transferDate=" + transferDate +
-                ", transferTime=" + transferTime +
+                ", scheduledDate=" + scheduledDate +
+                ", scheduledTime=" + scheduledTime +
                 ", transferType=" + transferType +
                 ", status=" + status +
+                ", date_posted=" + date_posted +
                 ", notificationEnabled=" + notificationEnabled +
                 '}';
     }

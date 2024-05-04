@@ -16,6 +16,7 @@ import com.example.aerobankapp.scheduler.ScheduleType;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.transactions.Transfer;
 import com.example.aerobankapp.workbench.utilities.BalanceHistoryUtil;
+import com.example.aerobankapp.workbench.utilities.TransactionStatus;
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
 import com.example.aerobankapp.workbench.utilities.TransferType;
 import org.junit.jupiter.api.AfterEach;
@@ -491,14 +492,14 @@ class TransferEngineTest {
         entity.setTransferID(transferEntity.getTransferID());
         entity.setTransferAmount(transferEntity.getAmount());
         entity.setTransferType(transferEntity.getTransferType());
-        entity.setStatus(TransferStatus.PENDING);
+        entity.setStatus(TransactionStatus.PENDING);
         entity.setToUser(UserEntity.builder().userID(transferEntity.getToUserID()).build());
         entity.setFromUser(UserEntity.builder().userID(transferEntity.getFromUserID()).build());
         entity.setToAccount(AccountEntity.builder().acctID(transferEntity.getToAccountID()).build());
         entity.setFromAccount(AccountEntity.builder().acctID(transferEntity.getFromAccountID()).build());
         entity.setDescription(transferEntity.getDescription());
-        entity.setTransferTime(transferEntity.getTimeScheduled());
-        entity.setTransferDate(transferEntity.getDateScheduled());
+        entity.setScheduledTime(transferEntity.getTimeScheduled());
+        entity.setScheduledDate(transferEntity.getDateScheduled());
         return entity;
     }
 
@@ -520,9 +521,9 @@ class TransferEngineTest {
         transferEntity.setToUser(UserEntity.builder().userID(toUserID).build());
         transferEntity.setFromAccount(AccountEntity.builder().acctID(fromAccountID).build());
         transferEntity.setToAccount(AccountEntity.builder().acctID(toAccountID).build());;
-        transferEntity.setTransferTime(LocalTime.now());
-        transferEntity.setTransferDate(LocalDate.now());
-        transferEntity.setStatus(TransferStatus.PENDING);
+        transferEntity.setScheduledTime(LocalTime.now());
+        transferEntity.setScheduledDate(LocalDate.now());
+        transferEntity.setStatus(TransactionStatus.PENDING);
         return transferEntity;
 
     }

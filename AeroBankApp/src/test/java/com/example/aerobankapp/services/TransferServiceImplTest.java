@@ -9,6 +9,7 @@ import com.example.aerobankapp.exceptions.NullTransferEntityFoundException;
 import com.example.aerobankapp.exceptions.StatusNotFoundException;
 import com.example.aerobankapp.repositories.TransferRepository;
 import com.example.aerobankapp.workbench.utilities.Status;
+import com.example.aerobankapp.workbench.utilities.TransactionStatus;
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
 import com.example.aerobankapp.workbench.utilities.TransferType;
 import org.junit.jupiter.api.AfterEach;
@@ -281,9 +282,9 @@ class TransferServiceImplTest {
         transferEntity.setToUser(UserEntity.builder().userID(toUserID).build());
         transferEntity.setFromAccount(AccountEntity.builder().acctID(fromAccountID).build());
         transferEntity.setToAccount(AccountEntity.builder().acctID(toAccountID).build());
-        transferEntity.setTransferTime(LocalTime.now());
-        transferEntity.setTransferDate(LocalDate.now());
-        transferEntity.setStatus(TransferStatus.PENDING);
+        transferEntity.setScheduledTime(LocalTime.now());
+        transferEntity.setScheduledDate(LocalDate.now());
+        transferEntity.setStatus(TransactionStatus.PENDING);
         return transferEntity;
 
     }

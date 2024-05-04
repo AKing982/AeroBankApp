@@ -10,7 +10,7 @@ public enum TransactionStatus
     COMPLETED("Completed"),
     FAILED("Failed"),
 
-    CANCELLED("Cancelled");
+    CANCELED("Canceled");
 
     private String code;
 
