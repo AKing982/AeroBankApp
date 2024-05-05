@@ -4,6 +4,7 @@ import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.entity.TransferEntity;
 import com.example.aerobankapp.entity.WithdrawEntity;
 import com.example.aerobankapp.workbench.transactionHistory.QueryBuilder;
+import com.example.aerobankapp.workbench.transactionHistory.QueryBuilderImpl;
 import com.example.aerobankapp.workbench.transactionHistory.criteria.HistoryCriteria;
 import com.example.aerobankapp.workbench.transactions.TransactionType;
 import jakarta.persistence.EntityManager;
@@ -26,16 +27,16 @@ public class TransactionHistoryQueryRunner
 {
     @PersistenceContext
     private EntityManager entityManager;
-    private QueryBuilder queryBuilder;
+    private QueryBuilderImpl queryBuilder;
     private Logger LOGGER = LoggerFactory.getLogger(TransactionHistoryQueryRunner.class);
 
-    public TransactionHistoryQueryRunner(EntityManager entityManager, QueryBuilder queryBuilder){
+    public TransactionHistoryQueryRunner(EntityManager entityManager, QueryBuilderImpl queryBuilder){
         this.entityManager = entityManager;
         this.queryBuilder = queryBuilder;
     }
 
     public List<?> runQuery(HistoryCriteria criteria){
-        String jpqlQuery = queryBuilder.getQueryFromHistoryCriteria(criteria);
+        String jpqlQuery = queryBuilder.getQueryFromCriteria(criteria);
         LOGGER.info("Running Query: " + jpqlQuery);
         TypedQuery<?> query = entityManager.createQuery(jpqlQuery, determineEntityClass(criteria.transactionType()));
 

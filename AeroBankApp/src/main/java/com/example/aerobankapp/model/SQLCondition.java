@@ -22,7 +22,7 @@ public class SQLCondition implements QueryComponent
     }
 
     /**
-     * For use with queries that use ranges
+     * DO NOT ATTEMPT TO USE OR NULL POINTER WILL BE THROWN
      * @param range
      */
     public SQLCondition(String range){
@@ -57,6 +57,8 @@ public class SQLCondition implements QueryComponent
         if(operator.equals("LIKE") || operator.equals("BETWEEN")){
             return field + " " + operator + " " + value;
         }
-        return field + " " + operator + value;
+        else{
+            return field + " " + operator + value;
+        }
     }
 }

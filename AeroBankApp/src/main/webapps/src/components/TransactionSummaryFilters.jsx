@@ -13,6 +13,7 @@ import {Box} from "@mui/system";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import {useState} from "react";
 import axios from "axios";
+import {CheckBox} from "@mui/icons-material";
 
 const transactionFilterType = {
     description: 'DESCRIPTION',
@@ -33,6 +34,7 @@ function TransactionSummaryFilters({ applyFilters}){
         transactionType: '',
         status: '',
         scheduledTime: '',
+        transferType: '',
         username: '',
         accountID: '',
         minAmount: '',
@@ -63,27 +65,17 @@ function TransactionSummaryFilters({ applyFilters}){
         { value: 'TRANSFER', label: 'Transfer' }
     ];
 
+    const transferTypes = [
+        {value: 'SAME_USER', label: 'Same User'},
+        {value: 'USER_TO_USER', label: 'to Other User'}
+    ]
+
     const transactionStatusTypes = [
         {value: 'PENDING', label: 'Pending'},
         {value: 'COMPLETED', label: 'Completed'},
         {value: 'FAILED', label: 'Failed'},
         {value: 'CANCELLED', label: 'Cancelled'}
     ];
-
-    const buildDescriptionAndStartDateRequest = (description, startDate) => {
-
-    };
-
-    const buildDescriptionAndStatusRequest = (description, status) => {
-
-    };
-
-    const buildDescriptionAndUserNameRequest = (description, username) => {
-
-    };
-
-
-
 
     const handleInputChange = (event) => {
         const { name, value, checked, type } = event.target;
@@ -269,6 +261,26 @@ function TransactionSummaryFilters({ applyFilters}){
                             </Select>
                         </FormControl>
                     )}
+                    <FormControlLabel
+                        control={<Checkbox checked={filters.enabledFilters.transferType} onChange={handleInputChange} name="transferType" />}
+                        label="Transfer Type"
+                    />
+                    {filters.enabledFilters.transferType && (
+                        <FormControl fullWidth>
+                            <InputLabel>Transfer Type</InputLabel>
+                            <Select
+                                value={filters.transferType}
+                                onChange={handleInputChange}
+                                name="transferType"
+                            >
+                                {transferTypes.map((type) => (
+                                    <MenuItem key={type.value} value={type.value}>
+                                        {type.label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    )}
 
                     <FormControlLabel
                         control={<Checkbox checked={filters.enabledFilters.status} onChange={handleInputChange} name="status" />}
@@ -291,23 +303,6 @@ function TransactionSummaryFilters({ applyFilters}){
                         </FormControl>
                     )}
 
-                    {/* Include checkboxes and fields for username, accountID, and amount range */}
-                    <FormControlLabel
-                        control={<Checkbox checked={filters.enabledFilters.username} onChange={handleInputChange} name="username" />}
-                        label="Username"
-                    />
-                    {filters.enabledFilters.username && (
-                        <TextField
-                            fullWidth
-                            label="Username"
-                            name="username"
-                            multiline
-                            rows={1}
-                            value={filters.username}
-                            onChange={handleInputChange}
-                        />
-                    )}
-
                     <FormControlLabel
                         control={<Checkbox checked={filters.enabledFilters.accountID} onChange={handleInputChange} name="accountID" />}
                         label="Account ID"
@@ -317,8 +312,7 @@ function TransactionSummaryFilters({ applyFilters}){
                             fullWidth
                             label="Account ID"
                             name="accountID"
-                            multiline
-                            rows={1}
+                            type="text"
                             value={filters.accountID}
                             onChange={handleInputChange}
                         />
