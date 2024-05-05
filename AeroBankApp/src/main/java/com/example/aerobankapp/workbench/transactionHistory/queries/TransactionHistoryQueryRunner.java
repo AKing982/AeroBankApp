@@ -46,6 +46,15 @@ public class TransactionHistoryQueryRunner
         return query.getResultList();
     }
 
+    public List<?> runDefaultQueryWithUserID(int userID){
+        String jpqlQuery = queryBuilder.getDefaultUserQuery();
+        LOGGER.info("Running Query; " + jpqlQuery);
+        TypedQuery<?> query = entityManager.createQuery(jpqlQuery, DepositsEntity.class);
+
+        query.setParameter("userID", userID);
+        return query.getResultList();
+    }
+
     private Class<?> determineEntityClass(TransactionType type) {
     return switch (type) {
         case DEPOSIT -> DepositsEntity.class;

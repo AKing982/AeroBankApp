@@ -1,18 +1,27 @@
 package com.example.aerobankapp.workbench.transactionHistory;
 
 import com.example.aerobankapp.exceptions.NullHistoryCriteriaException;
+import com.example.aerobankapp.model.SQLCondition;
+import com.example.aerobankapp.model.SQLOperand;
+import com.example.aerobankapp.model.SQLSelect;
+import com.example.aerobankapp.model.SQLTable;
 import com.example.aerobankapp.workbench.transactionHistory.criteria.HistoryCriteria;
 import com.example.aerobankapp.workbench.transactions.TransactionType;
+import org.hibernate.annotations.processing.SQL;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class QueryBuilderImpl implements QueryBuilder
+public class QueryBuilderImpl
 {
+    private final String BASIC_SELECTION = "e";
 
-    @Override
+    public QueryBuilderImpl(){
+        // NOT THE CONSTRUCTOR YOU SEEK
+    }
+
     public String getQueryFromHistoryCriteria(HistoryCriteria historyCriteria) {
         if(historyCriteria == null){
             throw new IllegalArgumentException("History criteria must not be null");
@@ -23,6 +32,55 @@ public class QueryBuilderImpl implements QueryBuilder
         return queryWithTable.toString();
     }
 
+    public String getQueryFromCriteria(HistoryCriteria criteria){
+        if(criteria == null){
+            throw new IllegalArgumentException("History criteria must not be null");
+        }
+
+        SQLSelect sqlSelect = buildSelectStatement(BASIC_SELECTION);
+        SQLTable sqlTable = buildTableQueryStatement(criteria.transactionType());
+        SQLOperand whereConditions = buildQueryWhereConditions(criteria);
+        return buildSQLQuery(sqlSelect, sqlTable, whereConditions);
+    }
+
+    private SQLSelect getSQLSelect(){
+        return new SQLSelect();
+    }
+
+    public String getSelectSQLQuery(final SQLSelect sqlSelect){
+        return sqlSelect.buildSQL();
+    }
+
+    public SQLSelect buildSelectStatement(final String selection){
+        SQLSelect sqlSelect = getSQLSelect();
+        sqlSelect.addSelection(selection);
+        return sqlSelect;
+    }
+
+    public SQLSelect buildSelectStatementFromSelections(final List<String> selections){
+        SQLSelect sqlSelect = getSQLSelect();
+        selections.forEach(sqlSelect::addSelection);
+        return sqlSelect;
+    }
+
+
+    public SQLTable buildTableQueryStatement(TransactionType transactionType){
+        SQLTable sqlTable;
+        switch(transactionType){
+            case DEPOSIT:
+                sqlTable = new SQLTable("DepositsEntity", "e");
+                break;
+            case WITHDRAW:
+                sqlTable = new SQLTable("WithdrawEntity", "e");
+                break;
+            case TRANSFER:
+                sqlTable = new SQLTable("TransferEntity", "e");
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid TransactionType found.");
+        }
+        return sqlTable;
+    }
 
     public StringBuilder buildTableStatement(TransactionType transactionType){
         StringBuilder query = new StringBuilder("SELECT e FROM ");
@@ -46,22 +104,30 @@ public class QueryBuilderImpl implements QueryBuilder
         return query;
     }
 
-    @Override
+    public SQLOperand buildQueryWhereConditions(final HistoryCriteria criteria){
+       SQLOperand whereConditions = new SQLOperand("AND");
+       if(criteria.description() != null && !criteria.description().isEmpty()){
+           whereConditions.addComponent(new SQLCondition("e.description", "LIKE", ":descr"));
+       }
+       return whereConditions;
+    }
+
+    public String buildSQLQuery(final SQLSelect select, final SQLTable table, final SQLOperand where){
+        String whereClause = where.buildQueryComponent();
+        if(whereClause.isEmpty()){
+            return select.buildSQL() + " " + table.buildSQL();
+        }
+        return select.buildSQL() + " " + table.buildSQL() + " WHERE " + whereClause;
+    }
+
+
     public List<String> buildQueryConditions(HistoryCriteria criteria, StringBuilder query){
         if(criteria == null){
             throw new NullHistoryCriteriaException("Null History Criteria caught.");
         }
 
         List<String> conditions = new ArrayList<>();
-        // The query will start with a description
-       // originalCondition(criteria, conditions, query);
-        boolean firstCondition = true;
-        revised(criteria, conditions, query);
-//        addDescriptionCondition(criteria, conditions, firstCondition);
-//        addAmountCondition(criteria, conditions, firstCondition);
-//        addStatusCondition(criteria, conditions, firstCondition);
-//        addTransferTypeCondition(criteria, conditions, firstCondition);
-//        addScheduledTimeCondition(criteria, conditions, firstCondition);
+        originalCondition(criteria, conditions, query);
 
         if(!conditions.isEmpty()){
             conditions.add(0, "WHERE");
@@ -72,85 +138,102 @@ public class QueryBuilderImpl implements QueryBuilder
         return conditions;
     }
 
-    public void revised(HistoryCriteria criteria, List<String> conditions, StringBuilder query){
-        // Is description the first statement?
-        if(!criteria.description().isEmpty()){
-            addANDStatement(conditions, "e.description LIKE :descr", true);
-            if(criteria.status() != null){
-                addANDStatement(conditions, "e.status =:status", false);
-                if(criteria.minAmount() != null){
-                    addANDStatement(conditions, "e.amount =:minAmount", false);
-                    if(criteria.maxAmount() != null){
-                        addANDStatement(conditions, "e.amount =:maxAmount", false);
-                        if(criteria.startDate() != null){
-                            addANDStatement(conditions, "e.scheduledDate =:startDate", false);
-                            if(criteria.endDate() != null){
-                                addANDStatement(conditions, "e.scheduledDate =:endDate", false);
-                                if(criteria.scheduledTime() != null){
-                                    addANDStatement(conditions, "e.scheduledTime =:scheduledTime", false);
-                                    if(criteria.transferType() != null){
-                                        addANDStatement(conditions, "e.transferType =:transferType", false);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if(!conditions.isEmpty()){
-            conditions.add(0, "WHERE ");
-            conditions.add("AND e.user.userID =:userID");
-            query.append(String.join(" ", conditions));
-        }
+    @Deprecated
+    public String getDefaultUserQuery(){
+        StringBuilder tableStatement = buildTableStatement(TransactionType.DEPOSIT);
 
+        StringBuilder queryWithWhereClause = getDefaultUserWhereClause(tableStatement);
+        return queryWithWhereClause.toString();
     }
 
-    private void original(HistoryCriteria criteria, List<String> conditions, StringBuilder query){
-        boolean firstCondition = true; // Flag to check if it's the first condition
+    public SQLOperand buildDefaultUserClause(){
+        SQLOperand sqlOperand = new SQLOperand("");
+        sqlOperand.addComponent(buildSQLCondition("e.user.userID", "=", ":userID"));
+        return sqlOperand;
+    }
 
-        if (criteria.description() != null && !criteria.description().isEmpty()) {
-            addANDStatement(conditions, "e.description LIKE :descr", firstCondition);
-            firstCondition = false; // Any subsequent condition is not the first
+    @Deprecated
+    public StringBuilder getDefaultUserWhereClause(StringBuilder query){
+        List<String> conditions = new ArrayList<>();
+        conditions.add(0, "WHERE");
+        conditions.add("e.user.userID=:userID");
+        query.append(String.join(" ", conditions));
+        return query;
+    }
 
-            if (criteria.startDate() != null && criteria.endDate() == null) {
-                addANDStatement(conditions, "e.scheduledDate =:startDate", firstCondition);
-            }
-            if (criteria.endDate() != null && criteria.startDate() != null) {
-                addANDStatement(conditions, "e.scheduledDate BETWEEN :startDate AND :endDate", firstCondition);
-            }
-            if (criteria.status() != null) {
-                addANDStatement(conditions, "e.status =:status", firstCondition);
-            }
-            if (criteria.minAmount() != null && criteria.maxAmount() == null) {
-                addANDStatement(conditions, "e.amount =:minAmount", firstCondition);
-            }
-            if (criteria.minAmount() != null && criteria.maxAmount() != null) {
-                addANDStatement(conditions, "(e.amount >= :minAmount AND e.amount <= :maxAmount)", firstCondition);
-            }
-        } else {
-            // When description is null or empty, handle other conditions
-            if (criteria.startDate() != null && criteria.endDate() != null) {
-                addANDStatement(conditions, "e.scheduledDate BETWEEN :startDate AND :endDate", firstCondition);
-                firstCondition = false;
-            }
-            if (criteria.startDate() != null && criteria.endDate() == null) {
-                addANDStatement(conditions, "e.scheduledDate =:startDate", firstCondition);
-            }
-            if (criteria.minAmount() != null && criteria.maxAmount() != null) {
-               addANDStatement(conditions, "(e.amount >= :minAmount AND e.amount <= :maxAmount)", firstCondition);
-            }
-            if (criteria.minAmount() == null && criteria.maxAmount() != null) {
-                addANDStatement(conditions, "e.amount =:maxAmount", firstCondition);
-            }
-            if (criteria.minAmount() != null && criteria.maxAmount() == null) {
-                addANDStatement(conditions, "e.amount =:minAmount", firstCondition);
-            }
-            if (criteria.status() != null) {
-                addANDStatement(conditions, "e.status =:status", firstCondition);
-            }
+    public SQLCondition buildSQLCondition(String field, String operator, String value){
+        return new SQLCondition(field, operator, value);
+    }
+
+    public SQLCondition buildSQLConditionWithRange(String rangeQuery){
+        return new SQLCondition(rangeQuery);
+    }
+
+    public SQLOperand buildQueryWithStartingAndOperand(HistoryCriteria criteria){
+        SQLOperand whereClause = new SQLOperand("AND");
+        buildConditionsStatementsFromCriteria(criteria, whereClause);
+        return whereClause;
+    }
+
+    public void buildConditionsStatementsFromCriteria(final HistoryCriteria criteria, final SQLOperand whereClause){
+
+        if(criteria.description() != null && !criteria.description().isEmpty()){
+            whereClause.addComponent(buildSQLCondition("e.description", "LIKE", "=:descr"));
+            addStartDateAndNoEndDateCondition(criteria, whereClause);
+            addStartAndEndDateCondition(criteria, whereClause);
+            addStatusCriteriaCondition(criteria, whereClause);
+            addMinAmountAndMaxAmountCondition(criteria, whereClause);
+            addMinAmountNoMaxAmountCondition(criteria, whereClause);
+            addMaxAmountNoMinAmountCondition(criteria, whereClause);
+        }else{
+            addStatusCriteriaCondition(criteria, whereClause);
+            addStartAndEndDateCondition(criteria, whereClause);
+            addStartDateAndNoEndDateCondition(criteria, whereClause);
         }
     }
+
+    public void addMinAmountNoMaxAmountCondition(HistoryCriteria criteria, SQLOperand where){
+        if(criteria.minAmount() != null && criteria.maxAmount() == null){
+            where.addComponent(buildSQLCondition("e.amount", "=", ":minAmount"));
+        }
+    }
+
+    public void addMinAmountAndMaxAmountCondition(HistoryCriteria criteria, SQLOperand where){
+        if(criteria.minAmount() != null && criteria.maxAmount() != null){
+            where.addComponent(buildSQLConditionWithRange("(e.amount >= :minAmount AND e.amount <= :maxAmount)"));
+        }
+    }
+
+    public void addMaxAmountNoMinAmountCondition(HistoryCriteria criteria, SQLOperand where){
+        if(criteria.maxAmount() != null && criteria.minAmount() == null){
+            where.addComponent(buildSQLCondition("e.amount", "=", ":maxAmount"));
+        }
+    }
+
+    public void addStatusCriteriaCondition(HistoryCriteria criteria, SQLOperand where){
+        if(criteria.status() != null){
+            where.addComponent(buildSQLCondition("e.status", "=", ":status"));
+        }
+    }
+
+    public void addStartAndEndDateCondition(HistoryCriteria criteria, SQLOperand where){
+        if(criteria.startDate() != null && criteria.endDate() != null){
+            where.addComponent(buildSQLCondition("e.scheduledDate", "BETWEEN", ":startDate AND :endDate"));
+        }
+    }
+
+    public void addStartDateAndNoEndDateCondition(HistoryCriteria criteria, SQLOperand where){
+        if(criteria.startDate() != null && criteria.endDate() == null){
+            where.addComponent(buildSQLCondition("e.scheduledDate", "=", ":startDate"));
+        }
+    }
+
+    public void addEndDateAndNoStartDateCondition(HistoryCriteria criteria, SQLOperand where){
+        if(criteria.endDate() != null && criteria.startDate() == null){
+            where.addComponent(buildSQLCondition("e.scheduledDate", "=", ":endDate"));
+        }
+    }
+
 
     private void originalCondition(HistoryCriteria criteria, List<String> conditions, StringBuilder query){
         if(criteria.description() != null && !criteria.description().isEmpty()){
@@ -194,69 +277,5 @@ public class QueryBuilderImpl implements QueryBuilder
                 conditions.add("AND e.status =:status");
             }
         }
-    }
-
-    private void buildFirstConditionStatement(HistoryCriteria criteria, List<String> conditions){
-        // Check if description is empty as its the first condition in the where clause
-        if(!criteria.description().isEmpty()){
-            boolean isFirst = true;
-            addANDStatement(conditions, "e.description LIKE :descr", isFirst);
-        }
-    }
-
-    private void addDescriptionCondition(HistoryCriteria criteria, List<String> conditions, boolean isFirstCondition){
-        if(criteria.description() != null && !criteria.description().isEmpty()){
-            addANDStatement(conditions, "e.description LIKE :descr", true);
-           // conditions.add("e.description LIKE :descr");
-            addStartDateAndEndDateCondition(criteria, conditions, isFirstCondition);
-        }
-    }
-
-    private void addStartDateAndEndDateCondition(HistoryCriteria criteria, List<String> conditions, boolean isFirstCondition){
-
-        if(criteria.startDate() != null){
-            if(criteria.endDate() != null){
-                conditions.add("e.scheduledDate BETWEEN :startDate AND :endDate");
-            }else{
-                conditions.add("AND e.scheduledDate =:startDate");
-            }
-        }
-    }
-
-    private void addStatusCondition(HistoryCriteria criteria, List<String> conditions, boolean isFirstCondition){
-        if(criteria.status() != null){
-            conditions.add("e.status =:status");
-        }
-    }
-
-    private void addAmountCondition(HistoryCriteria criteria, List<String> conditions, boolean isFirstCondition){
-        if(criteria.minAmount() != null){
-            if(criteria.maxAmount() != null){
-                conditions.add("e.amount BETWEEN :minAmount AND :maxAmount");
-            }else{
-                conditions.add("e.amount =:minAmount");
-            }
-        }
-    }
-
-    private void addScheduledTimeCondition(HistoryCriteria criteria, List<String> conditions, boolean isFirstCondition){
-        if(criteria.scheduledTime() != null){
-            conditions.add("e.scheduledTime =:scheduledTime");
-        }
-    }
-
-    private void addTransferTypeCondition(HistoryCriteria criteria, List<String> conditions, boolean isFirstCondition){
-        if(criteria.transferType() != null){
-            conditions.add("e.transferType =:transferType");
-        }
-    }
-
-    private void addANDStatement(List<String> conditions, String condition, boolean isFirstCondition){
-        String newCondition = "";
-        if(!isFirstCondition){
-            newCondition  = "AND " + condition;
-            conditions.add(newCondition);
-        }
-        conditions.add(condition);
     }
 }

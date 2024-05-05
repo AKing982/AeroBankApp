@@ -18,6 +18,7 @@ import {rows} from "./EnhancedTable";
 import React, {useEffect, useState} from "react";
 import TransactionSummaryFilters from "./TransactionSummaryFilters";
 import Dialog from "@mui/material/Dialog";
+import axios from "axios";
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -100,6 +101,7 @@ function EnhancedTableHead(props) {
                         indeterminate={numSelected > 0 && numSelected < rowCount}
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
+                        disabled
                         inputProps={{
                             'aria-label': 'select all desserts',
                         }}
@@ -184,9 +186,26 @@ export default function TransactionSummaryTable() {
         setOrderBy(property);
     };
 
+
     const handleFilterClick = () => {
         setDialogOpen(true);
     };
+
+    useEffect(() => {
+        let userID = sessionStorage.getItem('userID');
+         const fetchDefaultData = async () => {
+             try{
+                 const response = await axios.get(`http://localhost:8080/AeroBankApp/api/transactionHistory/data/${userID}`)
+                 if(response.status === 200 || response.status === 201){
+                     setRows(response.data);
+                 }
+             }catch(error){
+                 console.error('There was an error fetching default user data: ', error);
+             }
+         }
+
+         fetchDefaultData();
+    }, [])
 
     // Set rows directly from the filters applied
     const applyFilters = (filteredData) => {
@@ -244,6 +263,18 @@ export default function TransactionSummaryTable() {
         setDialogOpen(false);
     };
 
+    function formatTimeFromArray(timeArray){
+        if(!timeArray || timeArray.length !== 2){
+            return '';
+        }
+
+        const [hour, minute] = timeArray;
+        const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
+        const amPM = hour >= 12 ? 'PM' : 'AM';
+        const formattedMinute = minute < 10 ? `0${minute}` : minute;
+        return `${formattedHour}:${formattedMinute} ${amPM}`;
+    }
+
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
@@ -286,9 +317,9 @@ export default function TransactionSummaryTable() {
                                             <TableCell component="th" id={labelId} scope="row" padding="none">
                                                 {row.description}
                                             </TableCell>
-                                            <TableCell align="right">{row.amount}</TableCell>
-                                            <TableCell align="right">{row.scheduledDate}</TableCell>
-                                            <TableCell align="right">{row.scheduledTime}</TableCell>
+                                            <TableCell align="right">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(row.amount)}</TableCell>
+                                            <TableCell align="right">{new Date(row.scheduledDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</TableCell>
+                                            <TableCell align="right">{formatTimeFromArray(row.scheduledTime)}</TableCell>
                                             <TableCell align="right">{row.status}</TableCell>
                                         </TableRow>
                                     );
@@ -296,11 +327,6 @@ export default function TransactionSummaryTable() {
                             ) : (
                                 <TableRow style={{ height: 53 * rowsPerPage }}>
                                     <TableCell colSpan={6} align="center">No data available</TableCell>
-                                </TableRow>
-                            )}
-                            {emptyRows > 0 && rows.length > 0 && (
-                                <TableRow style={{ height: 53 * emptyRows }}>
-                                    <TableCell colSpan={6} />
                                 </TableRow>
                             )}
                         </TableBody>

@@ -1,6 +1,10 @@
 package com.example.aerobankapp.workbench.transactionHistory;
 
 import com.example.aerobankapp.exceptions.NullHistoryCriteriaException;
+import com.example.aerobankapp.model.SQLCondition;
+import com.example.aerobankapp.model.SQLOperand;
+import com.example.aerobankapp.model.SQLSelect;
+import com.example.aerobankapp.model.SQLTable;
 import com.example.aerobankapp.workbench.transactionHistory.criteria.HistoryCriteria;
 import com.example.aerobankapp.workbench.transactions.TransactionType;
 import com.example.aerobankapp.workbench.utilities.TransactionStatus;
@@ -24,7 +28,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class QueryBuilderImplTest {
 
-    private QueryBuilder queryBuilder;
+    private QueryBuilderImpl queryBuilder;
 
     private StringBuilder query;
 
@@ -276,43 +280,92 @@ class QueryBuilderImplTest {
     }
 
     @Test
-    public void testRevisedOnlyDescription(){
-        when(historyCriteria.description()).thenReturn("test");
+    public void testGetDefaultUserQuery(){
+        String expected = "SELECT e FROM DepositsEntity e WHERE e.user.userID=:userID";
+        String actual = queryBuilder.getDefaultUserQuery();
 
-        List<String> conditions = new ArrayList<>();
-        List<String> expectedConditions = List.of("WHERE ", "e.description LIKE :descr", " AND e.user.userID=:userID");
-        StringBuilder query = new StringBuilder();
-
-        queryBuilder.revised(historyCriteria, conditions, query);
-
-        assertEquals(3, conditions.size());
-        assertEquals(expectedConditions.get(0), conditions.get(0));
-        assertEquals(expectedConditions.get(1), conditions.get(1));
-        assertEquals("e.description LIKE :descr", conditions.get(1));
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void testRevisedDescriptionAndStatus(){
+    public void testBuildConditionsStatements_DescriptionAndStartDate(){
         when(historyCriteria.description()).thenReturn("test");
         when(historyCriteria.status()).thenReturn(TransactionStatus.PENDING);
 
-        List<String> conditions = new ArrayList<>();
-        List<String> expectedConditions = List.of("WHERE ", "e.description LIKE :descr", " AND e.status=:status", " AND e.user.userID=:userID");
-        StringBuilder query = new StringBuilder();
+        SQLOperand expectedWhere = new SQLOperand("AND");
 
-        queryBuilder.revised(historyCriteria, conditions, query);
+        expectedWhere.addComponent(new SQLCondition("e.description", "LIKE", "=:descr"));
+        expectedWhere.addComponent(new SQLCondition("e.status", "=", ":status"));
 
-        System.out.println(conditions);
-        assertEquals(4, conditions.size());
-        for(int i = 0; i < conditions.size(); i++){
-            assertEquals(expectedConditions.get(i), expectedConditions.get(i));
-        }
+        SQLOperand actualWhere = new SQLOperand("AND");
+        queryBuilder.buildConditionsStatementsFromCriteria(historyCriteria, actualWhere);
+        System.out.println(actualWhere.buildQueryComponent());
+        assertEquals(expectedWhere.buildQueryComponent(), actualWhere.buildQueryComponent());
+    }
 
-        assertEquals("e.description LIKE :descr", conditions.get(1));
+    @Test
+    public void testBuildConditionStatements_DescriptionAndStatusAndStartDate(){
+        when(historyCriteria.description()).thenReturn("test");
+        when(historyCriteria.status()).thenReturn(TransactionStatus.PENDING);
+        when(historyCriteria.startDate()).thenReturn(LocalDate.now());
+
+        SQLOperand expectedWhere = new SQLOperand("AND");
+        expectedWhere.addComponent(new SQLCondition("e.description", "LIKE ", "=:descr"));
+        expectedWhere.addComponent(new SQLCondition("e.scheduledDate", "=", ":startDate"));
+        expectedWhere.addComponent(new SQLCondition("e.status", "=", ":status"));
+
+        SQLOperand actualWhere = new SQLOperand("AND");
+
+        queryBuilder.buildConditionsStatementsFromCriteria(historyCriteria, actualWhere);
+        System.out.println(actualWhere.buildQueryComponent());
+        assertEquals(expectedWhere.buildQueryComponent(), actualWhere.buildQueryComponent());
+    }
+
+    @Test
+    public void testBuildConditionStatements_StatusAndStartAndEndDate(){
+        when(historyCriteria.status()).thenReturn(TransactionStatus.PENDING);
+        when(historyCriteria.startDate()).thenReturn(LocalDate.now());
+        when(historyCriteria.endDate()).thenReturn(LocalDate.of(2024, 5, 10));
+
+        SQLOperand expectedWhere = new SQLOperand("AND");
+        expectedWhere.addComponent(new SQLCondition("e.status", "=", ":status"));
+        expectedWhere.addComponent(new SQLCondition("e.scheduledDate", "BETWEEN", ":startDate AND :endDate"));
+
+        SQLOperand actualWhere = new SQLOperand("AND");
+        queryBuilder.buildConditionsStatementsFromCriteria(historyCriteria, actualWhere);
+        System.out.println(actualWhere.buildQueryComponent());
+        assertEquals(expectedWhere.buildQueryComponent(), actualWhere.buildQueryComponent());
+    }
+
+    @Test
+    public void testBuildDefaultUserClause(){
+        SQLOperand sqlOperand = new SQLOperand("");
+        sqlOperand.addComponent(new SQLCondition("e.user.userID", "=", ":userID"));
+
+        SQLOperand actual = queryBuilder.buildDefaultUserClause();
+        System.out.println(actual.buildQueryComponent());
+        assertEquals(sqlOperand.buildQueryComponent(), actual.buildQueryComponent());
+    }
+
+    @Test
+    public void testBuildSQLQueryDefaultUser(){
+        SQLOperand expectedWhere = new SQLOperand("");
+        expectedWhere.addComponent(new SQLCondition("e.user.userID", "=", ":userID"));
+
+        SQLSelect expectedSelect = new SQLSelect();
+        expectedSelect.addSelection("e");
+        SQLTable expectedTable = new SQLTable("DepositsEntity", "e");
+
+        String expectedQuery = "SELECT e FROM DepositsEntity e WHERE e.user.userID =:userID";
+
+        String actualQuery = queryBuilder.buildSQLQuery(expectedSelect, expectedTable, expectedWhere);
+        System.out.println(actualQuery);
+        assertEquals(expectedQuery, actualQuery);
     }
 
 
     @AfterEach
     void tearDown() {
+        historyCriteria = null;
     }
 }

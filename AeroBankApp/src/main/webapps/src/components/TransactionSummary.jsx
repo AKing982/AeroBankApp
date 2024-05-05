@@ -46,6 +46,18 @@ function TransactionSummary(){
         minAmount: '',
         maxAmount: ''
     });
+
+    const [transactionStatistics, setTransactionStatistics] = useState({
+        lastTransaction: '',
+        transactionCount: 0,
+        totalAmountTransferred: 0,
+        averageTransaction: 0,
+        averageMonthlyTransactions: 0,
+        totalWeeklyTransactions: 0,
+        totalMonthlyTransactions: 0,
+        pendingTransactionCount: 0,
+        totalMonthlyTransfers: 0,
+    })
     
     const handleCheckboxChange = (event) => {
         const { name, checked } = event.target;
@@ -168,7 +180,7 @@ function TransactionSummary(){
                         </Accordion>
                     </Grid>
                     <Grid item xs={12} md={10}>
-                        <TransactionSummaryTable />
+                        <TransactionSummaryTable  />
                     </Grid>
                 </Grid>
             </div>

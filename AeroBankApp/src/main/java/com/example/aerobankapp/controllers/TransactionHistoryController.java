@@ -33,6 +33,14 @@ public class TransactionHistoryController {
         this.transactionHistoryQueryRunner = transactionHistoryQueryRunner;
     }
 
+    @GetMapping("/data/{userID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getDefaultUserHistoryData(@PathVariable int userID){
+        List<?> queryList = transactionHistoryQueryRunner.runDefaultQueryWithUserID(userID);
+
+        return ResponseEntity.ok(queryList);
+    }
+
     @PostMapping("/save")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> sendTransactionHistoryRequest(@RequestBody TransactionHistoryDTO transactionHistoryDTO){

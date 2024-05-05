@@ -13,5 +13,7 @@ public interface QueryBuilder
 
     StringBuilder buildTableStatement(TransactionType transactionType);
 
+    String getDefaultUserQuery();
+
     void revised(HistoryCriteria criteria, List<String> conditions, StringBuilder query);
 }
