@@ -76,9 +76,6 @@ public class TransactionStatementServiceImpl implements TransactionStatementServ
     @Override
     public List<TransactionStatementEntity> getTransactionStatementsByAcctID(int acctID) {
         List<TransactionStatementEntity> transactionStatementEntityList = transactionStatementRepository.getTransactionStatementsByAcctID(acctID);
-        if(transactionStatementEntityList.isEmpty()){
-            throw new NonEmptyListRequiredException("Unable to retrieve empty Transaction Statements.");
-        }
         return transactionStatementEntityList;
     }
 

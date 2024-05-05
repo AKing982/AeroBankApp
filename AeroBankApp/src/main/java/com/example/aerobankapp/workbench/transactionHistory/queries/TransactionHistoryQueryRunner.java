@@ -48,7 +48,7 @@ public class TransactionHistoryQueryRunner
     }
 
     public List<?> runDefaultQueryWithUserID(int userID){
-        String jpqlQuery = queryBuilder.getDefaultUserQuery();
+        String jpqlQuery = queryBuilder.getDefaultQuery();
         LOGGER.info("Running Query; " + jpqlQuery);
         TypedQuery<?> query = entityManager.createQuery(jpqlQuery, DepositsEntity.class);
 

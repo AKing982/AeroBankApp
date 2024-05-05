@@ -237,6 +237,14 @@ class QueryBuilderImplTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testGetDefaultQuery(){
+        String expected = "SELECT e FROM DepositsEntity e WHERE e.user.userID =:userID";
+        String actual = queryBuilder.getDefaultQuery();
+
+        assertEquals(expected, actual);
+    }
+
 
     @AfterEach
     void tearDown() {

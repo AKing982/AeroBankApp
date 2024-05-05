@@ -1,13 +1,11 @@
 package com.example.aerobankapp.workbench.transactionHistory;
 
-import com.example.aerobankapp.exceptions.NullHistoryCriteriaException;
 import com.example.aerobankapp.model.SQLCondition;
 import com.example.aerobankapp.model.SQLOperand;
 import com.example.aerobankapp.model.SQLSelect;
 import com.example.aerobankapp.model.SQLTable;
 import com.example.aerobankapp.workbench.transactionHistory.criteria.HistoryCriteria;
 import com.example.aerobankapp.workbench.transactions.TransactionType;
-import org.hibernate.annotations.processing.SQL;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -118,6 +116,14 @@ public class QueryBuilderImpl
 
         StringBuilder queryWithWhereClause = getDefaultUserWhereClause(tableStatement);
         return queryWithWhereClause.toString();
+    }
+
+    public String getDefaultQuery(){
+        SQLTable depositsTable = buildTableQueryStatement(TransactionType.DEPOSIT);
+        SQLOperand userClause = buildDefaultUserClause();
+        SQLSelect sqlSelect = buildSelectStatement("e");
+
+        return buildSQLQuery(sqlSelect, depositsTable, userClause);
     }
 
     public SQLOperand buildDefaultUserClause(){
