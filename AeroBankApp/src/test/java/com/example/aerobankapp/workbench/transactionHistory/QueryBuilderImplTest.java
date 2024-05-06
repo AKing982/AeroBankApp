@@ -46,52 +46,16 @@ class QueryBuilderImplTest {
 
 
     @Test
-    public void shouldAddDepositsEntityTableWithDepositsType(){
-        TransactionType transactionType = TransactionType.DEPOSIT;
-
-        StringBuilder expected = new StringBuilder("SELECT e FROM DepositsEntity e ");
-        StringBuilder actual = queryBuilder.buildTableStatement(transactionType);
-
-        assertEquals(expected.toString(), actual.toString());
-    }
-
-    @Test
-    public void shouldAddWithdrawEntityTableWithWithdrawType(){
-        TransactionType transactionType = TransactionType.WITHDRAW;
-
-        StringBuilder expected = new StringBuilder("SELECT e FROM WithdrawEntity e ");
-        StringBuilder actual = queryBuilder.buildTableStatement(transactionType);
-
-        assertEquals(expected.toString(), actual.toString());
-    }
-
-    @Test
-    public void shouldAddTransferEntityTableWithTransferType(){
-        TransactionType transactionType = TransactionType.TRANSFER;
-
-        StringBuilder expected = new StringBuilder("SELECT e FROM TransferEntity e ");
-        StringBuilder actual = queryBuilder.buildTableStatement(transactionType);
-
-        assertEquals(expected.toString(), actual.toString());
-    }
-
-    @Test
-    public void testGetDefaultUserQuery(){
-        String expected = "SELECT e FROM DepositsEntity e WHERE e.user.userID=:userID";
-        String actual = queryBuilder.getDefaultUserQuery();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
     public void testBuildConditionsStatements_DescriptionAndStartDate(){
         when(historyCriteria.description()).thenReturn("test");
         when(historyCriteria.status()).thenReturn(TransactionStatus.PENDING);
+        when(historyCriteria.transactionType()).thenReturn(TransactionType.DEPOSIT);
 
         SQLOperand expectedWhere = new SQLOperand("AND");
 
         expectedWhere.addComponent(new SQLCondition("e.description", "LIKE", ":descr"));
         expectedWhere.addComponent(new SQLCondition("e.status", "=", ":status"));
+        expectedWhere.addComponent(new SQLCondition("e.user.userID", "=", ":userID"));
 
         SQLOperand actualWhere = new SQLOperand("AND");
         queryBuilder.buildConditionsStatementsFromCriteria(historyCriteria, actualWhere);
@@ -104,11 +68,13 @@ class QueryBuilderImplTest {
         when(historyCriteria.description()).thenReturn("test");
         when(historyCriteria.status()).thenReturn(TransactionStatus.PENDING);
         when(historyCriteria.startDate()).thenReturn(LocalDate.now());
+        when(historyCriteria.transactionType()).thenReturn(TransactionType.DEPOSIT);
 
         SQLOperand expectedWhere = new SQLOperand("AND");
         expectedWhere.addComponent(new SQLCondition("e.description", "LIKE ", ":descr"));
         expectedWhere.addComponent(new SQLCondition("e.scheduledDate", "=", ":startDate"));
         expectedWhere.addComponent(new SQLCondition("e.status", "=", ":status"));
+        expectedWhere.addComponent(new SQLCondition("e.user.userID", "=", ":userID"));
 
         SQLOperand actualWhere = new SQLOperand("AND");
 
@@ -122,10 +88,12 @@ class QueryBuilderImplTest {
         when(historyCriteria.status()).thenReturn(TransactionStatus.PENDING);
         when(historyCriteria.startDate()).thenReturn(LocalDate.now());
         when(historyCriteria.endDate()).thenReturn(LocalDate.of(2024, 5, 10));
+        when(historyCriteria.transactionType()).thenReturn(TransactionType.DEPOSIT);
 
         SQLOperand expectedWhere = new SQLOperand("AND");
         expectedWhere.addComponent(new SQLCondition("e.status", "=", ":status"));
         expectedWhere.addComponent(new SQLCondition("e.scheduledDate", "BETWEEN", ":startDate AND :endDate"));
+        expectedWhere.addComponent(new SQLCondition("e.user.userID", "=", ":userID"));
 
         SQLOperand actualWhere = new SQLOperand("AND");
         queryBuilder.buildConditionsStatementsFromCriteria(historyCriteria, actualWhere);
@@ -164,7 +132,6 @@ class QueryBuilderImplTest {
         when(historyCriteria.description()).thenReturn("test");
         when(historyCriteria.status()).thenReturn(TransactionStatus.PENDING);
         when(historyCriteria.transactionType()).thenReturn(TransactionType.DEPOSIT);
-        when(historyCriteria.userID()).thenReturn(1);
 
         String expectedQuery = "SELECT e FROM DepositsEntity e WHERE e.description LIKE :descr AND e.status =:status AND e.user.userID =:userID";
 
@@ -206,7 +173,6 @@ class QueryBuilderImplTest {
     @Test
     public void testGetQueryFromCriteria_TransferType(){
         when(historyCriteria.transactionType()).thenReturn(TransactionType.DEPOSIT);
-        when(historyCriteria.userID()).thenReturn(1);
         when(historyCriteria.transferType()).thenReturn(TransferType.USER_TO_USER);
 
         String expectedQuery = "SELECT e FROM DepositsEntity e WHERE e.transferType =:transferType AND e.user.userID =:userID";
@@ -227,7 +193,6 @@ class QueryBuilderImplTest {
         when(historyCriteria.transferType()).thenReturn(TransferType.USER_TO_USER);
         when(historyCriteria.scheduledTime()).thenReturn(LocalTime.now());
         when(historyCriteria.transactionType()).thenReturn(TransactionType.DEPOSIT);
-        when(historyCriteria.userID()).thenReturn(1);
 
         String expected = "SELECT e FROM DepositsEntity e WHERE e.description LIKE :descr AND e.status =:status AND (e.amount >=:minAmount AND e.amount <=:maxAmount) AND e.scheduledDate BETWEEN :startDate AND :endDate AND e.transferType =:transferType AND e.scheduledTime =:scheduledTime AND e.user.userID =:userID";
         String actual = queryBuilder.getQueryFromCriteria(historyCriteria);
@@ -248,7 +213,7 @@ class QueryBuilderImplTest {
     @Test
     public void testBuildTotalSumStatement(){
         String expected = "SELECT SUM(e.amount) FROM DepositsEntity e WHERE e.scheduledDate BETWEEN :startDate AND :endDate AND e.user.userID =:userID";
-        String actual = queryBuilder.buildTotalSumStatement(TransactionType.DEPOSIT);
+        String actual = queryBuilder.buildTotalSumScheduledDateStatement(TransactionType.DEPOSIT);
 
         assertEquals(expected, actual);
     }

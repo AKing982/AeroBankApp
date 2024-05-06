@@ -62,8 +62,10 @@ public class TransactionHistoryController {
         String totalAverageTransactionValue = transactionHistoryQueryRunner.runAverageTransactionValueQuery(userID);
         String totalTransferredAmount = transactionHistoryQueryRunner.runTotalAmountTransferredQuery(userID);
         Long totalPending = transactionHistoryQueryRunner.runPendingTransactionCountQuery(userID);
-
-        TransactionStatsResponse transactionStatsResponse = new TransactionStatsResponse(totalTransferredAmount, totalAverageTransactionValue, totalPending, totalTransactionAmountForMonth);
+        int totalTransactionsThisWeek = transactionHistoryQueryRunner.runTotalTransactionsThisWeekQuery(userID);
+        int totalTransactionCount = transactionHistoryQueryRunner.runTotalTransactionCountQuery(userID);
+        TransactionStatsResponse transactionStatsResponse = new TransactionStatsResponse(totalTransferredAmount,
+                totalAverageTransactionValue, totalPending, totalTransactionsThisWeek, totalTransactionAmountForMonth, totalTransactionCount);
         return ResponseEntity.ok(transactionStatsResponse);
     }
 

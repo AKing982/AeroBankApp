@@ -14,7 +14,7 @@ public class TransactionStatsResponse implements Serializable
     private String averageTransactionValue;
     private Long pendingTransactionCount;
     private String totalTransactionAmountByMonth;
-    private String totalTransactionAmountByWeek;
+    private int totalTransactionAmountByWeek;
     private String lastTransactionSubmitted;
     private int totalFailedTransactions;
     private int totalTransactionCount;
@@ -23,7 +23,7 @@ public class TransactionStatsResponse implements Serializable
                                     String averageValue,
                                     Long pending,
                                     String totalByMonth,
-                                    String totalByWeek,
+                                    int totalByWeek,
                                     String lastSubmitted,
                                     int totalFailed,
                                     int totalCount){
@@ -40,10 +40,14 @@ public class TransactionStatsResponse implements Serializable
     public TransactionStatsResponse(String totalTransferred,
                                     String averageValue,
                                     Long pending,
-                                    String totalByMonth){
+                                    int totalWeek,
+                                    String totalByMonth,
+                                    int totalCount){
         this.totalTransferredAmount = totalTransferred;
         this.averageTransactionValue = averageValue;
         this.pendingTransactionCount = pending;
+        this.totalTransactionAmountByWeek = totalWeek;
         this.totalTransactionAmountByMonth = totalByMonth;
+        this.totalTransactionCount = totalCount;
     }
 }

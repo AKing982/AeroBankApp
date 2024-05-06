@@ -4,6 +4,7 @@ import com.example.aerobankapp.model.SQLCondition;
 import com.example.aerobankapp.model.SQLOperand;
 import com.example.aerobankapp.model.SQLSelect;
 import com.example.aerobankapp.model.SQLTable;
+import com.example.aerobankapp.workbench.sql.QueryConstants;
 import com.example.aerobankapp.workbench.transactionHistory.criteria.HistoryCriteria;
 import com.example.aerobankapp.workbench.transactions.TransactionType;
 import org.hibernate.annotations.processing.SQL;
@@ -51,7 +52,7 @@ public class QueryBuilderImpl
 
 
     public String buildTotalAmountTransferredQuery(){
-        SQLSelect selectSum = buildSelectStatement("SUM(e.amount)");
+        SQLSelect selectSum = getSumAmountSelectParameter();
         SQLTable transferTable = buildTableQueryStatement(TransactionType.TRANSFER);
         SQLOperand where = new SQLOperand("");
         where.addComponent(buildSQLCondition("e.fromUser.userID", "=", ":userID"));
@@ -59,8 +60,16 @@ public class QueryBuilderImpl
         return buildSQLQuery(selectSum, transferTable, where);
     }
 
+    private SQLSelect getCountSelectParameter(){
+        return buildSelectStatement(QueryConstants.COUNT);
+    }
+
+    private SQLSelect getSumAmountSelectParameter(){
+        return buildSelectStatement(QueryConstants.SUM_AMOUNT);
+    }
+
     public String buildPendingTransactionCountQuery(final TransactionType transactionType){
-        SQLSelect averageSelect = buildSelectStatement("COUNT(e)");
+        SQLSelect averageSelect = getCountSelectParameter();
         SQLTable table = buildTableQueryStatement(transactionType);
         SQLOperand where = new SQLOperand("AND");
         buildWhereClauseWithStatusCondition(where);
@@ -68,12 +77,23 @@ public class QueryBuilderImpl
         return buildSQLQuery(averageSelect, table, where);
     }
 
+    public String buildCountQuery(TransactionType type){
+        return "";
+    }
+
+    public String buildCountQueryForTransfersForMonth(){
+        SQLSelect countSelect = getCountSelectParameter();
+        SQLTable table = buildTableQueryStatement(TransactionType.TRANSFER);
+        SQLOperand where = buildScheduledDateWhereConditions(TransactionType.TRANSFER);
+        return buildSQLQuery(countSelect, table, where);
+    }
+
     public void buildWhereClauseWithStatusCondition(SQLOperand where){
         where.addComponent(buildSQLCondition("e.status", "=", ":status"));
     }
 
     public String buildAverageTransactionValueQuery(final TransactionType transactionType){
-        SQLSelect averageSelect = buildSelectStatement("AVG(e.amount)");
+        SQLSelect averageSelect = buildSelectStatement(QueryConstants.AVG_AMOUNT);
         SQLTable table = buildTableQueryStatement(transactionType);
         SQLOperand where = buildWhereClauseWithTransferCondition(transactionType);
         return buildSQLQuery(averageSelect, table, where);
@@ -97,15 +117,30 @@ public class QueryBuilderImpl
         return where;
     }
 
-    public String buildTotalSumStatement(final TransactionType transactionType){
-        SQLSelect selectSum = buildSelectStatement("SUM(e.amount)");
+    public String buildTotalWeeklyCountQuery(final TransactionType transactionType){
+        SQLSelect countSelect = getCountSelectParameter();
         SQLTable table = buildTableQueryStatement(transactionType);
-        SQLOperand where = buildTotalAmountWhereConditions(transactionType);
+        SQLOperand where = buildScheduledDateWhereConditions(transactionType);
+        return buildSQLQuery(countSelect, table, where);
+    }
+
+    public String buildTotalTransactionCountQuery(final TransactionType transactionType){
+        SQLSelect countSelect = getCountSelectParameter();
+        SQLTable table = buildTableQueryStatement(transactionType);
+        SQLOperand where = new SQLOperand("");
+        buildWhereClauseTransferType(transactionType, where);
+        return buildSQLQuery(countSelect, table, where);
+    }
+
+    public String buildTotalSumScheduledDateStatement(final TransactionType transactionType){
+        SQLSelect selectSum = getSumAmountSelectParameter();
+        SQLTable table = buildTableQueryStatement(transactionType);
+        SQLOperand where = buildScheduledDateWhereConditions(transactionType);
 
         return buildSQLQuery(selectSum, table, where);
     }
 
-    public SQLOperand buildTotalAmountWhereConditions(final TransactionType transactionType){
+    public SQLOperand buildScheduledDateWhereConditions(final TransactionType transactionType){
         SQLOperand where = new SQLOperand("AND");
         where.addComponent(buildSQLCondition("e.scheduledDate", "BETWEEN", ":startDate AND :endDate"));
         if(transactionType.equals(TransactionType.TRANSFER)){
@@ -179,7 +214,7 @@ public class QueryBuilderImpl
         if(whereClause.isEmpty()){
             return select.buildSQL() + " " + table.buildSQL();
         }
-        return select.buildSQL() + " " + table.buildSQL() + " WHERE " + whereClause;
+        return select.buildSQL() + " " + table.buildSQL() + QueryConstants.WHERE + whereClause;
     }
 
 

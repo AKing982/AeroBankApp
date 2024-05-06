@@ -1,24 +1,11 @@
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Button,
-    Card, Checkbox, FormControl, FormControlLabel,
-    Grid, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
-    TextField,
-    Typography
-} from "@mui/material";
+import {Accordion, AccordionDetails, AccordionSummary, Grid, IconButton, Typography} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {DatePicker, LocalizationProvider, TimePicker} from "@mui/x-date-pickers";
+import {LocalizationProvider} from "@mui/x-date-pickers";
 import {useEffect, useState} from "react";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import TransactionSummaryTable from "./TransactionSummaryTable";
 import backgroundImage from './images/pexels-julius-silver-753325.jpg';
 import TransactionSummaryStats from "./TransactionSummaryStats";
-import {InfoOutlined, ViewComfy} from "@mui/icons-material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import GridOnIcon from '@mui/icons-material/GridOn';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
@@ -54,6 +41,7 @@ function TransactionSummary(){
         totalTransferredAmount: 0,
         averageTransactionValue: 0,
         totalTransactionAmountByMonth: 0,
+        totalTransactionsThisWeek: 0,
         totalWeeklyTransactions: 0,
         pendingTransactionCount: 0,
         totalMonthlyTransfers: 0,
@@ -126,7 +114,9 @@ function TransactionSummary(){
                         totalTransactionAmountByMonth: response.data.totalTransactionAmountByMonth,
                         pendingTransactionCount: response.data.pendingTransactionCount,
                         averageTransactionValue: response.data.averageTransactionValue,
-                        totalTransferredAmount: response.data.totalTransferredAmount
+                        totalTransferredAmount: response.data.totalTransferredAmount,
+                        totalTransactionsThisWeek: response.data.totalTransactionAmountByWeek,
+                        totalTransactionCount: response.data.totalTransactionCount
                     });
                 }else{
                     console.error('Failed to fetch transaction statistics: ', response.status);
@@ -155,6 +145,83 @@ function TransactionSummary(){
         fetchMonthlyTransactionStatsByUserID();
     }, []);
 
+    const getStartOfWeek = () => {
+        const today = new Date();
+
+        const dayOfWeek = (today.getDay() + 6) % 7;
+
+        return new Date(today.setDate(today.getDate() - dayOfWeek));
+    }
+
+    const getEndOfWeek = () => {
+        const today = new Date();
+
+        const startOfWeek = getStartOfWeek();
+
+        return new Date(today.setDate(startOfWeek.getDate() + 6));
+    }
+
+    const getWeekString = () => {
+
+    }
+
+    const getCurrentMonthAsString = () => {
+        const today = new Date();
+
+        const currentMonth = today.getMonth();
+        console.log('Current Month: ', currentMonth);
+        return getMonthString(currentMonth);
+    }
+
+    const getMonthString = (currentMonth) => {
+        let month = "";
+        switch(currentMonth){
+            case 0:
+                month = "January";
+                break;
+            case 1:
+                month = "February";
+                break;
+            case 2:
+                month = "March";
+                break;
+            case 3:
+                month = "April";
+                break;
+            case 4:
+                month = "May";
+                break;
+            case 5:
+                month = "June";
+                break;
+            case 6:
+                month = "July";
+                break;
+            case 7:
+                month = "August";
+                break;
+            case 8:
+                month = "September";
+                break;
+            case 9:
+                month = "October";
+                break;
+            case 10:
+                month = "November";
+                break;
+            case 11:
+                month = "December";
+                break;
+        }
+        return month;
+    }
+
+    const formatDate = (date) => {
+        let month = (date.getMonth() + 1).toString().padStart(2, '0');  // Months are 0-based, add 1
+        let day = date.getDate().toString().padStart(2, '0');
+        let year = date.getFullYear();
+        return `${month}/${day}/${year}`;
+    };
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -188,7 +255,7 @@ function TransactionSummary(){
                                         <TransactionSummaryStats title="Last Transaction Submitted" value={transactionStats.lastTransaction} />
                                     </Grid>
                                     <Grid item xs={4}>
-                                        <TransactionSummaryStats title="Transaction Count" value={transactionStats.transactionCount} />
+                                        <TransactionSummaryStats title="Transaction Count" value={transactionStatistics.totalTransactionCount} />
                                     </Grid>
                                     <Grid item xs={4}>
                                         <TransactionSummaryStats title="Total Amount Transferred" value={transactionStatistics.totalTransferredAmount} />
@@ -199,11 +266,11 @@ function TransactionSummary(){
                                     </Grid>
                                     <Grid item xs={4}>
                                         {/* You can add more stats here */}
-                                        <TransactionSummaryStats title="Total Transaction Amount by Month" value={transactionStatistics.totalTransactionAmountByMonth} />
+                                        <TransactionSummaryStats title="Total Transactions Amount This Month" value={transactionStatistics.totalTransactionAmountByMonth} />
                                     </Grid>
                                     <Grid item xs={4}>
                                         {/* Additional stat */}
-                                        <TransactionSummaryStats title="Total Weekly Transactions" value="50" />
+                                        <TransactionSummaryStats title={`Total Transactions for ${formatDate(getStartOfWeek())} to ${formatDate(getEndOfWeek())}`} value={transactionStatistics.totalTransactionsThisWeek} />
                                     </Grid>
                                     {/* Row 3 */}
                                     <Grid item xs={4}>
@@ -216,7 +283,7 @@ function TransactionSummary(){
                                     </Grid>
                                     <Grid item xs={4}>
                                         {/* Placeholder or another stat */}
-                                        <TransactionSummaryStats title="Total Transfers by month" value="15" />
+                                        <TransactionSummaryStats title={`Total Transfers for ${getCurrentMonthAsString()}`} value="15" />
                                     </Grid>
                                 </Grid>
                             </AccordionDetails>

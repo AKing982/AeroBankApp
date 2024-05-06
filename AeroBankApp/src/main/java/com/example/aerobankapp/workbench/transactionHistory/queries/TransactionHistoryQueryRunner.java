@@ -21,8 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 
-import static com.example.aerobankapp.workbench.utilities.dateUtil.DateUtil.getCurrentMonthEndDate;
-import static com.example.aerobankapp.workbench.utilities.dateUtil.DateUtil.getCurrentMonthStartDate;
+import static com.example.aerobankapp.workbench.utilities.dateUtil.DateUtil.*;
 
 /**
  * This class will take the parsed list of TransactionHistory criteria and execute the
@@ -69,6 +68,18 @@ public class TransactionHistoryQueryRunner
                 .getSingleResult();
     }
 
+    private Object setTotalAmountByWeekQuery(String query, int userID){
+        LocalDate weekStart = getStartOfCurrentWeek();
+        LocalDate weekEnd = getEndOfCurrentWeek();
+        LOGGER.info("Week Start: " + weekStart);
+        LOGGER.info("Week End: " + weekEnd);
+        return entityManager.createQuery(query, BigDecimal.class)
+                .setParameter("startDate", getStartOfCurrentWeek())
+                .setParameter("endDate", getEndOfCurrentWeek())
+                .setParameter("userID", userID)
+                .getSingleResult();
+    }
+
     private BigDecimal getTotalAmountResult(String query, int userID){
         return entityManager.createQuery(query, BigDecimal.class)
                 .setParameter("startDate", getCurrentMonthStartDate())
@@ -84,6 +95,15 @@ public class TransactionHistoryQueryRunner
     }
 
     public BigDecimal getQuerySum(final BigDecimal total1, final BigDecimal total2, final BigDecimal total3){
+        if(total1 == null){
+            return total2.add(total3);
+        }
+        if(total2 == null){
+            return total1.add(total3);
+        }
+        if(total3 == null){
+            return total1.add(total2);
+        }
         return total1.add(total2).add(total3);
     }
 
@@ -143,6 +163,48 @@ public class TransactionHistoryQueryRunner
         return getAverageFormattedValueFromDouble(totalAverageValue);
     }
 
+    public int runTotalTransactionCountQuery(int userID){
+        String totalDeposits = queryBuilder.buildTotalTransactionCountQuery(TransactionType.DEPOSIT);
+        LOGGER.info("Total Deposit Count Query: " + totalDeposits);
+        Long depositTotal = (Long) getResultSetWithUserID(totalDeposits, userID);
+        LOGGER.info("Deposit Count: " + depositTotal);
+
+        String totalWithdraws = queryBuilder.buildTotalTransactionCountQuery(TransactionType.WITHDRAW);
+        LOGGER.info("Total Withdraw Count Query: " + totalWithdraws);
+        Long withdrawTotal = (Long) getResultSetWithUserID(totalWithdraws, userID);
+        LOGGER.info("Withdraw Count: " + withdrawTotal);
+
+        String totalTransfers = queryBuilder.buildTotalTransactionCountQuery(TransactionType.TRANSFER);
+        LOGGER.info("Total Transfer Count Query: " + totalTransfers);
+        Long transferCount = (Long) getResultSetWithUserID(totalTransfers, userID);
+        LOGGER.info("Transfer Count: " + transferCount);
+
+        Long totalCount = getQuerySumAsLong(depositTotal, withdrawTotal, transferCount);
+        return Integer.parseInt(totalCount.toString());
+    }
+
+    public int runTotalTransactionsThisWeekQuery(int userID){
+        String totalDepositTransactions = queryBuilder.buildTotalWeeklyCountQuery(TransactionType.DEPOSIT);
+        LOGGER.info("Total Weekly Deposits Query: " + totalDepositTransactions);
+        Long depositTotal = (Long) setTotalAmountByWeekQuery(totalDepositTransactions, userID);
+        LOGGER.info("Deposit Total: " + depositTotal);
+
+        String totalWithdrawTransactions = queryBuilder.buildTotalWeeklyCountQuery(TransactionType.WITHDRAW);
+        LOGGER.info("Total Weekly Withdraws Query: " + totalWithdrawTransactions);
+        Long withdrawTotal = (Long) setTotalAmountByWeekQuery(totalWithdrawTransactions, userID);
+        LOGGER.info("Withdraw Total: " + withdrawTotal);
+
+        String totalTransferTransactions = queryBuilder.buildTotalWeeklyCountQuery(TransactionType.TRANSFER);
+        LOGGER.info("Total Weekly Transfer Query: " + totalTransferTransactions);
+        Long transferTotal = (Long) setTotalAmountByWeekQuery(totalTransferTransactions, userID);
+        LOGGER.info("Transfer Total: " + transferTotal);
+
+        Long total = getQuerySumAsLong(depositTotal, withdrawTotal, transferTotal);
+        LOGGER.info("Total Transaction Count This week: " + total);
+
+        return Integer.parseInt(total.toString());
+    }
+
     public String runTotalAmountTransferredQuery(int userID){
         String totalTransferredQuery = queryBuilder.buildTotalAmountTransferredQuery();
         BigDecimal totalAmount = getTotalAmountTransferResultSet(totalTransferredQuery, userID);
@@ -150,7 +212,7 @@ public class TransactionHistoryQueryRunner
     }
 
     public BigDecimal getTotalSumResultByQuery(TransactionType transactionType, int userID){
-        String totalSumQuery = queryBuilder.buildTotalSumStatement(transactionType);
+        String totalSumQuery = queryBuilder.buildTotalSumScheduledDateStatement(transactionType);
         return getTotalAmountResult(totalSumQuery, userID);
     }
 
