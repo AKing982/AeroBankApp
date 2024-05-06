@@ -5,6 +5,8 @@ import {blue} from "@mui/material/colors";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import axios from "axios";
 import NotificationBell from "./NotificationBell";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const NotificationCategory = {
     TRANSACTION_ALERT: "TransactionAlert",
@@ -45,10 +47,11 @@ const testNotifications = [
 export default function Account({ color, accountCode, acctID, acctCodeID, accountName, balance, pending, available, notifications, onNotificationClick, notificationCount, onAccountClick, isSelected, backgroundImageUrl})
 {
     const [newNotificationCount, setNewNotificationCount] = useState(notifications.length);
+    const [expanded, setExpanded] = useState(false);  // State to manage expansion of account details
 
     const handleUpdateNotificationCount = (newCount) => {
         setNewNotificationCount(newCount);
-    }
+    };
 
     const handleClick = () => {
         onAccountClick(acctID);
@@ -60,21 +63,16 @@ export default function Account({ color, accountCode, acctID, acctCodeID, accoun
         }
     };
 
-    const handleOnNotificationClick = (event) => {
-        // Send a request to fetch notifications for the account with accountID
-      //  event.stopPropagation();
-      //  console.log('Notification Clicked');
-      //  onNotificationClick(accountCode);
+    const toggleDetails = (event) => {
+        event.stopPropagation(); // Prevent the card's onClick event from firing
+        setExpanded(!expanded);
     };
 
     const defaultColor = '#9e9e9e'; // Default color if none is provided
     const avatarColor = color || defaultColor; // Use provided color or default
-
-    // Adding a semi-transparent overlay if the account is selected
     const backgroundImageWithOverlay = isSelected ?
         `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${backgroundImageUrl})` :
         `url(${backgroundImageUrl})`;
-
 
     const avatarStyle = {
         bgcolor: avatarColor,
@@ -84,9 +82,22 @@ export default function Account({ color, accountCode, acctID, acctCodeID, accoun
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: '16px',
-        // If the selected color is a gradient, we'll use the text color that ensures readability
-        color: 'contrastText', // Adjust text color for readability if necessary
+        color: 'contrastText', // Adjust text color for readability
     };
+
+    const iconButtonStyle = {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        color: 'blue',  // Make the icon more visible
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',  // Background to enhance visibility
+        margin: '8px',  // Ensuring it's not flush against the edges
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',  // Darker on hover for better UI interaction
+        }
+    };
+
+
 
     return (
         <Card
@@ -107,21 +118,13 @@ export default function Account({ color, accountCode, acctID, acctCodeID, accoun
             }}
         >
             <CardContent sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                {/* Inner Card for Account Details */}
-                <Card sx={{ bgcolor: 'white', p: 2, mr: 2, minWidth: 200, position: 'right' }}>
+                <Card sx={{ bgcolor: 'white', p: 2, mr: 2, minWidth: 200, position: 'relative' }}>
                     {notificationCount > 0 && (
-                        <Box sx={{
-                            position: 'relative',
-                            top: 0,
-                            right: 0,
-                            transform: 'translate(40%, -20%)' // Adjusts the bell icon to be partly outside the card
-                        }}>
-                            <NotificationBell
-                                notificationCount={newNotificationCount}
-                                initialNotifications={notifications}
-                                onBellClick={handleUpdateNotificationCount}
-                            />
-                        </Box>
+                        <NotificationBell
+                            notificationCount={newNotificationCount}
+                            initialNotifications={notifications}
+                            onBellClick={handleUpdateNotificationCount}
+                        />
                     )}
                     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                         <Avatar sx={avatarStyle}>
@@ -134,11 +137,33 @@ export default function Account({ color, accountCode, acctID, acctCodeID, accoun
                         {accountName}
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 1 }}>Balance: <strong>${balance}</strong></Typography>
-                    <Typography variant="body1" sx={{ mb: 1 }}>Pending: <strong>${pending}</strong></Typography>
-                    <Typography variant="body1">Available: <strong>${available}</strong></Typography>
-                </Card>
-                {/* Existing Content */}
+                    {expanded && (
+                        <>
+                            <Typography variant="body1" sx={{ mb: 1 }}>Pending: <strong>${pending}</strong></Typography>
+                            <Typography variant="body1">Available: <strong>${available}</strong></Typography>
+                            {/* Additional details can be added here */}
+                        </>
+                    )}
+                    <IconButton
+                        onClick={toggleDetails}
+                        aria-expanded={expanded}
+                        aria-label="show more"// Positioning the toggle button
+                        sx={{
+                            position: 'absolute',
+                            right: 180,
+                            top: '80%',
+                            transform: 'translateY(-50%)',  // Center vertically
+                            color: 'primary.main',
+                            backgroundColor: 'background.paper',
+                            '&:hover': {
+                                backgroundColor: 'background.default',
+                            }
+                        }}
 
+                    >
+                        <ExpandMoreIcon />
+                    </IconButton>
+                </Card>
 
             </CardContent>
         </Card>
