@@ -245,6 +245,22 @@ class QueryBuilderImplTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testBuildTotalSumStatement(){
+        String expected = "SELECT SUM(e.amount) FROM DepositsEntity e WHERE e.scheduledDate BETWEEN :startDate AND :endDate AND e.user.userID =:userID";
+        String actual = queryBuilder.buildTotalSumStatement(TransactionType.DEPOSIT);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testBuildTotalAmountTransferQuery(){
+        String expected = "SELECT SUM(e.amount) FROM TransferEntity e WHERE e.fromUser.userID =:userID";
+        String actual = queryBuilder.buildTotalAmountTransferredQuery();
+
+        assertEquals(expected, actual);
+    }
+
 
     @AfterEach
     void tearDown() {

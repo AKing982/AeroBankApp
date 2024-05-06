@@ -6,6 +6,7 @@ import com.example.aerobankapp.services.TransactionHistoryService;
 import com.example.aerobankapp.workbench.transactionHistory.TransactionHistoryParser;
 import com.example.aerobankapp.workbench.transactionHistory.criteria.HistoryCriteria;
 import com.example.aerobankapp.workbench.transactionHistory.queries.TransactionHistoryQueryRunner;
+import com.example.aerobankapp.workbench.utilities.response.TransactionStatsResponse;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Controller
@@ -51,6 +53,25 @@ public class TransactionHistoryController {
         List<?> queryList = transactionHistoryQueryRunner.runQuery(historyCriteria);
 
         return ResponseEntity.ok(queryList);
+    }
+
+    @GetMapping("/stats/{userID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getTransactionStatistics(@PathVariable int userID){
+        String totalTransactionAmountForMonth = transactionHistoryQueryRunner.runTotalAmountForMonthQuery(userID);
+        String totalAverageTransactionValue = transactionHistoryQueryRunner.runAverageTransactionValueQuery(userID);
+        String totalTransferredAmount = transactionHistoryQueryRunner.runTotalAmountTransferredQuery(userID);
+        Long totalPending = transactionHistoryQueryRunner.runPendingTransactionCountQuery(userID);
+
+        TransactionStatsResponse transactionStatsResponse = new TransactionStatsResponse(totalTransferredAmount, totalAverageTransactionValue, totalPending, totalTransactionAmountForMonth);
+        return ResponseEntity.ok(transactionStatsResponse);
+    }
+
+    @GetMapping("/amount/month/{userID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getTotalTransactionAmountForMonth(@PathVariable int userID){
+        String totalTransactionAmountForMonth = transactionHistoryQueryRunner.runTotalAmountForMonthQuery(userID);
+        return ResponseEntity.ok(totalTransactionAmountForMonth);
     }
 
 }

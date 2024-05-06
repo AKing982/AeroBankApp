@@ -20,7 +20,6 @@ public class SQLSelect implements SQLStatement
 
     @Override
     public String buildSQL() {
-       // return SELECT + String.join(", ", selections);
         return SELECT + " " + String.join(", ", selections);
     }
 }

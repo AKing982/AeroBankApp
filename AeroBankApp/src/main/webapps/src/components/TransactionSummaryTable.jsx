@@ -179,6 +179,8 @@ export default function TransactionSummaryTable() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [rows, setRows] = useState([]); // Assume initial empty or fetched from somewhere else
     const [allData, setAllData] = useState([]); // This holds all unfiltered data
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -190,6 +192,20 @@ export default function TransactionSummaryTable() {
     const handleFilterClick = () => {
         setDialogOpen(true);
     };
+
+    const handleDateChange = (direction) => {
+        const newStartDate = new Date(startDate);
+        const newEndDate = new Date(endDate);
+        if(direction === 'prev') {
+            newStartDate.setDate(newStartDate.getDate() - 7);
+            newEndDate.setDate(newEndDate.getDate() - 7);
+        }else{
+            newStartDate.setDate(newStartDate.getDate() + 7);
+            newEndDate.setDate(newEndDate.getDate() + 7);
+        }
+        setStartDate(newStartDate);
+        setEndDate(newEndDate);
+    }
 
     useEffect(() => {
         let userID = sessionStorage.getItem('userID');

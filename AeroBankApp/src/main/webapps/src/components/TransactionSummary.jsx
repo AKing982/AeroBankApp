@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {DatePicker, LocalizationProvider, TimePicker} from "@mui/x-date-pickers";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import TransactionSummaryTable from "./TransactionSummaryTable";
 import backgroundImage from './images/pexels-julius-silver-753325.jpg';
@@ -22,6 +22,7 @@ import {InfoOutlined, ViewComfy} from "@mui/icons-material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import GridOnIcon from '@mui/icons-material/GridOn';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
+import axios from "axios";
 
 function TransactionSummary(){
     const [filters, setFilters] = useState({
@@ -49,15 +50,18 @@ function TransactionSummary(){
 
     const [transactionStatistics, setTransactionStatistics] = useState({
         lastTransaction: '',
-        transactionCount: 0,
-        totalAmountTransferred: 0,
-        averageTransaction: 0,
-        averageMonthlyTransactions: 0,
+        totalTransactionCount: 0,
+        totalTransferredAmount: 0,
+        averageTransactionValue: 0,
+        totalTransactionAmountByMonth: 0,
         totalWeeklyTransactions: 0,
-        totalMonthlyTransactions: 0,
         pendingTransactionCount: 0,
         totalMonthlyTransfers: 0,
     })
+
+    const [totalMonthlyTransactions, setTotalMonthlyTransactions] = useState('');
+
+
     
     const handleCheckboxChange = (event) => {
         const { name, checked } = event.target;
@@ -112,6 +116,45 @@ function TransactionSummary(){
         
     }
 
+    useEffect(() => {
+        const fetchTransactionStatistics = async() => {
+            let userID = sessionStorage.getItem('userID');
+            try{
+                const response = await axios.get(`http://localhost:8080/AeroBankApp/api/transactionHistory/stats/${userID}`)
+                if(response.status === 200 || response.status === 201){
+                    setTransactionStatistics({
+                        totalTransactionAmountByMonth: response.data.totalTransactionAmountByMonth,
+                        pendingTransactionCount: response.data.pendingTransactionCount,
+                        averageTransactionValue: response.data.averageTransactionValue,
+                        totalTransferredAmount: response.data.totalTransferredAmount
+                    });
+                }else{
+                    console.error('Failed to fetch transaction statistics: ', response.status);
+                }
+
+            }catch(error){
+                console.error('Error fetching transaction statistics: ', error);
+            }
+        };
+        fetchTransactionStatistics();
+    }, [])
+
+    useEffect(() => {
+        const fetchMonthlyTransactionStatsByUserID = async () => {
+            let userID = sessionStorage.getItem('userID');
+            try{
+                const response = await axios.get(`http://localhost:8080/AeroBankApp/api/transactionHistory/amount/month/${userID}`)
+                if(response.status === 200 || response.status === 201){
+                    setTotalMonthlyTransactions(response.data);
+                }
+
+            }catch(error){
+                console.error()
+            }
+        }
+        fetchMonthlyTransactionStatsByUserID();
+    }, []);
+
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -148,15 +191,15 @@ function TransactionSummary(){
                                         <TransactionSummaryStats title="Transaction Count" value={transactionStats.transactionCount} />
                                     </Grid>
                                     <Grid item xs={4}>
-                                        <TransactionSummaryStats title="Total Amount Transferred" value={transactionStats.totalAmountTransferred} />
+                                        <TransactionSummaryStats title="Total Amount Transferred" value={transactionStatistics.totalTransferredAmount} />
                                     </Grid>
                                     {/* Row 2 */}
                                     <Grid item xs={4}>
-                                        <TransactionSummaryStats title="Average Transaction Value" value={transactionStats.averageTransaction} />
+                                        <TransactionSummaryStats title="Average Transaction Value" value={transactionStatistics.averageTransactionValue} />
                                     </Grid>
                                     <Grid item xs={4}>
                                         {/* You can add more stats here */}
-                                        <TransactionSummaryStats title="Average Transactions by Month" value="140" />
+                                        <TransactionSummaryStats title="Total Transaction Amount by Month" value={transactionStatistics.totalTransactionAmountByMonth} />
                                     </Grid>
                                     <Grid item xs={4}>
                                         {/* Additional stat */}
@@ -165,7 +208,7 @@ function TransactionSummary(){
                                     {/* Row 3 */}
                                     <Grid item xs={4}>
                                         {/* Additional stat */}
-                                        <TransactionSummaryStats title="Currently Pending" value="3" />
+                                        <TransactionSummaryStats title="Currently Pending" value={transactionStatistics.pendingTransactionCount} />
                                     </Grid>
                                     <Grid item xs={4}>
                                         {/* Placeholder or another stat */}
