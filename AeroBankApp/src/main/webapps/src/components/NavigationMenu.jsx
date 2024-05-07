@@ -2,12 +2,22 @@ import {MenuItem, Typography} from "@mui/material";
 import Menu from "@mui/material/Menu";
 import SubMenu from "./SubMenu";
 import {styled} from "@mui/material/styles";
+import {useRef, useState} from "react";
 
 function NavigationMenu({anchorEl, isOpen, onClose, handleNavigation, isActive}){
+    const [isSubMenuOpen, setSubMenuOpen] = useState(false);
+    const subMenuAnchorRef = useRef(null);
+
     const handleSubMenuNavigate = (path) => {
         onClose();
         handleNavigation(path);
     };
+
+    const handleSubMenuToggle = () => {
+        setSubMenuOpen(!isSubMenuOpen);
+    };
+
+
 
 
     const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
@@ -57,16 +67,23 @@ function NavigationMenu({anchorEl, isOpen, onClose, handleNavigation, isActive})
             <StyledMenuItem onClick={() => handleNavigation("/transactionAnalytics")} selected={isActive("/transactionAnalytics")}>
                 <Typography>Transaction Analysis</Typography>
             </StyledMenuItem>
-            <StyledMenuItem onClick={onClose} selected={isActive("/createTransaction")}>
+            <StyledMenuItem ref={subMenuAnchorRef} onClick={handleSubMenuToggle} selected={isSubMenuOpen}>
                 <Typography>Create Transaction</Typography>
             </StyledMenuItem>
-            {isActive("/createTransaction") && (
-                <SubMenu
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={onClose}
-                    items={createTransactionSubMenuItems}
-                />
+            {isSubMenuOpen && (
+                <Menu
+                    anchorEl={subMenuAnchorRef.current}
+                    open={true}
+                    onClose={() => setSubMenuOpen(false)}
+                    anchorOrigin={{ vertical: 'right', horizontal: 'right' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                >
+                    {createTransactionSubMenuItems.map((item, index) => (
+                        <MenuItem key={index} onClick={() => item.onNavigate(item.path)}>
+                            <Typography>{item.label}</Typography>
+                        </MenuItem>
+                    ))}
+                </Menu>
             )}
             <StyledMenuItem onClick={() => handleNavigation("/billPay")} selected={isActive("/billPay")}>
                 <Typography>Bill Pay</Typography>
