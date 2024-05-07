@@ -13,7 +13,8 @@
     "@mui/material-next": "^6.0.0-alpha.119",
     "@mui/system": "^5.15.6",
     "@mui/utils": "^5.15.6",
-    "@mui/x-data-grid": "^6.19.2",
+    "@mui/x-charts": "^7.3.2",
+    "@mui/x-data-grid": "^6.19.11",
     "@mui/x-date-pickers": "^6.19.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -29,6 +30,7 @@
     "react-scripts": "5.0.1",
     "react-virtuoso": "^4.7.2",
     "react-window": "^1.8.10",
+    "recharts": "^2.12.6",
     "socket.io-client": "^4.7.5",
     "web-vitals": "^2.1.4"
   },
