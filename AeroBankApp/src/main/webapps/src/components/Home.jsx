@@ -17,6 +17,8 @@ import {Button, Typography} from "@mui/material";
 import {Box} from "@mui/system";
 import * as PropTypes from "prop-types";
 import TransactionSummary from "./TransactionSummary";
+import MenuAppBar from "./MenuAppBar";
+import GradientSeparator from "./GradientSeparator";
 
 
 
@@ -258,6 +260,7 @@ export default function Home()
 
     return (
         <Box className="home-container">
+            <MenuAppBar />
             <Box className="home-header">
                 <Box className="welcome-section">
                     <img src="/images/aerobank3.jpg" alt="aerobank" />
@@ -274,18 +277,9 @@ export default function Home()
                             Total Accounts: {totalAccounts}
                         </Typography>
                     </Box>
-                    <Box className="logout-button-header">
-                        <Button variant="contained" onClick={handleLogout}>Logout</Button>
-                        {/* Use BasicButton if it's specifically styled or provides additional functionality */}
-                    </Box>
                 </Box>
             </Box>
-            <Box className="home-tabs">
-                {/* Tabs can go here */}
-            </Box>
-            <Box className="tab-content">
-                <BasicTabs role={role} />
-            </Box>
+            <GradientSeparator />
         </Box>
     )
 }

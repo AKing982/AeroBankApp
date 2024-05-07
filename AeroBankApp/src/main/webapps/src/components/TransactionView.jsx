@@ -8,6 +8,7 @@ import axios from "axios";
 import TransactionTable from "./TransactionTable";
 import PendingTransactionsTable from "./PendingTransactionsTable";
 import {Box} from "@mui/system";
+import Home from "./Home";
 
 
 export default function TransactionView()
@@ -75,25 +76,29 @@ export default function TransactionView()
     }
 
     return (
-        <Box className="transaction-view-container" sx={{ flexGrow: 100}}>
-            <Grid container spacing={2}>
-                <Grid item xs={12} md={6} className="account-list-body">
-                    <Box sx={{margin: 2}}>
-                        <Typography variant="h6"><TimeGreeting name={firstName}/> </Typography>
-                    </Box>
-                    <ListView updateAccountID={setAccountID} />
-                    <Divider orientation="vertical" flexItem />
+        <div>
+            <Home />
+            <Box className="transaction-view-container" sx={{ flexGrow: 100}}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} md={6} className="account-list-body">
+                        <Box sx={{margin: 2}}>
+                            <Typography variant="h6"><TimeGreeting name={firstName}/> </Typography>
+                        </Box>
+                        <ListView updateAccountID={setAccountID} />
+                        <Divider orientation="vertical" flexItem />
+                    </Grid>
+                    <Grid item xs={12} md={6} className="transaction-view-right">
+                        <Box sx={{ maxWidth: 'auto', margin: 'auto', width: '100%' }}>
+                            <PendingTransactionsTable accountID={accountID} />
+                            <TransactionTable accountID={accountID} />
+                        </Box>
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} md={6} className="transaction-view-right">
-                    <Box sx={{ maxWidth: 'auto', margin: 'auto', width: '100%' }}>
-                        <PendingTransactionsTable accountID={accountID} />
-                        <TransactionTable accountID={accountID} />
-                    </Box>
-                </Grid>
-            </Grid>
-            <Box className="transaction-view-footer" sx={{ pt: 2 }}>
-                {/* Footer content can go here */}
+                <Box className="transaction-view-footer" sx={{ pt: 2 }}>
+                    {/* Footer content can go here */}
+                </Box>
             </Box>
-        </Box>
+        </div>
+
     );
 }

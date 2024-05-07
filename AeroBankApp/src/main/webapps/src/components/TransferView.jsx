@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import {Container} from "@mui/system";
 import axios from "axios";
+import Home from "./Home";
 
 export default function TransferView()
 {
@@ -437,56 +438,30 @@ export default function TransferView()
     };
 
     return (
-        <Container style={{ marginTop: '20px' }}>
-            <Typography variant="h4">Make a Transfer</Typography>
-            <form style={{ marginTop: '20px' }}>
-                <FormControl component="fieldset" style={{ marginBottom: '20px' }}>
-                    <FormLabel component="legend">Transfer Type</FormLabel>
-                    <RadioGroup
-                        row
-                        aria-label="transferType"
-                        name="row-radio-buttons-group"
-                        value={transferType}
-                        onChange={(e) => setTransferType(e.target.value)}
-                    >
-                        <FormControlLabel value="ownAccount" control={<Radio />} label="To Own Account" />
-                        <FormControlLabel value="otherUser" control={<Radio />} label="To Another User" />
-                    </RadioGroup>
-                </FormControl>
+        <div>
+            <Home />
+            <Container style={{ marginTop: '20px' }}>
+                <Typography variant="h4">Make a Transfer</Typography>
+                <form style={{ marginTop: '20px' }}>
+                    <FormControl component="fieldset" style={{ marginBottom: '20px' }}>
+                        <FormLabel component="legend">Transfer Type</FormLabel>
+                        <RadioGroup
+                            row
+                            aria-label="transferType"
+                            name="row-radio-buttons-group"
+                            value={transferType}
+                            onChange={(e) => setTransferType(e.target.value)}
+                        >
+                            <FormControlLabel value="ownAccount" control={<Radio />} label="To Own Account" />
+                            <FormControlLabel value="otherUser" control={<Radio />} label="To Another User" />
+                        </RadioGroup>
+                    </FormControl>
 
-                <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                    <InputLabel>From Account</InputLabel>
-                    <Select
-                        value={fromAccount}
-                        onChange={(e) => setFromAccount(e.target.value)}
-                        displayEmpty
-                        renderValue={selected => {
-                            if (selected.length === 0) {
-                                return <em>Please wait while we load your accounts...</em>;
-                            }
-                            return selected;
-                        }}
-                    >
-                        {isLoading ? (
-                            <MenuItem disabled value="">
-                                <CircularProgress size={24} />
-                            </MenuItem>
-                        ) : (
-                            accountNamesList.map((account) => (
-                                <MenuItem key={account.id} value={account.accountName}>
-                                    {account.accountName}
-                                </MenuItem>
-                            ))
-                        )}
-                    </Select>
-                </FormControl>
-
-                {transferType === 'ownAccount' ? (
                     <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                        <InputLabel>To Account</InputLabel>
+                        <InputLabel>From Account</InputLabel>
                         <Select
-                            value={toAccount}
-                            onChange={(e) => setToAccount(e.target.value)}
+                            value={fromAccount}
+                            onChange={(e) => setFromAccount(e.target.value)}
                             displayEmpty
                             renderValue={selected => {
                                 if (selected.length === 0) {
@@ -500,7 +475,7 @@ export default function TransferView()
                                     <CircularProgress size={24} />
                                 </MenuItem>
                             ) : (
-                                accountNamesList.filter(account => account.accountName !== fromAccount).map((account) => (
+                                accountNamesList.map((account) => (
                                     <MenuItem key={account.id} value={account.accountName}>
                                         {account.accountName}
                                     </MenuItem>
@@ -508,172 +483,202 @@ export default function TransferView()
                             )}
                         </Select>
                     </FormControl>
-                ) : (transferType === 'otherUser' && (
-                    <>
-                        <FormControl component="fieldset" style={{ marginBottom: '20px' }}>
-                            <FormLabel component="legend">Search Recipient By</FormLabel>
-                            <RadioGroup
-                                row
-                                aria-label="searchType"
-                                name="searchTypeRadioGroup"
-                                value={searchType}
-                                onChange={(e) => {setSearchType(e.target.value);
-                                    if(e.target.value === 'username'){
-                                        setSelectedAccountNumber('');
-                                        setSelectedToAccountCodeID(0);
-                                }else{
-                                        setSelectedToUserName('');
-                                        setAccountCodeList([]);
-                                }
-                            }}
+
+                    {transferType === 'ownAccount' ? (
+                        <FormControl fullWidth style={{ marginBottom: '20px' }}>
+                            <InputLabel>To Account</InputLabel>
+                            <Select
+                                value={toAccount}
+                                onChange={(e) => setToAccount(e.target.value)}
+                                displayEmpty
+                                renderValue={selected => {
+                                    if (selected.length === 0) {
+                                        return <em>Please wait while we load your accounts...</em>;
+                                    }
+                                    return selected;
+                                }}
                             >
-                                <FormControlLabel value="accountNumber" control={<Radio />} label="Account Number" />
-                                <FormControlLabel value="username" control={<Radio />} label="Username" />
-                            </RadioGroup>
-                        </FormControl>
-
-                        {searchType === 'username' ? (
-                            <>
-                                <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                                    <InputLabel>Recipient's Username</InputLabel>
-                                    <Select
-                                        value={selectedToUserName}
-                                        onChange={(e) => setSelectedToUserName(e.target.value)}
-                                        displayEmpty
-                                    >
-                                        {toUserNames.filter(user => user.username !== currentUser).map((user) => (
-                                            <MenuItem key={user.id} value={user.username}>
-                                                {user.username}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                                {selectedToUserName && (
-                                    <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                                        <InputLabel>Recipient's Account Codes</InputLabel>
-                                        <Select
-                                            value={selectedToAccountCodeID}
-                                            onChange={(e) => setSelectedToAccountCodeID(e.target.value)}
-                                            displayEmpty
-                                        >
-                                            {isLoadingAccountCodes ? (
-                                                <MenuItem value="" disabled>
-                                                    <CircularProgress size={24} />
-                                                </MenuItem>
-                                            ) : (
-                                                accountCodeUserList.map((code) => (
-                                                    <MenuItem key={code.id} value={code.accountCode}>
-                                                        {code.accountCode}
-                                                    </MenuItem>
-                                                ))
-                                            )}
-                                        </Select>
-                                    </FormControl>
+                                {isLoading ? (
+                                    <MenuItem disabled value="">
+                                        <CircularProgress size={24} />
+                                    </MenuItem>
+                                ) : (
+                                    accountNamesList.filter(account => account.accountName !== fromAccount).map((account) => (
+                                        <MenuItem key={account.id} value={account.accountName}>
+                                            {account.accountName}
+                                        </MenuItem>
+                                    ))
                                 )}
-                            </>
-                        ) : (
-                            <>
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    rows={1}
-                                    label="Recipient's Account Number"
-                                    type="text"
-                                    value={selectedAccountNumber}
-                                    onChange={(e) => setSelectedAccountNumber(e.target.value)}
-                                    onKeyDown={handleKeyPressOnAccountNumber}
-                                    style={{ marginBottom: '20px' }}
-                                />
-                                {accountNumberExists && selectedAccountNumber ? (
+                            </Select>
+                        </FormControl>
+                    ) : (transferType === 'otherUser' && (
+                        <>
+                            <FormControl component="fieldset" style={{ marginBottom: '20px' }}>
+                                <FormLabel component="legend">Search Recipient By</FormLabel>
+                                <RadioGroup
+                                    row
+                                    aria-label="searchType"
+                                    name="searchTypeRadioGroup"
+                                    value={searchType}
+                                    onChange={(e) => {setSearchType(e.target.value);
+                                        if(e.target.value === 'username'){
+                                            setSelectedAccountNumber('');
+                                            setSelectedToAccountCodeID(0);
+                                        }else{
+                                            setSelectedToUserName('');
+                                            setAccountCodeList([]);
+                                        }
+                                    }}
+                                >
+                                    <FormControlLabel value="accountNumber" control={<Radio />} label="Account Number" />
+                                    <FormControlLabel value="username" control={<Radio />} label="Username" />
+                                </RadioGroup>
+                            </FormControl>
+
+                            {searchType === 'username' ? (
+                                <>
                                     <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                                        <InputLabel>Recipient's Account Codes</InputLabel>
+                                        <InputLabel>Recipient's Username</InputLabel>
                                         <Select
-                                            value={selectedToAccountCodeID}
-                                            onChange={(e) => setSelectedToAccountCodeID(e.target.value)}
+                                            value={selectedToUserName}
+                                            onChange={(e) => setSelectedToUserName(e.target.value)}
                                             displayEmpty
                                         >
-                                            {isLoadingAccountCodes ? (
-                                                <MenuItem value="" disabled>
-                                                    <CircularProgress size={24} />
+                                            {toUserNames.filter(user => user.username !== currentUser).map((user) => (
+                                                <MenuItem key={user.id} value={user.username}>
+                                                    {user.username}
                                                 </MenuItem>
-                                            ) : (
-                                                accountCodeList.map((code) => (
-                                                    <MenuItem key={code.id} value={code.accountCode}>
-                                                        {code.accountCode}
-                                                    </MenuItem>
-                                                ))
-                                            )}
+                                            ))}
                                         </Select>
                                     </FormControl>
-                                ) : null}
-                            </>
-                        )}
-                    </>
-                ))}
-                <TextField
-                    fullWidth
-                    label="Amount"
-                    type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    style={{ marginBottom: '20px' }}
-                />
+                                    {selectedToUserName && (
+                                        <FormControl fullWidth style={{ marginBottom: '20px' }}>
+                                            <InputLabel>Recipient's Account Codes</InputLabel>
+                                            <Select
+                                                value={selectedToAccountCodeID}
+                                                onChange={(e) => setSelectedToAccountCodeID(e.target.value)}
+                                                displayEmpty
+                                            >
+                                                {isLoadingAccountCodes ? (
+                                                    <MenuItem value="" disabled>
+                                                        <CircularProgress size={24} />
+                                                    </MenuItem>
+                                                ) : (
+                                                    accountCodeUserList.map((code) => (
+                                                        <MenuItem key={code.id} value={code.accountCode}>
+                                                            {code.accountCode}
+                                                        </MenuItem>
+                                                    ))
+                                                )}
+                                            </Select>
+                                        </FormControl>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <TextField
+                                        fullWidth
+                                        multiline
+                                        rows={1}
+                                        label="Recipient's Account Number"
+                                        type="text"
+                                        value={selectedAccountNumber}
+                                        onChange={(e) => setSelectedAccountNumber(e.target.value)}
+                                        onKeyDown={handleKeyPressOnAccountNumber}
+                                        style={{ marginBottom: '20px' }}
+                                    />
+                                    {accountNumberExists && selectedAccountNumber ? (
+                                        <FormControl fullWidth style={{ marginBottom: '20px' }}>
+                                            <InputLabel>Recipient's Account Codes</InputLabel>
+                                            <Select
+                                                value={selectedToAccountCodeID}
+                                                onChange={(e) => setSelectedToAccountCodeID(e.target.value)}
+                                                displayEmpty
+                                            >
+                                                {isLoadingAccountCodes ? (
+                                                    <MenuItem value="" disabled>
+                                                        <CircularProgress size={24} />
+                                                    </MenuItem>
+                                                ) : (
+                                                    accountCodeList.map((code) => (
+                                                        <MenuItem key={code.id} value={code.accountCode}>
+                                                            {code.accountCode}
+                                                        </MenuItem>
+                                                    ))
+                                                )}
+                                            </Select>
+                                        </FormControl>
+                                    ) : null}
+                                </>
+                            )}
+                        </>
+                    ))}
+                    <TextField
+                        fullWidth
+                        label="Amount"
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        style={{ marginBottom: '20px' }}
+                    />
 
-                <TextField
-                    fullWidth
-                    label="Transfer Date"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    value={transferDate}
-                    onChange={(e) => setTransferDate(e.target.value)}
-                    style={{ marginBottom: '20px' }}
-                />
+                    <TextField
+                        fullWidth
+                        label="Transfer Date"
+                        type="date"
+                        InputLabelProps={{ shrink: true }}
+                        value={transferDate}
+                        onChange={(e) => setTransferDate(e.target.value)}
+                        style={{ marginBottom: '20px' }}
+                    />
 
-                <TextField
-                    fullWidth
-                    type="time"
-                    label="Transfer Time"
-                    value={transferTime}
-                    onChange={(e) => setTransferTime(e.target.value)}
-                    style={{ marginBottom: '20px' }}
-                />
+                    <TextField
+                        fullWidth
+                        type="time"
+                        label="Transfer Time"
+                        value={transferTime}
+                        onChange={(e) => setTransferTime(e.target.value)}
+                        style={{ marginBottom: '20px' }}
+                    />
 
-                <TextField
-                    fullWidth
-                    label="Description"
-                    multiline
-                    rows={4}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    style={{ marginBottom: '20px' }}
-                        />
+                    <TextField
+                        fullWidth
+                        label="Description"
+                        multiline
+                        rows={4}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        style={{ marginBottom: '20px' }}
+                    />
 
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={enableNotifications}
-                            onChange={(e) => setEnableNotifications(e.target.checked)}
-                            color="primary"
-                        />
-                    }
-                    label="Notify me when this transfer is completed"
-                    style={{ marginBottom: '20px' }}
-                />
-                <Button variant="contained" color="primary" onClick={handleTransfer}>
-                    Submit Transfer
-                </Button>
-            </form>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={enableNotifications}
+                                onChange={(e) => setEnableNotifications(e.target.checked)}
+                                color="primary"
+                            />
+                        }
+                        label="Notify me when this transfer is completed"
+                        style={{ marginBottom: '20px' }}
+                    />
+                    <Button variant="contained" color="primary" onClick={handleTransfer}>
+                        Submit Transfer
+                    </Button>
+                </form>
 
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                message="Transfer successful"
-            >
-                <Alert onClose={handleCloseSnackbar} severity={snackBarSeverity} variant="filled" sx={{width: '100%'}}>
-                    {snackBarMessage}
-                </Alert>
-            </Snackbar>
-        </Container>
+                <Snackbar
+                    open={openSnackbar}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    message="Transfer successful"
+                >
+                    <Alert onClose={handleCloseSnackbar} severity={snackBarSeverity} variant="filled" sx={{width: '100%'}}>
+                        {snackBarMessage}
+                    </Alert>
+                </Snackbar>
+            </Container>
+        </div>
+
     );
 }

@@ -8,6 +8,13 @@ import Home from "./components/Home";
 import LoginForm from "./components/LoginForm";
 import ForgotPasswordForm from "./components/ForgotPasswordForm";
 import MFAuthenticate from "./components/MFAuthenticate";
+import TransactionView from "./components/TransactionView";
+import DashBoard from "./components/DashBoard";
+import SettingsView from "./components/SettingsView";
+import TransferView from "./components/TransferView";
+import TransactionSummary from "./components/TransactionSummary";
+import BillPayPage from "./components/BillPayPage";
+import AccountSummaries from "./components/AccountSummaries";
 
 
 function App() {
@@ -20,6 +27,13 @@ function App() {
                   <Route path="/home" element={<Home />}/>
                   <Route path="/forgot-password" element={<ForgotPasswordForm />}/>
                   <Route path="/mfa/authenticate" element={<MFAuthenticate />}/>
+                  <Route path="/accounts" element={<TransactionView />}/>
+                  <Route path="/dashboard" element={<DashBoard />}/>
+                  <Route path="/settings" element={<SettingsView />}/>
+                  <Route path="/transfers" element={<TransferView/>}/>
+                  <Route path="/transactionAnalytics" element={<TransactionSummary />}/>
+                  <Route path="/billPay" element={<BillPayPage />}/>
+                  <Route path="/reports" element={<AccountSummaries/>}/>
               </Routes>
           </BrowserRouter>
       </div>

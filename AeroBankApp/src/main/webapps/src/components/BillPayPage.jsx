@@ -4,6 +4,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import BillPaySchedule from "./BillPaySchedule";
+import Home from "./Home";
 
 export default function BillPayPage() {
     // Sample data for payees, this should be fetched from your back end or state management.
@@ -13,34 +14,38 @@ export default function BillPayPage() {
     ];
 
     return (
-        <Container maxWidth="lg">
-            <Box my={4}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={8}>
-                        <BillPaySchedule />
+        <div>
+            <Home />
+            <Container maxWidth="lg">
+                <Box my={4}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} md={8}>
+                            <BillPaySchedule />
 
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            {/* Pending and History sections can be Accordions */}
+                            <Accordion>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography>Pending</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    {/* ... Content for Pending section */}
+                                </AccordionDetails>
+                            </Accordion>
+                            <Accordion>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography>History</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    {/* ... Content for History section */}
+                                </AccordionDetails>
+                            </Accordion>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} md={4}>
-                        {/* Pending and History sections can be Accordions */}
-                        <Accordion>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography>Pending</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                {/* ... Content for Pending section */}
-                            </AccordionDetails>
-                        </Accordion>
-                        <Accordion>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography>History</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                {/* ... Content for History section */}
-                            </AccordionDetails>
-                        </Accordion>
-                    </Grid>
-                </Grid>
-            </Box>
-        </Container>
+                </Box>
+            </Container>
+        </div>
+
     );
 }

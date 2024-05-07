@@ -272,7 +272,7 @@ export default function LoginFormOLD()
     };
 
     const navigateToHomePage = () => {
-        navigate('/home')
+        navigate('/accounts')
     }
 
     const handleForgotPassword = () => {

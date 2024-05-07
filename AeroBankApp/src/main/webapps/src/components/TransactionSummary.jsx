@@ -10,6 +10,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import GridOnIcon from '@mui/icons-material/GridOn';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import axios from "axios";
+import Home from "./Home";
 
 function TransactionSummary(){
     const [filters, setFilters] = useState({
@@ -224,77 +225,81 @@ function TransactionSummary(){
     };
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <div style={{
-                backgroundImage: `url(${backgroundImage})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                minHeight: '100vh',
-                padding: '20px'
-            }}>
-                <Typography variant="h4" align="center" gutterBottom>Transaction Analytics</Typography>
-                <Grid container spacing={2} justifyContent="center">
-                    <Grid item xs={12} md={10}>
-                        <Accordion>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography variant="h6" fontFamily="Montserrat" fontWeight="bold">Transaction Statistics</Typography>
-                                <IconButton onClick={handleIconClick} style={{fontSize: 36}}>
-                                    <FilterListIcon />
-                                </IconButton>
-                                <IconButton onClick={handleGridIconClick}>
-                                    <GridOnIcon />
-                                </IconButton>
-                                <IconButton onClick={handleToggleIconClick}>
-                                    <ViewComfyIcon/>
-                                </IconButton>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Grid container spacing={2} justifyContent="center">
-                                    {/* Row 1 */}
-                                    <Grid item xs={4}>
-                                        <TransactionSummaryStats title="Last Transaction Submitted" value={transactionStats.lastTransaction} />
+        <div>
+            <Home />
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <div style={{
+                    backgroundImage: `url(${backgroundImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    minHeight: '100vh',
+                    padding: '20px'
+                }}>
+                    <Typography variant="h4" align="center" gutterBottom>Transaction Analytics</Typography>
+                    <Grid container spacing={2} justifyContent="center">
+                        <Grid item xs={12} md={10}>
+                            <Accordion>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography variant="h6" fontFamily="Montserrat" fontWeight="bold">Transaction Statistics</Typography>
+                                    <IconButton onClick={handleIconClick} style={{fontSize: 36}}>
+                                        <FilterListIcon />
+                                    </IconButton>
+                                    <IconButton onClick={handleGridIconClick}>
+                                        <GridOnIcon />
+                                    </IconButton>
+                                    <IconButton onClick={handleToggleIconClick}>
+                                        <ViewComfyIcon/>
+                                    </IconButton>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Grid container spacing={2} justifyContent="center">
+                                        {/* Row 1 */}
+                                        <Grid item xs={4}>
+                                            <TransactionSummaryStats title="Last Transaction Submitted" value={transactionStats.lastTransaction} />
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            <TransactionSummaryStats title="Transaction Count" value={transactionStatistics.totalTransactionCount} />
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            <TransactionSummaryStats title="Total Amount Transferred" value={transactionStatistics.totalTransferredAmount} />
+                                        </Grid>
+                                        {/* Row 2 */}
+                                        <Grid item xs={4}>
+                                            <TransactionSummaryStats title="Average Transaction Value" value={transactionStatistics.averageTransactionValue} />
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            {/* You can add more stats here */}
+                                            <TransactionSummaryStats title="Total Transactions Amount This Month" value={transactionStatistics.totalTransactionAmountByMonth} />
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            {/* Additional stat */}
+                                            <TransactionSummaryStats title={`Total Transactions for ${formatDate(getStartOfWeek())} to ${formatDate(getEndOfWeek())}`} value={transactionStatistics.totalTransactionsThisWeek} />
+                                        </Grid>
+                                        {/* Row 3 */}
+                                        <Grid item xs={4}>
+                                            {/* Additional stat */}
+                                            <TransactionSummaryStats title="Currently Pending" value={transactionStatistics.pendingTransactionCount} />
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            {/* Placeholder or another stat */}
+                                            <TransactionSummaryStats title="Failed Transactions" value="0" />
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            {/* Placeholder or another stat */}
+                                            <TransactionSummaryStats title={`Total Transfers for ${getCurrentMonthAsString()}`} value="15" />
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={4}>
-                                        <TransactionSummaryStats title="Transaction Count" value={transactionStatistics.totalTransactionCount} />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        <TransactionSummaryStats title="Total Amount Transferred" value={transactionStatistics.totalTransferredAmount} />
-                                    </Grid>
-                                    {/* Row 2 */}
-                                    <Grid item xs={4}>
-                                        <TransactionSummaryStats title="Average Transaction Value" value={transactionStatistics.averageTransactionValue} />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        {/* You can add more stats here */}
-                                        <TransactionSummaryStats title="Total Transactions Amount This Month" value={transactionStatistics.totalTransactionAmountByMonth} />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        {/* Additional stat */}
-                                        <TransactionSummaryStats title={`Total Transactions for ${formatDate(getStartOfWeek())} to ${formatDate(getEndOfWeek())}`} value={transactionStatistics.totalTransactionsThisWeek} />
-                                    </Grid>
-                                    {/* Row 3 */}
-                                    <Grid item xs={4}>
-                                        {/* Additional stat */}
-                                        <TransactionSummaryStats title="Currently Pending" value={transactionStatistics.pendingTransactionCount} />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        {/* Placeholder or another stat */}
-                                        <TransactionSummaryStats title="Failed Transactions" value="0" />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        {/* Placeholder or another stat */}
-                                        <TransactionSummaryStats title={`Total Transfers for ${getCurrentMonthAsString()}`} value="15" />
-                                    </Grid>
-                                </Grid>
-                            </AccordionDetails>
-                        </Accordion>
+                                </AccordionDetails>
+                            </Accordion>
+                        </Grid>
+                        <Grid item xs={12} md={10}>
+                            <TransactionSummaryTable  />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} md={10}>
-                        <TransactionSummaryTable  />
-                    </Grid>
-                </Grid>
-            </div>
-        </LocalizationProvider>
+                </div>
+            </LocalizationProvider>
+        </div>
+
     );
 
 }
