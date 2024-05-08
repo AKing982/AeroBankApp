@@ -72,6 +72,9 @@ public class UserEntity
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name="profileImgUrl")
+    private String profileImgUrl;
+
     public UserEntity(String firstName, String lastName, String username, String email, String password, String pinNumber, String accountNumber, boolean isAdmin, boolean isEnabled, Set<AccountEntity> accounts, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;

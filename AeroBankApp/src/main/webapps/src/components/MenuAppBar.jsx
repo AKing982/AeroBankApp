@@ -44,6 +44,15 @@ const SearchIconWrapper = styled(SearchIcon)({
     // other styles as needed
 });
 
+function formatAmount(amount, currencyCode = 'USD', locale = 'en-US') {
+    const formatter = new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: currencyCode,
+        // Additional options can be set here if needed
+    });
+    return formatter.format(amount);
+}
+
 export default function MenuAppBar(){
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElProfile, setAnchorElProfile] = useState(null);
@@ -322,6 +331,8 @@ export default function MenuAppBar(){
                     >
                         <StyledMenuIcon />
                     </IconButton>
+
+
                     {location.pathname.includes('/accounts') && (
                         <Autocomplete
                             disablePortal
@@ -336,6 +347,10 @@ export default function MenuAppBar(){
                             value={selectedTransaction}
                         />
                     )}
+                    {/* Display Account Info */}
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, ml: 2 }}>
+                        AccountNumber: {accountNumber} | Balance: {formatAmount(balance)} | Total Accounts: {totalAccounts}
+                    </Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <IconButton
                         size="large"

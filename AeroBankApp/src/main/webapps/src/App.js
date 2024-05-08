@@ -18,12 +18,15 @@ import AccountSummaries from "./components/AccountSummaries";
 import DepositView from "./components/DepositView";
 import WithdrawView from "./components/WithdrawView";
 import ProfilePage from "./components/ProfilePage";
+import TransactionBuilder from "./components/TransactionBuilder";
+import SupportChat from "./components/SupportChat";
 
 
 function App() {
   return (
       <div className="App">
           <BrowserRouter basename="/AeroBankApp">
+              <SupportChat />
               <Routes>
                   <Route path="/" element={<LoginFormOLD/>}/>
                   <Route path="/registration" element={<RegistrationForm />}/>
@@ -40,6 +43,7 @@ function App() {
                   <Route path="/billPay" element={<BillPayPage />}/>
                   <Route path="/reports" element={<AccountSummaries/>}/>
                   <Route path="/profile" element={<ProfilePage />}/>
+                  <Route path="/transactions" element={<TransactionBuilder />}/>
               </Routes>
           </BrowserRouter>
       </div>
