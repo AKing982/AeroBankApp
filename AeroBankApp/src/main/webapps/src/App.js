@@ -15,6 +15,9 @@ import TransferView from "./components/TransferView";
 import TransactionSummary from "./components/TransactionSummary";
 import BillPayPage from "./components/BillPayPage";
 import AccountSummaries from "./components/AccountSummaries";
+import DepositView from "./components/DepositView";
+import WithdrawView from "./components/WithdrawView";
+import ProfilePage from "./components/ProfilePage";
 
 
 function App() {
@@ -30,10 +33,13 @@ function App() {
                   <Route path="/accounts" element={<TransactionView />}/>
                   <Route path="/dashboard" element={<DashBoard />}/>
                   <Route path="/settings" element={<SettingsView />}/>
+                  <Route path="/deposits" element={<DepositView />}/>
+                  <Route path="/withdraws" element={<WithdrawView />}/>
                   <Route path="/transfers" element={<TransferView/>}/>
                   <Route path="/transactionAnalytics" element={<TransactionSummary />}/>
                   <Route path="/billPay" element={<BillPayPage />}/>
                   <Route path="/reports" element={<AccountSummaries/>}/>
+                  <Route path="/profile" element={<ProfilePage />}/>
               </Routes>
           </BrowserRouter>
       </div>

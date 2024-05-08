@@ -19,6 +19,8 @@ import {
 import {Container} from "@mui/system";
 import axios from "axios";
 import Home from "./Home";
+import GradientSeparator from "./GradientSeparator";
+import MenuAppBar from "./MenuAppBar";
 
 export default function TransferView()
 {
@@ -439,7 +441,8 @@ export default function TransferView()
 
     return (
         <div>
-            <Home />
+            <MenuAppBar />
+            <GradientSeparator />
             <Container style={{ marginTop: '20px' }}>
                 <Typography variant="h4">Make a Transfer</Typography>
                 <form style={{ marginTop: '20px' }}>

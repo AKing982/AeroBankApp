@@ -11,6 +11,8 @@ import GridOnIcon from '@mui/icons-material/GridOn';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import axios from "axios";
 import Home from "./Home";
+import GradientSeparator from "./GradientSeparator";
+import MenuAppBar from "./MenuAppBar";
 
 function TransactionSummary(){
     const [filters, setFilters] = useState({
@@ -226,7 +228,7 @@ function TransactionSummary(){
 
     return (
         <div>
-            <Home />
+            <MenuAppBar />
             <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <div style={{
                     backgroundImage: `url(${backgroundImage})`,

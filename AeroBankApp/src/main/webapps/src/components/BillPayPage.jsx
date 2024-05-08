@@ -5,6 +5,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import BillPaySchedule from "./BillPaySchedule";
 import Home from "./Home";
+import GradientSeparator from "./GradientSeparator";
+import MenuAppBar from "./MenuAppBar";
 
 export default function BillPayPage() {
     // Sample data for payees, this should be fetched from your back end or state management.
@@ -15,7 +17,8 @@ export default function BillPayPage() {
 
     return (
         <div>
-            <Home />
+            <MenuAppBar />
+            <GradientSeparator />
             <Container maxWidth="lg">
                 <Box my={4}>
                     <Grid container spacing={3}>

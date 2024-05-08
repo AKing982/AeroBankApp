@@ -40,6 +40,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DepositAccountCode from "./DepositAccountCode";
 import Dialog from "@mui/material/Dialog";
 import {format} from "date-fns";
+import MenuAppBar from "./MenuAppBar";
+import GradientSeparator from "./GradientSeparator";
 
 export default function DepositView()
 {
@@ -339,111 +341,116 @@ export default function DepositView()
         }
     }
     return (
-        <Container style={{ marginTop: '20px'}}>
-            <Typography variant="h4">Make a Deposit</Typography>
+        <div>
+            <MenuAppBar/>
+            <GradientSeparator />
+            <Container style={{ marginTop: '20px'}}>
+                <Typography variant="h4">Make a Deposit</Typography>
 
-            <Accordion style={{ marginBottom: '20px'}}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography>Select Account</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    {accountData.map((account, index) => (
-                        <Button key={index} variant="text"
-                                onClick={() => handleAccountSelect(account)}
-                                className={account.accountType === selectedAccountType ? 'selected' : ''}
-                        >
-                            {account.accountType}
+                <Accordion style={{ marginBottom: '20px'}}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography>Select Account</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        {accountData.map((account, index) => (
+                            <Button key={index} variant="text"
+                                    onClick={() => handleAccountSelect(account)}
+                                    className={account.accountType === selectedAccountType ? 'selected' : ''}
+                            >
+                                {account.accountType}
+                            </Button>
+                        ))}
+                    </AccordionDetails>
+                </Accordion>
+
+                <form style={{ marginTop: '20px' }}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+
+                        <DepositAccountCode
+                            accounts={accountCodes}
+                            value={selectedAccountCode}
+                            onChange={(e) => setSelectedAccountCode(e.target.value)}
+                            loading={isAccountCodeLoading}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Amount"
+                            type="number"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            style={{ marginBottom: '20px' }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Description (Optional)"
+                            multiline
+                            rows={2}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            style={{ marginBottom: '20px' }}
+                        />
+
+                        <DesktopDatePicker
+                            label="Deposit Date"
+                            value={depositDate}
+                            onChange={setDepositDate}
+                            renderInput={(params) => <TextField {...params} fullWidth style={{ marginBottom: '20px' }} />}
+                        />
+
+                        <TimePicker
+                            label="Deposit Time"
+                            value={depositTime}
+                            onChange={setDepositTime}
+                            renderInput={(params) => <TextField {...params} fullWidth style={{ marginBottom: '20px' }} />}
+                        />
+
+                        <FormControl fullWidth style={{ marginBottom: '20px' }}>
+                            <InputLabel>Schedule Interval</InputLabel>
+                            <Select
+                                value={scheduleInterval}
+                                onChange={(e) => setScheduleInterval(e.target.value)}
+                            >
+                                {scheduleIntervals.map((interval, index) => (
+                                    <MenuItem key={index} value={interval}>{interval}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        <Button variant="contained" color="primary" onClick={handleDeposit}>
+                            Schedule Deposit
                         </Button>
-                    ))}
-                </AccordionDetails>
-            </Accordion>
+                    </LocalizationProvider>
+                </form>
 
-            <form style={{ marginTop: '20px' }}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <Snackbar
+                    open={openSnackbar}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    message="Deposit scheduled"
+                >
+                    <Alert onClose={handleCloseSnackbar} severity={snackBarSeverity} variant="filled" sx={{ width: '100%'}}>
+                        {snackbarmessage}
+                    </Alert>
+                </Snackbar>
 
-                    <DepositAccountCode
-                        accounts={accountCodes}
-                        value={selectedAccountCode}
-                        onChange={(e) => setSelectedAccountCode(e.target.value)}
-                        loading={isAccountCodeLoading}
-                    />
+                <Dialog open={IsLoading}>
+                    <CircularProgress />
+                </Dialog>
+                <TextField
+                    fullWidth
+                    label="Search"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    margin="normal"
+                    variant="outlined"
+                />
 
-                    <TextField
-                        fullWidth
-                        label="Amount"
-                        type="number"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        style={{ marginBottom: '20px' }}
-                    />
+                <DataTable selectedAccount={selectedAccountType} accountID={selectedAccountID}/>
+            </Container>
+        </div>
 
-                    <TextField
-                        fullWidth
-                        label="Description (Optional)"
-                        multiline
-                        rows={2}
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        style={{ marginBottom: '20px' }}
-                    />
-
-                    <DesktopDatePicker
-                        label="Deposit Date"
-                        value={depositDate}
-                        onChange={setDepositDate}
-                        renderInput={(params) => <TextField {...params} fullWidth style={{ marginBottom: '20px' }} />}
-                    />
-
-                    <TimePicker
-                        label="Deposit Time"
-                        value={depositTime}
-                        onChange={setDepositTime}
-                        renderInput={(params) => <TextField {...params} fullWidth style={{ marginBottom: '20px' }} />}
-                    />
-
-                    <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                        <InputLabel>Schedule Interval</InputLabel>
-                        <Select
-                            value={scheduleInterval}
-                            onChange={(e) => setScheduleInterval(e.target.value)}
-                        >
-                            {scheduleIntervals.map((interval, index) => (
-                                <MenuItem key={index} value={interval}>{interval}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
-                    <Button variant="contained" color="primary" onClick={handleDeposit}>
-                        Schedule Deposit
-                    </Button>
-                </LocalizationProvider>
-            </form>
-
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                message="Deposit scheduled"
-            >
-                <Alert onClose={handleCloseSnackbar} severity={snackBarSeverity} variant="filled" sx={{ width: '100%'}}>
-                    {snackbarmessage}
-                </Alert>
-            </Snackbar>
-
-            <Dialog open={IsLoading}>
-                <CircularProgress />
-            </Dialog>
-            <TextField
-                fullWidth
-                label="Search"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                margin="normal"
-                variant="outlined"
-            />
-
-            <DataTable selectedAccount={selectedAccountType} accountID={selectedAccountID}/>
-        </Container>
     );
 
 }
