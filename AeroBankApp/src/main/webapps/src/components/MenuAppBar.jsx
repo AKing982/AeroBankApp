@@ -316,7 +316,7 @@ export default function MenuAppBar(){
     ];
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box>
             <AppBar position="static" sx={{
                 background: 'linear-gradient(to right, #333333, #1a1a1a)'  // Gradient from dark grey to black
             }}>
@@ -347,10 +347,14 @@ export default function MenuAppBar(){
                             value={selectedTransaction}
                         />
                     )}
+
+                    {location.pathname.includes('/accounts') && (
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1, ml: 2 }}>
+                            AccountNumber: {accountNumber} | Balance: {formatAmount(balance)} | Total Accounts: {totalAccounts}
+                        </Typography>
+                    )}
                     {/* Display Account Info */}
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, ml: 2 }}>
-                        AccountNumber: {accountNumber} | Balance: {formatAmount(balance)} | Total Accounts: {totalAccounts}
-                    </Typography>
+
                     <Box sx={{ flexGrow: 1 }} />
                     <IconButton
                         size="large"

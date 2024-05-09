@@ -144,7 +144,7 @@ export default function BillPayPage({templates = []}) {
         <div style={{
             background: `url(${backgroundImage}) no-repeat center bottom`,
             backgroundSize: 'cover',
-            minHeight: 'calc(120vh - 64px)',
+            minHeight: 'calc(150vh - 64px)',
             width: '100%',
             position: 'relative',
         }}>
@@ -198,6 +198,10 @@ export default function BillPayPage({templates = []}) {
                                                 value={newPaymentDetails.dueDate.toISOString().substring(0, 10)}
                                                 onChange={handleInputChange}
                                                 margin="normal"
+                                            />
+                                            <FormControlLabel
+                                                control={<Switch name="recurring" />}
+                                                label="Enable AutoPay"
                                             />
                                             <Select
                                                 fullWidth

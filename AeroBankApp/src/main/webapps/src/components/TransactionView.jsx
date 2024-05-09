@@ -2,7 +2,7 @@ import AccountBox from "./AccountBox";
 import '../AccountBox.css';
 import './TransactionView.css';
 import ListView from "./AccountListView";
-import {Divider, Grid, Paper, Typography} from "@mui/material";
+import {Divider, Grid, List, ListItem, ListItemIcon, ListItemText, Paper, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import TransactionTable from "./TransactionTable";
@@ -12,6 +12,7 @@ import Home from "./Home";
 import MenuAppBar from "./MenuAppBar";
 import GradientSeparator from "./GradientSeparator";
 import backgroundImage from './images/pexels-pixabay-210307.jpg';
+import MailIcon from "@mui/icons-material/Mail";
 
 
 export default function TransactionView()
@@ -20,6 +21,35 @@ export default function TransactionView()
     const [fullName, setFullName] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
+    const toggleDrawer = (open) => (event) => {
+        if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setDrawerOpen(open);
+    };
+
+    const drawer = (
+        <Box
+            sx={{ width: 250 }}
+            role="presentation"
+            onClick={toggleDrawer(false)}
+            onKeyDown={toggleDrawer(false)}
+        >
+            <List>
+                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+                    <ListItem button key={text}>
+                        <ListItemIcon>
+                            {/* Icons can be adjusted based on the actual use case */}
+                            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                        </ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>
+                ))}
+            </List>
+        </Box>
+    );
 
     useEffect(() => {
         const fetchUsersName = () => {
@@ -95,8 +125,8 @@ export default function TransactionView()
             position: 'relative',
         }}>
             <MenuAppBar />
-            <Box sx={{ flexGrow: 0}}>
-                <Grid container spacing={2}>
+            <Box sx={{ flexGrow: 1}}>
+                <Grid container spacing={1}>
                     <Grid item xs={12} md={6}>
                         <Paper elevation={3} sx={{
                             margin: 2,
@@ -130,7 +160,7 @@ export default function TransactionView()
                                    borderRadius: '8px',
                                    height: 'auto',
                                    width: { xs: '100%', sm: '90%', md: '100%' }, // Responsive widths
-                                   maxWidth: '1660px', // Maximum width to ensure it doesn't get too wide on large screens
+                                   maxWidth: '1200px', // Maximum width to ensure it doesn't get too wide on large screens
                                    mx: 'auto' // Centers the Paper component within its container
                                }}>
                             <PendingTransactionsTable accountID={accountID} />

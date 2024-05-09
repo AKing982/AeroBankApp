@@ -1,6 +1,6 @@
 import {Autocomplete, Button, FormControlLabel, Paper, Radio, Switch, TextField, Typography} from "@mui/material";
 import {Box} from "@mui/system";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import MenuAppBar from "./MenuAppBar";
 import backgroundImage from './images/pexels-krivec-ales-547115.jpg';
 
@@ -32,6 +32,10 @@ function TransactionBuilder(){
         { label: 'Monthly', value: 'Monthly' },
         { label: 'Every Two Days', value: 'Every Two Days' }
     ];
+
+    useEffect(() => {
+
+    }, []);
 
     return (
         <div>
