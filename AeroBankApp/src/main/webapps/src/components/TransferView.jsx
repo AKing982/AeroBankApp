@@ -134,17 +134,22 @@ export default function TransferView()
     }
 
     const buildAndSendRequestToServer = async (type) => {
+
         let selectedToAccountID = parseSelectedAccountCodeToAccountID(selectedToAccountCodeID);
+        console.log('Selected To AccountID: ', selectedToAccountID);
         if(type){
             if(searchType === 'username'){
                 console.log('SelectedToAccountCodeID: ', selectedToAccountCodeID);
 
                 const userToUserWithUserIDRequest = await createUserToUserUserIDTransferRequest(fromAccount, amount, selectedToUserName, selectedToAccountID, description, transferDate, transferTime, TransferType.USER_TO_USER);
+                console.log('Request: ', userToUserWithUserIDRequest);
                 sendTransferRequestToServer(userToUserWithUserIDRequest);
+
             }
             if(searchType === 'accountNumber'){
                 console.log('SelectedToAccountCodeID: ', selectedToAccountCodeID);
                 const userToUserRequest =  await createUserToUserTransferRequest(fromAccount, amount, selectedAccountNumber, selectedToAccountID, description, transferDate, transferTime, TransferType.USER_TO_USER);
+                console.log('Request: ', userToUserRequest);
                 sendTransferRequestToServer(userToUserRequest);
             }
         }else{
@@ -448,7 +453,6 @@ export default function TransferView()
                       backgroundImage: `url(${backgroundImage})`,
                       backgroundSize: 'cover',
                       backgroundRepeat: 'no-repeat',
-                      backgroundAttachment: 'fixed',
                       marginTop: '0px'}}>
                 <Container style={{ marginTop: '20px' }}>
                     <Paper elevation={3} sx={{padding: 3, margin: 'auto', maxWidth: 600, backgroundColor:

@@ -42,7 +42,6 @@ function TransactionBuilder(){
                 backgroundImage: `url(${backgroundImage})`,
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
-                backgroundAttachment: 'fixed',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',

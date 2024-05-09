@@ -96,7 +96,6 @@ export default function TransactionView()
                 backgroundImage: `url(${backgroundImage})`,
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
-                backgroundAttachment: 'fixed',
                 marginTop: '-66px',
                 paddingTop: '63px'}}>
                 <Grid container spacing={2}>

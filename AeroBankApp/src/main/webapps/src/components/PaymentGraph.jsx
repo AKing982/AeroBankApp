@@ -1,5 +1,6 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
+import {Paper} from "@mui/material";
 
 
 function PaymentGraph({ data }) {
@@ -19,9 +20,9 @@ function PaymentGraph({ data }) {
     }));
 
     return (
-        <div style={{ height: 400, width: '100%' }}>
+        <Paper style={{ height: 350, width: '100%', backgroundColor: 'rgba(255, 255, 255, 0.8)', padding: '1em' }}>
             <DataGrid rows={rows} columns={columns} pageSize={5} />
-        </div>
+        </Paper>
     );
 }
 
