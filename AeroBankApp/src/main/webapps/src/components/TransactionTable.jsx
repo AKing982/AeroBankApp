@@ -7,11 +7,14 @@ import {
     TableHead,
     TableRow,
     Paper,
-    Typography, Alert
+    Typography, Alert, CircularProgress
 } from '@mui/material';
 import axios from "axios";
 import {Skeleton} from "@mui/lab";
-
+import { IconButton } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';   // Simpler back arrow
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'; // Simpler forward arrow
+import {Box} from "@mui/system";
 
 function createData(date, description, debit, credit, balance) {
     return { date, description, debit, credit, balance };
@@ -31,6 +34,19 @@ export default function TransactionTable({accountID}) {
     const [transactionStatements, setTransactionStatements] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
+    const [currentDate, setCurrentDate] = useState(new Date());
+
+    const handlePrevDate = () => {
+        const newDate = new Date(currentDate);
+        newDate.setMonth(currentDate.getMonth() - 1);
+        setCurrentDate(newDate);
+    };
+
+    const handleNextDate = () => {
+        const newDate = new Date(currentDate);
+        newDate.setMonth(currentDate.getMonth() + 1);
+        setCurrentDate(newDate);
+    }
 
     useEffect(() => {
         const fetchAccountAndTransactions = async () => {
@@ -89,6 +105,17 @@ export default function TransactionTable({accountID}) {
 
     return (
         <TableContainer component={Paper} sx={{ maxHeight: 1080 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 2 }}>
+                <IconButton onClick={handlePrevDate} aria-label="previous month">
+                    <ArrowBackIcon />
+                </IconButton>
+                <Typography variant="h6">
+                    Transactions for {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </Typography>
+                <IconButton onClick={handleNextDate} aria-label="next month">
+                    <ArrowForwardIcon />
+                </IconButton>
+            </Box>
             <Table sx={{ minWidth: 650 }} aria-label="transaction table">
                 <TableHead>
                     <TableRow>
@@ -100,22 +127,11 @@ export default function TransactionTable({accountID}) {
                 </TableHead>
                 <TableBody>
                     {isLoading ? (
-                        // Render Skeletons when data is loading
-                        Array.from(new Array(5)).map((_, index) => (
-                            <TableRow key={index}>
-                                <TableCell><Skeleton animation="wave" /></TableCell>
-                                <TableCell align="right"><Skeleton animation="wave" /></TableCell>
-                                <TableCell align="right"><Skeleton animation="wave" /></TableCell>
-                                <TableCell align="right"><Skeleton animation="wave" /></TableCell>
-                            </TableRow>
-                        ))
+                        <TableRow><TableCell colSpan={4}><CircularProgress /></TableCell></TableRow>
                     ) : errorMessage ? (
-                        // Display the error message within the table body if there's an errorMessage
                         <TableRow>
                             <TableCell colSpan={4}>
-                                <Alert severity="error" sx={{ width: '99%' }}>
-                                    {errorMessage}
-                                </Alert>
+                                <Alert severity="error">{errorMessage}</Alert>
                             </TableCell>
                         </TableRow>
                     ) : (
@@ -129,26 +145,18 @@ export default function TransactionTable({accountID}) {
                                     </TableCell>
                                 </TableRow>
                                 {statements.map((statement, stmtIndex) => (
-                                    <TableRow
-                                        key={`${date}-${stmtIndex}`}
-                                        sx={{
-                                            '&:last-child td, &:last-child th': { border: 0 },
-                                            '& td, & th': {
-                                                borderBottom: '1px solid rgba(224, 224, 224, 1)',
-                                                borderRight: 'none',
-                                            }
-                                        }}
-                                    >
+                                    <TableRow key={`${date}-${stmtIndex}`}
+                                              sx={{
+                                                  '&:last-child td, &:last-child th': { border: 0 },
+                                                  '& td, & th': {
+                                                      borderBottom: '1px solid rgba(224, 224, 224, 1)',
+                                                      borderRight: 'none',
+                                                  }
+                                              }}>
                                         <TableCell>{statement.description}</TableCell>
-                                        <TableCell align="right" sx={{ color: statement.debit ? 'red' : 'inherit' }}>
-                                            {statement.debit}
-                                        </TableCell>
-                                        <TableCell align="right" sx={{ color: statement.credit ? 'green' : 'inherit' }}>
-                                            {statement.credit}
-                                        </TableCell>
-                                        <TableCell align="right">
-                                            {statement.balance}
-                                        </TableCell>
+                                        <TableCell align="right" sx={{ color: statement.debit > 0 ? 'red' : 'inherit' }}>{statement.debit}</TableCell>
+                                        <TableCell align="right" sx={{ color: statement.credit > 0 ? 'green' : 'inherit'}}>{statement.credit}</TableCell>
+                                        <TableCell align="right">{statement.balance}</TableCell>
                                     </TableRow>
                                 ))}
                             </React.Fragment>

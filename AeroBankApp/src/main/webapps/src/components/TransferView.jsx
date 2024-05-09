@@ -513,60 +513,7 @@ export default function TransferView()
                                 )}
                             />
 
-                            {/*<FormControl fullWidth sx={{ mb:3 }}>*/}
-                            {/*    <InputLabel>From Account</InputLabel>*/}
-                            {/*    <Select*/}
-                            {/*        value={fromAccount}*/}
-                            {/*        onChange={(e) => setFromAccount(e.target.value)}*/}
-                            {/*        displayEmpty*/}
-                            {/*        renderValue={selected => {*/}
-                            {/*            if (selected.length === 0) {*/}
-                            {/*                return <em>Please wait while we load your accounts...</em>;*/}
-                            {/*            }*/}
-                            {/*            return selected;*/}
-                            {/*        }}*/}
-                            {/*    >*/}
-                            {/*        {isLoading ? (*/}
-                            {/*            <MenuItem disabled value="">*/}
-                            {/*                <CircularProgress size={24} />*/}
-                            {/*            </MenuItem>*/}
-                            {/*        ) : (*/}
-                            {/*            accountNamesList.map((account) => (*/}
-                            {/*                <MenuItem key={account.id} value={account.accountName}>*/}
-                            {/*                    {account.accountName}*/}
-                            {/*                </MenuItem>*/}
-                            {/*            ))*/}
-                            {/*        )}*/}
-                            {/*    </Select>*/}
-                            {/*</FormControl>*/}
-
                             {transferType === 'ownAccount' ? (
-                                // <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                                //     <InputLabel>To Account</InputLabel>
-                                //     <Select
-                                //         value={toAccount}
-                                //         onChange={(e) => setToAccount(e.target.value)}
-                                //         displayEmpty
-                                //         renderValue={selected => {
-                                //             if (selected.length === 0) {
-                                //                 return <em>Please wait while we load your accounts...</em>;
-                                //             }
-                                //             return selected;
-                                //         }}
-                                //     >
-                                //         {isLoading ? (
-                                //             <MenuItem disabled value="">
-                                //                 <CircularProgress size={24} />
-                                //             </MenuItem>
-                                //         ) : (
-                                //             accountNamesList.filter(account => account.accountName !== fromAccount).map((account) => (
-                                //                 <MenuItem key={account.id} value={account.accountName}>
-                                //                     {account.accountName}
-                                //                 </MenuItem>
-                                //             ))
-                                //         )}
-                                //     </Select>
-                                // </FormControl>
                                 <Autocomplete
                                     fullWidth
                                     value={toAccount}
@@ -625,20 +572,7 @@ export default function TransferView()
 
                                     {searchType === 'username' ? (
                                         <>
-                                            {/*<FormControl fullWidth style={{ marginBottom: '20px' }}>*/}
-                                            {/*    <InputLabel>Recipient's Username</InputLabel>*/}
-                                            {/*    <Select*/}
-                                            {/*        value={selectedToUserName}*/}
-                                            {/*        onChange={(e) => setSelectedToUserName(e.target.value)}*/}
-                                            {/*        displayEmpty*/}
-                                            {/*    >*/}
-                                            {/*        {toUserNames.filter(user => user.username !== currentUser).map((user) => (*/}
-                                            {/*            <MenuItem key={user.id} value={user.username}>*/}
-                                            {/*                {user.username}*/}
-                                            {/*            </MenuItem>*/}
-                                            {/*        ))}*/}
-                                            {/*    </Select>*/}
-                                            {/*</FormControl>*/}
+
                                             <Autocomplete
                                                 fullWidth
                                                 value={selectedToUserName}

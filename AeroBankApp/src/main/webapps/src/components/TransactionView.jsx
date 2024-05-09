@@ -2,18 +2,39 @@ import AccountBox from "./AccountBox";
 import '../AccountBox.css';
 import './TransactionView.css';
 import ListView from "./AccountListView";
-import {Divider, Grid, List, ListItem, ListItemIcon, ListItemText, Paper, Typography} from "@mui/material";
+import {
+    Divider,
+    Grid, IconButton, Link,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Paper,
+    SwipeableDrawer,
+    Typography
+} from "@mui/material";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import TransactionTable from "./TransactionTable";
 import PendingTransactionsTable from "./PendingTransactionsTable";
-import {Box} from "@mui/system";
+import {Box, Container} from "@mui/system";
 import Home from "./Home";
 import MenuAppBar from "./MenuAppBar";
 import GradientSeparator from "./GradientSeparator";
 import backgroundImage from './images/pexels-pixabay-210307.jpg';
 import MailIcon from "@mui/icons-material/Mail";
+import MenuIcon from '@mui/icons-material/Menu'; // Icon for the drawer button
+import InboxIcon from '@mui/icons-material/MoveToInbox';
 
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import HistoryIcon from '@mui/icons-material/History';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import PaymentIcon from '@mui/icons-material/Payment';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import PieChartIcon from '@mui/icons-material/PieChart';
+import SettingsIcon from '@mui/icons-material/Settings';
+import HelpIcon from '@mui/icons-material/Help';
+import AccountOverview from "./AccountOverview";
 
 export default function TransactionView()
 {
@@ -30,7 +51,7 @@ export default function TransactionView()
         setDrawerOpen(open);
     };
 
-    const drawer = (
+    const DrawerContent = ({ toggleDrawer }) => (
         <Box
             sx={{ width: 250 }}
             role="presentation"
@@ -38,18 +59,53 @@ export default function TransactionView()
             onKeyDown={toggleDrawer(false)}
         >
             <List>
-                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+                {drawerItems.map(({ text, icon }) => (
                     <ListItem button key={text}>
-                        <ListItemIcon>
-                            {/* Icons can be adjusted based on the actual use case */}
-                            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                        </ListItemIcon>
+                        <ListItemIcon>{icon}</ListItemIcon>
                         <ListItemText primary={text} />
                     </ListItem>
                 ))}
             </List>
         </Box>
     );
+
+    const Footer = () => (
+        <Box component="footer" sx={{ bgcolor: 'background.paper', py: 6 }}>
+            <Container maxWidth="lg">
+                <Grid container spacing={4}>
+                    <Grid item xs={12} sm={4}>
+                        <Typography variant="h6">Resources</Typography>
+                        <Link href="#" sx={{ display: 'block' }}>FAQs</Link>
+                        <Link href="#" sx={{ display: 'block' }}>Contact Us</Link>
+                        <Link href="#" sx={{ display: 'block' }}>Download App</Link>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <Typography variant="h6">Legal</Typography>
+                        <Link href="#" sx={{ display: 'block' }}>Terms & Conditions</Link>
+                        <Link href="#" sx={{ display: 'block' }}>Privacy Policy</Link>
+                        <Link href="#" sx={{ display: 'block' }}>Regulatory Info</Link>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <Typography variant="h6">Tools</Typography>
+                        <Link href="#" sx={{ display: 'block' }}>Currency Converter</Link>
+                        <Link href="#" sx={{ display: 'block' }}>Tax Tools</Link>
+                        <Link href="#" sx={{ display: 'block' }}>Security Tips</Link>
+                    </Grid>
+                </Grid>
+            </Container>
+        </Box>
+    );
+
+    const drawerItems = [
+        { text: 'Accounts Overview', icon: <DashboardIcon /> },
+        { text: 'Transaction History', icon: <HistoryIcon /> },
+        { text: 'Transfer Funds', icon: <SwapHorizIcon /> },
+        { text: 'Payment Services', icon: <PaymentIcon /> },
+        { text: 'Investments', icon: <TrendingUpIcon /> },
+        { text: 'Budgets and Planning', icon: <PieChartIcon /> },
+        { text: 'Settings', icon: <SettingsIcon /> },
+        { text: 'Support', icon: <HelpIcon /> }
+    ];
 
     useEffect(() => {
         const fetchUsersName = () => {
@@ -125,9 +181,33 @@ export default function TransactionView()
             position: 'relative',
         }}>
             <MenuAppBar />
+            <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                sx={{ margin: 1, position: 'absolute', top: 10, left: 10 }}
+                onClick={toggleDrawer(true)}
+            >
+                <MenuIcon />
+            </IconButton>
+            <SwipeableDrawer
+                anchor="left"
+                open={drawerOpen}
+                onClose={toggleDrawer(false)}
+                onOpen={toggleDrawer(true)}
+            >
+                <DrawerContent toggleDrawer={toggleDrawer}/>
+            </SwipeableDrawer>
+
             <Box sx={{ flexGrow: 1}}>
                 <Grid container spacing={1}>
                     <Grid item xs={12} md={6}>
+                        <AccountOverview
+                            firstName={firstName}
+                            totalBalance="$1500"
+                            recentTransaction="Paid Rent"
+                            alerts="No New Alerts"
+                        />
                         <Paper elevation={3} sx={{
                             margin: 2,
                             padding: 2,
@@ -137,16 +217,6 @@ export default function TransactionView()
                             borderRadius: '8px', // Soft rounded corners for a smoother look
                             boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)' // Enhancing the shadow for better depth perception
                         }}>
-                            <Typography variant="h6" component="div" sx={{
-                                color: '#333', // Subdued, professional text color
-                                fontWeight: 'medium', // Medium weight for slight emphasis
-                                padding: '8px 0', // Padding above and below the text for better spacing
-                                borderBottom: '2px solid #ccc', // A subtle underline to denote section separation
-                                marginBottom: '12px', // Margin below to separate from other content
-                                textAlign: 'center' // Center alignment to make it stand out
-                            }}>
-                                <TimeGreeting name={firstName} />
-                            </Typography>
                             <ListView updateAccountID={setAccountID} />
                         </Paper>
                     </Grid>
@@ -170,6 +240,7 @@ export default function TransactionView()
                 </Grid>
                 <Box sx={{ pt: 2, textAlign: 'center' }}>
                     {/* Footer content can go here */}
+                    <Footer />
                 </Box>
             </Box>
         </div>

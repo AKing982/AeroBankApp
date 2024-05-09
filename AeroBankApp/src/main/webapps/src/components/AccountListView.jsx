@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import Account from "./Account";
-import {CircularProgress} from "@mui/material";
+import {CircularProgress, Grid, Typography} from "@mui/material";
+import {Box} from "@mui/system";
 
 const NotificationCategory = {
     TRANSACTION_ALERT: "TransactionAlert",
@@ -214,36 +215,39 @@ export default function AccountListView({updateAccountID})
     };
 
     return (
-        <div>
-            <h2>{fullName}'s Shares</h2>
+        <Box sx={{ flexGrow: 1, p: 3 }}>
+            <Typography variant="h4" gutterBottom>
+                {fullName ? `Your Accounts, ${fullName}` : 'Your Accounts'}
+            </Typography>
             {isLoading ? (
                 <CircularProgress />
             ) : (
-                <div className="account-list-body">
+                <Grid container spacing={3} direction="column">
                     {accountData.map((account) => {
-                        const accountNotifications = notificationsByAccount[account.acctID];
+                        const accountNotifications = notificationsByAccount[account.acctID] || [];
                         return (
-                            <Account
-                                key={account.id}
-                                acctID={account.acctID}
-                                accountCode={account.shortSegment}
-                                acctCodeID={account.acctCodeID}
-                                balance={account.balance}
-                                pending={account.pendingAmount}
-                                accountName={account.accountName}
-                                available={account.availableAmount}
-                                backgroundImageUrl={account.acctImage}
-                                onAccountClick={handleAccountButtonClick}
-                                notificationCount={accountNotifications.length}
-                                notifications={accountNotifications}
-                                onNotificationClick={(event) => handleNotificationClick(event)}
-                                color={account.acctColor}
-                                isSelected={selectedAccount === account.acctID}
-                            />
+                            <Grid item xs={12} key={account.id}>
+                                <Account
+                                    acctID={account.acctID}
+                                    accountCode={account.shortSegment}
+                                    acctCodeID={account.acctCodeID}
+                                    balance={account.balance}
+                                    pending={account.pendingAmount}
+                                    accountName={account.accountName}
+                                    available={account.availableAmount}
+                                    backgroundImageUrl={account.acctImage}
+                                    onAccountClick={() => handleAccountButtonClick(account.acctID)}
+                                    notificationCount={accountNotifications.length}
+                                    notifications={accountNotifications}
+                                    onNotificationClick={(event) => handleNotificationClick(event, account.acctID)}
+                                    color={account.acctColor}
+                                    isSelected={selectedAccount === account.acctID}
+                                />
+                            </Grid>
                         );
                     })}
-                </div>
+                </Grid>
             )}
-        </div>
+        </Box>
     );
 }
