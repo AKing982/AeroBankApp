@@ -153,7 +153,7 @@ export default function BillPayPage({templates = []}) {
             <Container maxWidth="lg">
                 <Box my={4} sx={{ background: 'rgba(255, 255, 255, 0.8)', padding: 2, borderRadius: '8px' }}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={8}>
+                        <Grid item xs={12} sm={8} md={8} lg={9} >
                             <Card raised>
                                 <CardContent>
                                     <Typography variant="h6" gutterBottom>
@@ -253,7 +253,7 @@ export default function BillPayPage({templates = []}) {
                                 <PaymentGraph data={paymentData} />
                             </Box>
                         </Grid>
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} sm={4} md={4} lg={3}>
                             <PaymentCalendar scheduledPayments={scheduledPayments} />
                             <BillScheduler payees={scheduledPayments} />
                         </Grid>

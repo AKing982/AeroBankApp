@@ -87,17 +87,15 @@ export default function TransactionView()
     }
 
     return (
-        <div>
+        <div style={{
+            background: `url(${backgroundImage}) no-repeat center bottom`,
+            backgroundSize: 'cover',
+            minHeight: 'calc(120vh - 64px)',
+            width: '100%',
+            position: 'relative',
+        }}>
             <MenuAppBar />
-            <GradientSeparator />
-            <Box sx={{ flexGrow: 1,
-                padding: 3,
-                backgroundColor: '#f5f5f5',
-                backgroundImage: `url(${backgroundImage})`,
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                marginTop: '-66px',
-                paddingTop: '63px'}}>
+            <Box sx={{ flexGrow: 0}}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                         <Paper elevation={3} sx={{
@@ -121,7 +119,6 @@ export default function TransactionView()
                             </Typography>
                             <ListView updateAccountID={setAccountID} />
                         </Paper>
-                        <Divider orientation="vertical" flexItem />
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <Paper elevation={3}
@@ -133,7 +130,7 @@ export default function TransactionView()
                                    borderRadius: '8px',
                                    height: 'auto',
                                    width: { xs: '100%', sm: '90%', md: '100%' }, // Responsive widths
-                                   maxWidth: '1200px', // Maximum width to ensure it doesn't get too wide on large screens
+                                   maxWidth: '1660px', // Maximum width to ensure it doesn't get too wide on large screens
                                    mx: 'auto' // Centers the Paper component within its container
                                }}>
                             <PendingTransactionsTable accountID={accountID} />

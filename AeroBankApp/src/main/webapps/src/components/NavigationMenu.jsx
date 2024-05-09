@@ -96,25 +96,22 @@ function NavigationMenu({anchorEl, isOpen, onClose, handleNavigation, isActive, 
             <StyledMenuItem onClick={() => handleNavigation("/billPay")} selected={isActive("/billPay")}>
                 <Typography>Bill Pay</Typography>
             </StyledMenuItem>
-            <StyledMenuItem ref={subMenuAnchorRef} onClick={handleSubMenuToggle} selected={isSubMenuOpen}>
-                <Typography>Create Transaction</Typography>
-            </StyledMenuItem>
-            {isSubMenuOpen && (
-                <Menu
-                    anchorEl={subMenuAnchorRef.current}
-                    open={true}
-                    onClose={() => setSubMenuOpen(false)}
-                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    PaperProps={{ style: submenuStyles }}
-                >
-                    {createTransactionSubMenuItems.map((item, index) => (
-                        <MenuItem key={index} onClick={() => item.onNavigate(item.path)}>
-                            <Typography>{item.label}</Typography>
-                        </MenuItem>
-                    ))}
-                </Menu>
-            )}
+            {/*{isSubMenuOpen && (*/}
+            {/*    <Menu*/}
+            {/*        anchorEl={subMenuAnchorRef.current}*/}
+            {/*        open={true}*/}
+            {/*        onClose={() => setSubMenuOpen(false)}*/}
+            {/*        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}*/}
+            {/*        transformOrigin={{ vertical: 'top', horizontal: 'right' }}*/}
+            {/*        PaperProps={{ style: submenuStyles }}*/}
+            {/*    >*/}
+            {/*        {createTransactionSubMenuItems.map((item, index) => (*/}
+            {/*            <MenuItem key={index} onClick={() => item.onNavigate(item.path)}>*/}
+            {/*                <Typography>{item.label}</Typography>*/}
+            {/*            </MenuItem>*/}
+            {/*        ))}*/}
+            {/*    </Menu>*/}
+            {/*)}*/}
 
 
             {/* Reports visible to all except Auditors */}

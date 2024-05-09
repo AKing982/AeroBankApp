@@ -134,7 +134,7 @@ export default function TransferView()
     }
 
     const buildAndSendRequestToServer = async (type) => {
-
+        console.log('SelectedToAccountCodeID: ', selectedToAccountCodeID);
         let selectedToAccountID = parseSelectedAccountCodeToAccountID(selectedToAccountCodeID);
         console.log('Selected To AccountID: ', selectedToAccountID);
         if(type){
@@ -327,11 +327,13 @@ export default function TransferView()
 
     const fetchFromAccountID = async (accountName) => {
         console.log('Fetching Account ID for account Name: ', accountName);
-        if(!accountName){
+        let accountNameEntry = accountName.accountName;
+        console.log('Account Name: ', accountNameEntry);
+        if(!accountNameEntry){
             return;
         }
         try{
-            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/id/${accountName}`)
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/id/${accountNameEntry}`)
             if(response.status === 200 || response.status === 201){
                 console.log('FromAccount response: ', response.data);
                 return response.data.accountID;
@@ -448,13 +450,16 @@ export default function TransferView()
     };
 
     return (
-        <div>
+        <div style={{
+            background: `url(${backgroundImage}) no-repeat center bottom`,
+            backgroundSize: 'cover',
+            minHeight: 'calc(120vh - 64px)',
+            width: '100%',
+            position: 'relative',
+        }}>
             <MenuAppBar />
             <Box sx={{flexGrow: 0,
                       padding: 3,
-                      backgroundImage: `url(${backgroundImage})`,
-                      backgroundSize: 'cover',
-                      backgroundRepeat: 'no-repeat',
                       marginTop: '0px'}}>
                 <Container style={{ marginTop: '20px' }}>
                     <Paper elevation={3} sx={{padding: 3, margin: 'auto', maxWidth: 600, backgroundColor:

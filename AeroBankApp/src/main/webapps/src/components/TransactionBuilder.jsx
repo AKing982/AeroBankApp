@@ -48,7 +48,7 @@ function TransactionBuilder(){
                 minHeight: '100vh'
             }}>
                 <Paper elevation={3} sx={{padding: 3, maxWidth: 600, width: '100%', margin: '20px', backgroundColor: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(10px)'}}>
-                    <Typography variant="h4" gutterBottom>Configure Transaction</Typography>
+                    <Typography variant="h4" gutterBottom>Create Transaction</Typography>
                     <Autocomplete
                         options={transactionTypes}
                         getOptionLabel={(option) => option.label}
