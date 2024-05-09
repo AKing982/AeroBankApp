@@ -212,7 +212,9 @@ export default function TransferView()
         const accountID = await fetchFromAccountID(fromAccount);
         const toUserID = await fetchToUserIDByAccountNumber(accountNumber);
         const toAcctID = await fetchAccountIDByAccountCodeAndUserID(accountCodeID, toUserID);
-
+        console.log('FromAccountID: ', accountID);
+        console.log('ToUserID: ', toUserID);
+        console.log('ToAcctID: ', toAcctID);
         return {
             fromAccountID: accountID,
             toAccountID: toAcctID,
