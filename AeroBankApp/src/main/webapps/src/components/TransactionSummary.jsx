@@ -164,9 +164,49 @@ function TransactionSummary(){
         return new Date(today.setDate(startOfWeek.getDate() + 6));
     }
 
-    const getWeekString = () => {
+    const transactionStatsData = {
+        lastTransaction: [
+            { name: "Last Transaction", value: 500 }
+        ],
+        totalTransactionCount: [
+            { name: "Jan", value: 120 },
+            { name: "Feb", value: 210 },
+            { name: "Mar", value: 140 },
+            { name: "Apr", value: 170 },
+            { name: "May", value: 160 }
+        ],
+        totalTransferredAmount: [
+            { name: "Transfers", value: 30000 }
+        ],
+        averageTransactionValue: [
+            { name: "Average", value: 350 }
+        ],
+        totalTransactionAmountByMonth: [
+            { name: "Jan", value: 4000 },
+            { name: "Feb", value: 3000 },
+            { name: "Mar", value: 5000 },
+            { name: "Apr", value: 4500 },
+            { name: "May", value: 6000 }
+        ],
+        totalTransactionsThisWeek: [
+            { name: "Monday", value: 50 },
+            { name: "Tuesday", value: 60 },
+            { name: "Wednesday", value: 40 },
+            { name: "Thursday", value: 70 },
+            { name: "Friday", value: 30 }
+        ],
+        pendingTransactionCount: [
+            { name: "Pending", value: 15 }
+        ],
+        failedTransactions: [
+            { name: "Failed", value: 5 }
+        ],
+        totalTransfersForCurrentMonth: [
+            { name: "Transfers", value: 20 }
+        ]
+    };
 
-    }
+
 
     const getCurrentMonthAsString = () => {
         const today = new Date();

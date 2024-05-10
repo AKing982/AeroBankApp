@@ -10,7 +10,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Paper, Alert, Chip, Avatar, IconButton
+    Paper, Alert, Chip, Avatar, IconButton, CircularProgress
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from "axios";
@@ -132,20 +132,11 @@ export default function PendingTransactionsTable({accountID}) {
                         </TableHead>
                         <TableBody>
                             {isLoading ? (
-                                Array.from(new Array(5)).map((_, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell><Skeleton animation="wave" height={30} width="100%" /></TableCell>
-                                        <TableCell align="right"><Skeleton animation="wave" height={30} width="60%" /></TableCell>
-                                        <TableCell align="right"><Skeleton animation="wave" height={30} width="60%" /></TableCell>
-                                        <TableCell align="right"><Skeleton animation="wave" height={30} width="40%" /></TableCell>
-                                    </TableRow>
-                                ))
+                                <TableRow><TableCell colSpan={4}><CircularProgress /></TableCell></TableRow>
                             ) : errorMessage ? (
                                 <TableRow>
                                     <TableCell colSpan={4}>
-                                        <Alert severity="error" sx={{ width: '99%' }}>
-                                            {errorMessage}
-                                        </Alert>
+                                        <Alert severity="error">{errorMessage}</Alert>
                                     </TableCell>
                                 </TableRow>
                             ) : (
