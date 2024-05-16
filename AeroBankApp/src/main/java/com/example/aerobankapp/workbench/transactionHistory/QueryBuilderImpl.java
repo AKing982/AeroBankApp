@@ -141,7 +141,7 @@ public class QueryBuilderImpl
     }
 
     public SQLOperand buildScheduledDateWhereConditions(final TransactionType transactionType){
-        SQLOperand where = new SQLOperand("AND");
+        SQLOperand where = new SQLOperand(QueryConstants.AND);
         where.addComponent(buildSQLCondition("e.scheduledDate", "BETWEEN", ":startDate AND :endDate"));
         if(transactionType.equals(TransactionType.TRANSFER)){
             where.addComponent(buildSQLCondition("e.fromUser.userID", "=", ":userID"));
@@ -202,7 +202,7 @@ public class QueryBuilderImpl
     }
 
     public SQLOperand buildQueryWhereConditions(final HistoryCriteria criteria){
-       SQLOperand whereConditions = new SQLOperand("AND");
+       SQLOperand whereConditions = new SQLOperand(QueryConstants.AND);
        if(criteria.description() != null && !criteria.description().isEmpty()){
            whereConditions.addComponent(new SQLCondition("e.description", "LIKE", ":descr"));
        }

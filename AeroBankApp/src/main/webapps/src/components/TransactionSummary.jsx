@@ -206,7 +206,27 @@ function TransactionSummary(){
         ]
     };
 
+    const transactionStatusData = [
+        { name: "Completed", value: 75, color: "#00C49F" },
+        { name: "Pending", value: 15, color: "#FFBB28" },
+        { name: "Failed", value: 5, color: "#FF8042" },
+        { name: "Cancelled", value: 5, color: "#0088FE" }
+    ];
 
+    const totalTransfersByMonthData = [
+        { name: "Jan", value: 2000 },
+        { name: "Feb", value: 3400 },
+        { name: "Mar", value: 2200 },
+        { name: "Apr", value: 2780 },
+        { name: "May", value: 1890 },
+        { name: "Jun", value: 2390 },
+        { name: "Jul", value: 3490 },
+        { name: "Aug", value: 4300 },
+        { name: "Sep", value: 3100 },
+        { name: "Oct", value: 2100 },
+        { name: "Nov", value: 3300 },
+        { name: "Dec", value: 4030 }
+    ];
 
     const getCurrentMonthAsString = () => {
         const today = new Date();
@@ -277,7 +297,7 @@ function TransactionSummary(){
                     minHeight: '100vh',
                     padding: '20px'
                 }}>
-                    <Typography variant="h4" align="center" gutterBottom>Transaction Analytics</Typography>
+                    {/*<Typography variant="h4" align="center" gutterBottom>Transaction Analytics</Typography>*/}
                     <Grid container spacing={2} justifyContent="center">
                         <Grid item xs={12} md={10}>
                             <Accordion>
@@ -297,38 +317,37 @@ function TransactionSummary(){
                                     <Grid container spacing={2} justifyContent="center">
                                         {/* Row 1 */}
                                         <Grid item xs={4}>
-                                            <TransactionSummaryStats title="Last Transaction Submitted" value={transactionStats.lastTransaction} />
+                                            <TransactionSummaryStats title="Last Transaction Submitted" data={transactionStatsData.lastTransaction} type="pie" />
                                         </Grid>
                                         <Grid item xs={4}>
-                                            <TransactionSummaryStats title="Transaction Count" value={transactionStatistics.totalTransactionCount} />
+                                            <TransactionSummaryStats title="Transaction Count" data={transactionStatsData.totalTransactionCount} type="bar" />
                                         </Grid>
                                         <Grid item xs={4}>
-                                            <TransactionSummaryStats title="Total Amount Transferred" value={transactionStatistics.totalTransferredAmount} />
+                                            <TransactionSummaryStats title="Total Amount Transferred" data={transactionStatsData.totalTransferredAmount} type="bar" />
                                         </Grid>
                                         {/* Row 2 */}
                                         <Grid item xs={4}>
-                                            <TransactionSummaryStats title="Average Transaction Value" value={transactionStatistics.averageTransactionValue} />
+                                            <TransactionSummaryStats title="Average Transaction Value" data={transactionStatsData.averageTransactionValue} type="line" />
                                         </Grid>
                                         <Grid item xs={4}>
                                             {/* You can add more stats here */}
-                                            <TransactionSummaryStats title="Total Transactions Amount This Month" value={transactionStatistics.totalTransactionAmountByMonth} />
+                                            <TransactionSummaryStats title="Total Transactions Amount This Month" data={transactionStatsData.totalTransactionAmountByMonth} type="line" />
                                         </Grid>
                                         <Grid item xs={4}>
                                             {/* Additional stat */}
-                                            <TransactionSummaryStats title={`Total Transactions for ${formatDate(getStartOfWeek())} to ${formatDate(getEndOfWeek())}`} value={transactionStatistics.totalTransactionsThisWeek} />
+                                            <TransactionSummaryStats title={`Total Transactions for ${formatDate(getStartOfWeek())} to ${formatDate(getEndOfWeek())}`} data={transactionStatsData.totalTransactionsThisWeek} type="bar" />
                                         </Grid>
-                                        {/* Row 3 */}
                                         <Grid item xs={4}>
                                             {/* Additional stat */}
-                                            <TransactionSummaryStats title="Currently Pending" value={transactionStatistics.pendingTransactionCount} />
+                                            <TransactionSummaryStats title="Transfers By Month" data={totalTransfersByMonthData} type="pie"/>
                                         </Grid>
                                         <Grid item xs={4}>
                                             {/* Placeholder or another stat */}
-                                            <TransactionSummaryStats title="Failed Transactions" value="0" />
+                                            <TransactionSummaryStats title="Transaction Status" data={transactionStatusData} type="pie" />
                                         </Grid>
                                         <Grid item xs={4}>
                                             {/* Placeholder or another stat */}
-                                            <TransactionSummaryStats title={`Total Transfers for ${getCurrentMonthAsString()}`} value="15" />
+                                            <TransactionSummaryStats title={`Total Transfers for ${getCurrentMonthAsString()}`} data={transactionStatsData.totalTransfersForCurrentMonth} type="pie" />
                                         </Grid>
                                     </Grid>
                                 </AccordionDetails>

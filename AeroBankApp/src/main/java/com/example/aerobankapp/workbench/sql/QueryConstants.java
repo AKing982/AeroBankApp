@@ -9,6 +9,8 @@ public class QueryConstants {
 
     public static final String WHERE = " WHERE ";
 
+    public static final String AND = "AND";
+
     public static final String SELECT = "SELECT";
 
 

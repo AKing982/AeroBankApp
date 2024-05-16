@@ -1,7 +1,6 @@
 package com.example.aerobankapp.entity;
 
 import com.example.aerobankapp.workbench.utilities.Role;
-import com.example.aerobankapp.workbench.utilities.UserType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -10,7 +9,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity

@@ -177,6 +177,8 @@ export default function BillPayPage({templates = []}) {
                                                 fullWidth
                                                 label="Payee Name"
                                                 name="payeeName"
+                                                multiline
+                                                rows={1}
                                                 value={newPaymentDetails.payeeName}
                                                 onChange={handleInputChange}
                                                 margin="normal"
@@ -185,6 +187,8 @@ export default function BillPayPage({templates = []}) {
                                                 fullWidth
                                                 label="Amount"
                                                 name="amount"
+                                                multiline
+                                                rows={1}
                                                 value={newPaymentDetails.amount}
                                                 onChange={handleInputChange}
                                                 margin="normal"

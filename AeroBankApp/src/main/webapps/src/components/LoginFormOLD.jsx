@@ -21,7 +21,7 @@ import {
 import {Box} from "@mui/system";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import backgroundImage from './images/pexels-julius-silver-753325.jpg';
-import Logo from './images/aerobank3.jpg'
+import Logo from './images/KingsCreditUnionMainLogo.jpg';
 import axios from "axios";
 import {Link} from 'react-router-dom';
 
@@ -272,7 +272,7 @@ export default function LoginFormOLD()
     };
 
     const navigateToHomePage = () => {
-        navigate('/accounts')
+        navigate('/dashboard')
     }
 
     const handleForgotPassword = () => {
