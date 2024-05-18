@@ -5,11 +5,12 @@ import DownloadIcon from '@mui/icons-material/Download';
 function TransactionDetails({transaction}){
     return (
         <Paper elevation={3} sx={{ padding: 2, margin: 2 }}>
-            <Typography variant="h6">Transaction Details</Typography>
             <Box sx={{ my: 2 }}>
                 <Typography variant="subtitle1">Transaction ID: {transaction.id}</Typography>
-                <Typography variant="subtitle1">Date: {transaction.date}</Typography>
-                <Typography variant="subtitle1">Amount: ${transaction.amount}</Typography>
+                <Typography variant="subtitle1">Date: {transaction.transactionDate}</Typography>
+                <Typography variant="subtitle1">Debit: {transaction.debit}</Typography>
+                <Typography variant="subtitle1">Credit: {transaction.credit}</Typography>
+                <Typography variant="subtitle1">Balance: {transaction.balance}</Typography>
                 <Typography variant="subtitle1">Type: {transaction.type}</Typography>
                 <Typography variant="subtitle1">Status: {transaction.status}</Typography>
                 <Typography variant="subtitle1">Method: {transaction.method}</Typography>

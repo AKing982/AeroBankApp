@@ -333,20 +333,20 @@ export default function MenuAppBar(){
                     </IconButton>
 
 
-                    {location.pathname.includes('/accounts') && (
-                        <Autocomplete
-                            disablePortal
-                            options={transactions}
-                            getOptionLabel={(option) => option.label}
-                            sx={{ width: 300, bgcolor: 'background.paper' }}
-                            renderInput={(params) => (
-                                <TextField {...params} label="Search transactions..." size="small" />
-                            )}
-                            onChange={handleTransactionSelect}
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                            value={selectedTransaction}
-                        />
-                    )}
+                    {/*{location.pathname.includes('/accounts') && (*/}
+                    {/*    <Autocomplete*/}
+                    {/*        disablePortal*/}
+                    {/*        options={transactions}*/}
+                    {/*        getOptionLabel={(option) => option.label}*/}
+                    {/*        sx={{ width: 300, bgcolor: 'background.paper' }}*/}
+                    {/*        renderInput={(params) => (*/}
+                    {/*            <TextField {...params} label="Search transactions..." size="small" />*/}
+                    {/*        )}*/}
+                    {/*        onChange={handleTransactionSelect}*/}
+                    {/*        isOptionEqualToValue={(option, value) => option.id === value.id}*/}
+                    {/*        value={selectedTransaction}*/}
+                    {/*    />*/}
+                    {/*)}*/}
 
                     {location.pathname.includes('/accounts') && (
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1, ml: 2 }}>

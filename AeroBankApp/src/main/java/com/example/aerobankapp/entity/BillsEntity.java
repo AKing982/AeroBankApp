@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
+@Deprecated
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name="bills")
 public class BillsEntity

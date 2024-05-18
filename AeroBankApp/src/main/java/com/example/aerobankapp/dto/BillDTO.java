@@ -1,5 +1,8 @@
 package com.example.aerobankapp.dto;
 
+import com.example.aerobankapp.model.AccountCode;
+import com.example.aerobankapp.model.AccountNumber;
+import com.example.aerobankapp.model.ReferenceNumber;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -7,16 +10,16 @@ import java.time.LocalDate;
 
 @Builder
 public record BillDTO(Long billId,
-                      String accountNumber,
-                      String accountCode,
+
+                      AccountCode payeeAccountCode,
                       String payeeName,
-                      String payeeAccountNumber,
+                      AccountNumber payeeAccountNumber,
                       BigDecimal billAmount,
                       LocalDate dueDate,
                       LocalDate paymentDate,
                       String status,
                       String currency,
-                      String referenceNumber,
+                      ReferenceNumber referenceNumber,
                       String description,
                       String createdAt,
                       String createdBy,

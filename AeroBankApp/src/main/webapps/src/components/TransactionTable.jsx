@@ -7,7 +7,7 @@ import {
     TableHead,
     TableRow,
     Paper,
-    Typography, Alert, CircularProgress
+    Typography, Alert, CircularProgress, Button
 } from '@mui/material';
 import axios from "axios";
 import {Skeleton} from "@mui/lab";
@@ -15,6 +15,12 @@ import { IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';   // Simpler back arrow
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'; // Simpler forward arrow
 import {Box} from "@mui/system";
+import DialogTitle from "@mui/material/DialogTitle";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import TransactionDetails from "./TransactionDetails";
 
 function createData(date, description, debit, credit, balance) {
     return { date, description, debit, credit, balance };
@@ -35,6 +41,8 @@ export default function TransactionTable({accountID}) {
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const handlePrevDate = () => {
         const newDate = new Date(currentDate);
@@ -103,67 +111,252 @@ export default function TransactionTable({accountID}) {
         return acc;
     }, {});
 
+    const handleRowClick = (statement) => {
+        setSelectedTransaction(statement);
+        setIsDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setIsDialogOpen(false);
+        //setSelectedTransaction(null);
+    };
+
     return (
-        <TableContainer component={Paper} sx={{ maxHeight: 1080 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 2 }}>
-                <IconButton onClick={handlePrevDate} aria-label="previous month">
-                    <ArrowBackIcon />
-                </IconButton>
-                <Typography variant="h6">
-                    Transactions for {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                </Typography>
-                <IconButton onClick={handleNextDate} aria-label="next month">
-                    <ArrowForwardIcon />
-                </IconButton>
-            </Box>
-            <Table sx={{ minWidth: 650 }} aria-label="transaction table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Description</TableCell>
-                        <TableCell align="right">Debit</TableCell>
-                        <TableCell align="right">Credit</TableCell>
-                        <TableCell align="right">Balance</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {isLoading ? (
-                        <TableRow><TableCell colSpan={4}><CircularProgress /></TableCell></TableRow>
-                    ) : errorMessage ? (
+        <>
+            <TableContainer component={Paper} sx={{ maxHeight: 1080 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 2 }}>
+                    <IconButton onClick={handlePrevDate} aria-label="previous month">
+                        <ArrowBackIcon />
+                    </IconButton>
+                    <Typography variant="h6">
+                        Transactions for {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    </Typography>
+                    <IconButton onClick={handleNextDate} aria-label="next month">
+                        <ArrowForwardIcon />
+                    </IconButton>
+                </Box>
+                <Table sx={{ minWidth: 650 }} aria-label="transaction table">
+                    <TableHead>
                         <TableRow>
-                            <TableCell colSpan={4}>
-                                <Alert severity="error">{errorMessage}</Alert>
-                            </TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell align="right">Debit</TableCell>
+                            <TableCell align="right">Credit</TableCell>
+                            <TableCell align="right">Balance</TableCell>
                         </TableRow>
-                    ) : (
-                        Object.entries(transactionsGroupedByDate).map(([date, statements]) => (
-                            <React.Fragment key={date}>
-                                <TableRow>
-                                    <TableCell colSpan={4} sx={{ backgroundColor: '#0E0F52', color: 'white' }}>
-                                        <Typography variant="subtitle1" gutterBottom>
-                                            {date}
-                                        </Typography>
-                                    </TableCell>
-                                </TableRow>
-                                {statements.map((statement, stmtIndex) => (
-                                    <TableRow key={`${date}-${stmtIndex}`}
-                                              sx={{
-                                                  '&:last-child td, &:last-child th': { border: 0 },
-                                                  '& td, & th': {
-                                                      borderBottom: '1px solid rgba(224, 224, 224, 1)',
-                                                      borderRight: 'none',
-                                                  }
-                                              }}>
-                                        <TableCell>{statement.description}</TableCell>
-                                        <TableCell align="right" sx={{ color: statement.debit > 0 ? 'red' : 'inherit' }}>{statement.debit}</TableCell>
-                                        <TableCell align="right" sx={{ color: statement.credit > 0 ? 'green' : 'inherit'}}>{statement.credit}</TableCell>
-                                        <TableCell align="right">{statement.balance}</TableCell>
+                    </TableHead>
+                    <TableBody>
+                        {isLoading ? (
+                            <TableRow><TableCell colSpan={4}><CircularProgress /></TableCell></TableRow>
+                        ) : errorMessage ? (
+                            <TableRow>
+                                <TableCell colSpan={4}>
+                                    <Alert severity="error">{errorMessage}</Alert>
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            Object.entries(transactionsGroupedByDate).map(([date, statements]) => (
+                                <React.Fragment key={date}>
+                                    <TableRow>
+                                        <TableCell colSpan={4} sx={{ backgroundColor: '#0E0F52', color: 'white' }}>
+                                            <Typography variant="subtitle1" gutterBottom>
+                                                {date}
+                                            </Typography>
+                                        </TableCell>
                                     </TableRow>
-                                ))}
-                            </React.Fragment>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                                    {statements.map((statement, stmtIndex) => (
+                                        <TableRow key={`${date}-${stmtIndex}`}
+                                                  onClick={() => handleRowClick(statement)}
+                                                  sx={{
+                                                      cursor: 'pointer',
+                                                      '&:last-child td, &:last-child th': { border: 0 },
+                                                      '& td, & th': {
+                                                          borderBottom: '1px solid rgba(224, 224, 224, 1)',
+                                                          borderRight: 'none',
+                                                      }
+                                                  }}>
+                                            <TableCell>{statement.description}</TableCell>
+                                            <TableCell align="right" sx={{ color: statement.debit > 0 ? 'red' : 'inherit' }}>{statement.debit}</TableCell>
+                                            <TableCell align="right" sx={{ color: statement.credit > 0 ? 'green' : 'inherit' }}>{statement.credit}</TableCell>
+                                            <TableCell align="right">{statement.balance}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </React.Fragment>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+                <DialogTitle>Transaction Details</DialogTitle>
+                <DialogContent>
+                    {selectedTransaction && <TransactionDetails transaction={selectedTransaction} />}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
     );
+
+
+    // return (
+    //     <>
+    //         <TableContainer component={Paper} sx={{ maxHeight: 1080 }}>
+    //             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 2 }}>
+    //                 <IconButton onClick={handlePrevDate} aria-label="previous month">
+    //                     <ArrowBackIcon />
+    //                 </IconButton>
+    //                 <Typography variant="h6">
+    //                     Transactions for {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+    //                 </Typography>
+    //                 <IconButton onClick={handleNextDate} aria-label="next month">
+    //                     <ArrowForwardIcon />
+    //                 </IconButton>
+    //             </Box>
+    //             <Table sx={{ minWidth: 650 }} aria-label="transaction table">
+    //                 <TableHead>
+    //                     <TableRow>
+    //                         <TableCell>Description</TableCell>
+    //                         <TableCell align="right">Debit</TableCell>
+    //                         <TableCell align="right">Credit</TableCell>
+    //                         <TableCell align="right">Balance</TableCell>
+    //                     </TableRow>
+    //                 </TableHead>
+    //                 <TableBody>
+    //                     {isLoading ? (
+    //                         <TableRow><TableCell colSpan={4}><CircularProgress /></TableCell></TableRow>
+    //                     ) : errorMessage ? (
+    //                         <TableRow>
+    //                             <TableCell colSpan={4}>
+    //                                 <Alert severity="error">{errorMessage}</Alert>
+    //                             </TableCell>
+    //                         </TableRow>
+    //                     ) : (
+    //                         Object.entries(transactionsGroupedByDate).map(([date, statements]) => (
+    //                             <React.Fragment key={date}>
+    //                                 <TableRow>
+    //                                     <TableCell colSpan={4} sx={{ backgroundColor: '#0E0F52', color: 'white' }}>
+    //                                         <Typography variant="subtitle1" gutterBottom>
+    //                                             {date}
+    //                                         </Typography>
+    //                                     </TableCell>
+    //                                 </TableRow>
+    //                                 {statements.map((statement, stmtIndex) => (
+    //                                     <TableRow key={`${date}-${stmtIndex}`}
+    //                                               onClick={() => handleRowClick(statement)}
+    //                                               sx={{
+    //                                                   cursor: 'pointer',
+    //                                                   '&:last-child td, &:last-child th': { border: 0 },
+    //                                                   '& td, & th': {
+    //                                                       borderBottom: '1px solid rgba(224, 224, 224, 1)',
+    //                                                       borderRight: 'none',
+    //                                                   }
+    //                                               }}>
+    //                                         <TableCell>{statement.description}</TableCell>
+    //                                         <TableCell align="right" sx={{ color: statement.debit > 0 ? 'red' : 'inherit' }}>{statement.debit}</TableCell>
+    //                                         <TableCell align="right" sx={{ color: statement.credit > 0 ? 'green' : 'inherit' }}>{statement.credit}</TableCell>
+    //                                         <TableCell align="right">{statement.balance}</TableCell>
+    //                                     </TableRow>
+    //                                 ))}
+    //                             </React.Fragment>
+    //                         ))
+    //                     )}
+    //                 </TableBody>
+    //             </Table>
+    //         </TableContainer>
+    //
+    //         <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+    //             <DialogTitle>Transaction Details</DialogTitle>
+    //             <DialogContent>
+    //                 <DialogContentText>
+    //                     {selectedTransaction ? (
+    //                         <>
+    //                             <Typography variant="body1"><strong>Description:</strong> {selectedTransaction.description}</Typography>
+    //                             <Typography variant="body1"><strong>Debit:</strong> {selectedTransaction.debit}</Typography>
+    //                             <Typography variant="body1"><strong>Credit:</strong> {selectedTransaction.credit}</Typography>
+    //                             <Typography variant="body1"><strong>Balance:</strong> {selectedTransaction.balance}</Typography>
+    //                             <Typography variant="body1"><strong>Date:</strong> {selectedTransaction.transactionDate}</Typography>
+    //                             {/* Add more fields as needed */}
+    //                         </>
+    //                     ) : (
+    //                         "No transaction selected"
+    //                     )}
+    //                 </DialogContentText>
+    //             </DialogContent>
+    //             <DialogActions>
+    //                 <Button onClick={handleCloseDialog} color="primary">
+    //                     Close
+    //                 </Button>
+    //             </DialogActions>
+    //         </Dialog>
+    //     </>
+    // );
+
+    // return (
+    //     <TableContainer component={Paper} sx={{ maxHeight: 1080 }}>
+    //         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 2 }}>
+    //             <IconButton onClick={handlePrevDate} aria-label="previous month">
+    //                 <ArrowBackIcon />
+    //             </IconButton>
+    //             <Typography variant="h6">
+    //                 Transactions for {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+    //             </Typography>
+    //             <IconButton onClick={handleNextDate} aria-label="next month">
+    //                 <ArrowForwardIcon />
+    //             </IconButton>
+    //         </Box>
+    //         <Table sx={{ minWidth: 650 }} aria-label="transaction table">
+    //             <TableHead>
+    //                 <TableRow>
+    //                     <TableCell>Description</TableCell>
+    //                     <TableCell align="right">Debit</TableCell>
+    //                     <TableCell align="right">Credit</TableCell>
+    //                     <TableCell align="right">Balance</TableCell>
+    //                 </TableRow>
+    //             </TableHead>
+    //             <TableBody>
+    //                 {isLoading ? (
+    //                     <TableRow><TableCell colSpan={4}><CircularProgress /></TableCell></TableRow>
+    //                 ) : errorMessage ? (
+    //                     <TableRow>
+    //                         <TableCell colSpan={4}>
+    //                             <Alert severity="error">{errorMessage}</Alert>
+    //                         </TableCell>
+    //                     </TableRow>
+    //                 ) : (
+    //                     Object.entries(transactionsGroupedByDate).map(([date, statements]) => (
+    //                         <React.Fragment key={date}>
+    //                             <TableRow>
+    //                                 <TableCell colSpan={4} sx={{ backgroundColor: '#0E0F52', color: 'white' }}>
+    //                                     <Typography variant="subtitle1" gutterBottom>
+    //                                         {date}
+    //                                     </Typography>
+    //                                 </TableCell>
+    //                             </TableRow>
+    //                             {statements.map((statement, stmtIndex) => (
+    //                                 <TableRow key={`${date}-${stmtIndex}`}
+    //                                           sx={{
+    //                                               '&:last-child td, &:last-child th': { border: 0 },
+    //                                               '& td, & th': {
+    //                                                   borderBottom: '1px solid rgba(224, 224, 224, 1)',
+    //                                                   borderRight: 'none',
+    //                                               }
+    //                                           }}>
+    //                                     <TableCell>{statement.description}</TableCell>
+    //                                     <TableCell align="right" sx={{ color: statement.debit > 0 ? 'red' : 'inherit' }}>{statement.debit}</TableCell>
+    //                                     <TableCell align="right" sx={{ color: statement.credit > 0 ? 'green' : 'inherit'}}>{statement.credit}</TableCell>
+    //                                     <TableCell align="right">{statement.balance}</TableCell>
+    //                                 </TableRow>
+    //
+    //                             ))}
+    //                         </React.Fragment>
+    //                     ))
+    //                 )}
+    //             </TableBody>
+    //         </Table>
+    //     </TableContainer>
+    // );
 }
