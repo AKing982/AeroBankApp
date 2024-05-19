@@ -108,9 +108,9 @@ public class SchedulerCriteriaServiceImpl implements SchedulerCriteriaService {
     public SchedulerCriteriaEntity convertDepositToSchedulerCriteriaEntity(final DepositsEntity depositsEntity)
     {
         SchedulerCriteriaEntity schedulerCriteria = new SchedulerCriteriaEntity();
-        schedulerCriteria.setScheduledDate(depositsEntity.getScheduledDate());
-        schedulerCriteria.setScheduledTime(depositsEntity.getScheduledTime());
-        schedulerCriteria.setScheduleType(depositsEntity.getScheduleInterval());
+        schedulerCriteria.setScheduledDate(depositsEntity.getTransactionCriteria().getTransactionScheduleCriteria().getScheduledDate());
+        schedulerCriteria.setScheduledTime(depositsEntity.getTransactionCriteria().getTransactionScheduleCriteria().getScheduledTime());
+        schedulerCriteria.setScheduleType(depositsEntity.getTransactionCriteria().getTransactionScheduleCriteria().getScheduleInterval());
         schedulerCriteria.setPriority(1);
         schedulerCriteria.setStatus(Status.ACTIVE);
         return schedulerCriteria;

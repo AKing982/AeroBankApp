@@ -276,15 +276,15 @@ class TransferServiceImplTest {
         TransferEntity transferEntity = new TransferEntity();
         transferEntity.setTransferID(id);
         transferEntity.setTransferType(transferType);
-        transferEntity.setAmount(amount);
-        transferEntity.setDescription(description);
+       // transferEntity.setAmount(amount);
+        //transferEntity.setDescription(description);
         transferEntity.setFromUser(UserEntity.builder().userID(fromUserID).build());
         transferEntity.setToUser(UserEntity.builder().userID(toUserID).build());
         transferEntity.setFromAccount(AccountEntity.builder().acctID(fromAccountID).build());
         transferEntity.setToAccount(AccountEntity.builder().acctID(toAccountID).build());
-        transferEntity.setScheduledTime(LocalTime.now());
-        transferEntity.setScheduledDate(LocalDate.now());
-        transferEntity.setStatus(TransactionStatus.PENDING);
+       // transferEntity.setScheduledTime(LocalTime.now());
+       // transferEntity.setScheduledDate(LocalDate.now());
+      //  transferEntity.setStatus(TransactionStatus.PENDING);
         return transferEntity;
 
     }

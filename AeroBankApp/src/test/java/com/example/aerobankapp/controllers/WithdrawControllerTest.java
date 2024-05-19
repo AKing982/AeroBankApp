@@ -241,10 +241,10 @@ class WithdrawControllerTest {
         withdrawEntity.setWithdrawID(id);
         withdrawEntity.setAccount(AccountEntity.builder().acctID(acctID).build());
         withdrawEntity.setUser(UserEntity.builder().userID(userID).build());
-        withdrawEntity.setAmount(amount);
-        withdrawEntity.setDescription(description);
-        withdrawEntity.setPosted(LocalDate.now());
-        withdrawEntity.setStatus(TransactionStatus.PENDING);
+       // withdrawEntity.setAmount(amount);
+     //   withdrawEntity.setDescription(description);
+      //  withdrawEntity.setPosted(LocalDate.now());
+      //  withdrawEntity.setStatus(TransactionStatus.PENDING);
         return withdrawEntity;
     }
 

@@ -1,7 +1,6 @@
 package com.example.aerobankapp.entity;
 
 
-import com.example.aerobankapp.model.ReferenceNumber;
 import com.example.aerobankapp.workbench.utilities.TransactionStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -50,7 +49,7 @@ public class TransactionCriteriaEntity {
     private TransactionStatus transactionStatus;
 
     @Column(name="posted")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private LocalDate posted;
 
     @Column(name="notificationEnabled")

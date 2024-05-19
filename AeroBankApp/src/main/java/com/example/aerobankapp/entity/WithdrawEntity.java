@@ -18,7 +18,7 @@ import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
-@Table(name="withdrawals")
+@Table(name="withdraw")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,29 +38,8 @@ public class WithdrawEntity
     @JsonBackReference
     private AccountEntity account;
 
-    @Column(name="description")
-    @NotNull
-    @Size(min=35, message="Must have atleast 35 characters")
-    private String description;
-
-    @Column(name="amount")
-    private BigDecimal amount;
-
-    @Column(name="posted")
-    private LocalDate posted;
-
-    @Column(name="scheduledInterval")
-    @Enumerated(EnumType.STRING)
-    private ScheduleType scheduledInterval;
-
-    @Column(name="scheduledTime")
-    private LocalTime scheduledTime;
-
-    @Column(name="scheduledDate")
-    private LocalDate scheduledDate;
-
-    @Column(name="status")
-    @Enumerated(EnumType.STRING)
-    private TransactionStatus status;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="transactionCriteriaID")
+    private TransactionCriteriaEntity transactionCriteria;
 
 }

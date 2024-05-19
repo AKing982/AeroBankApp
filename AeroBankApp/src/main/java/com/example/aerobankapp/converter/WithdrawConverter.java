@@ -17,8 +17,8 @@ public class WithdrawConverter implements EntityToModelConverter<WithdrawEntity,
         Withdraw withdraw = new Withdraw();
         withdraw.setId(entity.getWithdrawID());
         withdraw.setFromAccountID(entity.getAccount().getAcctID());
-        withdraw.setAmount(entity.getAmount());
-        withdraw.setDescription(entity.getDescription());
+        withdraw.setAmount(entity.getTransactionCriteria().getAmount());
+        withdraw.setDescription(entity.getTransactionCriteria().getDescription());
         withdraw.setPosted(LocalDate.now());
         return withdraw;
     }

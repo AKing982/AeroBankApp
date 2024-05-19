@@ -58,13 +58,13 @@ public class DepositQueue implements QueueModel<Deposit>
     {
         return DepositsEntity.builder()
                 .depositID(deposit.getDepositID())
-                .amount(deposit.getAmount())
-                .description(deposit.getDescription())
-                .scheduledDate(deposit.getDateScheduled())
-                .scheduledTime(deposit.getTimeScheduled())
-                .posted(deposit.getPosted())
-                .scheduleInterval(deposit.getScheduleInterval())
-                .user(UserEntity.builder().userID(1).build())
+         //       .transactionCriteria(deposit.getAmount())
+          //      .description(deposit.getDescription())
+          //      .scheduledDate(deposit.getDateScheduled())
+          //      .scheduledTime(deposit.getTimeScheduled())
+          //      .posted(deposit.getPosted())
+         //       .scheduleInterval(deposit.getScheduleInterval())
+         //       .user(UserEntity.builder().userID(1).build())
              //   .account(AccountEntity.builder().accountCode(deposit.getAcctCode()).build())
                 .build();
     }

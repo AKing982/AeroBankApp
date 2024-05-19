@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@Table(name="deposits")
+@Table(name="deposit")
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -37,31 +37,8 @@ public class DepositsEntity extends AbstractTransactionEntityModel
     @JsonBackReference
     private AccountEntity account;
 
-    @Column(name="amount", nullable = false)
-    @NotNull
-    @DecimalMin("0.0")
-    @Digits(integer=10, fraction = 2)
-    private BigDecimal amount;
-
-    @Column(name="description")
-    @NotNull
-    private String description;
-
-    @Column(name="scheduledInterval")
-    @Enumerated(EnumType.STRING)
-    private ScheduleType scheduleInterval;
-
-    @Column(name="scheduledTime")
-    private LocalTime scheduledTime;
-
-    @Column(name="scheduledDate")
-    private LocalDate scheduledDate;
-
-    @Column(name="status")
-    @Enumerated(EnumType.STRING)
-    private TransactionStatus status;
-
-    @Column(name="posted")
-    private LocalDate posted;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="transactionCriteriaID")
+    private TransactionCriteriaEntity transactionCriteria;
 
 }

@@ -34,7 +34,7 @@ public class TransactionScheduleCriteriaEntity {
 
     @Column(name="scheduledInterval")
     @Enumerated(EnumType.STRING)
-    private ScheduleInterval scheduleInterval;
+    private ScheduleType scheduleInterval;
 
     @Column(name="isScheduledNow")
     private boolean isScheduledNow;

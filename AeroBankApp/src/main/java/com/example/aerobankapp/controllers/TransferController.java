@@ -2,9 +2,7 @@ package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.converter.TransferConverter;
 import com.example.aerobankapp.dto.TransferDTO;
-import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.entity.TransferEntity;
-import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.TransferService;
 import com.example.aerobankapp.services.UserService;
@@ -56,13 +54,31 @@ public class TransferController
         return ResponseEntity.ok("Transfer Request submitted successfully.");
     }
 
+    private TransactionCriteriaEntity buildTransactionCriteria(TransferDTO transferDTO, TransactionScheduleCriteriaEntity criteria){
+        TransactionCriteriaEntity transactionCriteria = new TransactionCriteriaEntity();
+        transactionCriteria.setAmount(transferDTO.transferAmount());
+        transactionCriteria.setDescription(transferDTO.transferDescription());
+        transactionCriteria.setPosted(LocalDate.now());
+        transactionCriteria.setTransactionScheduleCriteria(criteria);
+        transactionCriteria.setNotificationEnabled(transactionCriteria.isNotificationEnabled());
+        transactionCriteria.setTransactionStatus(TransactionStatus.PENDING);
+        return transactionCriteria;
+    }
+
+    private TransactionScheduleCriteriaEntity buildTransactionSchedule(TransferDTO transferDTO){
+        TransactionScheduleCriteriaEntity transactionScheduleCriteria = new TransactionScheduleCriteriaEntity();
+        transactionScheduleCriteria.setScheduledDate(transferDTO.transferDate());
+        transactionScheduleCriteria.setScheduledTime(transferDTO.transferTime());
+        return transactionScheduleCriteria;
+    }
+
     private TransferEntity buildTransferEntity(TransferDTO transferDTO){
         TransferEntity transfer = new TransferEntity();
         transfer.setTransferID(transferDTO.transferID()); // Make sure getters are properly named
-        transfer.setDescription(transferDTO.transferDescription());
-        transfer.setAmount(transferDTO.transferAmount());
-        transfer.setScheduledDate(transferDTO.transferDate());
-        transfer.setScheduledTime(transferDTO.transferTime());
+
+        TransactionScheduleCriteriaEntity transactionScheduleCriteria = buildTransactionSchedule(transferDTO);
+        TransactionCriteriaEntity transactionCriteria = buildTransactionCriteria(transferDTO, transactionScheduleCriteria);
+        transfer.setTransactionCriteria(transactionCriteria);
 
         // Fetch and set the user entities
         UserEntity toUser = userService.findById(transferDTO.toUserID())
@@ -81,9 +97,6 @@ public class TransferController
         transfer.setToAccount(toAccount);
         transfer.setFromAccount(fromAccount);
 
-        transfer.setNotificationEnabled(transferDTO.notificationEnabled());
-        transfer.setDate_posted(LocalDate.now());
-        transfer.setStatus(TransactionStatus.PENDING);
         transfer.setTransferType(transferDTO.transferType());
         LOGGER.info("Transfer Type: " + transfer.getTransferType());
 

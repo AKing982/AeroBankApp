@@ -26,21 +26,21 @@ public interface WithdrawRepository extends JpaRepository<WithdrawEntity, Long>
     List<WithdrawEntity> findByAccountId(@Param("acctID") int acctID);
 
     // Find withdraws by status
-    @Query("SELECT w FROM WithdrawEntity w WHERE w.status=:status")
+    @Query("SELECT w FROM WithdrawEntity w JOIN w.transactionCriteria c WHERE c.transactionStatus=:status")
     List<WithdrawEntity> findByStatus(@Param("status") Status status);
 
     @Query("SELECT w FROM WithdrawEntity w JOIN w.user u WHERE u.username=:user")
     List<WithdrawEntity> findWithdrawalsByUserName(@Param("user") String user);
 
-    @Query("SELECT w.amount FROM WithdrawEntity w WHERE w.withdrawID=:id")
+    @Query("SELECT c.amount FROM WithdrawEntity w JOIN w.transactionCriteria c WHERE w.withdrawID=:id")
     BigDecimal findAmountById(@Param("id") Long id);
 
     // Find withdraws within a date range
-    @Query("SELECT w FROM WithdrawEntity w WHERE w.posted BETWEEN :startDate AND :endDate")
+    @Query("SELECT w FROM WithdrawEntity w JOIN w.transactionCriteria c WHERE c.posted BETWEEN :startDate AND :endDate")
     List<WithdrawEntity> findWithdrawsBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     // Find withdraws for a specific account and a specific status
-    @Query("SELECT w FROM WithdrawEntity w WHERE w.account.acctID = :acctID AND w.status = :status")
+    @Query("SELECT w FROM WithdrawEntity w JOIN w.transactionCriteria c WHERE w.account.acctID = :acctID AND c.transactionStatus = :status")
     List<WithdrawEntity> findByAccountIdAndStatus(@Param("acctID") int acctID, @Param("status") Status status);
 
     @Query("SELECT w FROM WithdrawEntity w WHERE w.user.userID=:userID ORDER BY w.withdrawID DESC")
@@ -49,7 +49,7 @@ public interface WithdrawRepository extends JpaRepository<WithdrawEntity, Long>
     @Query("SELECT w FROM WithdrawEntity w WHERE w.user.userID=:userID ORDER BY w.withdrawID ASC")
     List<WithdrawEntity> findByUserIDAscending(@Param("userID") int userID);
 
-    @Query("SELECT w FROM WithdrawEntity w WHERE w.description=:description")
+    @Query("SELECT w FROM WithdrawEntity w JOIN w.transactionCriteria c WHERE c.description=:description")
     Optional<WithdrawEntity> findByDescription(@Param("description") String description);
     // Update the processed status of withdraws by user ID
 

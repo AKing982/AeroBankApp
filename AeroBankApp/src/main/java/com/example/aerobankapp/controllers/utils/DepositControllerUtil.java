@@ -39,13 +39,13 @@ public class DepositControllerUtil
     {
         return DepositResponse.builder()
                 .userID(deposits.getUser().getUserID())
-                .interval(deposits.getScheduleInterval())
-                .selectedTime(deposits.getScheduledTime())
-                .amount(deposits.getAmount())
-                .description(deposits.getDescription())
+                .interval(deposits.getTransactionCriteria().getTransactionScheduleCriteria().getScheduleInterval())
+                .selectedTime(deposits.getTransactionCriteria().getTransactionScheduleCriteria().getScheduledTime())
+                .amount(deposits.getTransactionCriteria().getAmount())
+                .description(deposits.getTransactionCriteria().getDescription())
                 //  .accountCode(deposits.getAccount().getAccountCode())
                 .accountID(deposits.getAccount().getAcctID())
-                .scheduledDate(deposits.getScheduledDate())
+                .scheduledDate(deposits.getTransactionCriteria().getTransactionScheduleCriteria().getScheduledDate())
                 .build();
     }
 }

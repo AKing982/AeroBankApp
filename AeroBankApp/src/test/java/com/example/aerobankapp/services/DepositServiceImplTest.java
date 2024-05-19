@@ -104,23 +104,23 @@ class DepositServiceImplTest
 
         assertEquals(mockDeposits.size(), depositsEntities.size());
         for (int i = 0; i < mockDeposits.size(); i++) {
-            assertEquals(mockDeposits.get(i).getPosted(), depositsEntities.get(i).getPosted());
+            assertEquals(mockDeposits.get(i).getTransactionCriteria().getPosted(), depositsEntities.get(i).getTransactionCriteria().getPosted());
         }
 
-        assertTrue(depositsEntities.get(0).getPosted().isAfter(depositsEntities.get(1).getPosted()));
+        assertTrue(depositsEntities.get(0).getTransactionCriteria().getPosted().isAfter(depositsEntities.get(1).getTransactionCriteria().getPosted()));
     }
 
     private DepositsEntity createMockDepositEntity(int id, int userID, String acctCode, int acctID, BigDecimal amount, String description, ScheduleType scheduleType, LocalDate date, LocalDate posted, LocalTime scheduledTime)
     {
        DepositsEntity depositsEntity = new DepositsEntity();
        depositsEntity.setDepositID(id);
-       depositsEntity.setAmount(amount);
-       depositsEntity.setDescription(description);
+//       depositsEntity.setAmount(amount);
+//       depositsEntity.setDescription(description);
        depositsEntity.setUser(UserEntity.builder().userID(userID).build());
-       depositsEntity.setScheduleInterval(scheduleType);
-       depositsEntity.setScheduledDate(date);
-       depositsEntity.setScheduledTime(scheduledTime);
-       depositsEntity.setPosted(posted);
+//       depositsEntity.setScheduleInterval(scheduleType);
+//       depositsEntity.setScheduledDate(date);
+//       depositsEntity.setScheduledTime(scheduledTime);
+//       depositsEntity.setPosted(posted);
     //   depositsEntity.setAccount(AccountEntity.builder().accountCode(acctCode).acctID(acctID).build());
        return depositsEntity;
     }

@@ -20,13 +20,13 @@ public final class DepositServiceUtil
         return DepositsEntity.builder()
                 .depositID(depositDTO.getDepositID())
               //  .account(AccountEntity.builder().accountCode(depositDTO.getAccountCode()).acctID(depositDTO.getAccountID()).build())
-                .description(depositDTO.getDescription())
-                .amount(depositDTO.getAmount())
-                .scheduleInterval(depositDTO.getScheduleInterval())
-                .user(UserEntity.builder().userID(depositDTO.getUserID()).build())
-                .posted(LocalDate.now())
-                .scheduledTime(depositDTO.getTimeScheduled())
-                .scheduledDate(depositDTO.getDate())
+                //.description(depositDTO.getDescription())
+              ///  .amount(depositDTO.getAmount())
+              //  .scheduleInterval(depositDTO.getScheduleInterval())
+               // .user(UserEntity.builder().userID(depositDTO.getUserID()).build())
+               // .posted(LocalDate.now())
+               // .scheduledTime(depositDTO.getTimeScheduled())
+                //.scheduledDate(depositDTO.getDate())
                 .build();
     }
 

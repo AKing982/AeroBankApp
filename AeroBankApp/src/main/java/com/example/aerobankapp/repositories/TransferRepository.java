@@ -20,7 +20,7 @@ public interface TransferRepository extends JpaRepository<TransferEntity, Long>
     @Query("SELECT e FROM TransferEntity e WHERE e.fromUser.username=:fromUser AND e.toUser.username=:toUser AND e.transferType='USER_USER'")
     List<TransferEntity> findTransfersWithOriginUserAndTargetUser(@Param("fromUser") String fromUser, @Param("toUser") String toUser);
 
-    @Query("SELECT e FROM TransferEntity e WHERE e.status=:status")
+    @Query("SELECT e FROM TransferEntity e JOIN e.transactionCriteria c WHERE c.transactionStatus=:status")
     List<TransferEntity> findTransfersByStatus(@Param("status") TransferStatus status);
 
 

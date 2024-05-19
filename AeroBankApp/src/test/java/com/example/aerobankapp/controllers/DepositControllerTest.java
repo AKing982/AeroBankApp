@@ -103,10 +103,10 @@ class DepositControllerTest {
 
         DepositsEntity mockDeposit = DepositsEntity.builder()
                 .depositID(1)
-                .amount(new BigDecimal("45.00"))
-                .description("Transfer")
-                .scheduledTime(now)
-                .scheduledDate(today)
+                //.amount(new BigDecimal("45.00"))
+                //  .description("Transfer")
+               // .scheduledTime(now)
+               // .scheduledDate(today)
                 .user(mockUser)
                 .account(mockAccount)
                 .build();

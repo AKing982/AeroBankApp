@@ -503,12 +503,12 @@ class DepositEngineTest {
        // depositsEntity.setAccount(AccountEntity.builder().accountCode(acctCode).acctID(acctID).build());
         depositsEntity.setDepositID(1);
         depositsEntity.setUser(UserEntity.builder().userID(userID).build());
-        depositsEntity.setPosted(LocalDate.now());
-        depositsEntity.setDescription(description);
-        depositsEntity.setAmount(amount);
-        depositsEntity.setScheduledTime(timeScheduled);
-        depositsEntity.setScheduleInterval(scheduleType);
-        depositsEntity.setScheduledDate(scheduledDate);
+        // depositsEntity.setPosted(LocalDate.now());
+      //  depositsEntity.setDescription(description);
+      //  depositsEntity.setAmount(amount);
+      //  depositsEntity.setScheduledTime(timeScheduled);
+      //  depositsEntity.setScheduleInterval(scheduleType);
+      //  depositsEntity.setScheduledDate(scheduledDate);
         return depositsEntity;
     }
 
@@ -529,13 +529,13 @@ class DepositEngineTest {
     private Deposit convertDepositEntityToDeposit(final DepositsEntity depositsEntity){
         Deposit deposit = new Deposit();
         deposit.setDepositID(depositsEntity.getDepositID());
-        deposit.setScheduleInterval(depositsEntity.getScheduleInterval());
-        deposit.setDateScheduled(depositsEntity.getScheduledDate());
-        deposit.setDescription(depositsEntity.getDescription());
+        deposit.setScheduleInterval(depositsEntity.getTransactionCriteria().getTransactionScheduleCriteria().getScheduleInterval());
+        deposit.setDateScheduled(depositsEntity.getTransactionCriteria().getTransactionScheduleCriteria().getScheduledDate());
+        deposit.setDescription(depositsEntity.getTransactionCriteria().getDescription());
       //  deposit.setAcctCode(depositsEntity.getAccount().getAccountCode());
         deposit.setUserID(depositsEntity.getUser().getUserID());
-        deposit.setAmount(depositsEntity.getAmount());
-        deposit.setTimeScheduled(depositsEntity.getScheduledTime());
+        deposit.setAmount(depositsEntity.getTransactionCriteria().getAmount());
+        deposit.setTimeScheduled(depositsEntity.getTransactionCriteria().getTransactionScheduleCriteria().getScheduledTime());
         deposit.setAccountID(depositsEntity.getAccount().getAcctID());
         deposit.setPosted(LocalDate.now());
         return deposit;
@@ -543,15 +543,15 @@ class DepositEngineTest {
 
     private DepositsEntity convertDepositToEntity(Deposit deposit){
         DepositsEntity depositsEntity = new DepositsEntity();
-        depositsEntity.setScheduledDate(deposit.getDateScheduled());
+        //depositsEntity.setScheduledDate(deposit.getDateScheduled());
         depositsEntity.setUser(UserEntity.builder().userID(deposit.getUserID()).build());
       //  depositsEntity.setAccount(AccountEntity.builder().acctID(deposit.getAccountID()).accountCode(deposit.getAcctCode()).build());
         depositsEntity.setDepositID(deposit.getDepositID());
-        depositsEntity.setAmount(deposit.getAmount());
-        depositsEntity.setDescription(deposit.getDescription());
-        depositsEntity.setScheduleInterval(deposit.getScheduleInterval());
-        depositsEntity.setScheduledTime(deposit.getTimeScheduled());
-        depositsEntity.setPosted(deposit.getPosted());
+       // depositsEntity.setAmount(deposit.getAmount());
+       // depositsEntity.setDescription(deposit.getDescription());
+       // depositsEntity.setScheduleInterval(deposit.getScheduleInterval());
+       // depositsEntity.setScheduledTime(deposit.getTimeScheduled());
+      //  depositsEntity.setPosted(deposit.getPosted());
         return depositsEntity;
     }
 

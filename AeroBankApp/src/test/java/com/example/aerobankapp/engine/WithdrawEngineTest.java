@@ -142,12 +142,12 @@ class WithdrawEngineTest {
         WithdrawEntity withdrawEntity = new WithdrawEntity();
         withdrawEntity.setWithdrawID(withdraw.getId());
         withdrawEntity.setAccount(AccountEntity.builder().acctID(withdraw.getFromAccountID()).build());
-        withdrawEntity.setAmount(withdraw.getAmount());
+      //  withdrawEntity.setAmount(withdraw.getAmount());
         withdrawEntity.setUser(UserEntity.builder().userID(withdraw.getUserID()).build());
-        withdrawEntity.setDescription(withdraw.getDescription());
-        withdrawEntity.setScheduledDate(withdraw.getDateScheduled());
-        withdrawEntity.setScheduledTime(withdraw.getTimeScheduled());
-        withdrawEntity.setScheduledInterval(withdraw.getScheduleInterval());
+      //  withdrawEntity.setDescription(withdraw.getDescription());
+       // withdrawEntity.setScheduledDate(withdraw.getDateScheduled());
+       // withdrawEntity.setScheduledTime(withdraw.getTimeScheduled());
+       // withdrawEntity.setScheduledInterval(withdraw.getScheduleInterval());
         return withdrawEntity;
     }
 

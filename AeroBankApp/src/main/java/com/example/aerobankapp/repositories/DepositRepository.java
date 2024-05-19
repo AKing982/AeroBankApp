@@ -19,16 +19,16 @@ public interface DepositRepository extends JpaRepository<DepositsEntity, Long>
     @Query("SELECT d FROM DepositsEntity d JOIN d.user u WHERE u.userID=:userID")
     List<DepositsEntity> findDepositsByUserID(@Param("userID") int userID);
 
-    @Query("SELECT d FROM DepositsEntity d JOIN d.user u WHERE u.username=:user ORDER BY d.posted DESC")
+    @Query("SELECT d FROM DepositsEntity d JOIN d.user u JOIN d.transactionCriteria c WHERE u.username=:user ORDER BY c.posted DESC")
     List<DepositsEntity> getDepositsByUserNameDesc(@Param("user") String user);
 
     @Query("SELECT d FROM DepositsEntity d JOIN d.account a WHERE a.acctID=:acctID")
     List<DepositsEntity> getDepositsByAcctID(@Param("acctID") int acctID);
 
-    @Query("SELECT d FROM DepositsEntity d JOIN d.user u WHERE u.userID=:id ORDER BY d.posted ASC")
+    @Query("SELECT d FROM DepositsEntity d JOIN d.user u JOIN d.transactionCriteria c WHERE u.userID=:id ORDER BY c.posted ASC")
     List<DepositsEntity> getListOfDepositsByUserIDASC(@Param("id") int userID);
 
-    @Query("SELECT d FROM DepositsEntity d JOIN d.user u WHERE u.userID=:id ORDER BY d.posted DESC")
+    @Query("SELECT d FROM DepositsEntity d JOIN d.user u JOIN d.transactionCriteria c WHERE u.userID=:id ORDER BY c.posted DESC")
     List<DepositsEntity> getListOfDepositsByUserID_DESC(@Param("id") int userID);
 
 }

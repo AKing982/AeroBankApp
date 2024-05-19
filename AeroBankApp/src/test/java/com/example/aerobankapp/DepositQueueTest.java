@@ -225,12 +225,12 @@ class DepositQueueTest {
     {
         return DepositsEntity.builder()
                 .depositID(depositDTO.getDepositID())
-                .amount(depositDTO.getAmount())
-                .description(depositDTO.getDescription())
-                .scheduledDate(depositDTO.getDateScheduled())
-                .scheduledTime(depositDTO.getTimeScheduled())
-                .posted(depositDTO.getPosted())
-                .scheduleInterval(depositDTO.getScheduleInterval())
+                //.amount(depositDTO.getAmount())
+                //.description(depositDTO.getDescription())
+               // .scheduledDate(depositDTO.getDateScheduled())
+               // .scheduledTime(depositDTO.getTimeScheduled())
+               // .posted(depositDTO.getPosted())
+              //  .scheduleInterval(depositDTO.getScheduleInterval())
                 .build();
     }
 
