@@ -122,18 +122,29 @@ export default function TransferView()
 
     const parseSelectedAccountCodeToAccountID = (selectedAccountCode) => {
         if(!selectedAccountCode){
-
+            return;
         }else{
-            let pattern =  /XXXX(\d+)$/;
-            let matchResult = selectedAccountCode.match(pattern);
+            const isMatch = AccountCodeMatch(selectedAccountCode);
             let selectedAcctID = 0;
-            if(matchResult){
-                let digits = matchResult[1];
-                selectedAcctID = digits[digits.length - 1];
+            if(isMatch){
+                selectedAcctID = getSelectedAccountID(isMatch);
                 console.log('selectedAcctID: ', selectedAcctID);
                 return selectedAcctID;
             }
             return selectedAcctID;
+        }
+    }
+
+    const getSelectedAccountID = (match) => {
+        let digits =  match[1];
+        return digits[digits.length - 1];
+    }
+
+    const AccountCodeMatch = (accountCode) => {
+        let pattern = /XXXX(\d+)$/;
+        let match = accountCode.match(pattern);
+        if(match){
+            return match;
         }
     }
 
