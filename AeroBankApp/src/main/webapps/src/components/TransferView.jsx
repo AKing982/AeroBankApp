@@ -121,16 +121,20 @@ export default function TransferView()
     };
 
     const parseSelectedAccountCodeToAccountID = (selectedAccountCode) => {
-        let pattern =  /XXXX(\d+)$/;
-        let matchResult = selectedAccountCode.match(pattern);
-        let selectedAcctID = 0;
-        if(matchResult){
-            let digits = matchResult[1];
-            selectedAcctID = digits[digits.length - 1];
-            console.log('selectedAcctID: ', selectedAcctID);
+        if(!selectedAccountCode){
+
+        }else{
+            let pattern =  /XXXX(\d+)$/;
+            let matchResult = selectedAccountCode.match(pattern);
+            let selectedAcctID = 0;
+            if(matchResult){
+                let digits = matchResult[1];
+                selectedAcctID = digits[digits.length - 1];
+                console.log('selectedAcctID: ', selectedAcctID);
+                return selectedAcctID;
+            }
             return selectedAcctID;
         }
-        return selectedAcctID;
     }
 
     const buildAndSendRequestToServer = async (type) => {

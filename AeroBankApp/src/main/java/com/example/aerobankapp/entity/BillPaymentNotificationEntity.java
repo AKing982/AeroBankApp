@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BillPaymentNotification
+public class BillPaymentNotificationEntity
 {
 
     @Id

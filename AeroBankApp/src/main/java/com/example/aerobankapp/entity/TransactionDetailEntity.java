@@ -1,7 +1,11 @@
 package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.apache.commons.digester.annotations.rules.CallMethod;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,8 +16,7 @@ import java.util.Objects;
 @Table(name="transactionDetail")
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
-@Getter
-@Setter
+@Data
 public class TransactionDetailEntity
 {
     @Id
@@ -51,42 +54,49 @@ public class TransactionDetailEntity
     @Column(name="balance")
     private BigDecimal balance;
 
-    @Column(name="newBalance")
-    private BigDecimal newBalance;
-
     @Column(name="createdAt")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TransactionDetailEntity that = (TransactionDetailEntity) o;
-        return Objects.equals(transactionDetailID, that.transactionDetailID)
-                && Objects.equals(userEntity, that.userEntity)
-                && Objects.equals(accountEntity, that.accountEntity)
-                && Objects.equals(relatedAcctEntity, that.relatedAcctEntity)
-                && Objects.equals(depositsEntity, that.depositsEntity)
-                && Objects.equals(withdrawEntity, that.withdrawEntity)
-                && Objects.equals(transferEntity, that.transferEntity)
-                && Objects.equals(purchaseEntity, that.purchaseEntity)
-                && Objects.equals(balance, that.balance)
-                && Objects.equals(newBalance, that.newBalance)
-                && Objects.equals(createdAt, that.createdAt);
-    }
+    @Column(name="debit")
+    @NotNull
+    private BigDecimal debit;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(transactionDetailID,
-                userEntity,
-                accountEntity,
-                relatedAcctEntity,
-                depositsEntity,
-                withdrawEntity,
-                transferEntity,
-                purchaseEntity,
-                balance,
-                newBalance, createdAt);
-    }
+    @Column(name="credit")
+    @NotNull
+    private BigDecimal credit;
+
+    @Column(name="type")
+    @NotEmpty
+    @NotBlank
+    private String type;
+
+    @Column(name="status")
+    @NotEmpty
+    @NotBlank
+    private String status;
+
+    @Column(name="method")
+    @NotEmpty
+    @NotBlank
+    private String method;
+
+    @Column(name="payee")
+    private String payee;
+
+    @Column(name="description")
+    private String description;
+
+    @Column(name="referenceNumber")
+    private String referenceNumber;
+
+    @Column(name="confirmationNumber")
+    @NotNull
+    private Integer confirmationNumber;
+
+    @Column(name="fee")
+    private BigDecimal fee;
+
+
+
 }
