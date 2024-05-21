@@ -9,11 +9,15 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Dialog from "@mui/material/Dialog";
 import AnimatedEllipsisDialog from "./AnimatedEllipsisDialog";
+import DialogActions from "@mui/material/DialogActions";
 
 function ReviewAndSubmitRegistration({formData}){
 
     const [isLoading, setIsLoading] = useState(false);
     const [showBackdrop, setShowBackDrop] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [errorDialogOpen, setErrorDialogOpen] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -78,16 +82,23 @@ function ReviewAndSubmitRegistration({formData}){
 
             if (error.response) {
                 // Server responded with a status code that falls out of the range of 2xx
+                if(error.response.data.message === "Found invalid account segment less than required length."){
+                    setErrorMessage(`Server responded with status ${error.response.status}: Unable to proceed with registration due to improper username...`);
+                }
+                setErrorMessage(`Server responded with status ${error.response.status}: ${error.response.data.message}`);
                 console.log(error.response.data);
                 console.log(error.response.status);
                 console.log(error.response.headers);
             } else if (error.request) {
                 // Request was made but no response was received
+                setErrorMessage('Request was made but no response was received.');
                 console.log(error.request);
             } else {
                 // An error occurred in setting up the request
+                setErrorMessage(`Error: ${error.message}`);
                 console.log('Error', error.message);
             }
+            setErrorDialogOpen(true);
             return false;
         }
     };
@@ -173,6 +184,22 @@ function ReviewAndSubmitRegistration({formData}){
             <Button variant="contained" color="primary" onClick={handleSubmit}>
                 Submit All Information
             </Button>
+
+            {/* Error Dialog */}
+            <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {errorMessage}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setErrorDialogOpen(false)} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
         </Container>
     );
 }
