@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Container,
     Box,
@@ -33,6 +33,7 @@ import backgroundImage from './images/pexels-julius-silver-753325.jpg';
 import PaymentCalendar from "./PaymentCalendar";
 import SavePaymentTemplate from "./SavePaymentTemplate";
 import UsePaymentTemplate from "./UsePaymentTemplate";
+import axios from "axios";
 
 
 
@@ -47,6 +48,8 @@ export default function BillPayPage({templates = []}) {
         dueDate: new Date(),
         accountFrom: ''
     });
+    const [isLoading, setIsLoading] = useState(false);
+    const [payeeList, setPayeeList] = useState({});
    // const [paymentTemplates, setPaymentTemplates] = useState(templates);  // Assuming templates is passed as a prop
 
     const handleSaveTemplate = (paymentDetails) => {
@@ -91,6 +94,22 @@ export default function BillPayPage({templates = []}) {
             setNewPaymentDetails(prevDetails => ({ ...prevDetails, [name]: value }));
         }
     };
+
+    useEffect(() => {
+        setIsLoading(true);
+        console.log('Fetching Bill Payee List');
+        let userID = sessionStorage.getItem('userID');
+        axios.get(`http://localhost:8080/AeroBankApp/api/bills/${userID}/list`)
+            .then(response => {
+                if(Array.isArray(response.data) && response.data.length > 0){
+                    console.log('Bill Payee List: ', response.data);
+                    setPayeeList(response.data);
+                }
+            })
+            .catch(error => {
+                console.error('There was an error fetching the list of Bill Payees: ', error);
+            })
+    }, []);
 
     const submitNewPayment = () => {
         if (newPaymentDetails.dueDate instanceof Date) {
@@ -227,7 +246,7 @@ export default function BillPayPage({templates = []}) {
                                         scheduledPayments.length > 0 && (
                                             <>
                                                 <Autocomplete
-                                                    options={payees}
+                                                    options={payeeList}
                                                     getOptionLabel={(option) => option.name}
                                                     style={{ width: 300 }}
                                                     renderInput={(params) => <TextField {...params} label="Payee" variant="outlined" />}
@@ -246,7 +265,7 @@ export default function BillPayPage({templates = []}) {
                                                     margin="normal"
                                                     onChange={(e) => setNewPaymentDetails({ ...newPaymentDetails, account: e.target.value })}
                                                 >
-                                                    {payees.map(payee => (
+                                                    {payeeList.map(payee => (
                                                         <MenuItem key={payee.id} value={payee.id}>{payee.name}</MenuItem>
                                                     ))}
                                                 </Select>
