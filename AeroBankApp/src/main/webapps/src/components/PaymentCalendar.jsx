@@ -10,7 +10,7 @@ function PaymentCalendar({scheduledPayments}){
 
     // Filter scheduled payments based on the selected date
     const paymentsOnSelectedDate = scheduledPayments.filter(payment =>
-        new Date(payment.dueDate).toDateString() === selectedDate.toDateString()
+        new Date(payment.paymentDueDate).toDateString() === selectedDate.toDateString()
     );
 
     return (
@@ -26,14 +26,14 @@ function PaymentCalendar({scheduledPayments}){
                     shouldDisableDate={(date) => {
                         // Disable dates that have no scheduled payments
                         return !scheduledPayments.some(payment =>
-                            new Date(payment.nextPaymentDue).toDateString() === date.toDateString()
+                            new Date(payment.nextPayment).toDateString() === date.toDateString()
                         );
                     }}
                 />
                 <div>
                     {paymentsOnSelectedDate.map(payment => (
                         <Box key={payment.id}>
-                            <p>{payment.payeeName}: ${payment.amount.toFixed(2)} due</p>
+                            <p>{payment.payeeName}: ${payment.paymentAmount.toFixed(2)} due</p>
                         </Box>
                     ))}
                 </div>

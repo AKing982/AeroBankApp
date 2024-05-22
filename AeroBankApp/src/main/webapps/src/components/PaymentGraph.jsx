@@ -13,10 +13,10 @@ function PaymentGraph({ data }) {
 
     const rows = data.map((item, index) => ({
         id: index,
-        name: item.name,
-        lastPaid: item.lastPaid,
-        nextPaymentDue: item.nextPaymentDue,
-        amount: parseFloat(item.amount),
+        name: item.payeeName,
+        lastPaid: item.lastPayment,
+        nextPaymentDue: item.nextPayment,
+        amount: item.paymentAmount
     }));
 
     return (

@@ -25,6 +25,9 @@ public class BillPaymentScheduleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentScheduleID;
 
+    @Column(name="paymentDueDate")
+    private LocalDate paymentDueDate;
+
     @Column(name="endDate")
     private LocalDate endDate;
 
@@ -33,6 +36,7 @@ public class BillPaymentScheduleEntity {
     private ScheduleFrequency scheduleFrequency;
 
     @Column(name="scheduleStatus")
+    @Enumerated(EnumType.STRING)
     private ScheduleStatus scheduleStatus;
 
     @Column(name="isRecurring")

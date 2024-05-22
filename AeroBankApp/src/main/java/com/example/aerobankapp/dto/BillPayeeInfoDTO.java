@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public record BillPayeeInfoDTO(String payeeName,
-                               Date lastPaymentDate,
-                               Date nextPaymentDate,
+                               LocalDate lastPayment,
+                               LocalDate nextPayment,
+                               LocalDate paymentDueDate,
                                BigDecimal paymentAmount) {
 }

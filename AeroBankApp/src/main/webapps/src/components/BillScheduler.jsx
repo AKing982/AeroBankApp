@@ -14,13 +14,13 @@ function BillScheduler({ payees }){
         }}>
             {payees.map(payee => (
                 <ListItem
-                    key={payee.name}
+                    key={payee.payeeName}
                     divider
                     sx={{ justifyContent: 'space-between', padding: '10px 20px', bgcolor: 'transparent' }} // Ensure items are transparent
                 >
                     <ListItemText
-                        primary={payee.name}
-                        secondary={`Next payment of $${payee.amount} due on ${payee.nextPaymentDue}`}
+                        primary={payee.payeeName}
+                        secondary={`Next payment of ${payee.paymentAmount} due on ${payee.nextPayment}`}
                         primaryTypographyProps={{ noWrap: false }}
                         secondaryTypographyProps={{ noWrap: false }}
                         sx={{ minWidth: 0, mr: 2 }}

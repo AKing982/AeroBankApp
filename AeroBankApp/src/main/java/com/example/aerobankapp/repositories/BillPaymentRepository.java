@@ -12,11 +12,11 @@ import java.util.List;
 @Repository
 public interface BillPaymentRepository extends JpaRepository<BillPaymentEntity, Long>
 {
-    @Query("SELECT com.example.aerobankapp.dto.BillPayeeInfoDTO( " +
+    @Query("SELECT " +
             "    bp.payeeName, " +
             "    bph.lastPayment, " +
             "    bph.nextPayment, " +
-            "    bp.paymentAmount) " +
+            "    bp.paymentAmount " +
             "FROM BillPaymentEntity bp " +
             "JOIN bp.paymentSchedule bps " +
             "JOIN bps.billPaymentHistory bph " +
