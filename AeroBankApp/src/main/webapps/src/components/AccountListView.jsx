@@ -134,7 +134,11 @@ export default function AccountListView({updateAccountID})
                 setIsLoading(true);
                 try {
                     // Fetch account data
-                    const accountsResponse = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/${username}`);
+                    const accountsResponse = await axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/`, {
+                        params: {
+                            user: username
+                        }
+                        });
                     const accounts = accountsResponse.data;
                     setAccountData(accounts);
                     console.log('Accounts Response: ', accountsResponse.data);

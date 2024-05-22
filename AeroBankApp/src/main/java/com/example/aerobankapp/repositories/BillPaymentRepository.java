@@ -12,15 +12,5 @@ import java.util.List;
 @Repository
 public interface BillPaymentRepository extends JpaRepository<BillPaymentEntity, Long>
 {
-    @Query("SELECT " +
-            "    bp.payeeName, " +
-            "    bph.lastPayment, " +
-            "    bph.nextPayment, " +
-            "    bp.paymentAmount " +
-            "FROM BillPaymentEntity bp " +
-            "JOIN bp.paymentSchedule bps " +
-            "JOIN bps.billPaymentHistory bph " +
-            "WHERE bp.user.userID = :userID")
-    List<BillPayeeInfoDTO> findBillPaymentScheduleInfoByUserID(@Param("userID") int userID);
 
 }

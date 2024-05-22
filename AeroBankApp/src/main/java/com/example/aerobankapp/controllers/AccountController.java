@@ -53,10 +53,10 @@ public class AccountController {
         this.accountCodeService = accountCodeService;
     }
 
-    @GetMapping("/data/{user}")
+    @GetMapping("/data")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    public ResponseEntity<?> getUserAccounts(@PathVariable String user) {
+    public ResponseEntity<?> getUserAccounts(@RequestParam(name="user") String user) {
         List<AccountEntity> accountEntities = accountDAO.findByUserName(user);
         List<AccountPropertiesEntity> accountPropertiesEntities = accountPropertiesService.findByUserName(user);
 

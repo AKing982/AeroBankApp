@@ -36,6 +36,7 @@ import UsePaymentTemplate from "./UsePaymentTemplate";
 import axios from "axios";
 import PaymentNotification from "./PaymentNotification";
 import PaymentHistory from "./PaymentHistory";
+import { toast } from 'react-toastify';
 
 
 
@@ -124,7 +125,7 @@ export default function BillPayPage({templates = []}) {
         try{
             const response = await axios.post(`http://localhost:8080/AeroBankApp/api/bills/save`, request);
             if(response.status === 200 || response.status === 201){
-
+                toast.success('Payment successfully scheduled.');
             }
         }catch(error){
             console.error('There was an error sending the request to the server: ', error);

@@ -1,8 +1,6 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.dto.BillPayeeInfoDTO;
 import com.example.aerobankapp.entity.BillPaymentEntity;
-import com.example.aerobankapp.repositories.BillPayeesRepository;
 import com.example.aerobankapp.repositories.BillPaymentRepository;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +41,4 @@ public class BillPaymentServiceImpl implements BillPaymentService
         return null;
     }
 
-    @Override
-    public List<BillPayeeInfoDTO> findBillPaymentScheduleInfoByUserID(int userID) {
-        return billPaymentRepository.findBillPaymentScheduleInfoByUserID(userID);
-    }
 }

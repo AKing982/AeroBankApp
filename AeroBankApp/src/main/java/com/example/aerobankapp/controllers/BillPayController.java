@@ -5,7 +5,6 @@ import com.example.aerobankapp.dto.BillPaymentDTO;
 import com.example.aerobankapp.dto.PaymentHistoryDTO;
 import com.example.aerobankapp.dto.ScheduledPaymentDTO;
 import com.example.aerobankapp.entity.BillPayeesEntity;
-import com.example.aerobankapp.entity.BillPaymentEntity;
 import com.example.aerobankapp.services.BillPayeesService;
 import com.example.aerobankapp.services.BillPaymentService;
 import com.example.aerobankapp.workbench.billPayment.BillPaymentQueries;
