@@ -17,7 +17,17 @@ import {
     TableHead,
     TableRow,
     IconButton,
-    Select, FormControlLabel, MenuItem, InputAdornment, Card, CardContent, Switch, Autocomplete, CssBaseline, FormGroup
+    Select,
+    FormControlLabel,
+    MenuItem,
+    InputAdornment,
+    Card,
+    CardContent,
+    Switch,
+    Autocomplete,
+    CssBaseline,
+    FormGroup,
+    Collapse, Radio, FormControl, FormLabel, RadioGroup
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
@@ -37,6 +47,7 @@ import axios from "axios";
 import PaymentNotification from "./PaymentNotification";
 import PaymentHistory from "./PaymentHistory";
 import { toast } from 'react-toastify';
+import NewPaymentDialog from "./NewPaymentDialog";
 
 
 
@@ -48,6 +59,10 @@ export default function BillPayPage({templates = []}) {
     const [newPaymentDetails, setNewPaymentDetails] = useState({
         payeeName: '',
         amount: '',
+        cardNumber: '',
+        fromAccount: '',
+        cardExpiry: '',
+        cardCVV: '',
         dueDate: new Date().toISOString().substring(0, 10) ,
         accountFrom: ''
     });
@@ -56,6 +71,11 @@ export default function BillPayPage({templates = []}) {
     const [scheduledPayments, setScheduledPayments] = useState([]);
     const [isAutoPayEnabled, setIsAutoPayEnabled] = useState(false);
     const [paymentHistory, setPaymentHistory] = useState([]);
+    const [isPaymentHistoryOpen, setIsPaymentHistoryOpen] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [content, setContent] = useState('');
+    const [accountCodeList, setAccountCodeList] = useState([]);
+    const [paymentMethod, setPaymentMethod] = useState('account'); // Default to account
 
 
     let userID = sessionStorage.getItem('userID');
@@ -191,10 +211,51 @@ export default function BillPayPage({templates = []}) {
 
     const submitNewPayment = () => {
         const paymentRequest = buildPaymentRequest();
-
-        sendNewPaymentRequest(paymentRequest);
+        if(validateNewPaymentCriteria()){
+            sendNewPaymentRequest(paymentRequest);
             // Add logic to handle submitting the new payment
+            toggleAddPaymentForm();
+        }
     };
+
+    const handleDialogClose = () => {
+        setIsDialogOpen(false);
+    };
+
+    const validateNewPaymentCriteria = () => {
+
+        if(!newPaymentDetails.payeeName){
+            setIsDialogOpen(true);
+            setContent('Please enter a Payee Name.');
+            return false;
+        }
+        if(!newPaymentDetails.amount){
+            setIsDialogOpen(true);
+            setContent('Please specify a payment amount...');
+            return false;
+        }
+        if(!newPaymentDetails.dueDate){
+            setIsDialogOpen(true);
+            setContent('Please specify a due date for the payment...');
+            return false;
+        }
+        if (paymentMethod === 'account' && !newPaymentDetails.accountFrom) {
+            setContent('Please select an account to pull funds from.');
+            setIsDialogOpen(true);
+            return false;
+        }
+        if (paymentMethod === 'card' && (!newPaymentDetails.cardNumber || !newPaymentDetails.cardExpiry || !newPaymentDetails.cardCVV)) {
+            setContent('Please enter your card details.');
+            setIsDialogOpen(true);
+            return false;
+        }
+        if (paymentMethod === 'wallet' && !newPaymentDetails.walletProvider) {
+            setContent('Please select a digital wallet.');
+            setIsDialogOpen(true);
+            return false;
+        }
+        return true;
+    }
 
     const paymentData = [
         {
@@ -234,11 +295,15 @@ export default function BillPayPage({templates = []}) {
         }
     ];
 
+    const togglePaymentHistory = () => {
+        setIsPaymentHistoryOpen(!isPaymentHistoryOpen);
+    };
+
     return (
         <div style={{
             background: `url(${backgroundImage}) no-repeat center bottom`,
             backgroundSize: 'cover',
-            minHeight: 'calc(150vh - 64px)',
+             minHeight: 'calc(200vh - 64px)',
             width: '100%',
             position: 'relative',
         }}>
@@ -277,6 +342,75 @@ export default function BillPayPage({templates = []}) {
                                                 onChange={handleInputChange}
                                                 margin="normal"
                                             />
+                                            <FormControl component="fieldset" margin="normal">
+                                                <FormLabel component="legend">Payment Method</FormLabel>
+                                                <RadioGroup
+                                                    row
+                                                    aria-label="payment-method"
+                                                    name="paymentMethod"
+                                                    value={paymentMethod}
+                                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                                >
+                                                    <FormControlLabel value="account" control={<Radio />} label="Bank Account" />
+                                                    <FormControlLabel value="card" control={<Radio />} label="Credit/Debit Card" />
+                                                    <FormControlLabel value="wallet" control={<Radio />} label="Digital Wallet" />
+                                                </RadioGroup>
+                                            </FormControl>
+
+                                            {paymentMethod === 'account' && (
+                                                <Autocomplete
+                                                    options={accountCodeList}
+                                                    getOptionLabel={(option) => option.name}
+                                                    style={{ width: '100%' }}
+                                                    renderInput={(params) => <TextField {...params} label="Pay from" variant="outlined" margin="normal" />}
+                                                    onChange={(event, newValue) => setNewPaymentDetails({ ...newPaymentDetails, accountFrom: newValue.id })}
+                                                />
+                                            )}
+
+                                            {paymentMethod === 'card' && (
+                                                <>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="Card Number"
+                                                        name="cardNumber"
+                                                        value={newPaymentDetails.cardNumber}
+                                                        onChange={handleInputChange}
+                                                        margin="normal"
+                                                    />
+                                                    <TextField
+                                                        fullWidth
+                                                        label="Expiry Date"
+                                                        name="cardExpiry"
+                                                        placeholder="MM/YY"
+                                                        value={newPaymentDetails.cardExpiry}
+                                                        onChange={handleInputChange}
+                                                        margin="normal"
+                                                    />
+                                                    <TextField
+                                                        fullWidth
+                                                        label="CVV"
+                                                        name="cardCVV"
+                                                        value={newPaymentDetails.cardCVV}
+                                                        onChange={handleInputChange}
+                                                        margin="normal"
+                                                    />
+                                                </>
+                                            )}
+
+                                            {paymentMethod === 'wallet' && (
+                                                <Select
+                                                    fullWidth
+                                                    label="Select Wallet"
+                                                    name="walletProvider"
+                                                    value={newPaymentDetails.walletProvider}
+                                                    onChange={handleInputChange}
+                                                    margin="normal"
+                                                >
+                                                    <MenuItem value="paypal">PayPal</MenuItem>
+                                                    <MenuItem value="googlepay">Google Pay</MenuItem>
+                                                    <MenuItem value="applepay">Apple Pay</MenuItem>
+                                                </Select>
+                                            )}
                                             <TextField
                                                 fullWidth
                                                 label="Amount"
@@ -358,20 +492,25 @@ export default function BillPayPage({templates = []}) {
                                 <PaymentGraph data={scheduledPayments} />
                             </Box>
                             <Box mt={2}>
-                                <PaymentHistory paymentHistory={paymentHistory} />
+                                <Button onClick={togglePaymentHistory} variant="outlined">
+                                    {isPaymentHistoryOpen ? 'Hide Payment History' : 'Show Payment History'}
+                                </Button>
+                                <Collapse in={isPaymentHistoryOpen}>
+                                    <PaymentHistory paymentHistory={paymentHistory} />
+                                </Collapse>
                             </Box>
                         </Grid>
                         <Grid item xs={12} sm={4} md={4} lg={3}>
                             <PaymentCalendar scheduledPayments={scheduledPayments} />
                             <BillScheduler payees={scheduledPayments} />
+                            {/*<NotificationAlerts notifications={notifications} />*/}
                         </Grid>
                     </Grid>
                 </Box>
             </Container>
+            <NewPaymentDialog open={isDialogOpen} handleClose={handleDialogClose} content={content} />
         </div>
     );
-
-    //
     // return (
     //     <div style={{
     //         background: `url(${backgroundImage}) no-repeat center bottom`,
@@ -431,8 +570,8 @@ export default function BillPayPage({templates = []}) {
     //                                             label="Due Date"
     //                                             name="dueDate"
     //                                             InputLabelProps={{ shrink: true }}
-    //                                             value={newPaymentDetails.dueDate.toISOString().substring(0, 10)}
-    //                                             onChange={handleInputChange}
+    //                                             value={selectedDate}
+    //                                             onChange={handleDateChange}
     //                                             margin="normal"
     //                                         />
     //                                         <FormControlLabel
@@ -495,6 +634,9 @@ export default function BillPayPage({templates = []}) {
     //                         <Box mt={2}>
     //                             <PaymentGraph data={scheduledPayments} />
     //                         </Box>
+    //                         <Box mt={2}>
+    //                             <PaymentHistory paymentHistory={paymentHistory} />
+    //                         </Box>
     //                     </Grid>
     //                     <Grid item xs={12} sm={4} md={4} lg={3}>
     //                         <PaymentCalendar scheduledPayments={scheduledPayments} />
@@ -505,5 +647,7 @@ export default function BillPayPage({templates = []}) {
     //         </Container>
     //     </div>
     // );
+    //
+    //
 
 }

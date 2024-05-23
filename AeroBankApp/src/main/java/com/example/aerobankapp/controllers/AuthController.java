@@ -4,7 +4,10 @@ import com.example.aerobankapp.services.AuthenticationServiceImpl;
 import com.example.aerobankapp.workbench.tokens.AuthTokenResponse;
 import com.example.aerobankapp.workbench.utilities.LoginRequest;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
+import com.example.aerobankapp.workbench.utilities.response.AuthDataResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -12,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -44,15 +48,16 @@ public class AuthController {
         String password = loginRequest.getPassword().trim();
 
         try {
-            String authToken = getAuthenticationToken(username, password);
-            LOGGER.warn("Token: " + authToken);
-            if (authToken == null) {
+           // String authToken = getAuthenticationToken(username, password);
+            AuthDataResponse authResponse = getAuthenticationToken(username, password);
+            LOGGER.warn("Token: " + authResponse.getToken());
+            if (authResponse.getToken() == null) {
                 LOGGER.warn("Authentication Failed for User: " + loginRequest.getUsername());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token Generated");
             }
-            LOGGER.debug("User Generated Token: " + authToken);
+            LOGGER.debug("User Generated Token: " + authResponse.getToken());
             // return ResponseEntity.ok(new AuthTokenResponse(authToken, "Bearer"));
-            return ResponseEntity.ok(new AuthTokenResponse(authToken, "Bearer", username));
+            return ResponseEntity.ok(authResponse);
 
         } catch (AuthenticationException ex) {
             LOGGER.debug("Authentication Exception for user: " + loginRequest.getUsername());
@@ -60,12 +65,14 @@ public class AuthController {
         }
     }
 
-    private String getAuthenticationToken(String user, String password) {
+    private AuthDataResponse getAuthenticationToken(String user, String password) {
         LOGGER.warn("User: " + user);
         LOGGER.warn("Password: " + password);
-        String authToken = getAuthenticationService().login(user, password);
-        LOGGER.warn("Authentication Token: " + authToken);
-        return authToken;
+        return getAuthenticationService().login(user, password);
+     //   AuthDataResponse dataResponse = getAuthenticationService().login(user, password);
+//        String authToken = dataResponse.getToken();
+//        LOGGER.warn("Authentication Token: " + authToken);
+//        return authToken;
     }
 
     @GetMapping("/status")
@@ -76,6 +83,15 @@ public class AuthController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized User");
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response){
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return ResponseEntity.ok().body("User logged out successfully");
     }
 
 }

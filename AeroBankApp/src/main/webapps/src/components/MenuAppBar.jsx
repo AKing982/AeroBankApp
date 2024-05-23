@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
+import {useEffect, useState} from 'react';
+import {styled} from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,13 +15,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import {Search} from "@mui/icons-material";
-import MoreIcon from '@mui/icons-material/MoreVert';
-import {useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import NavigationMenu from "./NavigationMenu";
 import axios from "axios";
-import {Autocomplete, Avatar, TextField} from "@mui/material";
+import {Avatar} from "@mui/material";
 import TransactionDetails from "./TransactionDetails";
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -251,8 +249,17 @@ export default function MenuAppBar(){
         }
     }
 
+    const fetchLogout = async () => {
+        try{
+            return await fetch(`http://localhost:8080/AeroBankApp/api/auth/logout`);
+        }catch(error){
+            console.error(`Error during logout: `);
+            return false;
+        }
+    }
 
-    const handleLogout = () => {
+
+    const handleLogout = async () => {
 
         const logoutTime = new Date().getTime();
         const lastLoginTime = sessionStorage.getItem('currentLoginTime');
@@ -270,7 +277,13 @@ export default function MenuAppBar(){
         sessionStorage.removeItem('loginTime');
         sessionStorage.clear();
 
-        navigate('/');
+        const logoutResponse =  await fetchLogout();
+        console.log('Logout Response: ', logoutResponse);
+        if(logoutResponse || logoutResponse.ok){
+            console.log('User logged out successfully');
+            navigate('/');
+        }
+
     }
 
     const transactions = [

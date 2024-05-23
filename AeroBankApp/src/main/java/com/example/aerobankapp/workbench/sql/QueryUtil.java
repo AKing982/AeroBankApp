@@ -2,7 +2,6 @@ package com.example.aerobankapp.workbench.sql;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 

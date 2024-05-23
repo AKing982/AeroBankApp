@@ -4,6 +4,7 @@ import com.example.aerobankapp.credentials.Credentials;
 import com.example.aerobankapp.workbench.security.authentication.JWTUtil;
 import com.example.aerobankapp.workbench.utilities.UserType;
 import com.example.aerobankapp.workbench.utilities.logging.AeroLogger;
+import com.example.aerobankapp.workbench.utilities.response.AuthDataResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,12 +22,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.*;
 
 @Service
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
+@RequestScope
 public class AuthenticationServiceImpl implements AuthenticationProvider {
 
     private UserDetailsService userDetailsService;
@@ -76,7 +79,7 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
         return getUserDetailsService().loadUserByUsername(user);
     }
 
-    public String login(String user, String password)
+    public AuthDataResponse login(String user, String password)
     {
         Authentication authentication = authenticate(new UsernamePasswordAuthenticationToken(user, password));
         if(authentication.isAuthenticated()) {
@@ -87,29 +90,13 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
                 throw new AuthenticationServiceException("Token Generation failed");
             }
             logger.warn("Token: " + jwtToken);
-            return jwtToken;
+            return new AuthDataResponse(jwtToken, "Bearer", user, authentication.getAuthorities());
         }
         else
         {
             throw new BadCredentialsException("Invalid Username or Password");
         }
     }
-
-    private Credentials<String> getUserCredentials()
-    {
-        return null;
-    }
-
-    private Credentials<String> getAuthenticationCredentials(Authentication authentication)
-    {
-        return new Credentials<>(authentication.getName(), authentication.getCredentials().toString());
-    }
-
-    private Map<String, String> getAuthCredentials()
-    {
-        return null;
-    }
-
 
     public boolean isAuthenticated(Authentication authentication)
     {

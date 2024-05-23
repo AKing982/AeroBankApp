@@ -130,21 +130,78 @@ export default function LoginFormOLD()
         sessionStorage.setItem('jwtToken', jwt);
     }
 
+    const setSessionAttributes = async (username, roles, token) => {
+        try {
+            const response = await fetch(`http://localhost:8080/session/set?name=${username}&roles=${roles}&token=${token}`);
+            console.log('Session Response: ', response);
+        } catch (error) {
+            console.error('Error setting session attributes: ', error);
+        }
+    }
+
+    // const setSessionAttribute = async (username) => {
+    //     try {
+    //         await fetch(`http://localhost:8080/AeroBankApp/session/set?name=${username}`, {
+    //             method: 'GET',
+    //             credentials: 'include' // Ensure cookies are sent with the request
+    //         });
+    //     } catch (error) {
+    //         console.error('Error setting session attribute: ', error);
+    //     }
+    // }
+
+    const getSessionAttribute = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/AeroBankApp/session/get`, {
+                method: 'GET',
+                credentials: 'include' // Ensure cookies are sent with the request
+            });
+            const data = await response.text();
+            console.log(data);
+        } catch (error) {
+            console.error('Error getting session attribute: ', error);
+        }
+    }
+
+    const handleLoginResponse = async (response, data) => {
+        if (response && response.ok) {
+            const token = data.token;
+            const username = data.username;
+            const roles = data.roles.map(role => role.authority);
+            console.log('Token: ', token);
+            console.log('Role: ', roles);
+            saveJWTSession(token);
+            await setSessionAttributes(username, roles, token);
+            navigateToHomePage();
+        } else {
+            setError('Incorrect Username or Password');
+            setDialogMessage('Incorrect Username or Password');
+            setIsDialogOpen(true);
+        }
+    }
+
+
 
     const authenticationResponse = async () => {
-
-        return await fetch(`http://localhost:8080/AeroBankApp/api/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-              //  'X-CSRF-TOKEN': token
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password
-            })
-        });
+        try {
+            const response = await fetch(`http://localhost:8080/AeroBankApp/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                    // 'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+            const data = await response.json(); // Read the body once
+            return { response, data };
+        } catch (error) {
+            console.error('Error during authentication:', error);
+            throw error; // Re-throw the error to be handled by the caller
+        }
     }
 
     const circularProgressStyle = {
@@ -217,59 +274,111 @@ export default function LoginFormOLD()
         sessionStorage.setItem('currentLoginTime', currentLoginTime);
 
         const userID = await fetchUserID(username);
+        sessionStorage.setItem('userID', userID);
+        sessionStorage.setItem('username', username);
+        console.log('UserID', userID);
 
-        try{
-
-         //   const csrfToken = await fetchCsrfToken();
+        try {
             setTimeout(async () => {
-
-                const response = await authenticationResponse();
+                const { response, data } = await authenticationResponse();
+                console.log('Authentication Response: ', response);
 
                 // Store the JWT Token in the sessionStorage
+                await handleLoginResponse(response, data);
 
-                if(response.ok)
-                {
+                if (response && response.ok) {
                     console.log('Login Successful');
-
-                    const data = await response.json();
-                    console.log(data);
-                    const token = data.token;
-                    const username = data.username;
-                    saveJWTSession(token);
-                    saveUserNameToSession(username);
-                    navigateToHomePage();
-
                     setLoginAttempts(1);
-                    // Create a User Log instance
                     console.log('Creating User Log for userID: ', userID);
                     sendUserLogRequest(userID, 1, 1);
-                }
-                else
-                {
+                } else {
                     console.log('Login Failed');
-                    setDialogMessage(`Incorrect Username or Password`);
+                    setDialogMessage('Incorrect Username or Password');
                     setIsDialogOpen(true);
                     setError('Incorrect Username or Password');
-
                     setLoginAttempts((prevAttempts) => prevAttempts + 1);
                 }
 
                 setLoading(false);
                 setShowBackdrop(false);
-
             }, 2000);
-
-        }catch(error)
-        {
-             console.error("Network Error: ", error);
-             setError('A network error occurred, please try again later.');
-             setLoading(false);
-             setShowBackdrop(false);
-        }finally {
+        } catch (error) {
+            console.error('Network Error: ', error);
+            setError('A network error occurred, please try again later.');
+            setLoading(false);
+            setShowBackdrop(false);
+        } finally {
             setTimeout(() => setLoading(false), 2000);
         }
-
     };
+
+    // const handleSubmit = async (event) => {
+    //     event.preventDefault();
+    //     setLoading(true);
+    //     setShowBackdrop(true);
+    //     const loginTime = new Date().getTime().toString();
+    //     const loginISOTime = new Date().toISOString();
+    //     const currentLoginTime = new Date().toLocaleString();
+    //     sessionStorage.setItem('loginISOTime', loginISOTime);
+    //     sessionStorage.setItem('loginTime', loginTime);
+    //     sessionStorage.setItem('currentLoginTime', currentLoginTime);
+    //
+    //     const userID = await fetchUserID(username);
+    //     console.log('UserID', userID);
+    //
+    //     try{
+    //
+    //      //   const csrfToken = await fetchCsrfToken();
+    //         setTimeout(async () => {
+    //
+    //             const response = await authenticationResponse();
+    //             console.log('Authentication Response: ', response);
+    //
+    //             // Store the JWT Token in the sessionStorage
+    //
+    //             if(response && response.ok)
+    //             {
+    //                 console.log('Login Successful');
+    //
+    //                 const data = await response.json();
+    //                 console.log(data);
+    //                 const token = data.token;
+    //                 const username = data.username;
+    //                 saveJWTSession(token);
+    //                 saveUserNameToSession(username);
+    //                 navigateToHomePage();
+    //
+    //                 setLoginAttempts(1);
+    //                 // Create a User Log instance
+    //                 console.log('Creating User Log for userID: ', userID);
+    //                 sendUserLogRequest(userID, 1, 1);
+    //             }
+    //             else
+    //             {
+    //                 console.log('Login Failed');
+    //                 setDialogMessage(`Incorrect Username or Password`);
+    //                 setIsDialogOpen(true);
+    //                 setError('Incorrect Username or Password');
+    //
+    //                 setLoginAttempts((prevAttempts) => prevAttempts + 1);
+    //             }
+    //
+    //             setLoading(false);
+    //             setShowBackdrop(false);
+    //
+    //         }, 2000);
+    //
+    //     }catch(error)
+    //     {
+    //          console.error("Network Error: ", error);
+    //          setError('A network error occurred, please try again later.');
+    //          setLoading(false);
+    //          setShowBackdrop(false);
+    //     }finally {
+    //         setTimeout(() => setLoading(false), 2000);
+    //     }
+    //
+    // };
 
     const navigateToHomePage = () => {
         navigate('/dashboard')

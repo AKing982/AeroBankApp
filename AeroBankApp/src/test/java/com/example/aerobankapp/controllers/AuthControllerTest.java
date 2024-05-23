@@ -117,7 +117,7 @@ class AuthControllerTest {
         String expectedToken = "eyJhbGciOiJub25lIn0.eyJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4ifQ.";
         when(jwtUtil.generateToken(Mockito.any(Authentication.class))).thenReturn(expectedToken);
 
-        when(authenticationManager.login(anyString(), anyString())).thenReturn(expectedToken);
+       // when(authenticationManager.login(anyString(), anyString())).thenReturn(expectedToken);
         AuthController authController = new AuthController(authenticationManager);
 
         // Invoke the method
@@ -139,7 +139,7 @@ class AuthControllerTest {
         LoginRequest loginRequest = new LoginRequest("AKing94", "Halflifer45!");
         String mockToken = "eyJhbGciOiJub25lIn0.eyJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4ifQ.";
 
-        when(authenticationManager.login(anyString(), anyString())).thenReturn(mockToken);
+     //   when(authenticationManager.login(anyString(), anyString())).thenReturn(mockToken);
 
         AuthController authController1 = new AuthController(authenticationManager);
         ResponseEntity<?> response = authController1.createAuthenticateToken(loginRequest);
