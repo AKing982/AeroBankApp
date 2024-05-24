@@ -25,7 +25,7 @@ import java.security.Principal;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping(value = "/api/auth", method = RequestMethod.POST)
+@RequestMapping(value = "/api/auth")
 @Getter
 public class AuthController {
 
@@ -89,7 +89,10 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response){
         HttpSession session = request.getSession(false);
         if (session != null) {
+            LOGGER.info("Invalidating Session: " + session.getId());
             session.invalidate();
+        }else{
+            LOGGER.info("No Session to invalidate");
         }
         return ResponseEntity.ok().body("User logged out successfully");
     }

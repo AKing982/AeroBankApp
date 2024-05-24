@@ -132,7 +132,7 @@ export default function LoginFormOLD()
 
     const setSessionAttributes = async (username, roles, token) => {
         try {
-            const response = await fetch(`http://localhost:8080/session/set?name=${username}&roles=${roles}&token=${token}`);
+            const response = await fetch(`http://localhost:8080/AeroBankApp/session/set?name=${username}&roles=${roles}&token=${token}`);
             console.log('Session Response: ', response);
         } catch (error) {
             console.error('Error setting session attributes: ', error);
@@ -196,6 +196,14 @@ export default function LoginFormOLD()
                     password: password
                 })
             });
+
+            if(response.status === 401){
+                console.error('Authentication Failed: invalid credentials');
+                setShowBackdrop(false);
+                setError('Incorrect Username or Password');
+
+            }
+
             const data = await response.json(); // Read the body once
             return { response, data };
         } catch (error) {

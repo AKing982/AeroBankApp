@@ -251,7 +251,9 @@ export default function MenuAppBar(){
 
     const fetchLogout = async () => {
         try{
-            return await fetch(`http://localhost:8080/AeroBankApp/api/auth/logout`);
+            return await fetch(`http://localhost:8080/AeroBankApp/api/auth/logout`,  {
+                method: 'POST', // Specify the method explicitly
+            });
         }catch(error){
             console.error(`Error during logout: `);
             return false;
@@ -279,7 +281,7 @@ export default function MenuAppBar(){
 
         const logoutResponse =  await fetchLogout();
         console.log('Logout Response: ', logoutResponse);
-        if(logoutResponse || logoutResponse.ok){
+        if(logoutResponse.status === 200){
             console.log('User logged out successfully');
             navigate('/');
         }
