@@ -63,7 +63,7 @@ public class UserLogController
 
         int foundUserID = userLogEntityOptional.getUserEntity().getUserID();
         int sessionID = userLogEntityOptional.getId();
-        String userName = userLogEntityOptional.getUserEntity().getUsername();
+        String userName = userLogEntityOptional.getUserEntity().getUserCredentials().getUsername();
         String lastLogout = userLogEntityOptional.getLastLogout();
         String lastLogin = userLogEntityOptional.getLastLogin();
         int sessionDuration = userLogEntityOptional.getSessionDuration();

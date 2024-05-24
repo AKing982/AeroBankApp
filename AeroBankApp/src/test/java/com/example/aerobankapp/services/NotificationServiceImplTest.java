@@ -4,6 +4,8 @@ import com.example.aerobankapp.dto.EmailNotificationDTO;
 import com.example.aerobankapp.email.EmailConfig;
 import com.example.aerobankapp.email.EmailService;
 import com.example.aerobankapp.email.EmailServiceImpl;
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.EmailServerEntity;
 import com.example.aerobankapp.entity.NotificationEntity;
 import com.example.aerobankapp.entity.UserEntity;
@@ -65,7 +67,7 @@ class NotificationServiceImplTest {
                 .hasBeenRead(true)
                 .priority(1)
                 .sent(LocalDateTime.now())
-                .userEntity(UserEntity.builder().userID(1).username("AKing94").role(Role.ADMIN).build())
+                .userEntity(UserEntity.builder().userID(1).userCredentials(UserCredentials.builder().username("AKing94").build()).userSecurity(UserSecurity.builder().role(Role.ADMIN).build()).build())
                 .build();
 
         notificationService.createNotification(notification);
@@ -81,7 +83,7 @@ class NotificationServiceImplTest {
                 .message("Deposit has been processed")
                 .hasBeenRead(false)
                 .priority(1)
-                .userEntity(UserEntity.builder().userID(1).username("AKing94").role(Role.ADMIN).build())
+                .userEntity(UserEntity.builder().userID(1).userCredentials(UserCredentials.builder().username("AKing94").build()).userSecurity(UserSecurity.builder().role(Role.ADMIN).build()).build())
                 .sent(LocalDateTime.now())
                 .build();
         userNotifications.add(notification);
@@ -111,7 +113,7 @@ class NotificationServiceImplTest {
                 .message("Deposit has been processed")
                 .hasBeenRead(false)
                 .priority(1)
-                .userEntity(UserEntity.builder().userID(1).username("AKing94").role(Role.ADMIN).build())
+                .userEntity(UserEntity.builder().userID(1).userCredentials(UserCredentials.builder().username("AKing94").build()).userSecurity(UserSecurity.builder().role(Role.ADMIN).build()).build())
                 .sent(LocalDateTime.now())
                 .build();
         userNotifications.add(notification);
@@ -178,7 +180,7 @@ class NotificationServiceImplTest {
     {
         return NotificationEntity.builder()
                 .notificationID(1L)
-                .userEntity(UserEntity.builder().userID(userID).username(user).role(Role.ADMIN).build())
+                .userEntity(UserEntity.builder().userID(userID).userCredentials(UserCredentials.builder().username(user).build()).userSecurity(UserSecurity.builder().role(Role.ADMIN).build()).build())
                 .sent(LocalDateTime.now())
                 .message(message)
                 .priority(priority)

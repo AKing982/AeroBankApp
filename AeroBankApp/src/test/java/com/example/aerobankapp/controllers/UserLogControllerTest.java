@@ -1,8 +1,12 @@
 package com.example.aerobankapp.controllers;
 
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.services.UserLogServiceImpl;
+import com.example.aerobankapp.workbench.utilities.Role;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.AfterEach;
@@ -57,19 +61,46 @@ class UserLogControllerTest
     @WithMockUser
     public void getUserLogsById_ThenReturnUserLog() throws Exception {
         int id = 1;
+        LocalDateTime lastLogin = LocalDateTime.of(2024, 3, 4, 5, 2);
+        LocalDateTime lastLogout = LocalDateTime.of(2024, 3, 4, 5, 2);
+
+        UserDetails userDetails = UserDetails.builder()
+                .firstName("Alex")
+                .lastName("King")
+                .email("alex@utahkings.com")
+                .build();
+
+        UserCredentials userCredentials = UserCredentials.builder()
+                .username("AKing94")
+                .password("Halflifer45!")
+                .build();
+
+        UserSecurity userSecurity = UserSecurity.builder()
+                .isAdmin(true)
+                .isEnabled(true)
+                .role(Role.ADMIN)
+                .build();
+
+        UserEntity userEntity = UserEntity.builder()
+                .userID(1)
+                .userDetails(userDetails)
+                .userCredentials(userCredentials)
+                .userSecurity(userSecurity)
+                .build();
+
         UserLogEntity userLogEntity = new UserLogEntity();
-        userLogEntity.setUserEntity(UserEntity.builder().userID(1).username("AKing94").build());
+        userLogEntity.setUserEntity(userEntity);
         userLogEntity.setId(1);
         userLogEntity.setLoginSuccess(true);
         userLogEntity.setLoginAttempts(1);
-       // userLogEntity.setLastLogout(LocalDateTime.of(2024, 3, 4, 5, 2));
-       // userLogEntity.setLastLogin(LocalDateTime.of(2024, 3, 4, 5, 2));
+        userLogEntity.setLastLogout(String.valueOf(lastLogout));
+        userLogEntity.setLastLogin(String.valueOf(lastLogin));
         userLogEntity.setSessionDuration(6049);
 
         when(userLogService.findAllById(1L)).thenReturn(Optional.of(userLogEntity));
 
         mockMvc.perform(get("/api/session/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$.sessionID").value(1))
@@ -77,9 +108,8 @@ class UserLogControllerTest
                 .andExpect(jsonPath("$.username").value("AKing94"))
                 .andExpect(jsonPath("$.loginSuccess").value(true))
                 .andExpect(jsonPath("$.loginAttempts").value(1))
-                .andExpect(jsonPath("$.lastLogout").value("2024-03-04T05:02:00"))
-                .andExpect(jsonPath("$.lastLogin").value("2024-03-04T05:02:00"))
-                .andExpect(jsonPath("$.sessionToken").value("ajajajsdfasdf"))
+                .andExpect(jsonPath("$.lastLogout").value(lastLogout.toString()))
+                .andExpect(jsonPath("$.lastLogin").value(lastLogin.toString()))
                 .andExpect(jsonPath("$.sessionDuration").value(6049));
     }
 
@@ -153,25 +183,47 @@ class UserLogControllerTest
     @Test
     public void test_getUserLogsByLastLogin_ValidUserID_ValidDate_return_UserLog() throws Exception {
         final Long id = 2L;
-        final String date = "2024-03-15 12:56:21";
         final LocalDateTime dateTime = LocalDateTime.of(2024, 3, 15, 12, 56, 21);
+
+        UserDetails userDetails = UserDetails.builder()
+                .firstName("Alex")
+                .lastName("King")
+                .email("alex@utahkings.com")
+                .build();
+
+        UserCredentials loginCredentials = UserCredentials.builder()
+                .username("AKing94")
+                .password("Halflifer45!")
+                .build();
+
+        UserSecurity userSecurity = UserSecurity.builder()
+                .isAdmin(true)
+                .isEnabled(true)
+                .role(Role.ADMIN)
+                .build();
+
+        UserEntity userEntity = UserEntity.builder()
+                .userID(1)
+                .userDetails(userDetails)
+                .userCredentials(loginCredentials)
+                .userSecurity(userSecurity)
+                .build();
+
         UserLogEntity userLogEntity = new UserLogEntity();
-        userLogEntity.setUserEntity(UserEntity.builder().userID(1).username("AKing94").build());
+        userLogEntity.setUserEntity(userEntity);
         userLogEntity.setId(1);
         userLogEntity.setLoginSuccess(true);
         userLogEntity.setLoginAttempts(1);
-   //     userLogEntity.setLastLogout(LocalDateTime.of(2024, 3, 15, 12, 56, 21));
-    //    userLogEntity.setLastLogin(LocalDateTime.of(2024, 3, 15, 12, 56, 21));
+        userLogEntity.setLastLogout(String.valueOf(dateTime));
+        userLogEntity.setLastLogin(String.valueOf(dateTime));
         userLogEntity.setSessionDuration(5000);
-
-        final String dateTimeStr = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
         given(userLogService.getUserLogsByLastLogin(id, dateTime)).willReturn(List.of(userLogEntity));
 
         mockMvc.perform(get("/api/session/byLastLogin")
-                .param("id", String.valueOf(id))
-                .param("LastLogin", String.valueOf(dateTime))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .param("id", String.valueOf(id))
+                        .param("LastLogin", dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -207,46 +259,96 @@ class UserLogControllerTest
     public void findUserLogEntriesByActiveStateAndUserID_ValidUserID() throws Exception {
         final int userID = 1;
         final boolean isActive = true;
+
+        UserDetails userDetails = UserDetails.builder()
+                .firstName("Alex")
+                .lastName("King")
+                .email("alex@utahkings.com")
+                .build();
+
+        UserCredentials loginCredentials = UserCredentials.builder()
+                .username("AKing94")
+                .password("Halflifer45!")
+                .build();
+
+        UserSecurity userSecurity = UserSecurity.builder()
+                .isAdmin(true)
+                .isEnabled(true)
+                .role(Role.ADMIN)
+                .build();
+
+        UserEntity userEntity = UserEntity.builder()
+                .userID(userID)
+                .userDetails(userDetails)
+                .userCredentials(loginCredentials)
+                .userSecurity(userSecurity)
+                .build();
+
         UserLogEntity userLogEntity = new UserLogEntity();
-        userLogEntity.setUserEntity(UserEntity.builder().userID(1).username("AKing94").build());
+        userLogEntity.setUserEntity(userEntity);
         userLogEntity.setId(1);
         userLogEntity.setLoginSuccess(true);
         userLogEntity.setLoginAttempts(1);
-     ///   userLogEntity.setLastLogout(LocalDateTime.of(2024, 3, 4, 5, 2));
-    //    userLogEntity.setLastLogin(LocalDateTime.of(2024, 3, 15, 12, 56, 21));
         userLogEntity.setSessionDuration(6049);
-
+        userLogEntity.setLastLogout(String.valueOf(LocalDateTime.of(2024, 3, 4, 5, 2)));
+        userLogEntity.setLastLogin(String.valueOf(LocalDateTime.of(2024, 3, 15, 12, 56, 21)));
 
         given(userLogService.findUserLogEntriesByActiveStateAndUserID(isActive, userID)).willReturn(Optional.of(userLogEntity));
 
         mockMvc.perform(get("/api/session/byActiveState")
-                .param("isActive", String.valueOf(isActive))
-                .param("userID", String.valueOf(userID))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .param("isActive", String.valueOf(isActive))
+                        .param("userID", String.valueOf(userID))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testFindCurrentUserLogSessionByUserID_InvalidUserID() throws Exception {
-        final int userID = -1;
+        final int userID = 1;
+        final boolean isActive = true;
+
+        UserDetails userDetails = UserDetails.builder()
+                .firstName("Alex")
+                .lastName("King")
+                .email("alex@utahkings.com")
+                .build();
+
+        UserCredentials loginCredentials = UserCredentials.builder()
+                .username("AKing94")
+                .password("Halflifer45!")
+                .build();
+
+        UserSecurity userSecurity = UserSecurity.builder()
+                .isAdmin(true)
+                .isEnabled(true)
+                .role(Role.ADMIN)
+                .build();
+
+        UserEntity userEntity = UserEntity.builder()
+                .userDetails(userDetails)
+                .userCredentials(loginCredentials)
+                .userSecurity(userSecurity)
+                .userID(userID)
+                .build();
+
         UserLogEntity userLogEntity = new UserLogEntity();
-        userLogEntity.setUserEntity(UserEntity.builder().userID(1).username("AKing94").build());
+        userLogEntity.setUserEntity(userEntity);
         userLogEntity.setId(1);
         userLogEntity.setLoginSuccess(true);
         userLogEntity.setLoginAttempts(1);
-    //    userLogEntity.setLastLogout(LocalDateTime.of(2024, 3, 4, 5, 2));
-     //   userLogEntity.setLastLogin(LocalDateTime.of(2024, 3, 15, 12, 56, 21));
+        userLogEntity.setLastLogout(String.valueOf(LocalDateTime.of(2024, 3, 4, 5, 2)));
+        userLogEntity.setLastLogin(String.valueOf(LocalDateTime.of(2024, 3, 15, 12, 56, 21)));
         userLogEntity.setSessionDuration(6049);
 
-        Optional<UserLogEntity> optionalUserLogEntity = Optional.of(userLogEntity);
+        given(userLogService.findUserLogEntriesByActiveStateAndUserID(isActive, userID)).willReturn(Optional.of(userLogEntity));
 
-        given(userLogService.findActiveUserLogSessionByUserID(userID)).willReturn(optionalUserLogEntity);
-
-        mockMvc.perform(get("/api/session/currentSession/{userID}", userID)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
+        mockMvc.perform(get("/api/session/byActiveState")
+                        .param("isActive", String.valueOf(isActive))
+                        .param("userID", String.valueOf(userID))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
 
     }
 

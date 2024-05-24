@@ -2,6 +2,9 @@ package com.example.aerobankapp.services;
 
 
 import com.example.aerobankapp.dto.RegistrationDTO;
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.*;
@@ -102,7 +105,7 @@ public class UserServiceImpl implements UserService
         {
             throw new IllegalArgumentException("User Entity or its ID must not be null");
         }
-        userRepository.updateUser(obj.getUserID(), obj.getUsername(), obj.getEmail(), obj.getRole(), obj.getPassword(), obj.getPinNumber(), obj.getFirstName(), obj.getLastName());
+        userRepository.updateUser(obj.getUserID(), obj.getUserCredentials().getUsername(), obj.getUserDetails().getEmail(), obj.getUserSecurity().getRole(), obj.getUserCredentials().getPassword(), obj.getUserSecurity().getPinNumber(), obj.getUserDetails().getFirstName(), obj.getUserDetails().getLastName());
     }
 
     @Override
@@ -217,18 +220,12 @@ public class UserServiceImpl implements UserService
         }
         aeroLogger.info("User Role: " + userDTO.getRole());
         return UserEntity.builder()
-                .firstName(userDTO.getFirstName())
-                .lastName(userDTO.getLastName())
-                .email(userDTO.getEmail())
-                .username(userDTO.getUsername())
-                .pinNumber(getEncryptedPinNumber(userDTO.getPinNumber()))
-                .password(getEncryptedPassword(userDTO.getPassword()))
-                .isAdmin(userDTO.isAdmin())
-                .isEnabled(true)
-                .accountNumber(accountNumber.getAccountNumberToString())
-                .role(userDTO.getRole())
+                .userDetails(UserDetails.builder().email(userDTO.getEmail()).accountNumber(accountNumber.getAccountNumberToString()).firstName(userDTO.getFirstName()).lastName(userDTO.getLastName()).build())
+                .userSecurity(UserSecurity.builder().isEnabled(true).role(userDTO.getRole()).pinNumber(getEncryptedPinNumber(userDTO.getPinNumber())).isAdmin(userDTO.isAdmin()).build())
+                .userCredentials(UserCredentials.builder().password(getEncryptedPassword(userDTO.getPassword())).username(userDTO.getUsername()).build())
                 .build();
     }
+
 
     private String getEncryptedPinNumber(String pin){
         return bCryptPasswordEncoder.encode(pin);

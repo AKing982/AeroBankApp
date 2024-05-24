@@ -24,32 +24,31 @@ public class TransactionCriteriaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionCriteriaID;
 
-    @Column(name="amount")
+    @Column(name="amount", nullable = false)
     @NotNull
     @DecimalMin("1.00")
     private BigDecimal amount;
 
-    @Column(name="description")
+    @Column(name="description", nullable = false)
     @NotEmpty
     @NotBlank
     private String description;
 
-    @Column(name="referenceNumber")
+    @Column(name="referenceNumber", nullable = false)
     @NotEmpty
     @NotBlank
     private String referenceNumber;
 
-    @Column(name="confirmationNumber")
+    @Column(name="confirmationNumber", nullable = false)
     @NotNull
     @Size(max=7)
     private Integer confirmationNumber;
 
-    @Column(name="transactionStatus")
+    @Column(name="transactionStatus", nullable = false)
     @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
 
     @Column(name="posted")
-    @Temporal(TemporalType.DATE)
     private LocalDate posted;
 
     @Column(name="notificationEnabled")

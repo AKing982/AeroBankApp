@@ -1,5 +1,8 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.entity.UserLogEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
@@ -137,14 +140,40 @@ class UserLogServiceImplTest {
 
                                              LocalDateTime lastLogin,
                                              LocalDateTime lastLogout){
+
+        // Create and set UserDetails
+        UserDetails userDetails = UserDetails.builder()
+                .firstName("Alex")  // Assuming default values, adjust as necessary
+                .lastName("King")   // Assuming default values, adjust as necessary
+                .email("alex@utahkings.com")  // Assuming default values, adjust as necessary
+                .build();
+
+        // Create and set LoginCredentials
+        UserCredentials loginCredentials = UserCredentials.builder()
+                .username(user)
+                .build();
+
+        // Create and set UserSecurity
+        UserSecurity userSecurity = UserSecurity.builder()
+                .isEnabled(isActive)
+                .build();
+
+        // Create and set UserEntity
+        UserEntity userEntity = UserEntity.builder()
+                .userID(userID)
+                .userDetails(userDetails)
+                .userCredentials(loginCredentials)
+                .userSecurity(userSecurity)
+                .build();
+
+        // Create and set UserLogEntity
         UserLogEntity userLogEntity = new UserLogEntity();
         userLogEntity.setId(id);
-        userLogEntity.setUserEntity(UserEntity.builder().userID(userID).username(user).build());
-        userLogEntity.setId(1);
+        userLogEntity.setUserEntity(userEntity);
         userLogEntity.setSessionDuration(sessionDuration);
-    //    userLogEntity.setLastLogin(lastLogin);
+        userLogEntity.setLastLogin(String.valueOf(lastLogin));
         userLogEntity.setLoginAttempts(loginAttempts);
-     //   userLogEntity.setLastLogout(lastLogout);
+        userLogEntity.setLastLogout(String.valueOf(lastLogout));
         userLogEntity.setLoginSuccess(loginSuccess);
         userLogEntity.setActive(isActive);
         return userLogEntity;

@@ -48,7 +48,6 @@ public class AuthController {
         String password = loginRequest.getPassword().trim();
 
         try {
-           // String authToken = getAuthenticationToken(username, password);
             AuthDataResponse authResponse = getAuthenticationToken(username, password);
             LOGGER.warn("Token: " + authResponse.getToken());
             if (authResponse.getToken() == null) {
@@ -69,10 +68,6 @@ public class AuthController {
         LOGGER.warn("User: " + user);
         LOGGER.warn("Password: " + password);
         return getAuthenticationService().login(user, password);
-     //   AuthDataResponse dataResponse = getAuthenticationService().login(user, password);
-//        String authToken = dataResponse.getToken();
-//        LOGGER.warn("Authentication Token: " + authToken);
-//        return authToken;
     }
 
     @GetMapping("/status")

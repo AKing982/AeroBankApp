@@ -39,13 +39,13 @@ public class UserDetailsServiceImpl implements UserDetailsService
         }
 
         UserEntity matchingUser = userEntities.stream()
-                .filter(userEntity -> username.equals(userEntity.getUsername()))
+                .filter(userEntity -> username.equals(userEntity.getUserCredentials().getUsername()))
                 .findFirst().orElseThrow(() -> new NoSuchElementException("User Not Found"));
 
         return User.builder()
-                .username(matchingUser.getUsername())
-                .password(matchingUser.getPassword())
-                .roles(String.valueOf(matchingUser.getRole()))
+                .username(matchingUser.getUserCredentials().getUsername())
+                .password(matchingUser.getUserCredentials().getPassword())
+                .roles(String.valueOf(matchingUser.getUserSecurity().getRole()))
                 .build();
     }
 }

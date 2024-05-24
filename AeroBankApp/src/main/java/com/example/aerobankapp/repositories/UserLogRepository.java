@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface UserLogRepository extends JpaRepository<UserLogEntity, Long>
 {
-    @Query("SELECT e FROM UserLogEntity e JOIN e.userEntity u WHERE u.username=:user")
+    @Query("SELECT e FROM UserLogEntity e JOIN e.userEntity u WHERE u.userCredentials.username=:user")
     List<UserLogEntity> findByUserName(@Param("user") String user);
 
     @Query("SELECT e FROM UserLogEntity e WHERE e.isActive=:isActive AND e.userEntity.userID=:userID")

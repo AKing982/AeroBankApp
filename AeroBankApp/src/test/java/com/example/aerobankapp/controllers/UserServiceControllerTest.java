@@ -1,5 +1,8 @@
 package com.example.aerobankapp.controllers;
 
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.workbench.utilities.LoginRequest;
@@ -66,27 +69,17 @@ class UserServiceControllerTest
     public void getListOfUsers() throws Exception
     {
         UserEntity user1 = UserEntity.builder()
-                            .userID(1)
-                .username("AKing94")
-                .password("Halflifer45!")
-                .email("alex@utahkings.com")
-                .pinNumber("5988")
-                .accountNumber("87-34-21")
-                .isAdmin(true)
-                .isEnabled(true)
-                .role(Role.ADMIN)
+                .userID(1)
+                .userSecurity(UserSecurity.builder().role(Role.ADMIN).isAdmin(true).pinNumber("5988").isEnabled(true).build())
+                .userCredentials(UserCredentials.builder().password("Halflifer45!").username("AKing94").build())
+                .userDetails(UserDetails.builder().email("alex@utahkings.com").accountNumber("87-34-21").build())
                 .build();
 
         UserEntity user2 = UserEntity.builder()
                 .userID(2)
-                .username("BSmith23")
-                .email("BSmith@outlook.com")
-                .password("pass")
-                .pinNumber("2233")
-                .isAdmin(false)
-                .isEnabled(true)
-                .accountNumber("34-22-56")
-                .role(Role.USER)
+                .userDetails(UserDetails.builder().accountNumber("34-22-56").email("BSmith@outlook.com").build())
+                .userCredentials(UserCredentials.builder().password("pass").username("BSmith23").build())
+                .userSecurity(UserSecurity.builder().isEnabled(true).isAdmin(false).pinNumber("2233").role(Role.USER).build())
                 .build();
 
         List<UserEntity> userList = Arrays.asList(user1, user2);
@@ -147,12 +140,9 @@ class UserServiceControllerTest
 
         // Verify that userService.save was called with the right UserEntity
         UserEntity expectedUserEntity = UserEntity.builder()
-                .username(request.getUser())
-                .role(Role.valueOf(request.getRole()))
-                .pinNumber(request.getPin())
-                .email(request.getEmail())
-                .password(request.getPass())
-                .isEnabled(true)
+                .userSecurity(UserSecurity.builder().pinNumber(request.getPin()).isEnabled(true).role(Role.valueOf(request.getRole())).build())
+                .userCredentials(UserCredentials.builder().username(request.getUser()).password(request.getPass()).build())
+                .userDetails(UserDetails.builder().email(request.getEmail()).build())
                 .build();
 
         verify(userService).save(refEq(expectedUserEntity));

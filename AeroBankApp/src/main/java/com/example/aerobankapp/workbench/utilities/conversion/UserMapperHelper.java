@@ -10,11 +10,11 @@ public class UserMapperHelper
     public static UserDTO convertToDTO(UserEntity entity)
     {
         return new UserDTO(entity.getUserID(),
-                entity.getUsername(), entity.getEmail(),
-                entity.getPassword(), entity.getPinNumber(),
-                entity.getAccountNumber(),
-                entity.getFirstName(),
-                entity.getLastName(),
-                entity.isAdmin(), entity.isEnabled(), entity.getRole());
+                entity.getUserCredentials().getUsername(), entity.getUserDetails().getEmail(),
+                entity.getUserCredentials().getPassword(), entity.getUserSecurity().getPinNumber(),
+                entity.getUserDetails().getAccountNumber(),
+                entity.getUserDetails().getFirstName(),
+                entity.getUserDetails().getLastName(),
+                entity.getUserSecurity().isAdmin(), entity.getUserSecurity().isEnabled(), entity.getUserSecurity().getRole());
     }
 }

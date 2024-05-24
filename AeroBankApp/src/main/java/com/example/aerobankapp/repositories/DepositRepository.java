@@ -13,13 +13,13 @@ import java.util.List;
 @Repository
 public interface DepositRepository extends JpaRepository<DepositsEntity, Long>
 {
-    @Query("SELECT d FROM DepositsEntity d JOIN d.user u WHERE u.username=:user")
+    @Query("SELECT d FROM DepositsEntity d JOIN d.user u WHERE u.userCredentials.username=:user")
     List<DepositsEntity> findDepositsByUserName(@Param("user") String user);
 
     @Query("SELECT d FROM DepositsEntity d JOIN d.user u WHERE u.userID=:userID")
     List<DepositsEntity> findDepositsByUserID(@Param("userID") int userID);
 
-    @Query("SELECT d FROM DepositsEntity d JOIN d.user u JOIN d.transactionCriteria c WHERE u.username=:user ORDER BY c.posted DESC")
+    @Query("SELECT d FROM DepositsEntity d JOIN d.user u JOIN d.transactionCriteria c WHERE u.userCredentials.username=:user ORDER BY c.posted DESC")
     List<DepositsEntity> getDepositsByUserNameDesc(@Param("user") String user);
 
     @Query("SELECT d FROM DepositsEntity d JOIN d.account a WHERE a.acctID=:acctID")

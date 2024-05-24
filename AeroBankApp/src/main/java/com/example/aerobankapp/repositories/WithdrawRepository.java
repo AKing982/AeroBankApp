@@ -29,7 +29,7 @@ public interface WithdrawRepository extends JpaRepository<WithdrawEntity, Long>
     @Query("SELECT w FROM WithdrawEntity w JOIN w.transactionCriteria c WHERE c.transactionStatus=:status")
     List<WithdrawEntity> findByStatus(@Param("status") Status status);
 
-    @Query("SELECT w FROM WithdrawEntity w JOIN w.user u WHERE u.username=:user")
+    @Query("SELECT w FROM WithdrawEntity w JOIN w.user u WHERE u.userCredentials.username=:user")
     List<WithdrawEntity> findWithdrawalsByUserName(@Param("user") String user);
 
     @Query("SELECT c.amount FROM WithdrawEntity w JOIN w.transactionCriteria c WHERE w.withdrawID=:id")

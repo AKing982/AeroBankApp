@@ -23,14 +23,14 @@ public class UserServiceControllerUtil
     {
         return UserDTO.builder()
                 .userID(userEntity.getUserID())
-                .userName(userEntity.getUsername())
-                .email(userEntity.getEmail())
-                .accountNumber(userEntity.getAccountNumber())
-                .pinNumber(userEntity.getPinNumber())
-                .password(userEntity.getPassword())
-                .isAdmin(userEntity.isAdmin())
-                .role(userEntity.getRole())
-                .isEnabled(userEntity.isEnabled())
+                .userName(userEntity.getUserCredentials().getUsername())
+                .email(userEntity.getUserDetails().getEmail())
+                .accountNumber(userEntity.getUserDetails().getAccountNumber())
+                .pinNumber(userEntity.getUserSecurity().getPinNumber())
+                .password(userEntity.getUserCredentials().getPassword())
+                .isAdmin(userEntity.getUserSecurity().isAdmin())
+                .role(userEntity.getUserSecurity().getRole())
+                .isEnabled(userEntity.getUserSecurity().isEnabled())
                 .build();
     }
 }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 import java.math.BigDecimal;
@@ -55,23 +56,22 @@ public class TransactionDetailEntity
     private BigDecimal balance;
 
     @Column(name="createdAt")
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-    @Column(name="debit")
+    @Column(name="debit", nullable = false)
     @NotNull
     private BigDecimal debit;
 
-    @Column(name="credit")
+    @Column(name="credit", nullable = false)
     @NotNull
     private BigDecimal credit;
 
-    @Column(name="type")
+    @Column(name="type", nullable = false)
     @NotEmpty
     @NotBlank
     private String type;
 
-    @Column(name="status")
+    @Column(name="status", nullable = false)
     @NotEmpty
     @NotBlank
     private String status;
@@ -81,20 +81,30 @@ public class TransactionDetailEntity
     @NotBlank
     private String method;
 
-    @Column(name="payee")
+    @Column(name="payee", nullable = false)
+    @NotBlank
+    @NotEmpty
+    @NotNull
     private String payee;
 
-    @Column(name="description")
+    @Column(name="description", nullable = false)
+    @NotNull
+    @NotBlank
+    @NotEmpty
     private String description;
 
-    @Column(name="referenceNumber")
+    @Column(name="referenceNumber", nullable = false)
+    @NotNull
+    @NotBlank
+    @NotEmpty
     private String referenceNumber;
 
-    @Column(name="confirmationNumber")
+    @Column(name="confirmationNumber", nullable = false)
     @NotNull
     private Integer confirmationNumber;
 
-    @Column(name="fee")
+    @Column(name="fee",  nullable = false)
+    @NotNull
     private BigDecimal fee;
 
 

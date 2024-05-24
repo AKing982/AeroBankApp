@@ -31,24 +31,24 @@ public class BillPaymentEntity
     @JoinColumn(name="acctID")
     private AccountEntity account;
 
-    @Column(name="payeeName")
+    @Column(name="payeeName", nullable = false)
     @NotBlank
     @NotEmpty
     @NotNull
     private String payeeName;
 
-    @Column(name="paymentAmount")
+    @Column(name="paymentAmount", nullable = false)
     @NotNull
     @DecimalMin("1.00")
     private BigDecimal paymentAmount;
 
-    @Column(name="paymentDescription")
+    @Column(name="paymentDescription", nullable = false)
     @NotBlank
     @NotEmpty
     @NotNull
     private String paymentDescription;
 
-    @Column(name="paymentType")
+    @Column(name="paymentType", nullable = false)
     @NotBlank
     @NotEmpty
     @NotNull

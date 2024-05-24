@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 
@@ -21,12 +22,13 @@ public class BillPaymentHistoryEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentHistoryID;
 
-    @Column(name="nextPaymentDate")
+    @Column(name="nextPaymentDate", nullable = false)
     private LocalDate nextPayment;
 
-    @Column(name="lastPaymentDate")
+    @Column(name="lastPaymentDate", nullable = false)
     private LocalDate lastPayment;
 
+    @Temporal(TemporalType.DATE)
     @Column(name="dateUpdated")
     private LocalDate dateUpdated;
 

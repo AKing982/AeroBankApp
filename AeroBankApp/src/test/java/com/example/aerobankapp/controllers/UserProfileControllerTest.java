@@ -1,5 +1,8 @@
 package com.example.aerobankapp.controllers;
 
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.UserService;
@@ -69,12 +72,12 @@ class UserProfileControllerTest {
         Role role = Role.ADMIN;
 
         UserEntity userEntity = UserEntity.builder()
-                        .pinNumber(pin)
-                        .password(password)
-                        .email(email)
-                        .userID(1)
-                        .username(username)
-                        .role(role).build();
+                .userSecurity(UserSecurity.builder().pinNumber(pin).role(role).build())
+                .userDetails(UserDetails.builder().email(email).build())
+                .userCredentials(UserCredentials.builder().username(username).password(password).build())
+                .userID(1)
+                .build();
+
 
         List<UserEntity> userEntityList = new ArrayList<>();
         userEntityList.add(userEntity);
@@ -99,13 +102,9 @@ class UserProfileControllerTest {
 
         UserEntity userEntity = UserEntity.builder()
                 .userID(2)
-                .pinNumber("2233")
-                .role(Role.USER)
-                .password("pass")
-                .isAdmin(false)
-                .isEnabled(true)
-                .username("BSmith23")
-                .accountNumber("37-22-21")
+                .userCredentials(UserCredentials.builder().password("pass").username("BSmith23").build())
+                .userSecurity(UserSecurity.builder().isEnabled(true).isAdmin(false).pinNumber("2233").role(Role.USER).build())
+                .userDetails(UserDetails.builder().accountNumber("37-22-21").build())
                 .build();
 
         List<UserEntity> userEntityList = Collections.singletonList(userEntity);

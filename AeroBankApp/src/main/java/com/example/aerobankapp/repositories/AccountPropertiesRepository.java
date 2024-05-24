@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface AccountPropertiesRepository extends JpaRepository<AccountPropertiesEntity, Long>
 {
-    @Query("SELECT ap FROM AccountPropertiesEntity ap JOIN ap.account a JOIN a.users u WHERE u.username LIKE %:userName%")
+    @Query("SELECT ap FROM AccountPropertiesEntity ap JOIN ap.account a JOIN a.users u WHERE u.userCredentials.username LIKE %:userName%")
     List<AccountPropertiesEntity> findAccountPropertiesByUserName(@Param("userName") String userName);
 
     @Query("SELECT ap FROM AccountEntity a JOIN a.accountProperties ap WHERE a.user.userID=:userID")

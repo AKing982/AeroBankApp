@@ -1,5 +1,8 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.generator.AccountNumberGenerator;
@@ -48,18 +51,30 @@ class UserDAOImplTest
     }
 
     @Test
-    public void saveUser()
-    {
+    public void saveUser() {
         // Arrange
-        user = UserEntity.builder()
+        UserDetails userDetails = UserDetails.builder()
+                .firstName("Alex")
+                .lastName("King")
                 .email("alex@utahkings.com")
-                .isAdmin(true)
-                .password("Halflifer45!")
-                .pinNumber("5988")
+                .build();
+
+        UserCredentials loginCredentials = UserCredentials.builder()
                 .username("AKing94")
+                .password("Halflifer45!")
+                .build();
+
+        UserSecurity userSecurity = UserSecurity.builder()
+                .isAdmin(true)
                 .isEnabled(true)
-                .userID(1)
                 .role(Role.ADMIN)
+                .build();
+
+        UserEntity user = UserEntity.builder()
+                .userDetails(userDetails)
+                .userCredentials(loginCredentials)
+                .userSecurity(userSecurity)
+                .userID(1)
                 .build();
 
         // Act
@@ -78,7 +93,7 @@ class UserDAOImplTest
         List<UserEntity> userEntities = userDAO.findByUserName(user);
         UserEntity foundUser = userEntities.get(0);
 
-        assertEquals(user, foundUser.getUsername());
+        assertEquals(user, foundUser.getUserCredentials().getUsername());
     }
 
     @Test

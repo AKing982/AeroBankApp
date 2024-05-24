@@ -1,9 +1,13 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidAccountNumberException;
 import com.example.aerobankapp.exceptions.InvalidUserDTOException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
+import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.UserRepository;
 
@@ -77,12 +81,10 @@ class UserServiceImplTest {
         Role role = Role.ADMIN;
 
         UserEntity mockUser = UserEntity.builder()
-                .pinNumber(pin)
-                .password(password)
-                .email(email)
-                .username(username)
-                .accountNumber(expectedAccountNumber)
-                .role(role).build();
+                .userDetails(UserDetails.builder().accountNumber(expectedAccountNumber).email(email).build())
+                .userSecurity(UserSecurity.builder().pinNumber(pin).role(role).build())
+                .userCredentials(UserCredentials.builder().username(username).password(password).build())
+                .build();
 
         when(typedQuery.setParameter("user", "AKing94")).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(Collections.singletonList(mockUser));
@@ -114,7 +116,7 @@ class UserServiceImplTest {
 
         TypedQuery<String> mockQuery = mock(TypedQuery.class);
         when(mockQuery.getResultList()).thenReturn(Arrays.asList("username1", "username2"));
-        when(manager.createQuery("SELECT u.username FROM UserEntity u", String.class)).thenReturn(mockQuery);
+        when(manager.createQuery("SELECT u.userCredentials.username FROM UserEntity u", String.class)).thenReturn(mockQuery);
 
         List<String> usernames = userService.getListOfUserNames();
 
@@ -125,22 +127,43 @@ class UserServiceImplTest {
 
     @Test
     void testSave() {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("Adam552");
-        userEntity.setPassword("password");
-        userEntity.setAccountNumber("37-23-21");
-        userEntity.setPinNumber("2222");
-        userEntity.setEmail("adam@outlook.com");
-        userEntity.setEnabled(true);
-        userEntity.setRole(Role.USER);
-        userEntity.setUserID(4);
-        // Set other necessary fields...
+        // Create and set UserDetails
+        UserDetails userDetails = UserDetails.builder()
+                .firstName("Adam")
+                .lastName("Smith")
+                .email("adam@outlook.com")
+                .accountNumber("88-88-22")
+                .build();
 
+        // Create and set LoginCredentials
+        UserCredentials loginCredentials = UserCredentials.builder()
+                .username("Adam552")
+                .password("password")
+                .build();
+
+        // Create and set UserSecurity
+        UserSecurity userSecurity = UserSecurity.builder()
+                .isAdmin(false)
+                .isEnabled(true)
+                .role(Role.USER)
+                .build();
+
+        // Create and set the UserEntity
+        UserEntity userEntity = UserEntity.builder()
+                .userDetails(userDetails)
+                .userCredentials(loginCredentials)
+                .userSecurity(userSecurity)
+                .build();
+
+        // Set other necessary fields for the test
+        userEntity.setUserID(4);
+
+        // Save the user entity
         userService.save(userEntity);
 
+        // Assertions to verify the service and repository are not null
         assertNotNull(userService);
         assertNotNull(userRepository);
-
     }
 
     @Test

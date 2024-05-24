@@ -1,5 +1,8 @@
 package com.example.aerobankapp.entity;
 
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.workbench.utilities.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,47 +20,22 @@ import java.util.Set;
 @Builder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name="users")
+@Access(AccessType.FIELD)
 public class UserEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userID;
 
-    @Column(name="firstName")
-    private String firstName;
+    @Embedded
+    private UserDetails userDetails;
 
-    @Column(name="lastName")
-    private String lastName;
+    @Embedded
+    private UserSecurity userSecurity;
 
-    @Column(name="username")
-    @NotNull
-    @Size(min=8, message="You must choose at least 8 characters")
-    private String username;
-
-    @Column(name="email")
-    @NotNull
-    private String email;
-
-    @Column(name="password")
-    @Size(min=24, max=225, message="You must choose atleast 25 characters")
-    private String password;
-
-    @Column(name="pinNumber")
-    @NotNull
-    @Size(min=6, message="You must choose at least 6 characters")
-    private String pinNumber;
-
-    @Column(name="accountNumber")
-    @NotNull
-    private String accountNumber;
-
-    @Column(name="isAdmin")
-    private boolean isAdmin;
-
-    @Column(name="isEnabled")
-    private boolean isEnabled;
+    @Embedded
+    private UserCredentials userCredentials;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -66,25 +44,19 @@ public class UserEntity
     inverseJoinColumns = @JoinColumn(name="acctID"))
     private Set<AccountEntity> accounts = new HashSet<>();
 
-    @Column(name="role")
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    public UserEntity(int userID, UserDetails userDetails, UserSecurity userSecurity, UserCredentials userCredentials) {
+        this.userID = userID;
+        this.userDetails = userDetails;
+        this.userSecurity = userSecurity;
+        this.userCredentials = userCredentials;
+    }
 
-    @Column(name="profileImgUrl")
-    private String profileImgUrl;
-
-    public UserEntity(String firstName, String lastName, String username, String email, String password, String pinNumber, String accountNumber, boolean isAdmin, boolean isEnabled, Set<AccountEntity> accounts, Role role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.pinNumber = pinNumber;
-        this.accountNumber = accountNumber;
-        this.isAdmin = isAdmin;
-        this.isEnabled = isEnabled;
+    public UserEntity(int userID, UserDetails userDetails, UserSecurity userSecurity, UserCredentials userCredentials, Set<AccountEntity> accounts) {
+        this.userID = userID;
+        this.userDetails = userDetails;
+        this.userSecurity = userSecurity;
+        this.userCredentials = userCredentials;
         this.accounts = accounts;
-        this.role = role;
     }
 
     public void addAccount(AccountEntity accountEntity)
@@ -99,21 +71,5 @@ public class UserEntity
         accountEntity.getUsers().remove(this);
     }
 
-    @Override
-    public String toString() {
-        return "UserEntity{" +
-                "userID=" + userID +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", pinNumber='" + pinNumber + '\'' +
-                ", accountNumber='" + accountNumber + '\'' +
-                ", isAdmin=" + isAdmin +
-                ", isEnabled=" + isEnabled +
-                ", accounts=" + accounts +
-                ", role=" + role +
-                '}';
-    }
+
 }

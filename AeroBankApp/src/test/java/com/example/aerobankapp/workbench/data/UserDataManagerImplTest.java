@@ -185,9 +185,9 @@ class UserDataManagerImplTest {
         UserEntity actualUserEntity = userDataManager.buildUserEntity(user, accountNumber);
 
         assertNotNull(actualUserEntity);
-        assertEquals(user.getUsername(), actualUserEntity.getUsername());
-        assertEquals(user.getFirstName(), actualUserEntity.getFirstName());
-        assertEquals(accountNumber.getAccountNumberToString(), actualUserEntity.getAccountNumber());
+        assertEquals(user.getUsername(), actualUserEntity.getUserCredentials().getUsername());
+        assertEquals(user.getFirstName(), actualUserEntity.getUserDetails().getFirstName());
+        assertEquals(accountNumber.getAccountNumberToString(), actualUserEntity.getUserDetails().getAccountNumber());
     }
 
     @Test

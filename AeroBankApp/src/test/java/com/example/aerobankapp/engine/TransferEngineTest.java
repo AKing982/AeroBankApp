@@ -483,7 +483,7 @@ class TransferEngineTest {
         transfer.setPosted(LocalDate.now());
         transfer.setToAccountID(entity.getToAccount().getAcctID());
       //  transfer.setToAccountCode(entity.getToAccount().getAccountCode());
-        transfer.setToAccountNumber(entity.getToUser().getAccountNumber());
+        transfer.setToAccountNumber(entity.getToUser().getUserDetails().getAccountNumber());
         return transfer;
     }
 

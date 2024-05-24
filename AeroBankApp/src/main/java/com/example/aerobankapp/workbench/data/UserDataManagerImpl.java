@@ -1,6 +1,9 @@
 package com.example.aerobankapp.workbench.data;
 
 import com.example.aerobankapp.dto.UserDTO;
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.exceptions.InvalidUserDataException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
@@ -124,29 +127,17 @@ public class UserDataManagerImpl extends AbstractDataManager
 
     private UserEntity getUserEntityBuilder(User user, AccountNumber accountNumber){
         return UserEntity.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .pinNumber(user.getPinNumber())
-                .role(user.getRole())
-                .accountNumber(accountNumber.getAccountNumberToString())
-                .isEnabled(true)
+                .userDetails(UserDetails.builder().firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail()).accountNumber(accountNumber.getAccountNumberToString()).build())
+                .userCredentials(UserCredentials.builder().password(user.getPassword()).username(user.getUsername()).build())
+                .userSecurity(UserSecurity.builder().role(user.getRole()).pinNumber(user.getPinNumber()).isEnabled(true).build())
                 .build();
     }
 
     public UserEntity buildSimpleUserEntity(User user){
         return UserEntity.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .password(getEncryptedString(user.getPassword()))
-                .pinNumber(getEncryptedString(user.getPinNumber()))
-                .accountNumber(user.getAccountNumber().getAccountNumberToString())
-                .isEnabled(true)
-                .role(user.getRole())
+                .userDetails(UserDetails.builder().firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail()).accountNumber(user.getAccountNumber().getAccountNumberToString()).build())
+                .userCredentials(UserCredentials.builder().password(getEncryptedString(user.getPassword())).username(user.getUsername()).build())
+                .userSecurity(UserSecurity.builder().role(user.getRole()).pinNumber(getEncryptedString(user.getPinNumber())).isEnabled(true).build())
                 .userID(user.getUserID())
                 .build();
     }

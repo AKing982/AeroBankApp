@@ -1,6 +1,9 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.dto.DepositDTO;
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.DepositsEntity;
 import com.example.aerobankapp.entity.UserEntity;
@@ -78,21 +81,32 @@ class DepositControllerTest {
         LocalTime now = LocalTime.now();
         LocalDate today = LocalDate.now();
 
-        UserEntity mockUser = UserEntity.builder()
-                .userID(1)
+        UserDetails userDetails = UserDetails.builder()
+                .firstName("Alex")
+                .lastName("King")
+                .email("alex@utahkings.com")
+                .build();
+
+        UserCredentials userCredentials = UserCredentials.builder()
                 .username("AKing94")
                 .password("Halflifer45!")
-                .email("alex@utahkings.com")
-                .pinNumber("5988")
-                .accountNumber("37-22-34")
-                .role(Role.ADMIN)
-                .isEnabled(true)
+                .build();
+
+        UserSecurity userSecurity = UserSecurity.builder()
                 .isAdmin(true)
+                .isEnabled(true)
+                .role(Role.ADMIN)
+                .build();
+
+        UserEntity mockUser = UserEntity.builder()
+                .userID(1)
+                .userDetails(userDetails)
+                .userCredentials(userCredentials)
+                .userSecurity(userSecurity)
                 .build();
 
         AccountEntity mockAccount = AccountEntity.builder()
                 .isRentAccount(false)
-               // .accountCode("A1")
                 .hasMortgage(false)
                 .interest(new BigDecimal("2.67"))
                 .accountName("Alex Checking")
@@ -103,25 +117,20 @@ class DepositControllerTest {
 
         DepositsEntity mockDeposit = DepositsEntity.builder()
                 .depositID(1)
-                //.amount(new BigDecimal("45.00"))
-                //  .description("Transfer")
-               // .scheduledTime(now)
-               // .scheduledDate(today)
                 .user(mockUser)
                 .account(mockAccount)
                 .build();
 
         List<DepositsEntity> depositsEntities = Collections.singletonList(mockDeposit);
 
-        when(depositService.getDepositsByAcctID(1)).thenReturn(depositsEntities);
+        when(depositService.getDepositsByAcctID(acctID)).thenReturn(depositsEntities);
 
         mockMvc.perform(get("/api/deposits/data/{acctID}", acctID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(depositsEntities.size()))
                 .andDo(print());
-
     }
 
 

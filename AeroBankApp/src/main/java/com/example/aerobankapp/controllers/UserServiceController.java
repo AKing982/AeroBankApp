@@ -1,6 +1,9 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.dto.UserDTO;
+import com.example.aerobankapp.embeddables.UserCredentials;
+import com.example.aerobankapp.embeddables.UserDetails;
+import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.UserServiceImpl;
@@ -164,16 +167,16 @@ public class UserServiceController {
     {
         return UserDTO.builder()
                 .userID(userEntity.getUserID())
-                .userName(userEntity.getUsername())
-                .firstName(userEntity.getFirstName())
-                .lastName(userEntity.getLastName())
-                .isAdmin(userEntity.isAdmin())
-                .email(userEntity.getEmail())
-                .pinNumber(userEntity.getPinNumber())
-                .password(userEntity.getPassword())
-                .accountNumber(userEntity.getAccountNumber())
-                .role(userEntity.getRole())
-                .isEnabled(userEntity.isEnabled())
+                .userName(userEntity.getUserCredentials().getUsername())
+                .firstName(userEntity.getUserDetails().getFirstName())
+                .lastName(userEntity.getUserDetails().getLastName())
+                .isAdmin(userEntity.getUserSecurity().isAdmin())
+                .email(userEntity.getUserDetails().getEmail())
+                .pinNumber(userEntity.getUserSecurity().getPinNumber())
+                .password(userEntity.getUserCredentials().getPassword())
+                .accountNumber(userEntity.getUserDetails().getAccountNumber())
+                .role(userEntity.getUserSecurity().getRole())
+                .isEnabled(userEntity.getUserSecurity().isEnabled())
                 .build();
     }
 
@@ -190,17 +193,29 @@ public class UserServiceController {
 
        String encryptedPassword = bCryptPasswordEncoder.encode(request.getPass());
 
+        UserDetails userDetails = UserDetails.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .accountNumber(request.getAccountNumber())
+                .build();
+
+        UserSecurity userSecurity = UserSecurity.builder()
+                .role(Role.valueOf(request.getRole()))
+                .pinNumber(request.getPin())
+                .isEnabled(true)
+                .build();
+
+        UserCredentials userCredentials = UserCredentials.builder()
+                .password(encryptedPassword)
+                .username(request.getUser())
+                .build();
+
         UserEntity userEntity = UserEntity.builder()
-                        .username(request.getUser())
                         .userID(request.getUserID())
-                        .role(Role.valueOf(request.getRole()))
-                        .pinNumber(request.getPin())
-                        .lastName(request.getLastName())
-                        .firstName(request.getFirstName())
-                        .email(request.getEmail())
-                        .password(encryptedPassword)
-                        .accountNumber(request.getAccountNumber())
-                        .isEnabled(true)
+                        .userCredentials(userCredentials)
+                        .userDetails(userDetails)
+                        .userSecurity(userSecurity)
                         .build();
 
         LOGGER.info("UserEntity: " + userEntity);

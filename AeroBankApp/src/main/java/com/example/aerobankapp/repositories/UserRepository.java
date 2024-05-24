@@ -17,60 +17,60 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long>
 {
-    @Query(value="SELECT EXISTS(SELECT 1 FROM AccountEntity e JOIN e.users u WHERE u.accountNumber =:accountNum)")
+    @Query(value="SELECT EXISTS(SELECT 1 FROM AccountEntity e JOIN e.users u WHERE u.userDetails.accountNumber =:accountNum)")
     boolean doesAccountNumberExist(@Param("accountNum") String acctNum);
 
     @Query("SELECT u FROM UserEntity u WHERE u.userID=:id")
     Optional<UserEntity> findById(@Param("id") int id);
 
 
-    @Query("SELECT e FROM UserEntity e WHERE e.username=:user")
+    @Query("SELECT e FROM UserEntity e WHERE e.userCredentials.username=:user")
     List<UserEntity> findByUserName(@Param("user") String user);
 
-    @Query("SELECT e.userID FROM UserEntity e WHERE e.accountNumber=:acctNum")
+    @Query("SELECT e.userID FROM UserEntity e WHERE e.userDetails.accountNumber=:acctNum")
     int findUserIDByAccountNumber(@Param("acctNum") String acctNumber);
 
-    @Query("SELECT CONCAT(e.firstName, ' ', e.lastName) FROM UserEntity e WHERE e.userID=:userID")
+    @Query("SELECT CONCAT(e.userDetails.firstName, ' ', e.userDetails.lastName) FROM UserEntity e WHERE e.userID=:userID")
     String findFullNameByUserID(@Param("userID") int userID);
 
     @Modifying
-    @Query("UPDATE UserEntity u SET u.username=:username, u.email=:email, u.role=:role, u.password = :password, u.pinNumber =:pinNumber, u.firstName =:firstName, u.lastName =:lastName WHERE u.userID =:id")
+    @Query("UPDATE UserEntity u SET u.userCredentials.username=:username, u.userDetails.email=:email, u.userSecurity.role=:role, u.userCredentials.password = :password, u.userSecurity.pinNumber =:pinNumber, u.userDetails.firstName =:firstName, u.userDetails.lastName =:lastName WHERE u.userID =:id")
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     void updateUser(@Param("id") int id, @Param("username") String username, @Param("email") String email, @Param("role") Role role, @Param("password") String password, @Param("pinNumber") String pinNumber, @Param("firstName") String firstName, @Param("lastName") String lastName);
 
     @Modifying
-    @Query("UPDATE UserEntity u SET u.password=:pass WHERE u.username=:user")
+    @Query("UPDATE UserEntity u SET u.userCredentials.password=:pass WHERE u.userCredentials.username=:user")
     void updateUserPassword(@Param("pass") String password, @Param("user") String username);
 
-    @Query("SELECT e.role FROM UserEntity e WHERE e.username=:user")
+    @Query("SELECT e.userSecurity.role FROM UserEntity e WHERE e.userCredentials.username=:user")
     Role getUserRole(@Param("user") String username);
 
-    @Query("SELECT e.accountNumber FROM UserEntity e WHERE e.username=:user")
+    @Query("SELECT e.userDetails.accountNumber FROM UserEntity e WHERE e.userCredentials.username=:user")
     String getAccountNumberByUserName(@Param("user") String user);
 
-    @Query("SELECT e.email FROM UserEntity e WHERE e.userID=:userID")
+    @Query("SELECT e.userDetails.email FROM UserEntity e WHERE e.userID=:userID")
     String getEmailByID(@Param("userID") int userID);
 
-    @Query("SELECT e.pinNumber FROM UserEntity e WHERE e.userID=:userID")
+    @Query("SELECT e.userSecurity.pinNumber FROM UserEntity e WHERE e.userID=:userID")
     String getPinNumberByUserID(@Param("userID") int userID);
 
-    @Query("SELECT e.username FROM UserEntity e")
+    @Query("SELECT e.userCredentials.username FROM UserEntity e")
     List<String> getListOfUsers();
 
-    @Query("SELECT e.userID FROM UserEntity e WHERE e.username=:user")
+    @Query("SELECT e.userID FROM UserEntity e WHERE e.userCredentials.username=:user")
     int getIDByUserName(@Param("user") String user);
 
-    @Query("SELECT e.email FROM UserEntity e WHERE e.username=:user")
+    @Query("SELECT e.userDetails.email FROM UserEntity e WHERE e.userCredentials.username=:user")
     String findEmailByUserName(@Param("user") String username);
 
-    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.username=:user")
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.userCredentials.username=:user")
     int userExists(@Param("user") String user);
 
-    @Query("SELECT u FROM UserEntity u WHERE u.username=:user")
+    @Query("SELECT u FROM UserEntity u WHERE u.userCredentials.username=:user")
     Optional<UserEntity> fetchByUser(@Param("user") String user);
 
-    @Query("SELECT u.password FROM UserEntity u WHERE u.username=:user")
+    @Query("SELECT u.userCredentials.password FROM UserEntity u WHERE u.userCredentials.username=:user")
     String findUsersCurrentPassword(@Param("user") String user);
 
 }

@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface TransactionDetailRepository extends JpaRepository<TransactionDetailEntity, Long>
 {
-    @Query("SELECT td FROM TransactionDetailEntity td WHERE td.userEntity.username=:username")
+    @Query("SELECT td FROM TransactionDetailEntity td WHERE td.userEntity.userCredentials.username=:username")
     List<TransactionDetailEntity> findByUsername(@Param("username") String username);
 
 

@@ -27,38 +27,38 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
             "FROM AccountEntity a " +
             "JOIN a.accountCode ac " +
             "JOIN ac.user u " +
-            "WHERE u.username = :userName")
+            "WHERE u.userCredentials.username = :userName")
     List<String> getAccountCodeShortSegmentByUser(@Param("userName") String user);
 
 
-    @Query("SELECT a FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
+    @Query("SELECT a FROM AccountEntity a JOIN a.users u WHERE u.userCredentials.username =:username")
     List<AccountEntity> findByUserName(@Param("username") String username);
 
     @Query("SELECT e.balance FROM AccountEntity e WHERE e.acctID =:acctID")
     BigDecimal getBalanceByAcctID(@Param("acctID") int acctID);
 
    // @Query("SELECT a FROM AccountEntity a JOIN a.users u WHERE a.accountCode=:acctCode AND u.accountNumber=:acctNum")
-    @Query("SELECT a.acctID FROM AccountEntity a JOIN a.accountCode ac JOIN ac.user u WHERE u.accountNumber=:acctNum AND ac.acctCodeID=:code")
+    @Query("SELECT a.acctID FROM AccountEntity a JOIN a.accountCode ac JOIN ac.user u WHERE u.userDetails.accountNumber=:acctNum AND ac.acctCodeID=:code")
     int getAccountIDByAcctCodeAndAccountNumber(@Param("code") Long acctCodeID, @Param("acctNum") String acctNumber);
 
     @Query("SELECT e FROM AccountEntity e JOIN e.user u WHERE e.accountCode =:acctCode AND u.userID =:userID")
     List<AccountEntity> findByAccountCodeAndUserID(@Param("acctCode") String acctCode, @Param("userID") int userID);
 
-    @Query("SELECT SUM(a.balance) FROM AccountEntity a JOIN a.users u WHERE u.username = :username")
+    @Query("SELECT SUM(a.balance) FROM AccountEntity a JOIN a.users u WHERE u.userCredentials.username = :username")
     BigDecimal getTotalAccountBalances(@Param("username") String username);
 
-    @Query("SELECT COUNT(a) FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
+    @Query("SELECT COUNT(a) FROM AccountEntity a JOIN a.users u WHERE u.userCredentials.username =:username")
     Long getNumberOfAccounts(@Param("username") String username);
 
-    @Query("SELECT ac.acctCodeID FROM AccountCodeEntity ac JOIN ac.user u WHERE u.accountNumber=:acctNum")
+    @Query("SELECT ac.acctCodeID FROM AccountCodeEntity ac JOIN ac.user u WHERE u.userDetails.accountNumber=:acctNum")
     List<Integer> findAccountCodeIDListByAccountNumber(@Param("acctNum") String acctNumber);
 
    // @Query("SELECT a.accountCode FROM AccountEntity a JOIN a.users u WHERE u.username =:username")
-    @Query("SELECT CONCAT(a.accountName, ' - XXXX', ac.accountType, ac.account_segment) AS segment FROM AccountEntity a JOIN a.accountCode ac JOIN ac.user u WHERE u.username=:username")
+    @Query("SELECT CONCAT(a.accountName, ' - XXXX', ac.accountType, ac.account_segment) AS segment FROM AccountEntity a JOIN a.accountCode ac JOIN ac.user u WHERE u.userCredentials.username=:username")
     List<String> findAccountNameWithAcctCodeByUserName(@Param("username") String username);
 
    // @Query("SELECT a.accountCode FROM AccountEntity a JOIN a.users u WHERE u.accountNumber=:acctNum")
-    @Query("SELECT CONCAT(a.accountName, ' - XXXX', ac.accountType, ac.account_segment) AS segment FROM AccountEntity a JOIN a.accountCode ac JOIN ac.user u WHERE u.accountNumber=:acctNum")
+    @Query("SELECT CONCAT(a.accountName, ' - XXXX', ac.accountType, ac.account_segment) AS segment FROM AccountEntity a JOIN a.accountCode ac JOIN ac.user u WHERE u.userDetails.accountNumber=:acctNum")
     List<String> findAccountNamesWithAcctSegmentByAccountNumber(@Param("acctNum") String acctNum);
 
     @Query("SELECT e.balance FROM AccountEntity e JOIN e.user u WHERE e.accountCode =:acctCode AND u.userID =:userID")
