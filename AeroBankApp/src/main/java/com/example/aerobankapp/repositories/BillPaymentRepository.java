@@ -12,5 +12,6 @@ import java.util.List;
 @Repository
 public interface BillPaymentRepository extends JpaRepository<BillPaymentEntity, Long>
 {
-
+    @Query("SELECT e FROM BillPaymentEntity e WHERE e.user.userID=:userID")
+    List<BillPaymentEntity> findBillPaymentsByUserID(@Param("userID") int userID);
 }

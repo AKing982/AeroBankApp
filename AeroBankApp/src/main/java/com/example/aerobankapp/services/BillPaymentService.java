@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface BillPaymentService extends ServiceDAOModel<BillPaymentEntity>
 {
-
+    List<BillPaymentEntity> findBillPaymentsByUserID(int userID);
 }

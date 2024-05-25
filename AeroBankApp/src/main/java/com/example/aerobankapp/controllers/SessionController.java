@@ -12,7 +12,7 @@ public class SessionController {
     public String setSession(HttpSession session, @RequestParam String name, @RequestParam String roles, @RequestParam String token){
         session.setAttribute("username", name);
         session.setAttribute("roles", roles);
-        session.setAttribute("toke", token);
+        session.setAttribute("token", token);
         return "Session attributes set: username = " + name + ", roles = " + roles + ", token = " + token;
     }
 

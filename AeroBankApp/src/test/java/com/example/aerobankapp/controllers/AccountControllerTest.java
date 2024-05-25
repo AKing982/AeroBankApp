@@ -1,7 +1,12 @@
 package com.example.aerobankapp.controllers;
 
+import com.example.aerobankapp.configuration.AppConfig;
+import com.example.aerobankapp.configuration.JpaConfig;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.AccountPropertiesEntity;
+import com.example.aerobankapp.services.AccountCodeService;
+import com.example.aerobankapp.services.AccountNotificationService;
+import com.example.aerobankapp.services.AccountPropertiesService;
 import com.example.aerobankapp.services.AccountServiceImpl;
 import com.example.aerobankapp.workbench.utilities.response.AccountResponse;
 import org.junit.jupiter.api.AfterEach;
@@ -14,12 +19,18 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -33,8 +44,14 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@WebMvcTest(value=AccountController.class)
+@WebMvcTest(value=AccountController.class, excludeAutoConfiguration = {
+        org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.class,
+        org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
+        org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration.class,
+        org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessionConfiguration.class
+})
 @RunWith(SpringRunner.class)
+@Import({AppConfig.class, JpaConfig.class})
 class AccountControllerTest {
 
     @Autowired
@@ -42,6 +59,15 @@ class AccountControllerTest {
 
     @MockBean
     private AccountServiceImpl accountDAO;
+
+    @MockBean
+    private AccountPropertiesService accountPropertiesService;
+
+    @MockBean
+    private AccountNotificationService accountNotificationService;
+
+    @MockBean
+    private AccountCodeService accountCodeService;
 
     private AccountController accountController;
 

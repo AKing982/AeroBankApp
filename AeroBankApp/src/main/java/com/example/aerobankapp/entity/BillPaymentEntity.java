@@ -42,12 +42,6 @@ public class BillPaymentEntity
     @DecimalMin("1.00")
     private BigDecimal paymentAmount;
 
-    @Column(name="paymentDescription", nullable = false)
-    @NotBlank
-    @NotEmpty
-    @NotNull
-    private String paymentDescription;
-
     @Column(name="paymentType", nullable = false)
     @NotBlank
     @NotEmpty

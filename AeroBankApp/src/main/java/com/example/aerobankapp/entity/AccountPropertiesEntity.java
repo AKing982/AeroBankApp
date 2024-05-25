@@ -15,7 +15,7 @@ public class AccountPropertiesEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountPropsID;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="acctID")
     private AccountEntity account;
 

@@ -50,6 +50,23 @@ import { toast } from 'react-toastify';
 import NewPaymentDialog from "./NewPaymentDialog";
 
 
+const scheduleFrequencies = [
+    { label: 'One-time', value: 'one_time' },
+    // { label: 'Weekly', value: 'weekly' },
+    { label: 'Bi-weekly', value: 'bi_weekly' },
+    { label: 'Monthly', value: 'monthly' },
+    // { label: 'Yearly', value: 'yearly' }
+];
+
+const hardcodedPayees = [
+    { id: 1, name: 'Electric Company' },
+    { id: 2, name: 'Water Utility' },
+    { id: 3, name: 'Internet Provider' },
+    { id: 4, name: 'Rent' },
+    { id: 5, name: 'Insurance Company' }
+];
+
+
 
 export default function BillPayPage({templates = []}) {
     const [selectedPayee, setSelectedPayee] = useState(null);
@@ -60,12 +77,13 @@ export default function BillPayPage({templates = []}) {
         payeeName: '',
         amount: '',
         cardNumber: '',
-        fromAccount: '',
         cardExpiry: '',
         cardCVV: '',
         dueDate: new Date().toISOString().substring(0, 10) ,
-        accountFrom: ''
     });
+    const [payeeName, setPayeeName] = useState('');
+    const [amount, setAmount] = useState('');
+    const [fromAccount, setFromAccount] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [payeeList, setPayeeList] = useState({});
     const [scheduledPayments, setScheduledPayments] = useState([]);
@@ -76,7 +94,13 @@ export default function BillPayPage({templates = []}) {
     const [content, setContent] = useState('');
     const [accountCodeList, setAccountCodeList] = useState([]);
     const [paymentMethod, setPaymentMethod] = useState('account'); // Default to account
+    const [scheduledFrequency, setScheduledFrequency] = useState('');
+    const [reminders, setReminders] = useState(false);
+    const [payeeOptions, setPayeeOptions] = useState([]);
 
+    useEffect(() => {
+        setPayeeOptions(hardcodedPayees); // Ensure payeeOptions is set to hardcodedPayees on component mount
+    }, []);
 
     let userID = sessionStorage.getItem('userID');
    // const [paymentTemplates, setPaymentTemplates] = useState(templates);  // Assuming templates is passed as a prop
@@ -133,9 +157,10 @@ export default function BillPayPage({templates = []}) {
 
     const buildPaymentRequest = () => {
          return{
-            payeeName: newPaymentDetails.payeeName,
-            amount: newPaymentDetails.amount,
+            payeeName: payeeName,
+            amount: amount,
             dueDate: selectedDate,
+            payFrom: fromAccount,
             autoPayEnabled: isAutoPayEnabled
          }
      }
@@ -193,6 +218,26 @@ export default function BillPayPage({templates = []}) {
 
     useEffect(() => {
         setIsLoading(true);
+        let username = sessionStorage.getItem('username');
+        axios.get(`http://localhost:8080/AeroBankApp/api/accounts/data/codes/${username}`,
+            {
+                timeout: 4000
+            })
+            .then(response => {
+                if(Array.isArray(response.data) && response.data.length > 0){
+                    setAccountCodeList(response.data)
+                }
+            })
+            .catch(error => {
+                console.error('An error occurred while fetching the account codes: ', error);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            })
+    }, []);
+
+    useEffect(() => {
+        setIsLoading(true);
         axios.get(`http://localhost:8080/AeroBankApp/api/bills/${userID}/history`)
             .then(response => {
                  console.log('Payment History: ', response.data);
@@ -215,6 +260,7 @@ export default function BillPayPage({templates = []}) {
             sendNewPaymentRequest(paymentRequest);
             // Add logic to handle submitting the new payment
             toggleAddPaymentForm();
+            clearNewPaymentInputs();
         }
     };
 
@@ -224,12 +270,12 @@ export default function BillPayPage({templates = []}) {
 
     const validateNewPaymentCriteria = () => {
 
-        if(!newPaymentDetails.payeeName){
+        if(!payeeName){
             setIsDialogOpen(true);
             setContent('Please enter a Payee Name.');
             return false;
         }
-        if(!newPaymentDetails.amount){
+        if(!amount){
             setIsDialogOpen(true);
             setContent('Please specify a payment amount...');
             return false;
@@ -239,23 +285,29 @@ export default function BillPayPage({templates = []}) {
             setContent('Please specify a due date for the payment...');
             return false;
         }
-        if (paymentMethod === 'account' && !newPaymentDetails.accountFrom) {
+        if (!fromAccount) {
             setContent('Please select an account to pull funds from.');
-            setIsDialogOpen(true);
-            return false;
-        }
-        if (paymentMethod === 'card' && (!newPaymentDetails.cardNumber || !newPaymentDetails.cardExpiry || !newPaymentDetails.cardCVV)) {
-            setContent('Please enter your card details.');
-            setIsDialogOpen(true);
-            return false;
-        }
-        if (paymentMethod === 'wallet' && !newPaymentDetails.walletProvider) {
-            setContent('Please select a digital wallet.');
             setIsDialogOpen(true);
             return false;
         }
         return true;
     }
+
+    const handleChange = (event, newValue) => {
+        const accountCode = newValue ? newValue.accountCode : '';
+        setFromAccount(accountCode);
+    };
+
+
+
+    const clearNewPaymentInputs = () => {
+        setFromAccount('');
+        setPayeeName('');
+        setAmount('');
+        setIsAutoPayEnabled(false);
+
+    }
+
 
     const paymentData = [
         {
@@ -295,8 +347,34 @@ export default function BillPayPage({templates = []}) {
         }
     ];
 
+    const handlePayeeChange = (event) => {
+        setPayeeName(event.target.value);
+    }
+
+    const handleAmountChange = (event) => {
+        setAmount(event.target.value);
+    };
+
     const togglePaymentHistory = () => {
         setIsPaymentHistoryOpen(!isPaymentHistoryOpen);
+    };
+
+    const fetchPayees = (input) => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const filteredPayees = hardcodedPayees.filter(payee =>
+                    payee.name.toLowerCase().includes(input.toLowerCase())
+                );
+                resolve(filteredPayees);
+            }, 500);
+        });
+    };
+
+    const handlePayeeInputChange = async (event, value, reason) => {
+        if (reason === 'input') {
+            const fetchedPayees = await fetchPayees(value);
+            setPayeeOptions(fetchedPayees);
+        }
     };
 
     return (
@@ -332,93 +410,32 @@ export default function BillPayPage({templates = []}) {
                                     </Button>
                                     {showAddPaymentForm ? (
                                         <FormGroup>
-                                            <TextField
-                                                fullWidth
-                                                label="Payee Name"
-                                                name="payeeName"
-                                                multiline
-                                                rows={1}
-                                                value={newPaymentDetails.payeeName}
-                                                onChange={handleInputChange}
-                                                margin="normal"
+                                            <Autocomplete
+                                                options={payeeOptions}
+                                                getOptionLabel={(option) => option.name}
+                                                style={{ width: '100%' }}
+                                                renderInput={(params) => <TextField {...params} label="Payee Name" variant="outlined" margin="normal" />}
+                                                onInputChange={handlePayeeInputChange}
+                                                onChange={(event, newValue) => setPayeeName(newValue ? newValue.name : '')}
+                                                inputValue={payeeName}
                                             />
-                                            <FormControl component="fieldset" margin="normal">
-                                                <FormLabel component="legend">Payment Method</FormLabel>
-                                                <RadioGroup
-                                                    row
-                                                    aria-label="payment-method"
-                                                    name="paymentMethod"
-                                                    value={paymentMethod}
-                                                    onChange={(e) => setPaymentMethod(e.target.value)}
-                                                >
-                                                    <FormControlLabel value="account" control={<Radio />} label="Bank Account" />
-                                                    <FormControlLabel value="card" control={<Radio />} label="Credit/Debit Card" />
-                                                    <FormControlLabel value="wallet" control={<Radio />} label="Digital Wallet" />
-                                                </RadioGroup>
-                                            </FormControl>
-
-                                            {paymentMethod === 'account' && (
                                                 <Autocomplete
                                                     options={accountCodeList}
-                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionLabel={(option) => option.accountCode || ''}
+                                                    value={accountCodeList.find(option => option.accountCode === fromAccount) || null}
                                                     style={{ width: '100%' }}
                                                     renderInput={(params) => <TextField {...params} label="Pay from" variant="outlined" margin="normal" />}
-                                                    onChange={(event, newValue) => setNewPaymentDetails({ ...newPaymentDetails, accountFrom: newValue.id })}
+                                                    onChange={handleChange}
                                                 />
-                                            )}
 
-                                            {paymentMethod === 'card' && (
-                                                <>
-                                                    <TextField
-                                                        fullWidth
-                                                        label="Card Number"
-                                                        name="cardNumber"
-                                                        value={newPaymentDetails.cardNumber}
-                                                        onChange={handleInputChange}
-                                                        margin="normal"
-                                                    />
-                                                    <TextField
-                                                        fullWidth
-                                                        label="Expiry Date"
-                                                        name="cardExpiry"
-                                                        placeholder="MM/YY"
-                                                        value={newPaymentDetails.cardExpiry}
-                                                        onChange={handleInputChange}
-                                                        margin="normal"
-                                                    />
-                                                    <TextField
-                                                        fullWidth
-                                                        label="CVV"
-                                                        name="cardCVV"
-                                                        value={newPaymentDetails.cardCVV}
-                                                        onChange={handleInputChange}
-                                                        margin="normal"
-                                                    />
-                                                </>
-                                            )}
-
-                                            {paymentMethod === 'wallet' && (
-                                                <Select
-                                                    fullWidth
-                                                    label="Select Wallet"
-                                                    name="walletProvider"
-                                                    value={newPaymentDetails.walletProvider}
-                                                    onChange={handleInputChange}
-                                                    margin="normal"
-                                                >
-                                                    <MenuItem value="paypal">PayPal</MenuItem>
-                                                    <MenuItem value="googlepay">Google Pay</MenuItem>
-                                                    <MenuItem value="applepay">Apple Pay</MenuItem>
-                                                </Select>
-                                            )}
                                             <TextField
                                                 fullWidth
                                                 label="Amount"
                                                 name="amount"
                                                 multiline
                                                 rows={1}
-                                                value={newPaymentDetails.amount}
-                                                onChange={handleInputChange}
+                                                value={amount}
+                                                onChange={handleAmountChange}
                                                 margin="normal"
                                             />
                                             <TextField
@@ -431,16 +448,33 @@ export default function BillPayPage({templates = []}) {
                                                 onChange={handleDateChange}
                                                 margin="normal"
                                             />
+                                            <Autocomplete
+                                                options={scheduleFrequencies}
+                                                getOptionLabel={(option) => option.label}
+                                                style={{ width: '100%' }}
+                                                renderInput={(params) => <TextField {...params} label="Schedule Frequency" variant="outlined" margin="normal" />}
+                                                onChange={(event, newValue) => {
+                                                    setScheduledFrequency(newValue.value);
+                                                    if (newValue.value === 'one_time') {
+                                                        handleAutoPayChange({ target: { name: 'recurring', checked: false } });
+                                                    }
+                                                }}
+                                            />
                                             <FormControlLabel
                                                 control={<Switch name="recurring"
                                                                  checked={isAutoPayEnabled}
                                                                  onChange={handleAutoPayChange}
+                                                                 disabled={scheduledFrequency === 'one_time'}
                                                 />}
                                                 label="Enable AutoPay"
                                             />
+                                            <FormControlLabel
+                                                control={<Switch name="reminders" checked={reminders} onChange={(e) => setReminders(e.target.checked)} />}
+                                                label="Set Reminders"
+                                            />
                                             <Select
                                                 fullWidth
-                                                label="Pay from"
+                                                label="Payee List"
                                                 name="accountFrom"
                                                 value={newPaymentDetails.accountFrom}
                                                 onChange={handleInputChange}
@@ -468,6 +502,7 @@ export default function BillPayPage({templates = []}) {
                                                     control={<Switch name="recurring" />}
                                                     label="Enable AutoPay"
                                                 />
+
                                                 <Select
                                                     labelId="select-account-label"
                                                     id="select-account"
