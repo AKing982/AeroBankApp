@@ -28,8 +28,8 @@ public class BillPaymentScheduleEntity {
     @Column(name="paymentDueDate")
     private LocalDate paymentDueDate;
 
-    @Column(name="endDate")
-    private LocalDate endDate;
+    @Column(name="scheduledPaymentDate")
+    private LocalDate scheduledPaymentDate;
 
     @Column(name="frequency")
     @Enumerated(EnumType.STRING)
@@ -45,7 +45,6 @@ public class BillPaymentScheduleEntity {
     @Column(name="autoPayEnabled")
     private boolean autoPayEnabled;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="paymentHistoryID")
     @OnDelete(action= OnDeleteAction.CASCADE)

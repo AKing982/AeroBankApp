@@ -1,6 +1,7 @@
 package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class BillPaymentHistoryEntity
     @Column(name="nextPaymentDate", nullable = false)
     private LocalDate nextPayment;
 
-    @Column(name="lastPaymentDate", nullable = false)
+    @Column(name="lastPaymentDate")
     private LocalDate lastPayment;
 
     @Temporal(TemporalType.DATE)

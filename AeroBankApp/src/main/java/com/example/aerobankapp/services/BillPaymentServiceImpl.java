@@ -6,6 +6,8 @@ import com.example.aerobankapp.exceptions.InvalidBillPaymentException;
 import com.example.aerobankapp.exceptions.InvalidBillPaymentParametersException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.repositories.BillPaymentRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,7 @@ import java.util.Optional;
 public class BillPaymentServiceImpl implements BillPaymentService
 {
     private BillPaymentRepository billPaymentRepository;
+    private Logger LOGGER = LoggerFactory.getLogger(BillPaymentServiceImpl.class);
 
     public BillPaymentServiceImpl(BillPaymentRepository billPaymentRepository){
         this.billPaymentRepository = billPaymentRepository;
@@ -38,16 +41,18 @@ public class BillPaymentServiceImpl implements BillPaymentService
                 obj.getPaymentSchedule() == null ||
                 obj.getUser() == null ||
                 obj.getPayeeName() == null){
+            LOGGER.info("Obj: " + obj.toString());
             throw new InvalidBillPaymentParametersException("Bill Payment has null parameters.");
         }
 
         // Check for duplicates
-        Optional<BillPaymentEntity> optionalBillPaymentEntity = billPaymentRepository.findById(obj.getPaymentID());
-        if(optionalBillPaymentEntity.isPresent()){
-            throw new DuplicateBillPaymentException("Found existing Bill Payment: " + optionalBillPaymentEntity.get());
-        }else{
-            billPaymentRepository.save(obj);
+        if(obj.getPaymentID() != null){
+            Optional<BillPaymentEntity> optionalBillPaymentEntity = billPaymentRepository.findById(obj.getPaymentID());
+            if(optionalBillPaymentEntity.isPresent()){
+                throw new DuplicateBillPaymentException("Found existing Bill Payment: " + optionalBillPaymentEntity.get());
+            }
         }
+       billPaymentRepository.save(obj);
     }
 
 

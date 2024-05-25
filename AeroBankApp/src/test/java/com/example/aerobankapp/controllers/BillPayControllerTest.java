@@ -1,5 +1,5 @@
 package com.example.aerobankapp.controllers;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,15 +12,28 @@ import com.example.aerobankapp.dto.PaymentHistoryDTO;
 import com.example.aerobankapp.dto.ScheduledPaymentDTO;
 import com.example.aerobankapp.entity.BillPayeesEntity;
 import com.example.aerobankapp.entity.BillPaymentEntity;
+import com.example.aerobankapp.entity.BillPaymentHistoryEntity;
+import com.example.aerobankapp.entity.BillPaymentScheduleEntity;
 import com.example.aerobankapp.exceptions.UserNotFoundException;
+import com.example.aerobankapp.services.BillPaymentHistoryService;
+import com.example.aerobankapp.services.BillPaymentNotificationService;
+import com.example.aerobankapp.services.BillPaymentScheduleService;
 import com.example.aerobankapp.services.BillPaymentService;
+import com.example.aerobankapp.services.utilities.BillPaymentHistoryServiceUtils;
+import com.example.aerobankapp.services.utilities.BillPaymentScheduleServiceUtils;
+import com.example.aerobankapp.services.utilities.BillPaymentServiceUtils;
 import com.example.aerobankapp.workbench.billPayment.BillPaymentQueries;
 import com.example.aerobankapp.workbench.formatter.FormatterUtil;
+import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.With;
-import org.apache.commons.collections.functors.ExceptionPredicate;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +82,24 @@ class BillPayControllerTest {
 
     @MockBean
     private BillPaymentService billPaymentService;
+
+    @MockBean
+    private BillPaymentScheduleService billPaymentScheduleService;
+
+    @MockBean
+    private BillPaymentHistoryService billPaymentHistoryService;
+
+    @MockBean
+    private BillPaymentNotificationService billPaymentNotificationService;
+
+    @MockBean
+    private BillPaymentHistoryServiceUtils billPaymentHistoryServiceUtils;
+
+    @MockBean
+    private BillPaymentScheduleServiceUtils billPaymentScheduleServiceUtils;
+
+    @MockBean
+    private BillPaymentServiceUtils billPaymentServiceUtils;
 
     @MockBean
     private BillPaymentQueries billPaymentQueries;
@@ -257,13 +289,22 @@ class BillPayControllerTest {
     @Test
     @WithMockUser
     public void testSavePaymentDetails_validPaymentDTO() throws Exception {
-        BillPaymentDTO billPaymentDTO = new BillPaymentDTO("Payee 1", 1, BigDecimal.valueOf(120), "Alex Checking - XXXX011", 1, LocalDate.of(2024, 6, 19), true);
+        BillPaymentDTO billPaymentDTO = new BillPaymentDTO("Payee 1",
+                1, BigDecimal.valueOf(120), "Alex Checking - XXXX011", 1, ScheduleFrequency.ONE_TIME, true, LocalDate.of(2024, 6, 19), LocalDate.of(2024, 6, 19),true);
+
+        doNothing().when(billPaymentService).save(any(BillPaymentEntity.class));
+        doNothing().when(billPaymentScheduleService).save(any(BillPaymentScheduleEntity.class));
+        doNothing().when(billPaymentHistoryService).save(any(BillPaymentHistoryEntity.class));
 
         mockMvc.perform(post("/api/bills/save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(billPaymentDTO)))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        verify(billPaymentService).save(any(BillPaymentEntity.class));
+        verify(billPaymentScheduleService).save(any(BillPaymentScheduleEntity.class));
+        verify(billPaymentHistoryService).save(any(BillPaymentHistoryEntity.class));
     }
 
     @Test

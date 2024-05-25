@@ -51,10 +51,10 @@ import NewPaymentDialog from "./NewPaymentDialog";
 
 
 const scheduleFrequencies = [
-    { label: 'One-time', value: 'one_time' },
+    { label: 'One-time', value: 'ONE_TIME' },
     // { label: 'Weekly', value: 'weekly' },
-    { label: 'Bi-weekly', value: 'bi_weekly' },
-    { label: 'Monthly', value: 'monthly' },
+    { label: 'Bi-weekly', value: 'BI_WEEKLY' },
+    { label: 'Monthly', value: 'MONTHLY' },
     // { label: 'Yearly', value: 'yearly' }
 ];
 
@@ -97,6 +97,7 @@ export default function BillPayPage({templates = []}) {
     const [scheduledFrequency, setScheduledFrequency] = useState('');
     const [reminders, setReminders] = useState(false);
     const [payeeOptions, setPayeeOptions] = useState([]);
+    const [paymentDate, setPaymentDate] = useState('');
 
     useEffect(() => {
         setPayeeOptions(hardcodedPayees); // Ensure payeeOptions is set to hardcodedPayees on component mount
@@ -155,12 +156,47 @@ export default function BillPayPage({templates = []}) {
         setSelectedDate(value);  // Directly set the string value
     };
 
+    const fetchAccountID = (fromAccount) => {
+        if(!fromAccount){
+            return;
+        }else{
+            const isMatch = matchOnAccountCode(fromAccount);
+            let acctID = 0;
+            if(isMatch){
+                acctID = getSelectedAccountID(isMatch);
+                console.log('AcctID: ', acctID);
+                return acctID;
+            }
+        }
+    }
+
+    const getSelectedAccountID = (match) => {
+        let digits =  match[1];
+        return digits[digits.length - 1];
+    }
+
+    const matchOnAccountCode = (accountCode) => {
+        let pattern = /XXXX(\d+)$/;
+        let match = accountCode.match(pattern);
+        if(match){
+            return match;
+        }
+    }
+
+
     const buildPaymentRequest = () => {
-         return{
+        let userID = sessionStorage.getItem('userID');
+        let fetchAcctID = fetchAccountID(fromAccount);
+        return{
             payeeName: payeeName,
+            userID: userID,
+            acctID: fetchAcctID,
             amount: amount,
+            paymentDate: paymentDate,
             dueDate: selectedDate,
             payFrom: fromAccount,
+            paymentSchedule: scheduledFrequency,
+            enabledReminders: reminders,
             autoPayEnabled: isAutoPayEnabled
          }
      }
@@ -287,6 +323,16 @@ export default function BillPayPage({templates = []}) {
         }
         if (!fromAccount) {
             setContent('Please select an account to pull funds from.');
+            setIsDialogOpen(true);
+            return false;
+        }
+        if(!paymentDate){
+            setContent('Please specify a payment date for the payment.');
+            setIsDialogOpen(true);
+            return false;
+        }
+        if(!scheduledFrequency){
+            setContent('Please specify the bill schedule frequency...');
             setIsDialogOpen(true);
             return false;
         }
@@ -448,6 +494,16 @@ export default function BillPayPage({templates = []}) {
                                                 onChange={handleDateChange}
                                                 margin="normal"
                                             />
+                                            <TextField
+                                                fullWidth
+                                                type="date"
+                                                label="Payment Date"
+                                                name="paymentDate"
+                                                InputLabelProps={{ shrink: true }}
+                                                value={paymentDate}
+                                                onChange={(e) => setPaymentDate(e.target.value)}
+                                                margin="normal"
+                                            />
                                             <Autocomplete
                                                 options={scheduleFrequencies}
                                                 getOptionLabel={(option) => option.label}
@@ -464,7 +520,7 @@ export default function BillPayPage({templates = []}) {
                                                 control={<Switch name="recurring"
                                                                  checked={isAutoPayEnabled}
                                                                  onChange={handleAutoPayChange}
-                                                                 disabled={scheduledFrequency === 'one_time'}
+                                                                 disabled={scheduledFrequency === 'ONE_TIME'}
                                                 />}
                                                 label="Enable AutoPay"
                                             />
@@ -472,18 +528,18 @@ export default function BillPayPage({templates = []}) {
                                                 control={<Switch name="reminders" checked={reminders} onChange={(e) => setReminders(e.target.checked)} />}
                                                 label="Set Reminders"
                                             />
-                                            <Select
-                                                fullWidth
-                                                label="Payee List"
-                                                name="accountFrom"
-                                                value={newPaymentDetails.accountFrom}
-                                                onChange={handleInputChange}
-                                                margin="normal"
-                                            >
-                                                {payees.map((payee) => (
-                                                    <MenuItem key={payee.id} value={payee.id}>{payee.name}</MenuItem>
-                                                ))}
-                                            </Select>
+                                            {/*<Select*/}
+                                            {/*    fullWidth*/}
+                                            {/*    label="Payee List"*/}
+                                            {/*    name="accountFrom"*/}
+                                            {/*    value={newPaymentDetails.accountFrom}*/}
+                                            {/*    onChange={handleInputChange}*/}
+                                            {/*    margin="normal"*/}
+                                            {/*>*/}
+                                            {/*    {payees.map((payee) => (*/}
+                                            {/*        <MenuItem key={payee.id} value={payee.id}>{payee.name}</MenuItem>*/}
+                                            {/*    ))}*/}
+                                            {/*</Select>*/}
                                             <Button onClick={submitNewPayment} variant="contained" color="primary">
                                                 Submit Payment
                                             </Button>

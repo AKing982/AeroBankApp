@@ -25,7 +25,7 @@ public class BillPaymentScheduleServiceImpl implements BillPaymentScheduleServic
 
     @Override
     public void save(BillPaymentScheduleEntity obj) {
-
+        billPaymentScheduleRepository.save(obj);
     }
 
     @Override
