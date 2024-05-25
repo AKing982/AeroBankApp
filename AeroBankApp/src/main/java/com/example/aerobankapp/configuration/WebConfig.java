@@ -28,10 +28,12 @@ public class WebConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf().disable()
+                //.csrf(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
-                    //    .requestMatchers("/api/auth/login").permitAll()
-                    //    .requestMatchers("/api/accounts/{user}").permitAll()
-                    //    .requestMatchers("/api/profile/data/{user}").permitAll()
+                       .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/accounts/{user}").permitAll()
+                        .requestMatchers("/api/profile/data/{user}").permitAll()
+                        .requestMatchers("/AeroBankApp/dasboard/**").permitAll()
                                .anyRequest().permitAll());
 
         return http.build();
