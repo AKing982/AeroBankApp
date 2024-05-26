@@ -1,9 +1,45 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import {Paper} from "@mui/material";
 
 
-function PaymentGraph({ data }) {
+function PaymentGraph({ initialData }) {
+    const [data, setData] = useState(initialData);
+
+    useEffect(() => {
+        const socket = new WebSocket('ws://localhost:8080/AeroBankApp/ws');
+
+        socket.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        socket.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+                console.log('Received:', message);
+                if(message.type === 'update'){
+                    setData(message.data);
+                }
+
+            } catch (error) {
+                console.error('Error parsing message:', error);
+            }
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        socket.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        return () => {
+            socket.close();
+        };
+    }, []);
+
+
     const columns = [
         { field: 'name', headerName: 'Payee', width: 300 },
         { field: 'lastPaid', headerName: 'Last Paid', width: 180 },
@@ -11,7 +47,7 @@ function PaymentGraph({ data }) {
         { field: 'amount', headerName: 'Amount ($)', width: 110, type: 'number' },
     ];
 
-    const rows = data.map((item, index) => ({
+    const rows = initialData.map((item, index) => ({
         id: index,
         name: item.payeeName,
         lastPaid: item.lastPayment,

@@ -580,7 +580,7 @@ export default function BillPayPage({templates = []}) {
                                 </CardContent>
                             </Card>
                             <Box mt={2}>
-                                <PaymentGraph data={scheduledPayments} />
+                                <PaymentGraph initialData={scheduledPayments} />
                             </Box>
                             <Box mt={2}>
                                 <Button onClick={togglePaymentHistory} variant="outlined">

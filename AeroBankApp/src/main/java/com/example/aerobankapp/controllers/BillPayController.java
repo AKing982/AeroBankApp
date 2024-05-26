@@ -1,5 +1,6 @@
 package com.example.aerobankapp.controllers;
 
+import com.example.aerobankapp.MyWebSocketHandler;
 import com.example.aerobankapp.dto.BillPayeeInfoDTO;
 import com.example.aerobankapp.dto.BillPaymentDTO;
 import com.example.aerobankapp.dto.PaymentHistoryDTO;
@@ -43,6 +44,8 @@ public class BillPayController {
 
     private BillPaymentQueries billPaymentQueries;
 
+    private MyWebSocketHandler myWebSocketHandler;
+
     private Logger LOGGER = LoggerFactory.getLogger(BillPayController.class);
 
     @Autowired
@@ -56,6 +59,7 @@ public class BillPayController {
         this.billPaymentHistoryService = billPaymentHistoryService;
         this.billPaymentNotificationService = billPaymentNotificationService;
         this.billPaymentQueries = billPaymentQueries;
+        this.myWebSocketHandler = new MyWebSocketHandler();
     }
 
     @GetMapping("/{userID}/list")
@@ -77,6 +81,7 @@ public class BillPayController {
         }
         List<BillPayeeInfoDTO> billPayeeInfoDTOS = billPaymentQueries.getBillPaymentScheduleQuery(userID);
         List<ScheduledPaymentDTO> scheduledPaymentDTOS = FormatterUtil.getFormattedBillPaymentSchedule(billPayeeInfoDTOS);
+        myWebSocketHandler.broadcastUpdatedData(scheduledPaymentDTOS);
         return ResponseEntity.ok(scheduledPaymentDTOS);
     }
 

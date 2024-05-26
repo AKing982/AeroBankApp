@@ -2,6 +2,7 @@ package com.example.aerobankapp.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -13,6 +14,9 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class RabbitMQConfig
@@ -56,7 +60,9 @@ public class RabbitMQConfig
     @Bean
     public static Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
+        JavaTimeModule module = new JavaTimeModule();
+        module.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+        objectMapper.registerModule(module);
         return new Jackson2JsonMessageConverter(objectMapper);
     }
 

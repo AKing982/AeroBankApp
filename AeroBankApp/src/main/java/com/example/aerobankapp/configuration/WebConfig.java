@@ -34,7 +34,8 @@ public class WebConfig {
                         .requestMatchers("/api/accounts/{user}").permitAll()
                         .requestMatchers("/api/profile/data/{user}").permitAll()
                         .requestMatchers("/AeroBankApp/dasboard/**").permitAll()
-                               .anyRequest().permitAll());
+                        .requestMatchers("/ws/**").permitAll()
+                        .anyRequest().permitAll());
 
         return http.build();
     }
@@ -59,6 +60,12 @@ public class WebConfig {
                         .allowCredentials(true);
 
                 registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:3000")
+                        .allowedMethods("GET", "POST")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+
+                registry.addMapping("/ws/**")
                         .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET", "POST")
                         .allowedHeaders("*")
