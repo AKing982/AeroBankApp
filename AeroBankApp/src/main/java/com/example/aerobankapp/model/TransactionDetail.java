@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@Deprecated
 public class TransactionDetail
 {
     private Long transactionDetailID;

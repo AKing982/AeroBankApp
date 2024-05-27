@@ -72,9 +72,9 @@ export default function DashBoard()
         { date: '2023-05-01', description: 'Grocery Store', amount: '-$76.43', category: 'Groceries' },
         { date: '2023-04-29', description: 'Salary Deposit', amount: '+$2,000.00', category: 'Income' },
         { date: '2023-04-28', description: 'Electric Bill', amount: '-$120.15', category: 'Utilities' },
-        { date: '2024-05-08', description: 'Grocery Store', amount: '-25.46', category: 'Groceries'},
-        { date: '2024-05-08', description: 'Gas Bill', amount: '-44.56', category: 'Utilities'},
-        { date: '2024-05-09', description: 'Hair Cut', amount: '-21.00', category: 'Expense'}
+        { date: '2024-05-08', description: 'Grocery Store', amount: '-$25.46', category: 'Groceries'},
+        { date: '2024-05-08', description: 'Gas Bill', amount: '-$44.56', category: 'Utilities'},
+        { date: '2024-05-09', description: 'Hair Cut', amount: '-$21.00', category: 'Expense'}
         // More transactions...
     ];
 
@@ -186,6 +186,10 @@ export default function DashBoard()
         setFilteredTransactions(filteredData);
     }, [searchTerm]);
 
+    const getAmountColor = (amount) => {
+        return amount.includes('-') ? 'red' : 'green';
+    }
+
     // Simulate data fetching on component mount
     useEffect(() => {
         setTimeout(() => {
@@ -211,27 +215,58 @@ export default function DashBoard()
                                         aria-controls="panel-content"
                                         id="panel-header"
                                     >
-                                        <Typography>{account.name}</Typography>
+                                        <Typography sx={headingStyle}>{account.name}</Typography>
                                     </AccordionSummary>
                                     <AccordionDetails>
-                                        <Typography sx={{ mb: 2 }}>Balance: {account.balance}</Typography>
-                                        <Typography sx={{ mb: 2 }}>Available: {account.availableBalance}</Typography>
+                                        <Typography variant="h6" sx={headingStyle}>Balance: <span style={{ color: 'green'}}>{account.balance}</span></Typography>
+                                        <Typography variant="h6" sx={headingStyle}>Available: <span style={{ color: 'green'}}>{account.availableBalance}</span></Typography>
+                                        {/*<Typography sx={{ mb: 2, color: account.balance >= 0 ? 'green' : 'red' }}>Balance: {account.balance}</Typography>*/}
+                                        {/*<Typography sx={{ mb: 2, color: account.availableBalance >= 0 ? 'green' : 'red' }}>Available: {account.availableBalance}</Typography>*/}
                                         <Table size="small">
                                             <TableHead>
                                                 <TableRow>
-                                                    <TableCell>Date</TableCell>
-                                                    <TableCell>Description</TableCell>
-                                                    <TableCell>Amount</TableCell>
+                                                    <TableCell sx={{ backgroundColor: '#0E0F52', color: 'white', fontWeight: 'bold' }}>Date</TableCell>
+                                                    <TableCell sx={{ backgroundColor: '#0E0F52', color: 'white', fontWeight: 'bold' }}>Description</TableCell>
+                                                    <TableCell sx={{ backgroundColor: '#0E0F52', color: 'white', fontWeight: 'bold' }}>Amount</TableCell>
+                                                    {/*<TableCell>Date</TableCell>*/}
+                                                    {/*<TableCell>Description</TableCell>*/}
+                                                    {/*<TableCell>Amount</TableCell>*/}
                                                 </TableRow>
                                             </TableHead>
+                                            {/*<TableBody>*/}
+                                            {/*    {account.transactions.map((transaction, index) => (*/}
+                                            {/*        <TableRow key={index}>*/}
+                                            {/*            <TableCell>{transaction.date}</TableCell>*/}
+                                            {/*            <TableCell>{transaction.description}</TableCell>*/}
+                                            {/*            <TableCell className={transaction.amount >= 0 ? 'positive' : 'negative'}>*/}
+                                            {/*                {transaction.amount}*/}
+                                            {/*            </TableCell>*/}
+                                            {/*        </TableRow>*/}
+                                            {/*    ))}*/}
+                                            {/*</TableBody>*/}
                                             <TableBody>
-                                                {account.transactions.map((transaction, index) => (
-                                                    <TableRow key={index}>
-                                                        <TableCell>{transaction.date}</TableCell>
-                                                        <TableCell>{transaction.description}</TableCell>
-                                                        <TableCell>{transaction.amount}</TableCell>
-                                                    </TableRow>
-                                                ))}
+                                                {account.transactions.map((transaction, index) => {
+                                                    const formattedAmount = transaction.amount.toLocaleString('en-US', {
+                                                        style: 'currency',
+                                                        currency: 'USD',
+                                                    });
+                                                    return (
+                                                        <TableRow key={index} sx={{
+                                                            backgroundColor: '#f5f5f5', // Alternating dark grey and light grey
+                                                            '&:hover': {
+                                                                backgroundColor: '#e0e0e0', // Hover effect
+                                                            },
+                                                        }} >
+                                                            <TableCell sx={{fontWeight: 'bold', color: '#000000'}}>{transaction.date}</TableCell>
+                                                            <TableCell sx={{fontWeight: 'bold', color: '#000000'}}>{transaction.description}</TableCell>
+                                                            <TableCell
+                                                                sx={{ color: getAmountColor(formattedAmount) }}
+                                                            >
+                                                                {formattedAmount}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
                                             </TableBody>
                                         </Table>
                                     </AccordionDetails>
@@ -240,6 +275,49 @@ export default function DashBoard()
                         )}
                     </Paper>
                 </Grid>
+            {/*<Grid container spacing={2} sx={gridContainerStyle}>*/}
+            {/*    <Grid item xs={12} md={6}>*/}
+            {/*        <Paper sx={paperStyle}>*/}
+            {/*            <Typography variant="h6" sx={headingStyle}>Account Summaries</Typography>*/}
+            {/*            {isLoading ? (*/}
+            {/*                <Skeleton variant="rectangular" height={300} />*/}
+            {/*            ) : (*/}
+            {/*                dummyAccounts.map(account => (*/}
+            {/*                    <Accordion key={account.id}>*/}
+            {/*                        <AccordionSummary*/}
+            {/*                            expandIcon={<ExpandMoreIcon />}*/}
+            {/*                            aria-controls="panel-content"*/}
+            {/*                            id="panel-header"*/}
+            {/*                        >*/}
+            {/*                            <Typography>{account.name}</Typography>*/}
+            {/*                        </AccordionSummary>*/}
+            {/*                        <AccordionDetails>*/}
+            {/*                            <Typography sx={{ mb: 2 }}>Balance: {account.balance}</Typography>*/}
+            {/*                            <Typography sx={{ mb: 2 }}>Available: {account.availableBalance}</Typography>*/}
+            {/*                            <Table size="small">*/}
+            {/*                                <TableHead>*/}
+            {/*                                    <TableRow>*/}
+            {/*                                        <TableCell>Date</TableCell>*/}
+            {/*                                        <TableCell>Description</TableCell>*/}
+            {/*                                        <TableCell>Amount</TableCell>*/}
+            {/*                                    </TableRow>*/}
+            {/*                                </TableHead>*/}
+            {/*                                <TableBody>*/}
+            {/*                                    {account.transactions.map((transaction, index) => (*/}
+            {/*                                        <TableRow key={index}>*/}
+            {/*                                            <TableCell>{transaction.date}</TableCell>*/}
+            {/*                                            <TableCell>{transaction.description}</TableCell>*/}
+            {/*                                            <TableCell>{transaction.amount}</TableCell>*/}
+            {/*                                        </TableRow>*/}
+            {/*                                    ))}*/}
+            {/*                                </TableBody>*/}
+            {/*                            </Table>*/}
+            {/*                        </AccordionDetails>*/}
+            {/*                    </Accordion>*/}
+            {/*                ))*/}
+            {/*            )}*/}
+            {/*        </Paper>*/}
+            {/*    </Grid>*/}
 
                 <Grid item xs={12} md={6}>
                     <Paper sx={paperStyle}>
@@ -266,19 +344,36 @@ export default function DashBoard()
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Date</TableCell>
-                                        <TableCell>Description</TableCell>
-                                        <TableCell>Amount</TableCell>
+                                        <TableCell sx={{ backgroundColor: '#0E0F52', color: 'white', fontWeight: 'bold' }}>Date</TableCell>
+                                        <TableCell sx={{ backgroundColor: '#0E0F52', color: 'white', fontWeight: 'bold' }}>Description</TableCell>
+                                        <TableCell sx={{ backgroundColor: '#0E0F52', color: 'white', fontWeight: 'bold' }}>Amount</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {filteredTransactions.map((transaction, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>{transaction.date}</TableCell>
-                                            <TableCell>{transaction.description}</TableCell>
-                                            <TableCell>{transaction.amount}</TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {filteredTransactions.map((transaction, index) => {
+                                        const formattedAmount = transaction.amount.toLocaleString('en-US', {
+                                            style: 'currency',
+                                            currency: 'USD',
+                                        });
+
+                                        return (
+                                            <TableRow
+                                                key={index}
+                                                sx={{
+                                                    backgroundColor: '#f5f5f5', // Light grey color for rows
+                                                    '&:hover': {
+                                                        backgroundColor: '#e0e0e0', // Hover effect
+                                                    },
+                                                }}
+                                            >
+                                                <TableCell sx={{fontWeight: 'bold', color: '#000000'}}>{transaction.date}</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold', color: '#000000'}}>{transaction.description}</TableCell>
+                                                <TableCell sx={{ color: getAmountColor(formattedAmount) }}>
+                                                    {formattedAmount}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                                 </TableBody>
                             </Table>
                         )}
