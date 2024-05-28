@@ -1,5 +1,6 @@
 package com.example.aerobankapp.engine;
 
+import com.example.aerobankapp.entity.BillPaymentEntity;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 
@@ -42,6 +43,12 @@ public interface BillPaymentEngine
     void updateTransactionDetails(TransactionDetail transactionDetail);
 
     boolean sendNotificationsToAccount();
+
+    List<BillPayment> getBillPaymentsFromService();
+
+    List<BillPaymentSchedule> getBillPaymentSchedulesFromService();
+
+    List<BillPaymentHistory> getBillPaymentHistoriesFromService();
 
 
 }
