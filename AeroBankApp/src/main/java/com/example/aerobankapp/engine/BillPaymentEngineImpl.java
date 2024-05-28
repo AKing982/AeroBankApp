@@ -1,5 +1,6 @@
 package com.example.aerobankapp.engine;
 
+import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.BillPaymentNotificationService;
 import com.example.aerobankapp.services.BillPaymentScheduleService;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class BillPaymentEngineImpl implements BillPaymentEngine
@@ -33,9 +35,14 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
 
 
     @Override
-    public void autoPayBills(List<BillPayment> billPayments) {
+    public List<ProcessedBillPayment> autoPayBills(final List<AutoPayBillPayment> billPayments) {
+        if(billPayments.isEmpty()){
+            throw new NonEmptyListRequiredException("Unable to process Auto-Payed bills due to empty list.");
+        }
 
+        return processPayments(billPayments);
     }
+
 
     @Override
     public boolean paymentVerification(BillPayment billPayment) {
@@ -43,7 +50,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     }
 
     @Override
-    public LocalDate getNextPaymentDate(BillPaymentSchedule billPaymentSchedule) {
+    public LocalDate getNextPaymentDate(BillPayment billPaymentSchedule) {
         return null;
     }
 
@@ -58,7 +65,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     }
 
     @Override
-    public LocalDate getLastPaymentDate(BillPaymentSchedule billPaymentSchedule) {
+    public LocalDate getLastPaymentDate(BillPayment billPayment) {
         return null;
     }
 
@@ -73,17 +80,12 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     }
 
     @Override
-    public ScheduleStatus updatePaymentStatus(BillPaymentSchedule billPayment) {
+    public ScheduleStatus updatePaymentStatus(BillPayment billPayment) {
         return null;
     }
 
     @Override
-    public void processMissedPayments(List<BillPayment> billPayments) {
-
-    }
-
-    @Override
-    public void processLatePayments(List<BillPayment> billPayments) {
+    public void processLatePayments(List<LateBillPayment> billPayments) {
 
     }
 
@@ -96,6 +98,15 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     public boolean sendLatePaymentNotification() {
         return false;
     }
+
+    @Override
+    public List<ProcessedBillPayment> processPayments(List<? extends BillPayment> payments) {
+        if(payments.isEmpty()){
+            throw new NonEmptyListRequiredException("Unable to process payments from empty list.");
+        }
+        return null;
+    }
+
 
     @Override
     public void updateBalanceHistory(BalanceHistory balanceHistory) {
@@ -122,10 +133,6 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return null;
     }
 
-    @Override
-    public List<BillPaymentSchedule> getBillPaymentSchedulesFromService() {
-        return null;
-    }
 
     @Override
     public List<BillPaymentHistory> getBillPaymentHistoriesFromService() {

@@ -10,31 +10,32 @@ import java.util.List;
 
 public interface BillPaymentEngine
 {
-    void autoPayBills(List<BillPayment> billPayments);
+    List<ProcessedBillPayment> autoPayBills(List<AutoPayBillPayment> billPayments);
 
     boolean paymentVerification(BillPayment billPayment);
 
-    LocalDate getNextPaymentDate(BillPaymentSchedule billPaymentSchedule);
+    LocalDate getNextPaymentDate(BillPayment billPaymentSchedule);
 
     void updateNextPaymentDate(BillPaymentHistory billPaymentHistory);
 
     void updateLastPaymentDate(BillPaymentHistory billPaymentHistory);
 
-    LocalDate getLastPaymentDate(BillPaymentSchedule billPaymentSchedule);
+    LocalDate getLastPaymentDate(BillPayment billPaymentSchedule);
 
     ConfirmationNumber generateConfirmationNumberForBill(BillPayment billPayment);
 
     void processRegularBillStatements(List<BillPayment> billPayments);
 
-    ScheduleStatus updatePaymentStatus(BillPaymentSchedule billPayment);
+    ScheduleStatus updatePaymentStatus(BillPayment billPayment);
 
-    void processMissedPayments(List<BillPayment> billPayments);
 
-    void processLatePayments(List<BillPayment> billPayments);
+    void processLatePayments(List<LateBillPayment> billPayments);
 
     void processLateFeesForLatePayments(List<BillPayment> latePayments);
 
     boolean sendLatePaymentNotification();
+
+    List<ProcessedBillPayment> processPayments(List<? extends BillPayment> payments);
 
     void updateBalanceHistory(BalanceHistory balanceHistory);
 
@@ -45,8 +46,6 @@ public interface BillPaymentEngine
     boolean sendNotificationsToAccount();
 
     List<BillPayment> getBillPaymentsFromService();
-
-    List<BillPaymentSchedule> getBillPaymentSchedulesFromService();
 
     List<BillPaymentHistory> getBillPaymentHistoriesFromService();
 
