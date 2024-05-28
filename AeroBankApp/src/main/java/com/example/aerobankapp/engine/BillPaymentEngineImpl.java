@@ -1,11 +1,14 @@
 package com.example.aerobankapp.engine;
 
+import com.example.aerobankapp.exceptions.InvalidBillPaymentParametersException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.BillPaymentNotificationService;
 import com.example.aerobankapp.services.BillPaymentScheduleService;
 import com.example.aerobankapp.services.BillPaymentService;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +24,8 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     private final BillPaymentScheduleService billPaymentScheduleService;
     private final BillPaymentService billPaymentService;
     private final BillPaymentNotificationService billPaymentNotificationService;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(BillPaymentEngineImpl.class);
 
     @Autowired
     public BillPaymentEngineImpl(RabbitTemplate rabbitTemplate,
@@ -104,7 +109,27 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         if(payments.isEmpty()){
             throw new NonEmptyListRequiredException("Unable to process payments from empty list.");
         }
+        if(!assertBillPaymentParametersNotNull(payments)){
+            throw new InvalidBillPaymentParametersException("Unable to process payments due to null bill payments.");
+        }
+
         return null;
+    }
+
+    private boolean assertBillPaymentParametersNotNull(List<? extends BillPayment> payments){
+        for(BillPayment payment : payments){
+            if(payment.getPaymentAmount() == null ||
+                payment.getPaymentType() == null ||
+                payment.getScheduledPaymentDate() == null ||
+                payment.getAccountCode() == null ||
+            payment.getDueDate() == null ||
+            payment.getScheduleFrequency() == null ||
+            payment.getScheduleStatus() == null){
+                LOGGER.error("Found Null Bill Parameters: " + payment.toString());
+                return false;
+            }
+        }
+        return true;
     }
 
 

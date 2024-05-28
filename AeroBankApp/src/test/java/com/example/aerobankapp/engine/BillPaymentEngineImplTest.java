@@ -1,15 +1,14 @@
 package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.account.AccountType;
+import com.example.aerobankapp.exceptions.InvalidBillPaymentParametersException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
-import com.example.aerobankapp.model.AccountCode;
-import com.example.aerobankapp.model.BillPayment;
-import com.example.aerobankapp.model.LateBillPayment;
-import com.example.aerobankapp.model.ProcessedBillPayment;
+import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.BillPaymentNotificationService;
 import com.example.aerobankapp.services.BillPaymentScheduleService;
 import com.example.aerobankapp.services.BillPaymentService;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
+import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,7 +79,7 @@ class BillPaymentEngineImplTest {
     public void testAutoPayBills_whenEmptyBillPayments_throwNonEmptyListException() {
 
         // Arrange
-        List<BillPayment> emptyBillPayments = Collections.emptyList();
+        List<AutoPayBillPayment> emptyBillPayments = Collections.emptyList();
 
         assertThrows(NonEmptyListRequiredException.class, () -> {
             billPaymentEngine.autoPayBills(emptyBillPayments);
@@ -91,7 +90,8 @@ class BillPaymentEngineImplTest {
     public void testAutoPayBills_whenBillPaymentsHaveAutoPayEnabled_return_ProcessedBillPayment(){
 
         // Arrange
-        List<BillPayment> billPayments = Collections.singletonList(TEST_PAYMENT);
+        AutoPayBillPayment autoPayBillPayment = new AutoPayBillPayment(PAYEE_NAME, ACCOUNT_CODE, PAYMENT_AMOUNT, PAYMENT_TYPE, DUE_DATE, SCHEDULED_PAYMENT_DATE, ScheduleStatus.PENDING, MONTHLY, true, LocalDate.now());
+        List<AutoPayBillPayment> billPayments = Collections.singletonList(autoPayBillPayment);
         ProcessedBillPayment processedBillPayment = new ProcessedBillPayment(TEST_PAYMENT, true);
 
         // Act
@@ -124,8 +124,12 @@ class BillPaymentEngineImplTest {
                 .scheduleStatus(null)
                 .build();
 
+        List<BillPayment> billPaymentList = Collections.singletonList(billPaymentWithNullParameters);
 
 
+        assertThrows(InvalidBillPaymentParametersException.class, () -> {
+            billPaymentEngine.processPayments(billPaymentList);
+        });
     }
 
     @AfterEach
