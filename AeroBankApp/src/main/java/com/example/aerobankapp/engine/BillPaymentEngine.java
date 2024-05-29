@@ -37,6 +37,8 @@ public interface BillPaymentEngine
 
     List<ProcessedBillPayment> processPayments(List<? extends BillPayment> payments);
 
+    ProcessedBillPayment processSinglePayment(BillPayment billPayment);
+
     void updateBalanceHistory(BalanceHistory balanceHistory);
 
     void updateAccountDetails(AccountDetails accountDetails);
