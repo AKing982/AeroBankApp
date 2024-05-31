@@ -147,7 +147,30 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
 
     @Override
     public LocalDate getLastPaymentDate(BillPayment billPayment) {
+        validateBillPayment(billPayment);
+        if(!isPaymentScheduleCriteriaValid(billPayment)){
+            throw new InvalidDateException("Unable to retrieve last payment date from null payment schedule criteria.");
+        }
+
+        if(!isPaymentScheduleDateValid(billPayment)){
+            return billPayment.getDueDate();
+        }
+
         return null;
+    }
+
+    private boolean isPaymentScheduleDateValid(BillPayment payment){
+        return payment.getScheduledPaymentDate() != null;
+    }
+
+    private boolean isPaymentScheduleCriteriaValid(BillPayment payment){
+        return (payment.getScheduledPaymentDate() != null || payment.getDueDate() != null);
+    }
+
+    private void validateBillPayment(BillPayment payment){
+        if(payment == null){
+            throw new InvalidBillPaymentException("Null Bill payment found.");
+        }
     }
 
     @Override

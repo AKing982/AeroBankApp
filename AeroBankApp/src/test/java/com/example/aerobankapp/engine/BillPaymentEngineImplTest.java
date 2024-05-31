@@ -484,9 +484,71 @@ class BillPaymentEngineImplTest {
     @Test
     public void testGetLastPaymentDate_whenBillPaymentIsNull_throwException(){
         assertThrows(InvalidBillPaymentException.class, () -> {
-
-        })
+            billPaymentEngine.getLastPaymentDate(null);
+        });
     }
+
+    @Test
+    public void testGetLastPaymentDate_whenScheduledPaymentDateNull_returnDueDate(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(null)
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        LocalDate lastPaymentDate = billPaymentEngine.getLastPaymentDate(billPayment);
+
+        assertNotNull(lastPaymentDate);
+        assertEquals(LocalDate.of(2024, 6, 20), lastPaymentDate);
+    }
+
+    @Test
+    public void testGetLastPaymentDate_whenDueDateAndScheduledPaymentDateNull_throwException(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(null)
+                .dueDate(null)
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        assertThrows(InvalidDateException.class, () -> {
+            billPaymentEngine.getLastPaymentDate(billPayment);
+        });
+    }
+
+    @Test
+    public void testGetLastPaymentDate_whenDueDateIsNull_returnScheduledPaymentAsLastDate(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 5, 19))
+                .dueDate(null)
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+
+        LocalDate lastPaymentDate = billPaymentEngine.getLastPaymentDate(billPayment);
+
+        assertNotNull(lastPaymentDate);
+        assertEquals(LocalDate.of(2024, 5, 19), lastPaymentDate);
+    }
+
+
 
 
 

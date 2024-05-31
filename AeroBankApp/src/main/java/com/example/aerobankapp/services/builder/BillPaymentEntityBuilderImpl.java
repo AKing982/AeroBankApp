@@ -3,7 +3,7 @@ package com.example.aerobankapp.services.builder;
 import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.model.BillPayment;
 import com.example.aerobankapp.services.BillPaymentScheduleService;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
