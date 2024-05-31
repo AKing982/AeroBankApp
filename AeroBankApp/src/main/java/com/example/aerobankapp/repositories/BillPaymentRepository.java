@@ -14,4 +14,7 @@ public interface BillPaymentRepository extends JpaRepository<BillPaymentEntity, 
 {
     @Query("SELECT e FROM BillPaymentEntity e WHERE e.user.userID=:userID")
     List<BillPaymentEntity> findBillPaymentsByUserID(@Param("userID") int userID);
+
+    @Query("SELECT e.isProcessed FROM BillPaymentEntity e WHERE e.paymentID=:id")
+    boolean isBillPaymentProcessed(@Param("id") Long id);
 }

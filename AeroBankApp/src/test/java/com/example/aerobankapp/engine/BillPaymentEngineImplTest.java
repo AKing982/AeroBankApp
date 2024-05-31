@@ -1,15 +1,14 @@
 package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.account.AccountType;
-import com.example.aerobankapp.exceptions.InvalidBillPaymentException;
-import com.example.aerobankapp.exceptions.InvalidBillPaymentParametersException;
-import com.example.aerobankapp.exceptions.InvalidDateException;
-import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
+import com.example.aerobankapp.entity.AccountDetailsEntity;
+import com.example.aerobankapp.entity.BalanceHistoryEntity;
+import com.example.aerobankapp.entity.BillPaymentEntity;
+import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.*;
-import com.example.aerobankapp.services.AccountService;
-import com.example.aerobankapp.services.BillPaymentNotificationService;
-import com.example.aerobankapp.services.BillPaymentScheduleService;
-import com.example.aerobankapp.services.BillPaymentService;
+import com.example.aerobankapp.services.*;
+import com.example.aerobankapp.services.builder.BillPaymentEntityBuilderImpl;
+import com.example.aerobankapp.services.builder.EntityBuilder;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 import org.junit.jupiter.api.AfterEach;
@@ -54,6 +53,18 @@ class BillPaymentEngineImplTest {
     private AccountService accountService;
 
     @Mock
+    private AccountDetailsService accountDetailsService;
+
+    @Mock
+    private BalanceHistoryService balanceHistoryService;
+
+    @Mock
+    private EntityBuilder<AccountDetailsEntity, AccountDetails> accountDetailsEntityBuilder;
+
+    @Mock
+    private EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder;
+
+    @Mock
     private RabbitTemplate rabbitTemplate;
     private final BigDecimal PAYMENT_AMOUNT = new BigDecimal("85.00");
     private final String PAYMENT_TYPE = "ACCOUNT";
@@ -64,10 +75,13 @@ class BillPaymentEngineImplTest {
     private final AccountCode ACCOUNT_CODE = new AccountCode("A", "K", 1, AccountType.CHECKING, 24, 1);
     private BillPayment TEST_PAYMENT;
 
+    @Mock
+    private EntityBuilder<BillPaymentEntity, BillPayment> billPaymentEntityBillPaymentEntityBuilder;
+
     @BeforeEach
     void setUp() {
 
-        billPaymentEngine = new BillPaymentEngineImpl(rabbitTemplate, billPaymentScheduleService, billPaymentService, billPaymentNotificationService, accountService);
+        billPaymentEngine = new BillPaymentEngineImpl(rabbitTemplate, billPaymentScheduleService, billPaymentService, billPaymentNotificationService, accountService, accountDetailsService, balanceHistoryService, accountDetailsEntityBuilder, balanceHistoryEntityBuilder);
 
         TEST_PAYMENT = BillPayment.builder()
                 .paymentAmount(PAYMENT_AMOUNT)
@@ -316,7 +330,162 @@ class BillPaymentEngineImplTest {
                 .scheduleFrequency(MONTHLY)
                 .build();
 
-        ProcessedBillPayment processedBillPayment = new ProcessedBillPayment()
+       // ProcessedBillPayment processedBillPayment = new ProcessedBillPayment()
+    }
+
+    @Test
+    public void testPaymentVerification_whenProcessedBillPaymentIsNull_throwException(){
+        assertThrows(InvalidProcessedBillPaymentException.class, () -> {
+            billPaymentEngine.paymentVerification(null);
+        });
+    }
+
+    @Test
+    public void testPaymentVerification_whenIsCompleteTrue_returnTrue(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 25))
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        ProcessedBillPayment processedBillPayment = new ProcessedBillPayment(billPayment, true, LocalDate.now());
+
+        boolean isVerified = billPaymentEngine.paymentVerification(processedBillPayment);
+
+        assertTrue(isVerified);
+    }
+
+    @Test
+    public void testPaymentVerification_whenLastProcessedDateIsNull_returnFalse(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 25))
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        ProcessedBillPayment processedBillPayment = new ProcessedBillPayment(billPayment, true, null);
+
+        boolean paymentIsVerified = billPaymentEngine.paymentVerification(processedBillPayment);
+
+        assertFalse(paymentIsVerified);
+    }
+
+    @Test
+    public void testPaymentVerification_whenPaymentIDNotFound_returnFalse(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 25))
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        ProcessedBillPayment payment = new ProcessedBillPayment(billPayment, true, LocalDate.now());
+
+        boolean isVerified = billPaymentEngine.paymentVerification(payment);
+
+        assertFalse(isVerified);
+    }
+
+    @Test
+    public void testPaymentVerification_whenPaymentID_returnTrue(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 25))
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .isProcessed(true)
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .schedulePaymentID(1L)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .paymentID(1L)
+                .build();
+
+        BillPaymentEntity billPaymentEntity = billPaymentEntityBillPaymentEntityBuilder.createEntity(billPayment);
+
+        billPaymentService.save(billPaymentEntity);
+
+        ProcessedBillPayment payment = new ProcessedBillPayment(billPayment, true, LocalDate.now());
+
+        // Mock the behavior of billPaymentService
+
+        boolean isVerified = billPaymentEngine.paymentVerification(payment);
+
+        assertTrue(isVerified);
+    }
+
+    @Test
+    public void testGetNextPaymentDate_whenBillPaymentNull_throwException(){
+
+        assertThrows(InvalidBillPaymentException.class, () -> {
+            billPaymentEngine.getNextPaymentDate(null);
+        });
+    }
+
+    @Test
+    public void testGetNextPaymentDate_whenScheduledPaymentDateNull_returnNextDueDate(){
+
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(null)
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        LocalDate nextPaymentDate = billPaymentEngine.getNextPaymentDate(billPayment);
+
+        assertEquals(LocalDate.of(2024, 7, 20), nextPaymentDate);
+    }
+
+    @Test
+    public void testGetNextPaymentDate_whenScheduledPaymentDateValid_returnNextPaymentDate(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 15))
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        LocalDate nextPaymentDate = billPaymentEngine.getNextPaymentDate(billPayment);
+
+        assertNotNull(nextPaymentDate);
+        assertEquals(LocalDate.of(2024, 7, 15), nextPaymentDate);
+    }
+
+    @Test
+    public void testGetLastPaymentDate_whenBillPaymentIsNull_throwException(){
+        assertThrows(InvalidBillPaymentException.class, () -> {
+
+        })
     }
 
 

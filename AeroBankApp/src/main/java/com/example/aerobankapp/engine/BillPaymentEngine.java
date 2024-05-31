@@ -12,7 +12,7 @@ public interface BillPaymentEngine
 {
     List<ProcessedBillPayment> autoPayBills(List<AutoPayBillPayment> billPayments);
 
-    boolean paymentVerification(BillPayment billPayment);
+    boolean paymentVerification(ProcessedBillPayment processedBillPayment);
 
     LocalDate getNextPaymentDate(BillPayment billPaymentSchedule);
 

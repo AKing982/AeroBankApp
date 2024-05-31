@@ -81,4 +81,14 @@ public class BillPaymentServiceImpl implements BillPaymentService
         }
         return billPaymentRepository.findBillPaymentsByUserID(userID);
     }
+
+    @Override
+    public Optional<BillPaymentEntity> findById(Long id) {
+        return billPaymentRepository.findById(id);
+    }
+
+    @Override
+    public boolean isBillPaymentProcessed(Long id) {
+        return billPaymentRepository.isBillPaymentProcessed(id);
+    }
 }

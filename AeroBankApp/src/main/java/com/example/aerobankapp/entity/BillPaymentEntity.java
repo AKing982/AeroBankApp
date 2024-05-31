@@ -55,6 +55,9 @@ public class BillPaymentEntity
     @Temporal(TemporalType.DATE)
     private LocalDate postedDate;
 
+    @Column(name="isProcessed")
+    private boolean isProcessed;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="paymentScheduleID")
     private BillPaymentScheduleEntity paymentSchedule;

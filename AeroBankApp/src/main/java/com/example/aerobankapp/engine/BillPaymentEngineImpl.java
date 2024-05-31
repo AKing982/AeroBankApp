@@ -3,6 +3,7 @@ package com.example.aerobankapp.engine;
 import com.example.aerobankapp.entity.AccountDetailsEntity;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.BalanceHistoryEntity;
+import com.example.aerobankapp.entity.BillPaymentEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.*;
@@ -34,6 +35,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     private final BalanceHistoryService balanceHistoryService;
     private final EntityBuilder<AccountDetailsEntity, AccountDetails> accountDetailsEntityBuilder;
     private final EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder;
+    private PendingBalanceCalculatorEngineImpl pendingBalanceCalculatorEngine;
     private final Logger LOGGER = LoggerFactory.getLogger(BillPaymentEngineImpl.class);
 
     @Autowired
@@ -67,15 +69,70 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return processPayments(billPayments);
     }
 
-
     @Override
-    public boolean paymentVerification(BillPayment billPayment) {
+    public boolean paymentVerification(final ProcessedBillPayment processedBillPayment) {
+        if(processedBillPayment == null){
+            throw new InvalidProcessedBillPaymentException("Processed bill payment cannot be null.");
+        }
+
+        LOGGER.info("Validating Payment Criteria.");
+        if(paymentCriteriaVerified(processedBillPayment)){
+            // Validate that the payment has been saved to the database
+            Long paymentID = getProcessedBillPaymentID(processedBillPayment);
+            Optional<BillPaymentEntity> billPaymentEntityOptional = fetchBillPaymentFromDB(paymentID);
+            LOGGER.info("Validating payment is Present in the database");
+            if(paymentIsPresent(billPaymentEntityOptional)){
+                // Is the isProcessed field set to true
+                LOGGER.info("Validating that the payment is processed");
+                if(isPaymentProcessed(paymentID)){
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
+    private boolean isPaymentProcessed(Long id){
+        return billPaymentService.isBillPaymentProcessed(id);
+    }
+
+    private Optional<BillPaymentEntity> fetchBillPaymentFromDB(final Long paymentID){
+        return billPaymentService.findById(paymentID);
+    }
+
+    private boolean paymentCriteriaVerified(final ProcessedBillPayment payment){
+        return (payment.isComplete() && payment.getLastProcessedDate() != null);
+    }
+
+    private boolean paymentIsPresent(final Optional<BillPaymentEntity> billPaymentEntityOptional){
+        return billPaymentEntityOptional.isPresent();
+    }
+
+    private Long getProcessedBillPaymentID(final ProcessedBillPayment payment){
+        return payment.getBillPayment().getPaymentID();
+    }
+
+
     @Override
     public LocalDate getNextPaymentDate(BillPayment billPaymentSchedule) {
-        return null;
+        if(billPaymentSchedule == null){
+            throw new InvalidBillPaymentException("Unable to retrieve next payment date from null bill payment.");
+        }
+        if(!isScheduledPaymentDateValid(billPaymentSchedule)){
+            // Grab the Due Date
+            return buildNextPaymentDate(billPaymentSchedule.getDueDate());
+        }
+        return buildNextPaymentDate(billPaymentSchedule.getScheduledPaymentDate());
+    }
+
+    private LocalDate buildNextPaymentDate(LocalDate date){
+        int currentMonth = date.getMonthValue();
+        int nextMonth = currentMonth + 1;
+        return LocalDate.of(date.getYear(), nextMonth, date.getDayOfMonth());
+    }
+
+    private boolean isScheduledPaymentDateValid(BillPayment billPayment){
+        return billPayment.getScheduledPaymentDate() != null;
     }
 
     @Override
@@ -159,12 +216,12 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
             int acctSegment = getAccountIDSegment(accountCode);
 
             // Retrieve the balance
-            BigDecimal acctBalance = getCurrentAccountBalance(acctSegment);
+            BigDecimal currentBalance = getCurrentAccountBalance(acctSegment);
 
             // Deduct the payment from the account balance
-            BigDecimal newBalance = getNewBalanceAfterPayment(acctBalance, paymentAmount);
+            BigDecimal newBalance = getNewBalanceAfterPayment(currentBalance, paymentAmount);
 
-            postProcessingUpdate(newBalance, acctSegment);
+            postProcessingUpdate(newBalance, acctSegment, currentBalance);
 
         }
         return null;
@@ -175,10 +232,10 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
      * @param newBalance
      * @param acctID
      */
-    public void postProcessingUpdate(BigDecimal newBalance, int acctID){
+    public void postProcessingUpdate(BigDecimal newBalance, int acctID, BigDecimal prevBalance){
         updateAccountBalance(newBalance, acctID);
 
-        postProcessingUpdateBalanceHistory();
+       // postProcessingUpdateBalanceHistory();
     }
 
     public void postProcessingUpdateBalanceHistory(BigDecimal newBalance, BigDecimal adjusted, BigDecimal prevBalance, int acctID){
