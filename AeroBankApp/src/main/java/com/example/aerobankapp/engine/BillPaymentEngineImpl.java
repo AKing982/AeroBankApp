@@ -59,6 +59,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         this.balanceHistoryEntityBuilder = balanceHistoryEntityBuilder;
     }
 
+    //TODO: Implement Code
 
     @Override
     public List<ProcessedBillPayment> autoPayBills(final List<AutoPayBillPayment> billPayments) {
@@ -118,8 +119,10 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         if(billPaymentSchedule == null){
             throw new InvalidBillPaymentException("Unable to retrieve next payment date from null bill payment.");
         }
-        if(!isScheduledPaymentDateValid(billPaymentSchedule)){
+
+        else if(!isScheduledPaymentDateValid(billPaymentSchedule)){
             // Grab the Due Date
+            LOGGER.info("ScheduledPaymentDate is not valid.");
             return buildNextPaymentDate(billPaymentSchedule.getDueDate());
         }
         return buildNextPaymentDate(billPaymentSchedule.getScheduledPaymentDate());
@@ -133,6 +136,10 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
 
     private boolean isScheduledPaymentDateValid(BillPayment billPayment){
         return billPayment.getScheduledPaymentDate() != null;
+    }
+
+    private boolean isDueDateValid(BillPayment billPayment){
+        return billPayment.getDueDate() != null;
     }
 
     @Override
@@ -151,12 +158,13 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         if(!isPaymentScheduleCriteriaValid(billPayment)){
             throw new InvalidDateException("Unable to retrieve last payment date from null payment schedule criteria.");
         }
-
-        if(!isPaymentScheduleDateValid(billPayment)){
+        else if(!isDueDateValid(billPayment)){
+            return billPayment.getScheduledPaymentDate();
+        }
+        else if(!isPaymentScheduleDateValid(billPayment)) {
             return billPayment.getDueDate();
         }
-
-        return null;
+        return billPayment.getScheduledPaymentDate();
     }
 
     private boolean isPaymentScheduleDateValid(BillPayment payment){
@@ -173,11 +181,13 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         }
     }
 
+    //TODO: Implement Code
     @Override
     public ConfirmationNumber generateConfirmationNumberForBill(BillPayment billPayment) {
         return null;
     }
 
+    //TODO: Implement Code
     @Override
     public void processRegularBillStatements(List<BillPayment> billPayments) {
 
@@ -188,11 +198,13 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return null;
     }
 
+    //TODO: Implement Code
     @Override
     public void processLatePayments(List<LateBillPayment> billPayments) {
 
     }
 
+    //TODO: Implement code
     @Override
     public void processLateFeesForLatePayments(List<BillPayment> latePayments) {
 
@@ -377,16 +389,5 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     @Override
     public boolean sendNotificationsToAccount() {
         return false;
-    }
-
-    @Override
-    public List<BillPayment> getBillPaymentsFromService() {
-        return null;
-    }
-
-
-    @Override
-    public List<BillPaymentHistory> getBillPaymentHistoriesFromService() {
-        return null;
     }
 }

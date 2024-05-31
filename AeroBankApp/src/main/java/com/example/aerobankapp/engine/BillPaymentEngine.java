@@ -45,9 +45,4 @@ public interface BillPaymentEngine
 
     boolean sendNotificationsToAccount();
 
-    List<BillPayment> getBillPaymentsFromService();
-
-    List<BillPaymentHistory> getBillPaymentHistoriesFromService();
-
-
 }

@@ -7,7 +7,6 @@ import com.example.aerobankapp.entity.BillPaymentEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.*;
-import com.example.aerobankapp.services.builder.BillPaymentEntityBuilderImpl;
 import com.example.aerobankapp.services.builder.EntityBuilder;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
@@ -16,13 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.core.parameters.P;
-import org.mockito.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,8 +26,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyChar;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
@@ -540,7 +534,6 @@ class BillPaymentEngineImplTest {
                 .payeeName(PAYEE_NAME)
                 .scheduleFrequency(MONTHLY)
                 .build();
-
 
         LocalDate lastPaymentDate = billPaymentEngine.getLastPaymentDate(billPayment);
 

@@ -103,6 +103,14 @@ function ReviewAndSubmitRegistration({formData}){
         }
     };
 
+    const getDialogContentStyle = (message) => {
+        if (message.length > 100) {
+            return { minWidth: '500px', minHeight: '200px' };
+        } else {
+            return { minWidth: '300px', minHeight: '100px' };
+        }
+    };
+
     console.log('Form Accounts: ', formData.accounts);
     console.log('Security Questions: ', formData.securityQuestions);
     return (
@@ -189,7 +197,7 @@ function ReviewAndSubmitRegistration({formData}){
             <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
                 <DialogTitle>Error</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
+                    <DialogContentText style={getDialogContentStyle(errorMessage)}>
                         {errorMessage}
                     </DialogContentText>
                 </DialogContent>
