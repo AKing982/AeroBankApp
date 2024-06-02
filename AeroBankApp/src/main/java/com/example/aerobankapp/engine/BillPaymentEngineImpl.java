@@ -21,12 +21,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Component
 public class BillPaymentEngineImpl implements BillPaymentEngine
 {
-    private final RabbitTemplate rabbitTemplate;
     private final BillPaymentScheduleService billPaymentScheduleService;
     private final BillPaymentService billPaymentService;
     private final BillPaymentNotificationService billPaymentNotificationService;
@@ -36,10 +36,11 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     private final EntityBuilder<AccountDetailsEntity, AccountDetails> accountDetailsEntityBuilder;
     private final EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder;
     private PendingBalanceCalculatorEngineImpl pendingBalanceCalculatorEngine;
+    private TreeMap<LocalDate, AutoPayBillPayment> futureAutoPayments = new TreeMap<>();
     private final Logger LOGGER = LoggerFactory.getLogger(BillPaymentEngineImpl.class);
 
     @Autowired
-    public BillPaymentEngineImpl(RabbitTemplate rabbitTemplate,
+    public BillPaymentEngineImpl(
                                  BillPaymentScheduleService billPaymentScheduleService,
                                  BillPaymentService billPaymentService,
                                  BillPaymentNotificationService billPaymentNotificationService,
@@ -48,7 +49,6 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
                                  BalanceHistoryService balanceHistoryService,
                                  @Qualifier("accountDetailsEntityBuilderImpl") EntityBuilder<AccountDetailsEntity, AccountDetails> accountDetailsEntityBuilder,
                                  @Qualifier("balanceHistoryEntityBuilderImpl") EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder){
-        this.rabbitTemplate = rabbitTemplate;
         this.billPaymentScheduleService = billPaymentScheduleService;
         this.billPaymentService = billPaymentService;
         this.billPaymentNotificationService = billPaymentNotificationService;
@@ -62,7 +62,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     //TODO: Implement Code
 
     @Override
-    public List<ProcessedBillPayment> autoPayBills(final List<AutoPayBillPayment> billPayments) {
+    public TreeMap<LocalDate, ProcessedBillPayment> autoPayBills(final TreeMap<LocalDate, AutoPayBillPayment> billPayments) {
         if(billPayments.isEmpty()){
             throw new NonEmptyListRequiredException("Unable to process Auto-Payed bills due to empty list.");
         }
@@ -189,7 +189,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
 
     //TODO: Implement Code
     @Override
-    public void processRegularBillStatements(List<BillPayment> billPayments) {
+    public void processRegularBillStatements(TreeMap<LocalDate, BillPayment> billPayments) {
 
     }
 
@@ -200,13 +200,13 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
 
     //TODO: Implement Code
     @Override
-    public void processLatePayments(List<LateBillPayment> billPayments) {
+    public void processLatePayments(TreeMap<LocalDate, LateBillPayment> billPayments) {
 
     }
 
     //TODO: Implement code
     @Override
-    public void processLateFeesForLatePayments(List<BillPayment> latePayments) {
+    public void processLateFeesForLatePayments(TreeMap<LocalDate, BillPayment> latePayments) {
 
     }
 
@@ -216,7 +216,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     }
 
     @Override
-    public List<ProcessedBillPayment> processPayments(List<? extends BillPayment> payments) {
+    public TreeMap<LocalDate, ProcessedBillPayment> processPayments(TreeMap<LocalDate, ? extends BillPayment> payments) {
         if(payments.isEmpty()){
             throw new NonEmptyListRequiredException("Unable to process payments from empty list.");
         }
@@ -354,8 +354,8 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return true;
     }
 
-    private boolean assertBillPaymentParametersListNotNull(List<? extends BillPayment> payments){
-        for(BillPayment payment : payments){
+    private boolean assertBillPaymentParametersListNotNull(TreeMap<LocalDate, ? extends BillPayment> payments){
+        for(BillPayment payment : payments.values()){
             if(payment.getPaymentAmount() == null ||
                 payment.getPaymentType() == null ||
                 payment.getScheduledPaymentDate() == null ||

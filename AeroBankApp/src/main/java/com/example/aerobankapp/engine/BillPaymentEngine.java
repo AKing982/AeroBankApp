@@ -5,10 +5,11 @@ import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.TreeMap;
 
 public interface BillPaymentEngine
 {
-    List<ProcessedBillPayment> autoPayBills(List<AutoPayBillPayment> billPayments);
+    TreeMap<LocalDate, ProcessedBillPayment> autoPayBills(TreeMap<LocalDate, AutoPayBillPayment> billPayments);
 
     boolean paymentVerification(ProcessedBillPayment processedBillPayment);
 
@@ -22,18 +23,18 @@ public interface BillPaymentEngine
 
     ConfirmationNumber generateConfirmationNumberForBill(BillPayment billPayment);
 
-    void processRegularBillStatements(List<BillPayment> billPayments);
+    void processRegularBillStatements(TreeMap<LocalDate, BillPayment> billPayments);
 
     ScheduleStatus updatePaymentStatus(BillPayment billPayment);
 
 
-    void processLatePayments(List<LateBillPayment> billPayments);
+    void processLatePayments(TreeMap<LocalDate, LateBillPayment> billPayments);
 
-    void processLateFeesForLatePayments(List<BillPayment> latePayments);
+    void processLateFeesForLatePayments(TreeMap<LocalDate, BillPayment> latePayments);
 
     boolean sendLatePaymentNotification();
 
-    List<ProcessedBillPayment> processPayments(List<? extends BillPayment> payments);
+    TreeMap<LocalDate, ProcessedBillPayment> processPayments(TreeMap<LocalDate, ? extends BillPayment> payments);
 
     ProcessedBillPayment processSinglePayment(BillPayment billPayment);
 

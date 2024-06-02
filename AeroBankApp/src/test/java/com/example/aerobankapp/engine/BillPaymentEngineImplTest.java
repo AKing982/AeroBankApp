@@ -22,8 +22,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,8 +60,6 @@ class BillPaymentEngineImplTest {
     @Mock
     private EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder;
 
-    @Mock
-    private RabbitTemplate rabbitTemplate;
     private final BigDecimal PAYMENT_AMOUNT = new BigDecimal("85.00");
     private final String PAYMENT_TYPE = "ACCOUNT";
     private final LocalDate SCHEDULED_PAYMENT_DATE = LocalDate.of(2024, 5, 29);
@@ -75,7 +75,7 @@ class BillPaymentEngineImplTest {
     @BeforeEach
     void setUp() {
 
-        billPaymentEngine = new BillPaymentEngineImpl(rabbitTemplate, billPaymentScheduleService, billPaymentService, billPaymentNotificationService, accountService, accountDetailsService, balanceHistoryService, accountDetailsEntityBuilder, balanceHistoryEntityBuilder);
+        billPaymentEngine = new BillPaymentEngineImpl(billPaymentScheduleService, billPaymentService, billPaymentNotificationService, accountService, accountDetailsService, balanceHistoryService, accountDetailsEntityBuilder, balanceHistoryEntityBuilder);
 
         TEST_PAYMENT = BillPayment.builder()
                 .paymentAmount(PAYMENT_AMOUNT)
@@ -94,7 +94,7 @@ class BillPaymentEngineImplTest {
     public void testAutoPayBills_whenEmptyBillPayments_throwNonEmptyListException() {
 
         // Arrange
-        List<AutoPayBillPayment> emptyBillPayments = Collections.emptyList();
+        TreeMap<LocalDate, AutoPayBillPayment> emptyBillPayments = new TreeMap<>();
 
         assertThrows(NonEmptyListRequiredException.class, () -> {
             billPaymentEngine.autoPayBills(emptyBillPayments);
@@ -102,23 +102,35 @@ class BillPaymentEngineImplTest {
     }
 
     @Test
-    public void testAutoPayBills_whenBillPaymentsHaveAutoPayEnabled_return_ProcessedBillPayment(){
+    public void testAutoPayBills_whenBillPaymentsHaveAutoPayEnabled_return_ProcessedBillPayment() {
+        TreeMap<LocalDate, AutoPayBillPayment> billPayments = new TreeMap<>();
 
-        // Arrange
+        // Assert
+
+        // Create the incoming AutoPayment and add it to the TreeMap
         AutoPayBillPayment autoPayBillPayment = new AutoPayBillPayment(PAYEE_NAME, ACCOUNT_CODE, PAYMENT_AMOUNT, PAYMENT_TYPE, DUE_DATE, SCHEDULED_PAYMENT_DATE, ScheduleStatus.PENDING, MONTHLY, true, LocalDate.now());
-        List<AutoPayBillPayment> billPayments = Collections.singletonList(autoPayBillPayment);
-        ProcessedBillPayment processedBillPayment = new ProcessedBillPayment(TEST_PAYMENT, true);
+        billPayments.put(SCHEDULED_PAYMENT_DATE, autoPayBillPayment);
 
-        // Act
-        List<ProcessedBillPayment> actual = billPaymentEngine.autoPayBills(billPayments);
+        // Build the Processed Bill Payment
+        ProcessedBillPayment processedBillPayment = new ProcessedBillPayment(TEST_PAYMENT, true, LocalDate.now());
+
+        // Create the TreeMap for the Processed Bill Payments
+        TreeMap<LocalDate, ProcessedBillPayment> processedBillPaymentTreeMap = new TreeMap<>();
+        processedBillPaymentTreeMap.put(SCHEDULED_PAYMENT_DATE, processedBillPayment);
+
+        // Get the Actual Processed Bill Payments
+        TreeMap<LocalDate, ProcessedBillPayment> actual = billPaymentEngine.autoPayBills(billPayments);
 
         assertNotNull(actual);
+        assertEquals(processedBillPaymentTreeMap.get(SCHEDULED_PAYMENT_DATE), actual.get(SCHEDULED_PAYMENT_DATE));
+        assertEquals()
         assertEquals(1, actual.size());
     }
 
+
     @Test
     public void testProcessPayments_whenBillPaymentsListIsEmpty_throwException(){
-        List<BillPayment> emptyList = Collections.emptyList();
+        TreeMap<LocalDate, BillPayment> emptyList = new TreeMap<>();
 
         assertThrows(NonEmptyListRequiredException.class, () -> {
             billPaymentEngine.processPayments(emptyList);
@@ -126,7 +138,7 @@ class BillPaymentEngineImplTest {
     }
 
     @Test
-    public void testProcessPayments_whenBillPaymentParametersInvalid_throwException(){
+    public void testProcessPayments_whenBillPaymentParametersInvalid_throwException() {
         BillPayment billPaymentWithNullParameters = BillPayment.builder()
                 .paymentAmount(null)
                 .paymentType("ACCOUNT")
@@ -139,42 +151,45 @@ class BillPaymentEngineImplTest {
                 .scheduleStatus(null)
                 .build();
 
-        List<BillPayment> billPaymentList = Collections.singletonList(billPaymentWithNullParameters);
-
+        TreeMap<LocalDate, BillPayment> billPaymentMap = new TreeMap<>();
+        billPaymentMap.put(LocalDate.now(), billPaymentWithNullParameters);
 
         assertThrows(InvalidBillPaymentParametersException.class, () -> {
-            billPaymentEngine.processPayments(billPaymentList);
+            billPaymentEngine.processPayments(billPaymentMap);
         });
     }
 
     @Test
-    public void testProcessPayments_whenAutoPayBillParametersInvalid_throwException(){
-        AutoPayBillPayment autoPayBillPayment = new AutoPayBillPayment(null, ACCOUNT_CODE,null, null, null, null, null, null, true, LocalDate.now());
-        List<AutoPayBillPayment> autoPayBillPaymentList = Collections.singletonList(autoPayBillPayment);
+    public void testProcessPayments_whenAutoPayBillParametersInvalid_throwException() {
+        AutoPayBillPayment autoPayBillPayment = new AutoPayBillPayment(null, ACCOUNT_CODE, null, null, null, null, null, null, true, LocalDate.now());
+
+        TreeMap<LocalDate, AutoPayBillPayment> autoPayBillPaymentMap = new TreeMap<>();
+        autoPayBillPaymentMap.put(LocalDate.now(), autoPayBillPayment);
 
         assertThrows(InvalidBillPaymentParametersException.class, () -> {
-            billPaymentEngine.processPayments(autoPayBillPaymentList);
+            billPaymentEngine.processPayments(autoPayBillPaymentMap);
         });
     }
 
     @Test
-    public void testProcessPayments_whenLatePaymentBillParametersInvalid_throwException(){
-        LateBillPayment lateBillPayment = new LateBillPayment(null, ACCOUNT_CODE,null, null, null, null, null, null, true, LocalDate.now(),
-                LocalDate.of(2024, 5, 19), LocalDate.of(2024, 5, 19), new BigDecimal("12.00"));
+    public void testProcessPayments_whenLatePaymentBillParametersInvalid_throwException() {
+        LateBillPayment lateBillPayment = new LateBillPayment(null, ACCOUNT_CODE, null, null, null, null, null, null, true, LocalDate.now(), LocalDate.of(2024, 5, 19), LocalDate.of(2024, 5, 19), new BigDecimal("12.00"));
 
-        List<LateBillPayment> lateBillPaymentList = Collections.singletonList(lateBillPayment);
+        TreeMap<LocalDate, LateBillPayment> lateBillPaymentMap = new TreeMap<>();
+        lateBillPaymentMap.put(LocalDate.now(), lateBillPayment);
 
         assertThrows(InvalidBillPaymentParametersException.class, () -> {
-            billPaymentEngine.processPayments(lateBillPaymentList);
+            billPaymentEngine.processPayments(lateBillPaymentMap);
         });
     }
 
     @Test
-    public void testProcessSinglePayment_whenBillPaymentIsNull_throwException(){
+    public void testProcessSinglePayment_whenBillPaymentIsNull_throwException() {
         assertThrows(InvalidBillPaymentException.class, () -> {
             billPaymentEngine.processSinglePayment(null);
         });
     }
+
 
     @Test
     public void testProcessSinglePayment_whenBillPaymentParametersNull_throwException(){
