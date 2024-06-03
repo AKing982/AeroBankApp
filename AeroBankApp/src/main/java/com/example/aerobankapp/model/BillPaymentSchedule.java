@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Data
-@Deprecated
 public class BillPaymentSchedule
 {
     private LocalDate dueDate;
