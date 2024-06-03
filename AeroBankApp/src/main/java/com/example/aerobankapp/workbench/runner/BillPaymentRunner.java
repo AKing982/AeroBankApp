@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 /**
- * This class will manage when the BillPaymentRunner will run and execute tasks
+ * This class will manage when the BillPaymentRunner will run and schedule payment tasks
  */
 @Component
 public class BillPaymentRunner implements Runnable
@@ -62,34 +62,36 @@ public class BillPaymentRunner implements Runnable
         return billPaymentQueue.isEmpty();
     }
 
-    public void updateNextScheduledRunDatesToQueue(final List<BillPaymentSchedule> billPaymentSchedules){
 
-    }
-
-    public List<BillPaymentEntity> loadBillPayments(){
+    public List<BillPaymentEntity> loadBillPayments () {
         return null;
     }
 
-    public void processBillPaymentsFromQueue(){
+    public void processBillPaymentsFromQueue () {
 
     }
 
-    public void archiveProcessedPayments(final List<BillPayment> processedBillPayments){
-
-    }
-
-    public boolean scheduleNextBatch(final Map<ScheduleFrequency, List<BillPayment>> groupedPayments){
+    // Schedule the next batch of bill payments based on their schedule frequency
+    public boolean scheduleNextBatch(final Map<LocalDate, List<BillPayment>> groupedPayments) {
+        // TODO: Add implementation
         return false;
     }
 
-    public LocalDate buildNextScheduledDate(final LocalDate currentDate, final ScheduleFrequency scheduleFrequency){
+    // Archive the processed bill payments for record-keeping
+    public void archiveProcessedPayments(final List<BillPayment> processedPayments) {
+        // TODO: Add implementation
+    }
+
+    // Build the next scheduled date based on the current date and schedule frequency
+    public LocalDate buildNextScheduledDate(final LocalDate currentDate, final ScheduleFrequency scheduleFrequency) {
+        // TODO: Add implementation
         return null;
     }
 
-    public TreeMap<LocalDate, List<BillPayment>> groupBillPaymentsByDateAndFrequency(final List<BillPayment> billPayments){
-        return null;
-    }
+    public void updateNextScheduledRunDatesToQueue(final List<BillPaymentSchedule> billPaymentSchedules) {
 
+
+    }
 
     @Override
     public void run() {
