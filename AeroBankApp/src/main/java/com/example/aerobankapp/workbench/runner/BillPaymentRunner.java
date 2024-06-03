@@ -71,6 +71,10 @@ public class BillPaymentRunner implements Runnable
 
     }
 
+    public void fetchAndQueueBillPayments(LocalDate startDate, LocalDate endDate){
+        
+    }
+
     // Schedule the next batch of bill payments based on their schedule frequency
     public boolean scheduleNextBatch(final Map<LocalDate, List<BillPayment>> groupedPayments) {
         // TODO: Add implementation

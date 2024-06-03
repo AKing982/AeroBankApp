@@ -12,6 +12,7 @@ import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -22,10 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -94,7 +92,7 @@ class BillPaymentEngineImplTest {
     public void testAutoPayBills_whenEmptyBillPayments_throwNonEmptyListException() {
 
         // Arrange
-        TreeMap<LocalDate, AutoPayBillPayment> emptyBillPayments = new TreeMap<>();
+        List<BillPayment> emptyBillPayments = new ArrayList<>();
 
         assertThrows(NonEmptyListRequiredException.class, () -> {
             billPaymentEngine.autoPayBills(emptyBillPayments);
@@ -102,40 +100,43 @@ class BillPaymentEngineImplTest {
     }
 
     @Test
-    public void testAutoPayBills_whenBillPaymentsHaveAutoPayEnabled_return_ProcessedBillPayment() {
-        TreeMap<LocalDate, AutoPayBillPayment> billPayments = new TreeMap<>();
+    @DisplayName("Test AutoPayBills when BillPayments objects null throw exception")
+    public void testAutoPayBills_whenSingleBillPaymentNull_throwException(){
+        List<BillPayment> billPaymentList = new ArrayList<>();
+        billPaymentList.add(null);
 
-        // Assert
-
-        // Create the incoming AutoPayment and add it to the TreeMap
-        AutoPayBillPayment autoPayBillPayment = new AutoPayBillPayment(PAYEE_NAME, ACCOUNT_CODE, PAYMENT_AMOUNT, PAYMENT_TYPE, DUE_DATE, SCHEDULED_PAYMENT_DATE, ScheduleStatus.PENDING, MONTHLY, true, LocalDate.now());
-        billPayments.put(SCHEDULED_PAYMENT_DATE, autoPayBillPayment);
-
-        // Build the Processed Bill Payment
-        ProcessedBillPayment processedBillPayment = new ProcessedBillPayment(TEST_PAYMENT, true, LocalDate.now());
-
-        // Create the TreeMap for the Processed Bill Payments
-        TreeMap<LocalDate, ProcessedBillPayment> processedBillPaymentTreeMap = new TreeMap<>();
-        processedBillPaymentTreeMap.put(SCHEDULED_PAYMENT_DATE, processedBillPayment);
-
-        // Get the Actual Processed Bill Payments
-        TreeMap<LocalDate, ProcessedBillPayment> actual = billPaymentEngine.autoPayBills(billPayments);
-
-        assertNotNull(actual);
-        assertEquals(processedBillPaymentTreeMap.get(SCHEDULED_PAYMENT_DATE), actual.get(SCHEDULED_PAYMENT_DATE));
-        assertEquals()
-        assertEquals(1, actual.size());
-    }
-
-
-    @Test
-    public void testProcessPayments_whenBillPaymentsListIsEmpty_throwException(){
-        TreeMap<LocalDate, BillPayment> emptyList = new TreeMap<>();
-
-        assertThrows(NonEmptyListRequiredException.class, () -> {
-            billPaymentEngine.processPayments(emptyList);
+        assertThrows(InvalidBillPaymentException.class, () -> {
+            billPaymentEngine.autoPayBills(billPaymentList);
         });
     }
+
+    @Test
+    @DisplayName("Test AutoPayBills when multiple bill payments and one null payment, skip null payment return ProcessedBillPayment list")
+    public void testAutoPayBills_whenMultipleBills_skipNullPayment_returnProcessedBillPaymentList() {
+        List<BillPayment> billPaymentList = new ArrayList<>();
+
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(null)
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        billPaymentList.add(TEST_PAYMENT);
+        billPaymentList.add(null);
+        billPaymentList.add(billPayment);
+
+        List<ProcessedBillPayment> processedBillPayments = billPaymentEngine.autoPayBills(billPaymentList);
+
+        assertNotNull(processedBillPayments);
+        assertEquals(2, processedBillPayments.size());
+    }
+
 
     @Test
     public void testProcessPayments_whenBillPaymentParametersInvalid_throwException() {
@@ -443,51 +444,149 @@ class BillPaymentEngineImplTest {
     }
 
     @Test
-    public void testGetNextPaymentDate_whenBillPaymentNull_throwException(){
-
-        assertThrows(InvalidBillPaymentException.class, () -> {
-            billPaymentEngine.getNextPaymentDate(null);
+    @DisplayName("Test calculateNextPaymentDate when LocalDate is null")
+    public void testCalculateNextPaymentDate_whenPaymentDateIsNull_throwException(){
+        assertThrows(IllegalDateException.class, () -> {
+            billPaymentEngine.calculateNextPaymentDate(null, ScheduleFrequency.MONTHLY);
         });
     }
 
     @Test
-    public void testGetNextPaymentDate_whenScheduledPaymentDateNull_returnNextDueDate(){
+    @DisplayName("Test calculateNextPaymentDate when schedule frequency is null")
+    public void testCalculateNextPaymentDate_whenFrequencyIsNull_throwException(){
+        assertThrows(IllegalScheduleCriteriaException.class, () -> {
+            billPaymentEngine.calculateNextPaymentDate(LocalDate.of(2024, 5, 19), null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test calculateNextPaymentDate when frequency and date are null throw exception")
+    public void testCalculateNextPaymentDate_whenDateAndFrequencyNull_throwException(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            billPaymentEngine.calculateNextPaymentDate(null, null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test calculateNextPaymentDate when frequency is monthly")
+    public void testCalculateNextPaymentDate_whenMonthly_returnNextPaymentDate(){
+
+        LocalDate paymentDate = LocalDate.of(2024, 5, 29);
+        ScheduleFrequency monthly = ScheduleFrequency.MONTHLY;
+
+        LocalDate expectedNextPaymentDate = LocalDate.of(2024, 6, 29);
+        LocalDate actual = billPaymentEngine.calculateNextPaymentDate(paymentDate, monthly);
+
+        assertNotNull(actual);
+        assertEquals(expectedNextPaymentDate, actual);
+    }
+
+    @Test
+    @DisplayName("Test calculateNextPaymentDate when frequency is weekly")
+    public void testCalculateNextPaymentDate_whenWeekly_returnNextPaymentDate(){
+        LocalDate paymentDate = LocalDate.of(2024, 5, 29);
+        ScheduleFrequency weekly = ScheduleFrequency.WEEKLY;
+
+        LocalDate expectedNextPaymentDate = LocalDate.of(2024, 6, 5);
+        LocalDate actual = billPaymentEngine.calculateNextPaymentDate(paymentDate, weekly);
+
+        assertNotNull(actual);
+        assertEquals(expectedNextPaymentDate, actual);
+    }
+
+    @Test
+    @DisplayName("Test calculateNextPaymentDate when frequency is bi weekly")
+    public void testCalculateNextPaymentDate_whenBiWeekly_returnNextPaymentDate(){
+        LocalDate paymentDate = LocalDate.of(2024, 5, 29);
+        ScheduleFrequency biweekly = ScheduleFrequency.BI_WEEKLY;
+
+        LocalDate expectedNextPaymentDate = LocalDate.of(2024, 6, 12);
+        LocalDate actual = billPaymentEngine.calculateNextPaymentDate(paymentDate, biweekly);
+
+        assertNotNull(actual);
+        assertEquals(expectedNextPaymentDate, actual);
+    }
+
+    @Test
+    @DisplayName("Test GetNextPaymentDateFromPayment when payment is null")
+    public void testGetNextPaymentDateFromPayment_whenPaymentNull_throwException(){
+        assertThrows(InvalidBillPaymentException.class, () -> {
+            billPaymentEngine.getNextPaymentDateFromPayment(null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test GetNextPaymentDateFromPayment when payment date is null use the due date use monthly")
+    public void testGetNextPaymentDateFromPayment_whenPaymentDateNull_returnNextPayment(){
 
         BillPayment billPayment = BillPayment.builder()
                 .paymentAmount(new BigDecimal("45.00"))
                 .scheduledPaymentDate(null)
                 .dueDate(LocalDate.of(2024, 6, 20))
                 .paymentType("ACCOUNT")
+                .isProcessed(true)
                 .scheduleStatus(ScheduleStatus.PENDING)
                 .isAutoPayEnabled(true)
                 .accountCode(ACCOUNT_CODE)
+                .schedulePaymentID(1L)
                 .payeeName(PAYEE_NAME)
                 .scheduleFrequency(MONTHLY)
+                .paymentID(1L)
                 .build();
 
-        LocalDate nextPaymentDate = billPaymentEngine.getNextPaymentDate(billPayment);
+       LocalDate expectedDate = LocalDate.of(2024, 7, 20);
+       LocalDate actual = billPaymentEngine.getNextPaymentDateFromPayment(billPayment);
 
-        assertEquals(LocalDate.of(2024, 7, 20), nextPaymentDate);
+       assertNotNull(actual);
+       assertEquals(expectedDate, actual);
     }
 
     @Test
-    public void testGetNextPaymentDate_whenScheduledPaymentDateValid_returnNextPaymentDate(){
+    @DisplayName("Test GetNextPaymentDateFromPayment when frequency is null and payment date throw exception")
+    public void testGetNextPaymentDateFromPayment_whenFrequencyNull_throwException(){
         BillPayment billPayment = BillPayment.builder()
                 .paymentAmount(new BigDecimal("45.00"))
-                .scheduledPaymentDate(LocalDate.of(2024, 6, 15))
+                .scheduledPaymentDate(null)
                 .dueDate(LocalDate.of(2024, 6, 20))
                 .paymentType("ACCOUNT")
+                .isProcessed(true)
                 .scheduleStatus(ScheduleStatus.PENDING)
                 .isAutoPayEnabled(true)
                 .accountCode(ACCOUNT_CODE)
+                .schedulePaymentID(1L)
                 .payeeName(PAYEE_NAME)
-                .scheduleFrequency(MONTHLY)
+                .scheduleFrequency(null)
+                .paymentID(1L)
                 .build();
 
-        LocalDate nextPaymentDate = billPaymentEngine.getNextPaymentDate(billPayment);
+        assertThrows(IllegalScheduleCriteriaException.class, () -> {
+            billPaymentEngine.getNextPaymentDateFromPayment(billPayment);
+        });
+    }
 
-        assertNotNull(nextPaymentDate);
-        assertEquals(LocalDate.of(2024, 7, 15), nextPaymentDate);
+    @Test
+    @DisplayName("Test GetNextPaymentDateFromPayment when payment and frequency as weekly return next payment date")
+    public void testGetNextPaymentDateFromPayment_whenPaymentAndFrequencyAsWeekly_returnNextPaymentDate(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 5, 19))
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .isProcessed(true)
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .schedulePaymentID(1L)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(ScheduleFrequency.WEEKLY)
+                .paymentID(1L)
+                .build();
+
+        LocalDate expectedNextPaymentDate = LocalDate.of(2024, 5, 26);
+        LocalDate actual = billPaymentEngine.getNextPaymentDateFromPayment(billPayment);
+
+        assertNotNull(actual);
+        assertEquals(expectedNextPaymentDate, actual);
     }
 
     @Test

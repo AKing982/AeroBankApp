@@ -1,18 +1,20 @@
 package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.model.*;
+import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.TreeMap;
 
 public interface BillPaymentEngine
 {
-    TreeMap<LocalDate, ProcessedBillPayment> autoPayBills(TreeMap<LocalDate, AutoPayBillPayment> billPayments);
+    List<ProcessedBillPayment> autoPayBills(List<BillPayment> billPayments);
 
     boolean paymentVerification(ProcessedBillPayment processedBillPayment);
 
-    LocalDate getNextPaymentDate(BillPayment billPaymentSchedule);
+    LocalDate calculateNextPaymentDate(LocalDate currentDate, ScheduleFrequency frequency);
 
     void updateNextPaymentDate(BillPaymentHistory billPaymentHistory);
 
@@ -44,5 +46,15 @@ public interface BillPaymentEngine
     void updateTransactionDetails(TransactionDetail transactionDetail);
 
     boolean sendNotificationsToAccount();
+
+    void handleDailyPayments(TreeMap<BillPayment, BillPaymentSchedule> billPayments);
+
+    void handleWeeklyPayments(TreeMap<BillPayment, BillPaymentSchedule> weeklyPayments);
+
+    void handleMonthlyPayments(TreeMap<BillPayment, BillPaymentSchedule> monthlyPayments);
+
+    void handleBiWeeklyPayments(TreeMap<BillPayment, BillPaymentSchedule> biWeeklyPayments);
+
+
 
 }

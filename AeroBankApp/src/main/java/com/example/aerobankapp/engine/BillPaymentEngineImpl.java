@@ -9,6 +9,7 @@ import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.services.builder.AccountDetailsEntityBuilderImpl;
 import com.example.aerobankapp.services.builder.EntityBuilder;
+import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -59,15 +58,52 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         this.balanceHistoryEntityBuilder = balanceHistoryEntityBuilder;
     }
 
-    //TODO: Implement Code
+    //TODO: To Implement 6/3/24
 
     @Override
-    public TreeMap<LocalDate, ProcessedBillPayment> autoPayBills(final TreeMap<LocalDate, AutoPayBillPayment> billPayments) {
+    public List<ProcessedBillPayment> autoPayBills(final List<BillPayment> billPayments) {
         if(billPayments.isEmpty()){
             throw new NonEmptyListRequiredException("Unable to process Auto-Payed bills due to empty list.");
         }
 
-        return processPayments(billPayments);
+        // Does the Bill Payments have a single payment
+        if(assertPaymentsSizeEqualToOne(billPayments)){
+            // Is the payment null?
+            BillPayment payment = billPayments.get(0);
+            if(payment == null){
+                throw new InvalidBillPaymentException("Caught Null Payment in list.");
+            }
+        }
+        // Check if the single payment is null before proceeding to processing
+
+        // Loop through the bill payments
+        for(BillPayment billPayment : billPayments){
+            if(!assertBillPaymentNull(billPayment)){
+                if(billPayment.isAutoPayEnabled()){
+                    // Process the bill payment
+                    ProcessedBillPayment processedBillPayment = processSinglePayment(billPayment);
+
+                    // Send the notification to the user
+
+                    // Build the next scheduled payment date
+                }
+            }else{
+                continue;
+            }
+        }
+        // Does the bill payment have auto pay enabled?
+        // If auto pay is enabled, proceed to process the payment
+        // Once the payment has been processed, send a notification to the user/account
+        // build the next scheduled payment date
+        return new ArrayList<>();
+    }
+
+    private boolean assertPaymentsSizeEqualToOne(List<BillPayment> billPayments){
+        return billPayments.size() == 1;
+    }
+
+    private boolean assertBillPaymentNull(BillPayment billPayment){
+        return billPayment == null;
     }
 
     @Override
@@ -93,6 +129,67 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return false;
     }
 
+    public LocalDate getNextPaymentDateFromPayment(BillPayment payment){
+        if(payment == null){
+            throw new InvalidBillPaymentException("Unable to retrieve next payment date from null bill payment.");
+        }
+        LocalDate dueDate = payment.getDueDate();
+        ScheduleFrequency frequency = payment.getScheduleFrequency();
+        LocalDate paymentDate = payment.getScheduledPaymentDate();
+
+        if(paymentDate == null){
+            return calculateNextPaymentDate(dueDate, frequency);
+        }
+        return calculateNextPaymentDate(paymentDate, frequency);
+    }
+
+    @Override
+    public LocalDate calculateNextPaymentDate(LocalDate currentDate, ScheduleFrequency frequency) {
+        validateNextPaymentDateCriteria(currentDate, frequency);
+        switch(frequency){
+            case MONTHLY -> {
+                return buildNextPaymentDateByMonth(currentDate);
+            }
+            case WEEKLY -> {
+                return buildNextPaymentDateByWeek(currentDate);
+            }
+            case BI_WEEKLY -> {
+                return buildNextPaymentDateByBiWeekly(currentDate);
+            }
+        }
+        return currentDate;
+    }
+
+    private LocalDate buildNextPaymentDateByBiWeekly(LocalDate date){
+        if(date != null){
+            return date.plusWeeks(2);
+        }
+        throw new IllegalDateException("Unable to build next payment date by month from null date.");
+    }
+
+    private LocalDate buildNextPaymentDateByWeek(LocalDate date){
+        if(date != null){
+            return date.plusWeeks(1);
+        }
+        throw new IllegalDateException("Unable to build next payment date by month from null date.");
+    }
+
+    private LocalDate buildNextPaymentDateByMonth(LocalDate date){
+        if(date != null){
+            return date.plusMonths(1);
+        }
+        throw new IllegalDateException("Unable to build next payment date by month from null date.");
+    }
+
+    private void validateNextPaymentDateCriteria(LocalDate date, ScheduleFrequency frequency){
+        if(date == null){
+            throw new IllegalDateException("Null Date criteria caught. Unable to calculate next payment date.");
+        }
+        else if(frequency == null){
+            throw new IllegalScheduleCriteriaException("Null ScheduleFrequency found. Unable to calculate next payment date.");
+        }
+    }
+
     private boolean isPaymentProcessed(Long id){
         return billPaymentService.isBillPaymentProcessed(id);
     }
@@ -113,26 +210,6 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return payment.getBillPayment().getPaymentID();
     }
 
-
-    @Override
-    public LocalDate getNextPaymentDate(BillPayment billPaymentSchedule) {
-        if(billPaymentSchedule == null){
-            throw new InvalidBillPaymentException("Unable to retrieve next payment date from null bill payment.");
-        }
-
-        else if(!isScheduledPaymentDateValid(billPaymentSchedule)){
-            // Grab the Due Date
-            LOGGER.info("ScheduledPaymentDate is not valid.");
-            return buildNextPaymentDate(billPaymentSchedule.getDueDate());
-        }
-        return buildNextPaymentDate(billPaymentSchedule.getScheduledPaymentDate());
-    }
-
-    private LocalDate buildNextPaymentDate(LocalDate date){
-        int currentMonth = date.getMonthValue();
-        int nextMonth = currentMonth + 1;
-        return LocalDate.of(date.getYear(), nextMonth, date.getDayOfMonth());
-    }
 
     private boolean isScheduledPaymentDateValid(BillPayment billPayment){
         return billPayment.getScheduledPaymentDate() != null;
@@ -187,7 +264,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return null;
     }
 
-    //TODO: Implement Code
+    //TODO: To implement 6/3/24
     @Override
     public void processRegularBillStatements(TreeMap<LocalDate, BillPayment> billPayments) {
 
@@ -198,7 +275,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return null;
     }
 
-    //TODO: Implement Code
+    //TODO: To implement 6/3/24
     @Override
     public void processLatePayments(TreeMap<LocalDate, LateBillPayment> billPayments) {
 
@@ -215,6 +292,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return false;
     }
 
+    //TODO: To implement 6/3/24
     @Override
     public TreeMap<LocalDate, ProcessedBillPayment> processPayments(TreeMap<LocalDate, ? extends BillPayment> payments) {
         if(payments.isEmpty()){
@@ -227,13 +305,17 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return null;
     }
 
+    //TODO: To implement 6/3/24
     @Override
     public ProcessedBillPayment processSinglePayment(final BillPayment billPayment) {
         if(!assertBillPaymentParameterNotNull(billPayment)) {
             throw new InvalidBillPaymentParametersException("Unable to process payment due to invalid parameters.");
         }
-        return getProcessedPayment(billPayment);
+        return null;
+       // return getProcessedPayment(billPayment);
     }
+
+    //TODO: To implement 6/3/24
 
     public ProcessedBillPayment getProcessedPayment(BillPayment billPayment){
         ProcessedBillPayment processedBillPayment = null;
@@ -389,5 +471,25 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     @Override
     public boolean sendNotificationsToAccount() {
         return false;
+    }
+
+    @Override
+    public void handleDailyPayments(TreeMap<BillPayment, BillPaymentSchedule> billPayments) {
+
+    }
+
+    @Override
+    public void handleWeeklyPayments(TreeMap<BillPayment, BillPaymentSchedule> weeklyPayments) {
+
+    }
+
+    @Override
+    public void handleMonthlyPayments(TreeMap<BillPayment, BillPaymentSchedule> monthlyPayments) {
+
+    }
+
+    @Override
+    public void handleBiWeeklyPayments(TreeMap<BillPayment, BillPaymentSchedule> biWeeklyPayments) {
+
     }
 }
