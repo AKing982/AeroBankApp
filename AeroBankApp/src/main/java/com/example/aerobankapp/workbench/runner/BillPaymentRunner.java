@@ -10,30 +10,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
 /**
- * This class will manage when the BillPaymentRunner will run and execute tasks
+ * This class will manage when the BillPaymentRunner will run and schedule payment tasks
  */
 @Component
 public class BillPaymentRunner implements Runnable
 {
     private final BillPaymentEngine billPaymentEngine;
     private final BillPaymentService billPaymentService;
-    private final BillPaymentScheduleService billPaymentScheduleService;
-    private final BillPaymentHistoryService billPaymentHistoryService;
-    private RabbitTemplate rabbitTemplate;
 
     @Autowired
     public BillPaymentRunner(@Qualifier("billPaymentEngineImpl")BillPaymentEngine billPaymentEngine,
-                             BillPaymentService billPaymentService,
-                             BillPaymentScheduleService billPaymentScheduleService,
-                             BillPaymentHistoryService billPaymentHistoryService){
+                             BillPaymentService billPaymentService){
         this.billPaymentEngine = billPaymentEngine;
         this.billPaymentService = billPaymentService;
-        this.billPaymentScheduleService = billPaymentScheduleService;
-        this.billPaymentHistoryService = billPaymentHistoryService;
     }
 
     public List<BillPaymentEntity> loadBillPayments(){
@@ -43,6 +37,11 @@ public class BillPaymentRunner implements Runnable
     public void executeAutoPayments(List<BillPaymentEntity> billPaymentEntities){
 
     }
+
+    public LocalDate scheduleNextPaymentDate(){
+        return null;
+    }
+
 
     public void executeRegularBillPayments(){
 
