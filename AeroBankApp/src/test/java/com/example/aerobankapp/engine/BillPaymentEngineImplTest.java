@@ -45,6 +45,9 @@ class BillPaymentEngineImplTest {
     private BillPaymentNotificationService billPaymentNotificationService;
 
     @Autowired
+    private BillPaymentHistoryService billPaymentHistoryService;
+
+    @Autowired
     private AccountService accountService;
 
     @Mock
@@ -74,7 +77,7 @@ class BillPaymentEngineImplTest {
     @BeforeEach
     void setUp() {
 
-        billPaymentEngine = new BillPaymentEngineImpl(billPaymentScheduleService, billPaymentService, billPaymentNotificationService, accountService, accountDetailsService, balanceHistoryService, accountDetailsEntityBuilder, balanceHistoryEntityBuilder);
+        billPaymentEngine = new BillPaymentEngineImpl(billPaymentScheduleService, billPaymentService, billPaymentNotificationService, billPaymentHistoryService, accountService, accountDetailsService, balanceHistoryService, accountDetailsEntityBuilder, balanceHistoryEntityBuilder);
 
         TEST_PAYMENT = BillPayment.builder()
                 .paymentAmount(PAYMENT_AMOUNT)
