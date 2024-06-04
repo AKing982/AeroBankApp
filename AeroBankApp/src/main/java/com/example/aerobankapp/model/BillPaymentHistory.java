@@ -8,14 +8,31 @@ import java.util.Objects;
 @Data
 public class BillPaymentHistory
 {
+    private Long paymentId;
     private LocalDate nextPaymentDate;
     private LocalDate lastPaymentDate;
     private LocalDate dateUpdated;
+    private boolean isProcessed;
 
     public BillPaymentHistory(LocalDate nextPaymentDate, LocalDate lastPaymentDate, LocalDate dateUpdated) {
         this.nextPaymentDate = nextPaymentDate;
         this.lastPaymentDate = lastPaymentDate;
         this.dateUpdated = dateUpdated;
+    }
+
+    public BillPaymentHistory(LocalDate nextPaymentDate, LocalDate lastPaymentDate, LocalDate dateUpdated, boolean isProcessed) {
+        this.nextPaymentDate = nextPaymentDate;
+        this.lastPaymentDate = lastPaymentDate;
+        this.dateUpdated = dateUpdated;
+        this.isProcessed = isProcessed;
+    }
+
+    public BillPaymentHistory(Long paymentId, LocalDate nextPaymentDate, LocalDate lastPaymentDate, LocalDate dateUpdated, boolean isProcessed) {
+        this.paymentId = paymentId;
+        this.nextPaymentDate = nextPaymentDate;
+        this.lastPaymentDate = lastPaymentDate;
+        this.dateUpdated = dateUpdated;
+        this.isProcessed = isProcessed;
     }
 
     @Override

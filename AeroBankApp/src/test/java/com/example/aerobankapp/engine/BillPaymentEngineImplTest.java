@@ -1,12 +1,11 @@
 package com.example.aerobankapp.engine;
 
 import com.example.aerobankapp.account.AccountType;
-import com.example.aerobankapp.entity.AccountDetailsEntity;
-import com.example.aerobankapp.entity.BalanceHistoryEntity;
-import com.example.aerobankapp.entity.BillPaymentEntity;
+import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.*;
+import com.example.aerobankapp.services.builder.AccountNotificationEntityBuilderImpl;
 import com.example.aerobankapp.services.builder.EntityBuilder;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
@@ -50,6 +49,9 @@ class BillPaymentEngineImplTest {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private AccountNotificationService accountNotificationService;
+
     @Mock
     private AccountDetailsService accountDetailsService;
 
@@ -61,6 +63,12 @@ class BillPaymentEngineImplTest {
 
     @Mock
     private EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder;
+
+    @Mock
+    private EntityBuilder<BillPaymentHistoryEntity, BillPaymentHistory> billPaymentHistoryEntityBuilder;
+
+    @Mock
+    private EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityAccountNotificationEntityBuilder;
 
     private final BigDecimal PAYMENT_AMOUNT = new BigDecimal("85.00");
     private final String PAYMENT_TYPE = "ACCOUNT";
@@ -77,7 +85,7 @@ class BillPaymentEngineImplTest {
     @BeforeEach
     void setUp() {
 
-        billPaymentEngine = new BillPaymentEngineImpl(billPaymentScheduleService, billPaymentService, billPaymentNotificationService, billPaymentHistoryService, accountService, accountDetailsService, balanceHistoryService, accountDetailsEntityBuilder, balanceHistoryEntityBuilder);
+        billPaymentEngine = new BillPaymentEngineImpl(billPaymentScheduleService, billPaymentService, billPaymentNotificationService, billPaymentHistoryService, accountService, accountNotificationService, balanceHistoryService, accountDetailsEntityBuilder, balanceHistoryEntityBuilder, billPaymentHistoryEntityBuilder, accountNotificationEntityAccountNotificationEntityBuilder);
 
         TEST_PAYMENT = BillPayment.builder()
                 .paymentAmount(PAYMENT_AMOUNT)
@@ -121,7 +129,7 @@ class BillPaymentEngineImplTest {
 
         BillPayment billPayment = BillPayment.builder()
                 .paymentAmount(new BigDecimal("45.00"))
-                .scheduledPaymentDate(null)
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 15))
                 .dueDate(LocalDate.of(2024, 6, 20))
                 .paymentType("ACCOUNT")
                 .scheduleStatus(ScheduleStatus.PENDING)
@@ -281,11 +289,15 @@ class BillPaymentEngineImplTest {
                 .scheduleFrequency(MONTHLY)
                 .build();
 
-        ProcessedBillPayment expected = new ProcessedBillPayment(billPayment, true, LocalDate.now());
+        ProcessedBillPayment expected = new ProcessedBillPayment(billPayment, true, LocalDate.now(), LocalDate.of(2024, 7, 15));
         ProcessedBillPayment actual = billPaymentEngine.processSinglePayment(billPayment);
 
         assertNotNull(actual);
-        assertTrue(expected.equals(actual));
+        assertEquals(expected.getBillPayment(), actual.getBillPayment());
+        assertEquals(expected, actual);
+        assertEquals(expected.getNextPaymentDate(), actual.getNextPaymentDate());
+        assertEquals(expected.getLastProcessedDate(), actual.getLastProcessedDate());
+        assertEquals(expected.isComplete(), actual.isComplete());
     }
 
     @Test
@@ -434,7 +446,7 @@ class BillPaymentEngineImplTest {
     @Test
     public void testPaymentVerification_whenProcessedBillPaymentIsNull_throwException(){
         assertThrows(InvalidProcessedBillPaymentException.class, () -> {
-            billPaymentEngine.paymentVerification(null);
+            billPaymentEngine.paymentVerification(null, null);
         });
     }
 
@@ -453,8 +465,9 @@ class BillPaymentEngineImplTest {
                 .build();
 
         ProcessedBillPayment processedBillPayment = new ProcessedBillPayment(billPayment, true, LocalDate.now());
+        BillPaymentHistory billPaymentHistory = new BillPaymentHistory(processedBillPayment.getNextPaymentDate(), processedBillPayment.getLastProcessedDate(), LocalDate.now(), true);
 
-        boolean isVerified = billPaymentEngine.paymentVerification(processedBillPayment);
+        boolean isVerified = billPaymentEngine.paymentVerification(processedBillPayment, billPaymentHistory);
 
         assertTrue(isVerified);
     }
@@ -474,8 +487,10 @@ class BillPaymentEngineImplTest {
                 .build();
 
         ProcessedBillPayment processedBillPayment = new ProcessedBillPayment(billPayment, true, null);
+        BillPaymentHistory billPaymentHistory = new BillPaymentHistory(processedBillPayment.getNextPaymentDate(), processedBillPayment.getLastProcessedDate(), LocalDate.now(), true);
 
-        boolean paymentIsVerified = billPaymentEngine.paymentVerification(processedBillPayment);
+
+        boolean paymentIsVerified = billPaymentEngine.paymentVerification(processedBillPayment, billPaymentHistory);
 
         assertFalse(paymentIsVerified);
     }
@@ -495,8 +510,10 @@ class BillPaymentEngineImplTest {
                 .build();
 
         ProcessedBillPayment payment = new ProcessedBillPayment(billPayment, true, LocalDate.now());
+        BillPaymentHistory billPaymentHistory = new BillPaymentHistory(payment.getNextPaymentDate(), payment.getLastProcessedDate(), LocalDate.now(), true);
 
-        boolean isVerified = billPaymentEngine.paymentVerification(payment);
+
+        boolean isVerified = billPaymentEngine.paymentVerification(payment, billPaymentHistory);
 
         assertFalse(isVerified);
     }
@@ -523,10 +540,12 @@ class BillPaymentEngineImplTest {
         billPaymentService.save(billPaymentEntity);
 
         ProcessedBillPayment payment = new ProcessedBillPayment(billPayment, true, LocalDate.now());
+        BillPaymentHistory billPaymentHistory = new BillPaymentHistory(payment.getNextPaymentDate(), payment.getLastProcessedDate(), LocalDate.now(), true);
+
 
         // Mock the behavior of billPaymentService
 
-        boolean isVerified = billPaymentEngine.paymentVerification(payment);
+        boolean isVerified = billPaymentEngine.paymentVerification(payment, billPaymentHistory);
 
         assertTrue(isVerified);
     }
@@ -741,6 +760,33 @@ class BillPaymentEngineImplTest {
 
         assertNotNull(lastPaymentDate);
         assertEquals(LocalDate.of(2024, 5, 19), lastPaymentDate);
+    }
+
+    @Test
+    @DisplayName("Test sendNotifications To Account when bill payment is null, throw exception")
+    public void testSendProcessedPaymentNotification_whenBillPaymentNull_throwException(){
+        assertThrows(InvalidProcessedBillPaymentException.class, () -> {
+            billPaymentEngine.sendProcessedPaymentNotification(null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test send Processed Payment Notifications when bill payment valid return true")
+    public void testSendProcessedPaymentNotification_whenBillPaymentValid_returnTrue(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 5, 19))
+                .dueDate(null)
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+        ProcessedBillPayment payment = new ProcessedBillPayment(billPayment, true, LocalDate.now());
+
+        assertTrue(billPaymentEngine.sendProcessedPaymentNotification(payment));
     }
 
 

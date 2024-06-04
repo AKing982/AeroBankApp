@@ -5,7 +5,10 @@ import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.services.builder.AccountDetailsEntityBuilderImpl;
+import com.example.aerobankapp.services.builder.AccountNotificationEntityBuilderImpl;
+import com.example.aerobankapp.services.builder.BillPaymentHistoryEntityBuilderImpl;
 import com.example.aerobankapp.services.builder.EntityBuilder;
+import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 import org.slf4j.Logger;
@@ -16,7 +19,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,10 +33,12 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     private final BillPaymentNotificationService billPaymentNotificationService;
     private final BillPaymentHistoryService billPaymentHistoryService;
     private final AccountService accountService;
-    private final AccountDetailsService accountDetailsService;
+    private final AccountNotificationService accountNotificationService;
     private final BalanceHistoryService balanceHistoryService;
     private final EntityBuilder<AccountDetailsEntity, AccountDetails> accountDetailsEntityBuilder;
     private final EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder;
+    private EntityBuilder<BillPaymentHistoryEntity, BillPaymentHistory> billPaymentHistoryEntityBuilder;
+    private EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityBuilder;
     private PendingBalanceCalculatorEngineImpl pendingBalanceCalculatorEngine;
     private TreeMap<LocalDate, AutoPayBillPayment> futureAutoPayments = new TreeMap<>();
     private final Logger LOGGER = LoggerFactory.getLogger(BillPaymentEngineImpl.class);
@@ -43,25 +50,37 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
                                  BillPaymentNotificationService billPaymentNotificationService,
                                  BillPaymentHistoryService billPaymentHistoryService,
                                  AccountService accountService,
-                                 AccountDetailsService accountDetailsService,
+                                 AccountNotificationService accountNotificationService,
                                  BalanceHistoryService balanceHistoryService,
                                  @Qualifier("accountDetailsEntityBuilderImpl") EntityBuilder<AccountDetailsEntity, AccountDetails> accountDetailsEntityBuilder,
-                                 @Qualifier("balanceHistoryEntityBuilderImpl") EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder){
+                                 @Qualifier("balanceHistoryEntityBuilderImpl") EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder,
+                                 EntityBuilder<BillPaymentHistoryEntity, BillPaymentHistory> billPaymentHistoryEntityBuilder,
+                                 EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityAccountNotificationEntityBuilder){
         this.billPaymentScheduleService = billPaymentScheduleService;
         this.billPaymentService = billPaymentService;
         this.billPaymentNotificationService = billPaymentNotificationService;
         this.billPaymentHistoryService = billPaymentHistoryService;
         this.accountService = accountService;
-        this.accountDetailsService = accountDetailsService;
+        this.accountNotificationService = accountNotificationService;
         this.balanceHistoryService = balanceHistoryService;
         this.accountDetailsEntityBuilder = accountDetailsEntityBuilder;
         this.balanceHistoryEntityBuilder = balanceHistoryEntityBuilder;
+        this.billPaymentHistoryEntityBuilder = new BillPaymentHistoryEntityBuilderImpl();
+        this.accountNotificationEntityBuilder = new AccountNotificationEntityBuilderImpl();
     }
 
     //TODO: To Implement 6/3/24
-
+    /**
+     * Automatically pays the given list of bill payments.
+     *
+     * @param billPayments The list of bill payments to auto-pay.
+     * @return A list of processed bill payments.
+     * @throws NonEmptyListRequiredException if the billPayments list is empty.
+     * @throws InvalidBillPaymentException if a null payment is found in the list when there is only one payment.
+     */
     @Override
     public List<ProcessedBillPayment> autoPayBills(final List<BillPayment> billPayments) {
+        List<ProcessedBillPayment> processedBillPayments = new ArrayList<>();
         if(billPayments.isEmpty()){
             throw new NonEmptyListRequiredException("Unable to process Auto-Payed bills due to empty list.");
         }
@@ -78,24 +97,24 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
 
         // Loop through the bill payments
         for(BillPayment billPayment : billPayments){
-            if(!assertBillPaymentNull(billPayment)){
-                if(billPayment.isAutoPayEnabled()){
-                    // Process the bill payment
-                    ProcessedBillPayment processedBillPayment = processSinglePayment(billPayment);
-
-                    // Send the notification to the user
-
-                    // Build the next scheduled payment date
-                }
-            }else{
+            if(billPayment == null){
                 continue;
+            }
+
+            if(billPayment.isAutoPayEnabled()){
+                    // Process the bill payment
+                ProcessedBillPayment processedBillPayment = processSinglePayment(billPayment);
+
+                // Send the notification to the user
+
+                // Build the next scheduled payment date
             }
         }
         // Does the bill payment have auto pay enabled?
         // If auto pay is enabled, proceed to process the payment
         // Once the payment has been processed, send a notification to the user/account
         // build the next scheduled payment date
-        return new ArrayList<>();
+        return processedBillPayments;
     }
 
     private boolean assertPaymentsSizeEqualToOne(List<BillPayment> billPayments){
@@ -107,33 +126,31 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     }
 
     @Override
-    public boolean paymentVerification(final ProcessedBillPayment processedBillPayment) {
+    public boolean paymentVerification(final ProcessedBillPayment processedBillPayment, final BillPaymentHistory billPaymentHistory) {
         if(processedBillPayment == null){
             throw new InvalidProcessedBillPaymentException("Processed bill payment cannot be null.");
         }
 
-        if(!paymentCriteriaVerified(processedBillPayment)){
-            return false;
-        }
-
-        LOGGER.info("Validating Payment Criteria.");
+//        if(!paymentCriteriaVerified(processedBillPayment)){
+//            return false;
+//        }
+        Long paymentID = getProcessedBillPaymentID(billPaymentHistory);
         try{
-            Long paymentID = getProcessedBillPaymentID(processedBillPayment);
-            LOGGER.info("Validating PaymentID: {}", paymentID);
-            Optional<BillPaymentHistoryEntity> billPaymentEntityOptional = fetchBillPaymentFromDB(paymentID);
-            LOGGER.info("Validating payment is Present in the database");
-            if(paymentIsPresent(billPaymentEntityOptional)){
-                    // Is the isProcessed field set to true
-                LOGGER.info("Validating that the payment is processed");
-                if(isPaymentProcessed(paymentID)){
-                    return true;
-                }
-            }
-            }catch(Exception e){
-                LOGGER.error("Error while processing the payment", e);
-                return false;
+            validatePaymentWithDB(paymentID);
+        } catch(Exception e) {
+            LOGGER.error("Error while processing the payment", e);
         }
-        return false;
+        return isPaymentProcessed(paymentID);
+    }
+
+    private void validatePaymentWithDB(Long paymentID){
+        LOGGER.info("Validating Payment with ID: {}", paymentID);
+        Optional<BillPaymentHistoryEntity> billPaymentEntityOptional = fetchBillPaymentFromDB(paymentID);
+        LOGGER.info("Validating payment is Present in the database");
+        if(paymentIsPresent(billPaymentEntityOptional)){
+            // Is the isProcessed field set to true
+            LOGGER.info("Payment has been processed");
+        }
     }
 
     public LocalDate getNextPaymentDateFromPayment(BillPayment payment){
@@ -200,11 +217,19 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     }
 
     private boolean isPaymentProcessed(Long id){
-        return billPaymentHistoryService.isPaymentProcessedById(id);
+        boolean isProcessed = billPaymentHistoryService.isPaymentProcessedById(id);
+        LOGGER.info("Payment has been processed: {}", isProcessed);
+        return isProcessed;
     }
 
     private Optional<BillPaymentHistoryEntity> fetchBillPaymentFromDB(final Long paymentID){
-        return billPaymentHistoryService.findAllById(paymentID);
+        Optional<BillPaymentHistoryEntity> optionalBillPaymentHistoryEntity = billPaymentHistoryService.findById(paymentID);
+        if(optionalBillPaymentHistoryEntity.isPresent()){
+            LOGGER.info("Fetching BillPaymentHistory: {}", optionalBillPaymentHistoryEntity.get());
+        }else{
+            LOGGER.warn("No BillPaymentHistory found for paymentID: {}", paymentID);
+        }
+        return optionalBillPaymentHistoryEntity;
     }
 
     private boolean paymentCriteriaVerified(final ProcessedBillPayment payment){
@@ -215,8 +240,8 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return billPaymentEntityOptional.isPresent();
     }
 
-    private Long getProcessedBillPaymentID(final ProcessedBillPayment payment){
-        return payment.getBillPayment().getPaymentID();
+    private Long getProcessedBillPaymentID(final BillPaymentHistory billPaymentHistory){
+        return billPaymentHistory.getPaymentId();
     }
 
 
@@ -275,6 +300,28 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
 
         BigDecimal currentBalance = getCurrentAccountBalance(acctID);
         postProcessingUpdate(newBalance, acctID, currentBalance);
+    }
+
+    private BillPaymentHistory createBillPaymentHistoryModel(ProcessedBillPayment processedBillPayment){
+        return new BillPaymentHistory(processedBillPayment.getNextPaymentDate(), processedBillPayment.getLastProcessedDate(), LocalDate.now(), true);
+    }
+
+    private void updateBillPaymentHistory(final BillPaymentHistory billPaymentHistory){
+        // Convert the model class to an entity
+        BillPaymentHistoryEntity billPaymentHistoryEntity = billPaymentHistoryEntityBuilder.createEntity(billPaymentHistory);
+        try {
+
+            if(billPaymentHistoryEntity == null){
+                throw new RuntimeException("Could not create BillPaymentHistoryEntity.");
+            }
+            billPaymentHistoryService.save(billPaymentHistoryEntity);
+
+            Long id = billPaymentHistoryEntity.getPaymentHistoryID();
+            billPaymentHistory.setPaymentId(id);
+
+        }catch(Exception e){
+            LOGGER.error("There was an error saving the BillPaymentHistory: {}" ,billPaymentHistoryEntity, e);
+        }
     }
 
     private void scheduleNextPayment(BillPayment payment, TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap) {
@@ -341,6 +388,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     }
 
     //TODO: To implement 6/3/24
+    @Deprecated
     @Override
     public TreeMap<LocalDate, ProcessedBillPayment> processPayments(TreeMap<LocalDate, ? extends BillPayment> payments) {
         if(payments.isEmpty()){
@@ -367,15 +415,20 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         LocalDate nextPaymentDate = nextScheduledPayment.firstKey();
 
         ProcessedBillPayment processedBillPayment = buildProcessedBillPayment(nextPaymentDate, billPayment);
+        LOGGER.info("Processed Bill Payment: {}", processedBillPayment);
+
+        BillPaymentHistory billPaymentHistory = createBillPaymentHistoryModel(processedBillPayment);
+
+        updateBillPaymentHistory(billPaymentHistory);
 
         // Validate the Processed Bill Payment
-        validateProcessedBillPayment(processedBillPayment);
+        validateProcessedBillPayment(processedBillPayment, billPaymentHistory);
 
         return processedBillPayment;
     }
 
-    private void validateProcessedBillPayment(ProcessedBillPayment processedBillPayment) {
-        if(!paymentVerification(processedBillPayment)){
+    private void validateProcessedBillPayment(ProcessedBillPayment processedBillPayment, BillPaymentHistory billPaymentHistory) {
+        if(!paymentVerification(processedBillPayment, billPaymentHistory)){
             throw new BillPaymentNotVerifiedException("Bill Payment not verified: " + processedBillPayment);
         }
     }
@@ -546,8 +599,69 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     }
 
     @Override
-    public boolean sendNotificationsToAccount() {
-        return false;
+    public boolean sendProcessedPaymentNotification(ProcessedBillPayment billPayment) {
+        validateProcessedPayment(billPayment);
+
+        // Build the notification String
+        StringBuilder notificationMessage = buildProcessedPaymentNotification(billPayment);
+
+        // Create an AccountNotification model
+        int acctID = getAccountIDSegment(billPayment.getBillPayment().getAccountCode());
+        AccountNotification accountNotification = buildAccountNotificationModel(notificationMessage, billPayment.getBillPayment().getPayeeName(), acctID);
+
+        // Convert the AccountNotificationModel to entity
+        AccountNotificationEntity accountNotificationEntity = accountNotificationEntityBuilder.createEntity(accountNotification);
+        if(accountNotificationEntity == null){
+            throw new IllegalArgumentException("Unable to build AccountNotificationEntity");
+        }
+        try
+        {
+            // Save the AccountNotification Entity
+            accountNotificationService.save(accountNotificationEntity);
+            return true;
+
+        }catch(Exception e){
+            LOGGER.error("There was an error saving the Account Notification to the server: {}", accountNotificationEntity, e);
+            return false;
+        }
+    }
+
+    private AccountNotification buildAccountNotificationModel(StringBuilder strMessage, String payeeName, int acctID){
+        return AccountNotification.builder()
+                .accountID(acctID)
+                .title(payeeName)
+                .message(strMessage.toString())
+                .category(AccountNotificationCategory.PAYMENT_PROCESSED)
+                .isRead(false)
+                .isSevere(false)
+                .priority(1)
+                .build();
+    }
+
+    private StringBuilder buildProcessedPaymentNotification(ProcessedBillPayment payment){
+        StringBuilder sb = new StringBuilder();
+        int acctID = payment.getBillPayment().getAccountCode().getSequence();
+        BigDecimal paymentAmount = payment.getBillPayment().getPaymentAmount();
+        LocalDate nextPaymentDate = payment.getNextPaymentDate();
+        sb.append("Payment of $")
+                .append(paymentAmount)
+                .append(" has been processed for account ")
+                .append(acctID)
+                .append(". Next payment is scheduled on ")
+                .append(nextPaymentDateAsString(nextPaymentDate))
+                .append(".");
+        return sb;
+    }
+
+    private String nextPaymentDateAsString(LocalDate date){
+        return (date != null) ? date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                : "N/A";
+    }
+
+    private void validateProcessedPayment(ProcessedBillPayment payment){
+        if(payment == null){
+            throw new InvalidProcessedBillPaymentException("Caught Null Processed Bill Payment: " + payment);
+        }
     }
 
     @Override
@@ -568,5 +682,16 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     @Override
     public void handleBiWeeklyPayments(TreeMap<BillPayment, BillPaymentSchedule> biWeeklyPayments) {
 
+    }
+
+    /**
+     * Handles missed payments by returning a list of processed bill payments.
+     *
+     * @param lateBillPayments The list of late bill payments.
+     * @return The list of processed bill payments.
+     */
+    @Override
+    public List<ProcessedBillPayment> handleMissedPayments(List<LateBillPayment> lateBillPayments) {
+        return List.of();
     }
 }

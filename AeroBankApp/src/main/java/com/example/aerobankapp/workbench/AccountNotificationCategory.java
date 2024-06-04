@@ -10,7 +10,8 @@ public enum AccountNotificationCategory
     PAYMENT_RECEIVED("PaymentReceived"),
     SCHEDULED_MAINTENANCE("ScheduledMaintenance"),
     SYSTEM_TEST("SystemTest"),
-    ACCOUNT_UPDATE("AccountUpdate");
+    ACCOUNT_UPDATE("AccountUpdate"),
+    PAYMENT_PROCESSED("PaymentProcessed");
 
     private String code;
 

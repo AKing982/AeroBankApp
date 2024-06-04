@@ -41,6 +41,11 @@ public class BillPaymentHistoryServiceImpl implements BillPaymentHistoryService
     }
 
     @Override
+    public Optional<BillPaymentHistoryEntity> findById(Long id) {
+        return billPaymentHistoryRepository.findById(id);
+    }
+
+    @Override
     public List<BillPaymentHistoryEntity> findByUserName(String user) {
         return null;
     }

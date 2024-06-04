@@ -13,7 +13,7 @@ public interface BillPaymentEngine
 {
     List<ProcessedBillPayment> autoPayBills(List<BillPayment> billPayments);
 
-    boolean paymentVerification(ProcessedBillPayment processedBillPayment);
+    boolean paymentVerification(ProcessedBillPayment processedBillPayment, BillPaymentHistory billPaymentHistory);
 
     LocalDate calculateNextPaymentDate(LocalDate currentDate, ScheduleFrequency frequency);
 
@@ -47,7 +47,7 @@ public interface BillPaymentEngine
 
     void updateTransactionDetails(TransactionDetail transactionDetail);
 
-    boolean sendNotificationsToAccount();
+    boolean sendProcessedPaymentNotification(ProcessedBillPayment processedBillPayment);
 
     void handleDailyPayments(TreeMap<BillPayment, BillPaymentSchedule> billPayments);
 
@@ -56,6 +56,9 @@ public interface BillPaymentEngine
     void handleMonthlyPayments(TreeMap<BillPayment, BillPaymentSchedule> monthlyPayments);
 
     void handleBiWeeklyPayments(TreeMap<BillPayment, BillPaymentSchedule> biWeeklyPayments);
+
+    List<ProcessedBillPayment> handleMissedPayments(List<LateBillPayment> lateBillPayments);
+
 
 
 
