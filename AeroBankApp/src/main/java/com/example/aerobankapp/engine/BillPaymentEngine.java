@@ -29,7 +29,7 @@ public interface BillPaymentEngine
 
     void processRegularBillStatements(TreeMap<LocalDate, BillPayment> billPayments);
 
-    ScheduleStatus updatePaymentStatus(BillPayment billPayment);
+    void updatePaymentStatus(BillPayment billPayment);
 
     LateBillPayment buildLatePayment(BillPayment payment);
 

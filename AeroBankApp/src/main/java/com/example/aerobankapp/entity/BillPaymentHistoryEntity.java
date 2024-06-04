@@ -33,4 +33,7 @@ public class BillPaymentHistoryEntity
     @Column(name="dateUpdated")
     private LocalDate dateUpdated;
 
+    @Column(name="isProcessed")
+    private boolean isProcessed;
+
 }

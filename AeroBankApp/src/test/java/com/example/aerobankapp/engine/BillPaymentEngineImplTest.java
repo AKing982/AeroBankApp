@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
@@ -43,7 +44,7 @@ class BillPaymentEngineImplTest {
     @Mock
     private BillPaymentNotificationService billPaymentNotificationService;
 
-    @Mock
+    @Autowired
     private AccountService accountService;
 
     @Mock
@@ -281,7 +282,7 @@ class BillPaymentEngineImplTest {
         ProcessedBillPayment actual = billPaymentEngine.processSinglePayment(billPayment);
 
         assertNotNull(actual);
-        assertEquals(expected, actual);
+        assertTrue(expected.equals(actual));
     }
 
     @Test
@@ -327,8 +328,6 @@ class BillPaymentEngineImplTest {
         TreeMap<LocalDate, BigDecimal> actual = billPaymentEngine.processPaymentAndScheduleNextPayment(billPayment);
 
         assertEquals(expected.size(), actual.size());
-
-
     }
 
     @Test

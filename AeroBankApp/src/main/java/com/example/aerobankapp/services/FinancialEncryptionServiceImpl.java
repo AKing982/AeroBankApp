@@ -1,7 +1,6 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.exceptions.KeyGenerationException;
-import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ public class FinancialEncryptionServiceImpl implements FinancialEncryptionServic
 {
     private final VaultService vaultService;
     private SecretKey currentKey;
-    private Gson gson;
 
     @Autowired
     public FinancialEncryptionServiceImpl(VaultService vaultService){

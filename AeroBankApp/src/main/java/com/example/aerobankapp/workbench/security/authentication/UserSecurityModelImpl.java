@@ -1,7 +1,6 @@
 package com.example.aerobankapp.workbench.security.authentication;
 
 import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.workbench.transactions.CardDesignator;
 import com.example.aerobankapp.workbench.utilities.User;
 import com.example.aerobankapp.workbench.utilities.UserProfile;
 import com.example.aerobankapp.workbench.utilities.UserProfileFacade;
@@ -21,7 +20,6 @@ public class UserSecurityModelImpl implements UserSecurityModel
 {
    private boolean isEnabled;
    private Set<AccountEntity> allowedCheckingAccounts;
-   private Set<CardDesignator> userPaymentCards;
    private UserProfile currentUserProfile;
 
 
@@ -49,11 +47,6 @@ public class UserSecurityModelImpl implements UserSecurityModel
       return new HashSet<>();
    }
 
-
-   @Override
-   public Set<CardDesignator> getUserCardDetails() {
-      return null;
-   }
 
    @Override
    public boolean isUserEnabled()

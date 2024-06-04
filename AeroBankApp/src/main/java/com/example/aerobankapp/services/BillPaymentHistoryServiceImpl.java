@@ -44,4 +44,9 @@ public class BillPaymentHistoryServiceImpl implements BillPaymentHistoryService
     public List<BillPaymentHistoryEntity> findByUserName(String user) {
         return null;
     }
+
+    @Override
+    public boolean isPaymentProcessedById(Long id) {
+        return billPaymentHistoryRepository.findProcessedBillPaymentHistory(id);
+    }
 }

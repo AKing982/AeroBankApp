@@ -10,6 +10,7 @@ public class ProcessedBillPayment
     private BillPayment billPayment;
     private boolean isComplete;
     private LocalDate lastProcessedDate;
+    private LocalDate nextPaymentDate;
 
     public ProcessedBillPayment(BillPayment billPayment, boolean isComplete) {
         this.billPayment = billPayment;
@@ -20,5 +21,12 @@ public class ProcessedBillPayment
         this.billPayment = billPayment;
         this.isComplete = isComplete;
         this.lastProcessedDate = lastProcessedDate;
+    }
+
+    public ProcessedBillPayment(BillPayment billPayment, boolean isComplete, LocalDate lastProcessedDate, LocalDate nextPaymentDate) {
+        this.billPayment = billPayment;
+        this.isComplete = isComplete;
+        this.lastProcessedDate = lastProcessedDate;
+        this.nextPaymentDate = nextPaymentDate;
     }
 }
