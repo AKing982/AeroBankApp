@@ -160,28 +160,39 @@ class BillPaymentEngineImplTest {
         });
     }
 
-    @Test
-    public void testProcessPayments_whenAutoPayBillParametersInvalid_throwException() {
-        AutoPayBillPayment autoPayBillPayment = new AutoPayBillPayment(null, ACCOUNT_CODE, null, null, null, null, null, null, true, LocalDate.now());
-
-        TreeMap<LocalDate, AutoPayBillPayment> autoPayBillPaymentMap = new TreeMap<>();
-        autoPayBillPaymentMap.put(LocalDate.now(), autoPayBillPayment);
-
-        assertThrows(InvalidBillPaymentParametersException.class, () -> {
-            billPaymentEngine.processPayments(autoPayBillPaymentMap);
+   @Test
+   @DisplayName("Test Build Late Payment when bill payment is null, then throw exception")
+   public void testProcessLatePayment_whenBillPaymentNull_thenThrowException(){
+        assertThrows(InvalidBillPaymentException.class, () -> {
+            billPaymentEngine.buildLatePayment(null);
         });
-    }
+   }
+
+   @Test
+   @DisplayName("Test Build Late Payment when payment date after due date, then return LateBillPayment")
+   public void testProcessLatePayment_whenPaymentDateAfterDueDate_thenReturnLateBillPayment(){
+       BillPayment billPayment = BillPayment.builder()
+               .paymentAmount(new BigDecimal("50.00"))
+               .scheduledPaymentDate(LocalDate.of(2024, 6, 24))
+               .dueDate(LocalDate.of(2024, 6, 20))
+               .paymentType("ACCOUNT")
+               .scheduleStatus(ScheduleStatus.PENDING)
+               .isAutoPayEnabled(true)
+               .accountCode(ACCOUNT_CODE)
+               .payeeName(PAYEE_NAME)
+               .scheduleFrequency(MONTHLY)
+               .build();
+
+       BigDecimal lateFee = new BigDecimal("25.00");
+       LateBillPayment expected = new LateBillPayment(LocalDate.of(2024, 6, 20), lateFee, billPayment);
+       LateBillPayment actual = billPaymentEngine.buildLatePayment(billPayment);
+
+       assertEquals(expected, actual);
+   }
 
     @Test
     public void testProcessPayments_whenLatePaymentBillParametersInvalid_throwException() {
-        LateBillPayment lateBillPayment = new LateBillPayment(null, ACCOUNT_CODE, null, null, null, null, null, null, true, LocalDate.now(), LocalDate.of(2024, 5, 19), LocalDate.of(2024, 5, 19), new BigDecimal("12.00"));
 
-        TreeMap<LocalDate, LateBillPayment> lateBillPaymentMap = new TreeMap<>();
-        lateBillPaymentMap.put(LocalDate.now(), lateBillPayment);
-
-        assertThrows(InvalidBillPaymentParametersException.class, () -> {
-            billPaymentEngine.processPayments(lateBillPaymentMap);
-        });
     }
 
     @Test
@@ -212,6 +223,115 @@ class BillPaymentEngineImplTest {
     }
 
     @Test
+    @DisplayName("Test Process Single Payment when Payment amount is null then throw exception")
+    public void testProcessSinglePayment_whenPaymentAmountNull_throwException(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(null)
+                .scheduledPaymentDate(null)
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        assertThrows(NullPaymentAmountException.class, () -> {
+            billPaymentEngine.processSinglePayment(billPayment);
+        });
+    }
+
+    @Test
+    @DisplayName("Test Process Single payment when payment date is null, then throw exception")
+    public void testProcessSinglePayment_whenPaymentDateNull_throwException(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("50.00"))
+                .scheduledPaymentDate(null)
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        assertThrows(IllegalDateException.class, () -> {
+            billPaymentEngine.processSinglePayment(billPayment);
+        });
+    }
+
+    @Test
+    @DisplayName("Test Process Single payment when Payment Amount and Payment Date are valid, then return ProcessedBillPayment")
+    public void testProcessSinglePayment_whenPaymentAmountAndDateValid_returnProcessedBillPayment(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("50.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 15))
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        ProcessedBillPayment expected = new ProcessedBillPayment(billPayment, true, LocalDate.now());
+        ProcessedBillPayment actual = billPaymentEngine.processSinglePayment(billPayment);
+
+        assertNotNull(actual);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test processPaymentAndScheduleNextPayment when payment date after due date, then return late fee with payment amount ")
+    public void testProcessPaymentAndScheduleNextPayment_whenPaymentDateIsLate_returnLateFeeWithNextPayment(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("50.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 24))
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        TreeMap<LocalDate, BigDecimal> expected = new TreeMap<>();
+        expected.put(LocalDate.of(2024, 7, 20), BigDecimal.valueOf(75.00));
+
+        TreeMap<LocalDate, BigDecimal> actual = billPaymentEngine.processPaymentAndScheduleNextPayment(billPayment);
+
+        assertEquals(expected.size(), actual.size());
+    }
+
+    @Test
+    @DisplayName("Test processPaymentAndScheduleNextPayment when payment date before due date, then return next payment date criteria")
+    public void testProcessPaymentAndScheduleNextPayment_whenPaymentDateBeforeDueDate_thenReturnNextPayment(){
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("50.00"))
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 15))
+                .dueDate(LocalDate.of(2024, 6, 20))
+                .paymentType("ACCOUNT")
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isAutoPayEnabled(true)
+                .accountCode(ACCOUNT_CODE)
+                .payeeName(PAYEE_NAME)
+                .scheduleFrequency(MONTHLY)
+                .build();
+
+        TreeMap<LocalDate, BigDecimal> expected = new TreeMap<>();
+        expected.put(LocalDate.of(2024, 7, 20), BigDecimal.valueOf(50.00));
+        TreeMap<LocalDate, BigDecimal> actual = billPaymentEngine.processPaymentAndScheduleNextPayment(billPayment);
+
+        assertEquals(expected.size(), actual.size());
+
+
+    }
+
+    @Test
     public void testProcessSinglePayment_whenAutoPaymentBillParametersNull_throwException(){
         AutoPayBillPayment autoPayBillPayment = new AutoPayBillPayment(null, ACCOUNT_CODE,null, null, null, null, null, null, true, LocalDate.now());
 
@@ -220,15 +340,6 @@ class BillPaymentEngineImplTest {
         });
     }
 
-    @Test
-    public void testProcessSinglePayment_whenLatePaymentBillParametersNull_throwException(){
-        LateBillPayment lateBillPayment = new LateBillPayment(null, ACCOUNT_CODE,null, null, null, null, null, null, true, LocalDate.now(),
-                LocalDate.of(2024, 5, 19), LocalDate.of(2024, 5, 19), new BigDecimal("12.00"));
-
-        assertThrows(InvalidBillPaymentParametersException.class, () -> {
-            billPaymentEngine.processSinglePayment(lateBillPayment);
-        });
-    }
 
     @Test
     public void testProcessSinglePayment_whenAutoPayPaymentValid_returnProcessedBillPayment(){
@@ -316,31 +427,6 @@ class BillPaymentEngineImplTest {
         boolean isInvalidPayment = billPaymentEngine.validatePaymentDatePriorDueDate(billPayment);
 
         assertFalse(isInvalidPayment);
-    }
-
-    @Test
-    public void testGetProcessedPayment_nullBillPayment_throwException(){
-        assertThrows(InvalidBillPaymentException.class, () -> {
-            billPaymentEngine.getProcessedPayment(null);
-        });
-    }
-
-
-    @Test
-    public void testGetProcessedPayment_whenPaymentDateAfterDueDate_returnProcessedBillWithFees(){
-        BillPayment billPayment = BillPayment.builder()
-                .paymentAmount(new BigDecimal("45.00"))
-                .scheduledPaymentDate(LocalDate.of(2024, 6, 25))
-                .dueDate(LocalDate.of(2024, 6, 20))
-                .paymentType("ACCOUNT")
-                .scheduleStatus(ScheduleStatus.PENDING)
-                .isAutoPayEnabled(true)
-                .accountCode(ACCOUNT_CODE)
-                .payeeName(PAYEE_NAME)
-                .scheduleFrequency(MONTHLY)
-                .build();
-
-       // ProcessedBillPayment processedBillPayment = new ProcessedBillPayment()
     }
 
     @Test

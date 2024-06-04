@@ -4,6 +4,7 @@ import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.TreeMap;
@@ -22,16 +23,17 @@ public interface BillPaymentEngine
 
     LocalDate getLastPaymentDate(BillPayment billPaymentSchedule);
 
+    void processOnTimePayment(BillPayment billPayment, TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap);
+
     ConfirmationNumber generateConfirmationNumberForBill(BillPayment billPayment);
 
     void processRegularBillStatements(TreeMap<LocalDate, BillPayment> billPayments);
 
     ScheduleStatus updatePaymentStatus(BillPayment billPayment);
 
+    LateBillPayment buildLatePayment(BillPayment payment);
 
-    void processLatePayments(TreeMap<LocalDate, LateBillPayment> billPayments);
-
-    void processLateFeesForLatePayments(TreeMap<LocalDate, BillPayment> latePayments);
+    void processLatePayment(LateBillPayment lateBillPayment, TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap);
 
     boolean sendLatePaymentNotification();
 

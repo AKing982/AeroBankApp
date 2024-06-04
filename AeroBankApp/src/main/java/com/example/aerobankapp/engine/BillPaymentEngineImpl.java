@@ -244,6 +244,26 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return billPayment.getScheduledPaymentDate();
     }
 
+    @Override
+    public void processOnTimePayment(BillPayment billPayment, TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap) {
+        BigDecimal paymentAmount = getPaymentAmountCriteria(billPayment);
+
+        // Retrieve the account code
+        AccountCode accountCode = getAccountCodeByPaymentCriteria(billPayment);
+
+        int acctID = getAccountIDSegment(accountCode);
+
+        BigDecimal currentBalance = getCurrentAccountBalance(acctID);
+
+        BigDecimal newBalance = getNewBalanceAfterPayment(currentBalance, paymentAmount);
+
+        postProcessingUpdate(newBalance, acctID, currentBalance);
+
+        LocalDate nextPaymentDate = getNextPaymentDateFromPayment(billPayment);
+
+        nextScheduledPaymentMap.put(nextPaymentDate, paymentAmount);
+    }
+
     private boolean isPaymentScheduleDateValid(BillPayment payment){
         return payment.getScheduledPaymentDate() != null;
     }
@@ -275,17 +295,26 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return null;
     }
 
+    @Override
+    public LateBillPayment buildLatePayment(BillPayment payment) {
+        if(payment == null){
+            throw new InvalidBillPaymentException("Found null payment criteria.");
+        }
+        final BigDecimal lateFee = new BigDecimal("25.00");
+        return new LateBillPayment(payment.getDueDate(), lateFee, payment);
+    }
+
+    @Override
+    public void processLatePayment(LateBillPayment lateBillPayment, TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap) {
+        BigDecimal lateFee = lateBillPayment.getLateFee();
+
+        BigDecimal newPaymentAmount = lateBillPayment.getBillPayment().getPaymentAmount().add(lateFee);
+        LocalDate nextPaymentDate = getNextPaymentDateFromPayment(lateBillPayment.getBillPayment());
+        nextScheduledPaymentMap.put(nextPaymentDate, newPaymentAmount);
+    }
+
     //TODO: To implement 6/3/24
-    @Override
-    public void processLatePayments(TreeMap<LocalDate, LateBillPayment> billPayments) {
 
-    }
-
-    //TODO: Implement code
-    @Override
-    public void processLateFeesForLatePayments(TreeMap<LocalDate, BillPayment> latePayments) {
-
-    }
 
     @Override
     public boolean sendLatePaymentNotification() {
@@ -308,41 +337,55 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     //TODO: To implement 6/3/24
     @Override
     public ProcessedBillPayment processSinglePayment(final BillPayment billPayment) {
-        if(!assertBillPaymentParameterNotNull(billPayment)) {
-            throw new InvalidBillPaymentParametersException("Unable to process payment due to invalid parameters.");
+        BigDecimal paymentAmount = billPayment.getPaymentAmount();
+        if(paymentAmount == null){
+            throw new NullPaymentAmountException("Found Null Payment Amount: " + paymentAmount);
         }
+
+        LocalDate paymentDate = billPayment.getScheduledPaymentDate();
+        if(paymentDate == null){
+            throw new IllegalDateException("Found Null PaymentDate criteria: " + paymentDate);
+        }
+
+        // Get the current Account Balance
+
+        // Verify the balance is not null
+
+        // Is the balance within minimum requirements
+
+        // Deduct the payment amount from the balance
+
+        // Update the account balance using the new balance
+
+        // Update the state of the bill payment from PENDING to DONE
+
+        // Set the isProcessed flag to true
+
+        // Create the Processed Bill Payment
+
         return null;
        // return getProcessedPayment(billPayment);
     }
 
     //TODO: To implement 6/3/24
 
-    public ProcessedBillPayment getProcessedPayment(BillPayment billPayment){
-        ProcessedBillPayment processedBillPayment = null;
+    public TreeMap<LocalDate, BigDecimal> processPaymentAndScheduleNextPayment(BillPayment billPayment){
+        TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap = new TreeMap<>();
         if(billPayment == null){
             throw new InvalidBillPaymentException("Unable to process null bill payment.");
         }
-        if(validatePaymentDatePriorDueDate(billPayment)){
-            // Retrieve the payment Amount
-            BigDecimal paymentAmount = getPaymentAmountCriteria(billPayment);
 
-            // Retrieve the accountCode
-            AccountCode accountCode = getAccountCodeByPaymentCriteria(billPayment);
-
-            // Retrieve the account segment
-            int acctSegment = getAccountIDSegment(accountCode);
-
-            // Retrieve the balance
-            BigDecimal currentBalance = getCurrentAccountBalance(acctSegment);
-
-            // Deduct the payment from the account balance
-            BigDecimal newBalance = getNewBalanceAfterPayment(currentBalance, paymentAmount);
-
-            postProcessingUpdate(newBalance, acctSegment, currentBalance);
-
+        if(!validatePaymentDatePriorDueDate(billPayment)){
+            LateBillPayment lateBillPayment = buildLatePayment(billPayment);
+            processLatePayment(lateBillPayment, nextScheduledPaymentMap);
+        }else{
+           processOnTimePayment(billPayment, nextScheduledPaymentMap);
         }
-        return null;
+
+        return nextScheduledPaymentMap;
     }
+
+
 
     /**
      * This method will update the account balance, account details
@@ -352,7 +395,11 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     public void postProcessingUpdate(BigDecimal newBalance, int acctID, BigDecimal prevBalance){
         updateAccountBalance(newBalance, acctID);
 
-       // postProcessingUpdateBalanceHistory();
+        postProcessingUpdateBalanceHistory(newBalance, BigDecimal.ZERO, prevBalance, acctID);
+    }
+
+    private void updateIsProcessedParameter(BillPayment billPayment){
+        billPayment.setProcessed(true);
     }
 
     public void postProcessingUpdateBalanceHistory(BigDecimal newBalance, BigDecimal adjusted, BigDecimal prevBalance, int acctID){
