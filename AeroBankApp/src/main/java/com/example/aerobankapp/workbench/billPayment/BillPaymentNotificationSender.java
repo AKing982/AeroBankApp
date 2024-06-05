@@ -1,6 +1,11 @@
 package com.example.aerobankapp.workbench.billPayment;
 
-public interface BillPaymentNotificationSender<T>
+import com.example.aerobankapp.model.BillPayment;
+import com.example.aerobankapp.model.ProcessedBillPayment;
+
+public interface BillPaymentNotificationSender
 {
-    boolean send(T payment);
+    boolean sendPaymentNotification(BillPayment billPayment);
+
+    boolean sendProcessedPaymentNotification(ProcessedBillPayment processedBillPayment);
 }
