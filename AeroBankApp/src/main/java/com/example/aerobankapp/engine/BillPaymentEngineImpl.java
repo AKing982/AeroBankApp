@@ -4,72 +4,66 @@ import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.*;
-import com.example.aerobankapp.services.builder.AccountDetailsEntityBuilderImpl;
 import com.example.aerobankapp.services.builder.AccountNotificationEntityBuilderImpl;
 import com.example.aerobankapp.services.builder.BillPaymentHistoryEntityBuilderImpl;
 import com.example.aerobankapp.services.builder.EntityBuilder;
-import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import com.example.aerobankapp.workbench.billPayment.BillPaymentNotificationSender;
+import com.example.aerobankapp.workbench.data.AccountDataManager;
+import com.example.aerobankapp.workbench.data.BalanceHistoryDataManager;
+import com.example.aerobankapp.workbench.data.BillPaymentDataManager;
+import com.example.aerobankapp.workbench.data.BillPaymentHistoryDataManager;
+import com.example.aerobankapp.workbench.generator.confirmation.ConfirmationNumberGenerator;
+import com.example.aerobankapp.workbench.processor.LatePaymentProcessor;
+import com.example.aerobankapp.workbench.processor.PaymentProcessor;
+import com.example.aerobankapp.workbench.scheduler.PaymentScheduler;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
+import com.example.aerobankapp.workbench.verification.PaymentVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class BillPaymentEngineImpl implements BillPaymentEngine
 {
-    private final BillPaymentScheduleService billPaymentScheduleService;
-    private final BillPaymentService billPaymentService;
-    private final BillPaymentNotificationService billPaymentNotificationService;
-    private final BillPaymentHistoryService billPaymentHistoryService;
-    private final AccountService accountService;
-    private final AccountNotificationService accountNotificationService;
-    private final BalanceHistoryService balanceHistoryService;
+
+    private final AccountDataManager accountDataManager;
+    private final BalanceHistoryDataManager balanceHistoryDataManager;
     private final EntityBuilder<AccountDetailsEntity, AccountDetails> accountDetailsEntityBuilder;
     private final EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder;
     private EntityBuilder<BillPaymentHistoryEntity, BillPaymentHistory> billPaymentHistoryEntityBuilder;
-    private EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityBuilder;
+    private PaymentVerifier<BillPayment> billPaymentVerifier;
+    private PaymentVerifier<ProcessedBillPayment> processedBillPaymentVerifier;
+    private PaymentProcessor<BillPayment> billPaymentProcessor;
+    private PaymentProcessor<ProcessedBillPayment> processedBillPaymentProcessor;
+    private PaymentProcessor<LatePaymentProcessor> latePaymentProcessorPaymentProcessor;
+    private PaymentScheduler<BillPayment> billPaymentScheduler;
+    private BillPaymentDataManager billPaymentDataManager;
     private BillPaymentNotificationSender billPaymentNotificationSender;
-    private TreeMap<LocalDate, AutoPayBillPayment> futureAutoPayments = new TreeMap<>();
+    private ConfirmationNumberGenerator confirmationNumberGenerator;
     private final Logger LOGGER = LoggerFactory.getLogger(BillPaymentEngineImpl.class);
 
     @Autowired
-    public BillPaymentEngineImpl(
-                                 BillPaymentScheduleService billPaymentScheduleService,
-                                 BillPaymentService billPaymentService,
-                                 BillPaymentNotificationService billPaymentNotificationService,
-                                 BillPaymentHistoryService billPaymentHistoryService,
-                                 AccountService accountService,
-                                 AccountNotificationService accountNotificationService,
-                                 BalanceHistoryService balanceHistoryService,
+    public BillPaymentEngineImpl(AccountDataManager accountDataManager,
+                                 BalanceHistoryDataManager balanceHistoryDataManager,
                                  BillPaymentNotificationSender billPaymentNotificationSender,
+                                 ConfirmationNumberGenerator confirmationNumberGenerator,
                                  @Qualifier("accountDetailsEntityBuilderImpl") EntityBuilder<AccountDetailsEntity, AccountDetails> accountDetailsEntityBuilder,
                                  @Qualifier("balanceHistoryEntityBuilderImpl") EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder,
-                                 EntityBuilder<BillPaymentHistoryEntity, BillPaymentHistory> billPaymentHistoryEntityBuilder,
-                                 EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityAccountNotificationEntityBuilder){
-        this.billPaymentScheduleService = billPaymentScheduleService;
-        this.billPaymentService = billPaymentService;
-        this.billPaymentNotificationService = billPaymentNotificationService;
-        this.billPaymentHistoryService = billPaymentHistoryService;
-        this.accountService = accountService;
-        this.accountNotificationService = accountNotificationService;
-        this.balanceHistoryService = balanceHistoryService;
+                                 EntityBuilder<BillPaymentHistoryEntity, BillPaymentHistory> billPaymentHistoryEntityBuilder){
+        this.accountDataManager = accountDataManager;
+        this.balanceHistoryDataManager = balanceHistoryDataManager;
         this.billPaymentNotificationSender = billPaymentNotificationSender;
+        this.confirmationNumberGenerator = confirmationNumberGenerator;
         this.accountDetailsEntityBuilder = accountDetailsEntityBuilder;
         this.balanceHistoryEntityBuilder = balanceHistoryEntityBuilder;
         this.billPaymentHistoryEntityBuilder = new BillPaymentHistoryEntityBuilderImpl();
-        this.accountNotificationEntityBuilder = new AccountNotificationEntityBuilderImpl();
     }
 
     //TODO: To Implement 6/3/24
@@ -157,67 +151,12 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     }
 
     public LocalDate getNextPaymentDateFromPayment(BillPayment payment){
-        if(payment == null){
-            throw new InvalidBillPaymentException("Unable to retrieve next payment date from null bill payment.");
-        }
-        LocalDate dueDate = payment.getDueDate();
-        ScheduleFrequency frequency = payment.getScheduleFrequency();
-        LocalDate paymentDate = payment.getScheduledPaymentDate();
 
-        if(paymentDate == null){
-            return calculateNextPaymentDate(dueDate, frequency);
-        }
-        return calculateNextPaymentDate(paymentDate, frequency);
     }
 
 
 
-    @Override
-    public LocalDate calculateNextPaymentDate(LocalDate currentDate, ScheduleFrequency frequency) {
-        validateNextPaymentDateCriteria(currentDate, frequency);
-        switch(frequency){
-            case MONTHLY -> {
-                return buildNextPaymentDateByMonth(currentDate);
-            }
-            case WEEKLY -> {
-                return buildNextPaymentDateByWeek(currentDate);
-            }
-            case BI_WEEKLY -> {
-                return buildNextPaymentDateByBiWeekly(currentDate);
-            }
-        }
-        return currentDate;
-    }
 
-    private LocalDate buildNextPaymentDateByBiWeekly(LocalDate date){
-        if(date != null){
-            return date.plusWeeks(2);
-        }
-        throw new IllegalDateException("Unable to build next payment date by month from null date.");
-    }
-
-    private LocalDate buildNextPaymentDateByWeek(LocalDate date){
-        if(date != null){
-            return date.plusWeeks(1);
-        }
-        throw new IllegalDateException("Unable to build next payment date by month from null date.");
-    }
-
-    private LocalDate buildNextPaymentDateByMonth(LocalDate date){
-        if(date != null){
-            return date.plusMonths(1);
-        }
-        throw new IllegalDateException("Unable to build next payment date by month from null date.");
-    }
-
-    private void validateNextPaymentDateCriteria(LocalDate date, ScheduleFrequency frequency){
-        if(date == null){
-            throw new IllegalDateException("Null Date criteria caught. Unable to calculate next payment date.");
-        }
-        else if(frequency == null){
-            throw new IllegalScheduleCriteriaException("Null ScheduleFrequency found. Unable to calculate next payment date.");
-        }
-    }
 
     private boolean isPaymentProcessed(Long id){
         boolean isProcessed = billPaymentHistoryService.isPaymentProcessedById(id);
@@ -268,17 +207,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
 
     @Override
     public LocalDate getLastPaymentDate(BillPayment billPayment) {
-        validateBillPayment(billPayment);
-        if(!isPaymentScheduleCriteriaValid(billPayment)){
-            throw new InvalidDateException("Unable to retrieve last payment date from null payment schedule criteria.");
-        }
-        else if(!isDueDateValid(billPayment)){
-            return billPayment.getScheduledPaymentDate();
-        }
-        else if(!isPaymentScheduleDateValid(billPayment)) {
-            return billPayment.getDueDate();
-        }
-        return billPayment.getScheduledPaymentDate();
+
     }
 
     @Override
@@ -305,9 +234,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         postProcessingUpdate(newBalance, acctID, currentBalance);
     }
 
-    private BillPaymentHistory createBillPaymentHistoryModel(ProcessedBillPayment processedBillPayment){
-        return new BillPaymentHistory(processedBillPayment.getNextPaymentDate(), processedBillPayment.getLastProcessedDate(), LocalDate.now(), true);
-    }
+
 
     private void updateBillPaymentHistory(final BillPaymentHistory billPaymentHistory){
         // Convert the model class to an entity
@@ -366,20 +293,12 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
 
     @Override
     public LateBillPayment buildLatePayment(BillPayment payment) {
-        if(payment == null){
-            throw new InvalidBillPaymentException("Found null payment criteria.");
-        }
-        final BigDecimal lateFee = new BigDecimal("25.00");
-        return new LateBillPayment(payment.getDueDate(), lateFee, payment);
+
     }
 
     @Override
     public void processLatePayment(LateBillPayment lateBillPayment, TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap) {
-        BigDecimal lateFee = lateBillPayment.getLateFee();
 
-        BigDecimal newPaymentAmount = lateBillPayment.getBillPayment().getPaymentAmount().add(lateFee);
-        LocalDate nextPaymentDate = getNextPaymentDateFromPayment(lateBillPayment.getBillPayment());
-        nextScheduledPaymentMap.put(nextPaymentDate, newPaymentAmount);
     }
 
     //TODO: To implement 6/3/24
@@ -390,45 +309,6 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return false;
     }
 
-    //TODO: To implement 6/3/24
-    @Deprecated
-    @Override
-    public TreeMap<LocalDate, ProcessedBillPayment> processPayments(TreeMap<LocalDate, ? extends BillPayment> payments) {
-        if(payments.isEmpty()){
-            throw new NonEmptyListRequiredException("Unable to process payments from empty list.");
-        }
-        if(!assertBillPaymentParametersListNotNull(payments)){
-            throw new InvalidBillPaymentParametersException("Unable to process payments due to null bill payments.");
-        }
-
-        return null;
-    }
-
-    //TODO: To implement 6/3/24
-    @Override
-    public ProcessedBillPayment processSinglePayment(final BillPayment billPayment) {
-        BigDecimal paymentAmount = billPayment.getPaymentAmount();
-        validatePaymentAmount(paymentAmount);
-
-        LocalDate paymentDate = billPayment.getScheduledPaymentDate();
-        validatePaymentDate(paymentDate);
-
-        TreeMap<LocalDate, BigDecimal> nextScheduledPayment = processPaymentAndScheduleNextPayment(billPayment);
-        // Get the current Account Balance
-        LocalDate nextPaymentDate = nextScheduledPayment.firstKey();
-
-        ProcessedBillPayment processedBillPayment = buildProcessedBillPayment(nextPaymentDate, billPayment);
-        LOGGER.info("Processed Bill Payment: {}", processedBillPayment);
-
-        BillPaymentHistory billPaymentHistory = createBillPaymentHistoryModel(processedBillPayment);
-
-        updateBillPaymentHistory(billPaymentHistory);
-
-        // Validate the Processed Bill Payment
-        validateProcessedBillPayment(processedBillPayment, billPaymentHistory);
-
-        return processedBillPayment;
-    }
 
     private void validateProcessedBillPayment(ProcessedBillPayment processedBillPayment, BillPaymentHistory billPaymentHistory) {
         if(!paymentVerification(processedBillPayment, billPaymentHistory)){
@@ -500,30 +380,10 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     }
 
 
-    private BalanceHistory createBalanceHistoryModel(BigDecimal newBalance, BigDecimal adjusted, BigDecimal prevBalance, int acctID){
-        BalanceHistory balanceHistory = new BalanceHistory();
-        balanceHistory.setNewBalance(newBalance);
-        balanceHistory.setCurrentBalance(prevBalance);
-        balanceHistory.setAdjustedAmount(adjusted);
-        balanceHistory.setAccountID(acctID);
-        return balanceHistory;
-    }
-
-    private void updateAccountBalance(BigDecimal newBalance, int acctID){
-        accountService.updateAccountBalanceByAcctID(newBalance, acctID);
-    }
-
     private BigDecimal getNewBalanceAfterPayment(BigDecimal currentBalance, BigDecimal amount){
         return currentBalance.subtract(amount);
     }
 
-    private BigDecimal getCurrentAccountBalance(int acctID){
-        BigDecimal balance = accountService.getBalanceByAcctID(acctID);
-        if(balance == null){
-            LOGGER.error("Unable to retrieve balances for accountID: {}", acctID);
-        }
-        return balance;
-    }
 
     private AccountCode getAccountCodeByPaymentCriteria(BillPayment billPayment){
         return billPayment.getAccountCode();
@@ -533,15 +393,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return code.getSequence();
     }
 
-    public boolean validatePaymentDatePriorDueDate(BillPayment payment){
-        LocalDate paymentDate = getPaymentDate(payment);
-        LocalDate dueDate = getPaymentDueDate(payment);
-        if(paymentDate == null || dueDate == null){
-            LOGGER.error("There was an error validating the Payment Date due to null date parameters: Payment Date: {}, Due Date: {}", paymentDate, dueDate);
-            throw new InvalidDateException("Invalid Payment Date found");
-        }
-        return paymentDate.isBefore(dueDate);
-    }
+
 
     private LocalDate getPaymentDate(BillPayment payment){
         return payment.getScheduledPaymentDate();
@@ -585,21 +437,6 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         return true;
     }
 
-
-    @Override
-    public void updateBalanceHistory(BalanceHistory balanceHistory) {
-
-    }
-
-    @Override
-    public void updateAccountDetails(AccountDetails accountDetails) {
-
-    }
-
-    @Override
-    public void updateTransactionDetails(TransactionDetail transactionDetail) {
-
-    }
 
     @Override
     public boolean sendProcessedPaymentNotification(ProcessedBillPayment billPayment) {

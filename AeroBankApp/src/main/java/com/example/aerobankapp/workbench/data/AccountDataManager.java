@@ -8,58 +8,33 @@ import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.services.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
-public class AccountDataManager extends AbstractDataManager
+public class AccountDataManager
 {
-    private final AccountCodeCreator accountCodeCreator;
+    private AccountService accountService;
+    private AccountNotificationService accountNotificationService;
+    private Logger LOGGER = LoggerFactory.getLogger(AccountDataManager.class);
 
-    public AccountDataManager(UserService userService, AccountService accountService, AccountSecurityService accountSecurityService, AccountPropertiesService accountPropertiesService, AccountNotificationService accountNotificationService, AccountCodeService accountCodeService, AccountUsersEntityService accountUsersEntityService, UserLogService userLogService, AccountCodeCreator accountCodeCreator) {
-        super(userService, accountService, accountSecurityService, accountPropertiesService, accountNotificationService, accountCodeService, accountUsersEntityService, userLogService);
-        this.accountCodeCreator = accountCodeCreator;
+    @Autowired
+    public AccountDataManager(AccountService accountService, AccountNotificationService accountNotificationService) {
+        this.accountService = accountService;
+        this.accountNotificationService = accountNotificationService;
     }
 
 
-    /**
-     * This method will be used for creating the account code during the
-     * registration process
-     * @param user
-     * @param accountInfoDTO
-     * @return AccountCode
-     */
-    public AccountCode createAccountCode(User user, AccountInfoDTO accountInfoDTO){
-        return null;
-    }
-
-    public AccountEntity buildAccountEntity(final AccountInfoDTO accountInfoDTO, AccountCodeEntity accountCode, UserEntity user){
-        return null;
-    }
-
-    public List<AccountEntity> processAccountAndSecurity(List<AccountCodeEntity> accountCodeEntities, List<AccountInfoDTO> accountInfoDTOS){
-        return null;
-    }
-
-    public List<String> getFilteredZeroParameterList(List<String> unfilteredAccountCodeSegments){
-        return null;
-    }
-
-    public String filterZeroParameterString(String segment){
-        return null;
-    }
-
-    public boolean createAccount(AccountDTO account){
-        return false;
-    }
-
-    public boolean modifyAccount(AccountDTO account){
-        return false;
-    }
-
-    public boolean deleteAccount(int acctID){
-        return false;
+    private BigDecimal getCurrentAccountBalance(int acctID){
+        BigDecimal balance = accountService.getBalanceByAcctID(acctID);
+        if(balance == null){
+            LOGGER.error("Unable to retrieve balances for accountID: {}", acctID);
+        }
+        return balance;
     }
 }
