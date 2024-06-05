@@ -8,6 +8,7 @@ import com.example.aerobankapp.model.ProcessedBillPayment;
 import com.example.aerobankapp.services.AccountNotificationService;
 import com.example.aerobankapp.services.builder.AccountNotificationEntityBuilderImpl;
 import com.example.aerobankapp.services.builder.EntityBuilder;
+import com.example.aerobankapp.workbench.utilities.AccountNotificationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +45,17 @@ public class BillPaymentNotificationSenderImpl implements BillPaymentNotificatio
         validateProcessedPayment(processedBillPayment);
 
         StringBuilder paymentMessage = notificationMessageBuilder.buildProcessedPaymentNotification(processedBillPayment);
+        if(paymentMessage == null){
+            LOGGER.error("Payment message is null");
+            return false;
+        }
         LOGGER.info("Payment Message: {}", paymentMessage.toString());
-        AccountNotification accountNotification = buildAccountNotificationModel(paymentMessage, processedBillPayment);
+        AccountNotification accountNotification = AccountNotificationUtil.buildAccountNotificationModel(paymentMessage, processedBillPayment);
         AccountNotificationEntity accountNotificationEntity = accountNotificationEntityBuilder.createEntity(accountNotification);
+        if(accountNotificationEntity == null){
+            LOGGER.error("Account Notification Entity is null. Unable to send payment notification.");
+            return false;
+        }
         try{
 
             accountNotificationService.save(accountNotificationEntity);
@@ -58,11 +67,7 @@ public class BillPaymentNotificationSenderImpl implements BillPaymentNotificatio
         }
     }
 
-    private AccountNotification buildAccountNotificationModel(StringBuilder message, ProcessedBillPayment processedBillPayment) {
-        String payeeName = processedBillPayment.getBillPayment().getPayeeName();
-        int acctID = processedBillPayment.getBillPayment().getAccountCode().getSequence();
-        return NotificationUtil.buildAccountNotificationModel(message, payeeName, acctID);
-    }
+
 
     private void validateProcessedPayment(ProcessedBillPayment processedBillPayment) {
         if (processedBillPayment == null) {
