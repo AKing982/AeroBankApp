@@ -9,6 +9,7 @@ import com.example.aerobankapp.services.builder.AccountNotificationEntityBuilder
 import com.example.aerobankapp.services.builder.BillPaymentHistoryEntityBuilderImpl;
 import com.example.aerobankapp.services.builder.EntityBuilder;
 import com.example.aerobankapp.workbench.AccountNotificationCategory;
+import com.example.aerobankapp.workbench.billPayment.BillPaymentNotificationSender;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
     private final EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder;
     private EntityBuilder<BillPaymentHistoryEntity, BillPaymentHistory> billPaymentHistoryEntityBuilder;
     private EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityBuilder;
-    private PendingBalanceCalculatorEngineImpl pendingBalanceCalculatorEngine;
+    private BillPaymentNotificationSender billPaymentNotificationSender;
     private TreeMap<LocalDate, AutoPayBillPayment> futureAutoPayments = new TreeMap<>();
     private final Logger LOGGER = LoggerFactory.getLogger(BillPaymentEngineImpl.class);
 
@@ -52,6 +53,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
                                  AccountService accountService,
                                  AccountNotificationService accountNotificationService,
                                  BalanceHistoryService balanceHistoryService,
+                                 BillPaymentNotificationSender billPaymentNotificationSender,
                                  @Qualifier("accountDetailsEntityBuilderImpl") EntityBuilder<AccountDetailsEntity, AccountDetails> accountDetailsEntityBuilder,
                                  @Qualifier("balanceHistoryEntityBuilderImpl") EntityBuilder<BalanceHistoryEntity, BalanceHistory> balanceHistoryEntityBuilder,
                                  EntityBuilder<BillPaymentHistoryEntity, BillPaymentHistory> billPaymentHistoryEntityBuilder,
@@ -63,6 +65,7 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
         this.accountService = accountService;
         this.accountNotificationService = accountNotificationService;
         this.balanceHistoryService = balanceHistoryService;
+        this.billPaymentNotificationSender = billPaymentNotificationSender;
         this.accountDetailsEntityBuilder = accountDetailsEntityBuilder;
         this.balanceHistoryEntityBuilder = balanceHistoryEntityBuilder;
         this.billPaymentHistoryEntityBuilder = new BillPaymentHistoryEntityBuilderImpl();
@@ -600,63 +603,9 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
 
     @Override
     public boolean sendProcessedPaymentNotification(ProcessedBillPayment billPayment) {
-        validateProcessedPayment(billPayment);
-
-        // Build the notification String
-        StringBuilder notificationMessage = buildProcessedPaymentNotification(billPayment);
-
-        // Create an AccountNotification model
-        int acctID = getAccountIDSegment(billPayment.getBillPayment().getAccountCode());
-        AccountNotification accountNotification = buildAccountNotificationModel(notificationMessage, billPayment.getBillPayment().getPayeeName(), acctID);
-
-        // Convert the AccountNotificationModel to entity
-        AccountNotificationEntity accountNotificationEntity = accountNotificationEntityBuilder.createEntity(accountNotification);
-        if(accountNotificationEntity == null){
-            throw new IllegalArgumentException("Unable to build AccountNotificationEntity");
-        }
-        try
-        {
-            // Save the AccountNotification Entity
-            accountNotificationService.save(accountNotificationEntity);
-            return true;
-
-        }catch(Exception e){
-            LOGGER.error("There was an error saving the Account Notification to the server: {}", accountNotificationEntity, e);
-            return false;
-        }
+        return billPaymentNotificationSender.sendProcessedPaymentNotification(billPayment);
     }
 
-    private AccountNotification buildAccountNotificationModel(StringBuilder strMessage, String payeeName, int acctID){
-        return AccountNotification.builder()
-                .accountID(acctID)
-                .title(payeeName)
-                .message(strMessage.toString())
-                .category(AccountNotificationCategory.PAYMENT_PROCESSED)
-                .isRead(false)
-                .isSevere(false)
-                .priority(1)
-                .build();
-    }
-
-    private StringBuilder buildProcessedPaymentNotification(ProcessedBillPayment payment){
-        StringBuilder sb = new StringBuilder();
-        int acctID = payment.getBillPayment().getAccountCode().getSequence();
-        BigDecimal paymentAmount = payment.getBillPayment().getPaymentAmount();
-        LocalDate nextPaymentDate = payment.getNextPaymentDate();
-        sb.append("Payment of $")
-                .append(paymentAmount)
-                .append(" has been processed for account ")
-                .append(acctID)
-                .append(". Next payment is scheduled on ")
-                .append(nextPaymentDateAsString(nextPaymentDate))
-                .append(".");
-        return sb;
-    }
-
-    private String nextPaymentDateAsString(LocalDate date){
-        return (date != null) ? date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                : "N/A";
-    }
 
     private void validateProcessedPayment(ProcessedBillPayment payment){
         if(payment == null){

@@ -7,6 +7,7 @@ import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.services.builder.AccountNotificationEntityBuilderImpl;
 import com.example.aerobankapp.services.builder.EntityBuilder;
+import com.example.aerobankapp.workbench.billPayment.BillPaymentNotificationSender;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleStatus;
 import org.junit.jupiter.api.AfterEach;
@@ -58,6 +59,9 @@ class BillPaymentEngineImplTest {
     @Mock
     private BalanceHistoryService balanceHistoryService;
 
+    @Autowired
+    private BillPaymentNotificationSender billPaymentNotificationSender;
+
     @Mock
     private EntityBuilder<AccountDetailsEntity, AccountDetails> accountDetailsEntityBuilder;
 
@@ -85,7 +89,7 @@ class BillPaymentEngineImplTest {
     @BeforeEach
     void setUp() {
 
-        billPaymentEngine = new BillPaymentEngineImpl(billPaymentScheduleService, billPaymentService, billPaymentNotificationService, billPaymentHistoryService, accountService, accountNotificationService, balanceHistoryService, accountDetailsEntityBuilder, balanceHistoryEntityBuilder, billPaymentHistoryEntityBuilder, accountNotificationEntityAccountNotificationEntityBuilder);
+        billPaymentEngine = new BillPaymentEngineImpl(billPaymentScheduleService, billPaymentService, billPaymentNotificationService, billPaymentHistoryService, accountService, accountNotificationService, balanceHistoryService, billPaymentNotificationSender, accountDetailsEntityBuilder, balanceHistoryEntityBuilder, billPaymentHistoryEntityBuilder, accountNotificationEntityAccountNotificationEntityBuilder);
 
         TEST_PAYMENT = BillPayment.builder()
                 .paymentAmount(PAYMENT_AMOUNT)
@@ -771,8 +775,8 @@ class BillPaymentEngineImplTest {
     }
 
     @Test
-    @DisplayName("Test send Processed Payment Notifications when bill payment valid return true")
-    public void testSendProcessedPaymentNotification_whenBillPaymentValid_returnTrue(){
+    @DisplayName("Test send Processed Payment Notifications when bill payment valid and due date null, then return true")
+    public void testSendProcessedPaymentNotification_whenBillPaymentValidAndDueDateNull_returnTrue(){
         BillPayment billPayment = BillPayment.builder()
                 .paymentAmount(new BigDecimal("45.00"))
                 .scheduledPaymentDate(LocalDate.of(2024, 5, 19))
@@ -784,11 +788,10 @@ class BillPaymentEngineImplTest {
                 .payeeName(PAYEE_NAME)
                 .scheduleFrequency(MONTHLY)
                 .build();
-        ProcessedBillPayment payment = new ProcessedBillPayment(billPayment, true, LocalDate.now());
+        ProcessedBillPayment payment = new ProcessedBillPayment(billPayment, true, LocalDate.now(), LocalDate.of(2024, 6, 19));
 
         assertTrue(billPaymentEngine.sendProcessedPaymentNotification(payment));
     }
-
 
 
 
