@@ -4,6 +4,7 @@ import com.example.aerobankapp.exceptions.InvalidBillPaymentException;
 import com.example.aerobankapp.model.BillPayment;
 import com.example.aerobankapp.model.LateBillPayment;
 import com.example.aerobankapp.model.ProcessedBillPayment;
+import com.example.aerobankapp.workbench.billPayment.BillPaymentNotificationSender;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,10 +15,12 @@ import java.util.TreeMap;
 @Service
 public class LatePaymentProcessor implements PaymentProcessor<LateBillPayment>
 {
+
+    private BillPaymentNotificationSender billPaymentNotificationSender;
     private TreeMap<LocalDate, List<LateBillPayment>> latePayments = new TreeMap<>();
 
-    public LatePaymentProcessor(){
-
+    public LatePaymentProcessor(BillPaymentNotificationSender billPaymentNotificationSender){
+        this.billPaymentNotificationSender = billPaymentNotificationSender;
     }
 
     @Override
@@ -51,6 +54,11 @@ public class LatePaymentProcessor implements PaymentProcessor<LateBillPayment>
 
     public BigDecimal calculateTotalAmountDue(LateBillPayment lateBillPayment) {
         return null;
+    }
+
+
+    public boolean sendLatePaymentNotification(LateBillPayment lateBillPayment) {
+        return false;
     }
 
 }

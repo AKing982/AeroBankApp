@@ -291,23 +291,11 @@ public class BillPaymentEngineImpl implements BillPaymentEngine
        billPayment.setProcessed(true);
     }
 
-    @Override
-    public LateBillPayment buildLatePayment(BillPayment payment) {
-
-    }
-
-    @Override
-    public void processLatePayment(LateBillPayment lateBillPayment, TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap) {
-
-    }
 
     //TODO: To implement 6/3/24
 
 
-    @Override
-    public boolean sendLatePaymentNotification() {
-        return false;
-    }
+
 
 
     private void validateProcessedBillPayment(ProcessedBillPayment processedBillPayment, BillPaymentHistory billPaymentHistory) {

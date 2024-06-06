@@ -66,17 +66,17 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
 
     @Override
     public Optional<LocalDate> getPreviousPaymentDate(BillPayment payment) {
-//        validateBillPayment(billPayment);
-//        if(!isPaymentScheduleCriteriaValid(billPayment)){
-//            throw new InvalidDateException("Unable to retrieve last payment date from null payment schedule criteria.");
-//        }
-//        else if(!isDueDateValid(billPayment)){
-//            return billPayment.getScheduledPaymentDate();
-//        }
-//        else if(!isPaymentScheduleDateValid(billPayment)) {
-//            return billPayment.getDueDate();
-//        }
-//        return billPayment.getScheduledPaymentDate();
+        validateBillPayment(billPayment);
+        if(!isPaymentScheduleCriteriaValid(billPayment)){
+            throw new InvalidDateException("Unable to retrieve last payment date from null payment schedule criteria.");
+        }
+        else if(!isDueDateValid(billPayment)){
+            return billPayment.getScheduledPaymentDate();
+        }
+        else if(!isPaymentScheduleDateValid(billPayment)) {
+            return billPayment.getDueDate();
+        }
+        return billPayment.getScheduledPaymentDate();
     }
 
     private LocalDate getPaymentDate(BillPayment payment) {
