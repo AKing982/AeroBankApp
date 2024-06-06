@@ -8,17 +8,28 @@ import com.example.aerobankapp.services.builder.EntityBuilder;
 import com.example.aerobankapp.workbench.billPayment.NotificationMessageBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class MissedPaymentNotificationSender extends SystemNotificationSender<AccountNotification>
+public class MissedPaymentNotificationSender extends SystemNotificationSender<AccountNotification, MissedBillPayment>
 {
 
 
-    public MissedPaymentNotificationSender(AccountNotificationService accountNotificationService, NotificationMessageBuilder notificationMessageBuilder, EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityBuilder) {
-        super(accountNotificationService, notificationMessageBuilder, accountNotificationEntityBuilder);
+    public MissedPaymentNotificationSender(AccountNotificationService accountNotificationService, EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityBuilder) {
+        super(accountNotificationService, accountNotificationEntityBuilder);
     }
+
+    @Override
+    StringBuilder createMessage(MissedBillPayment payment) {
+        return null;
+    }
+
 
     @Override
     boolean send(AccountNotification notification) {
         return false;
+    }
+
+    @Override
+    void validatePayment(MissedBillPayment payment) {
+
     }
 
 

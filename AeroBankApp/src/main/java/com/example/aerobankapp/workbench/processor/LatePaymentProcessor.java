@@ -19,11 +19,11 @@ import java.util.TreeMap;
 public class LatePaymentProcessor implements PaymentProcessor<LateBillPayment, ProcessedBillPayment>, ScheduledPaymentProcessor<LateBillPayment>
 {
 
-    private SystemNotificationSender<AccountNotification> accountNotificationSender;
+    private SystemNotificationSender<AccountNotification, LateBillPayment> accountNotificationSender;
     private TreeMap<LocalDate, List<LateBillPayment>> latePayments = new TreeMap<>();
 
     @Autowired
-    public LatePaymentProcessor(SystemNotificationSender<AccountNotification> accountNotificationSender){
+    public LatePaymentProcessor(SystemNotificationSender<AccountNotification, LateBillPayment> accountNotificationSender){
         this.accountNotificationSender = accountNotificationSender;
     }
 

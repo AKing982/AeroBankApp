@@ -11,21 +11,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public abstract class SystemNotificationSender<M extends Notification>
+public abstract class SystemNotificationSender<M extends Notification, T>
 {
     protected AccountNotificationService accountNotificationService;
-    protected NotificationMessageBuilder notificationMessageBuilder;
     protected EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityBuilder;
 
 
     @Autowired
     public SystemNotificationSender(AccountNotificationService accountNotificationService,
-                                    NotificationMessageBuilder notificationMessageBuilder,
                                     EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityBuilder){
         this.accountNotificationService = accountNotificationService;
-        this.notificationMessageBuilder = notificationMessageBuilder;
         this.accountNotificationEntityBuilder = new AccountNotificationEntityBuilderImpl();
     }
 
+    abstract StringBuilder createMessage(T payment);
+
     abstract boolean send(M notification);
+
+    abstract void validatePayment(T payment);
 }

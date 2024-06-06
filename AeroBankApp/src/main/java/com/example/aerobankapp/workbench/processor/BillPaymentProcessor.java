@@ -1,23 +1,18 @@
 package com.example.aerobankapp.workbench.processor;
 
-import com.example.aerobankapp.entity.BalanceHistoryEntity;
-import com.example.aerobankapp.entity.BillPaymentHistoryEntity;
 import com.example.aerobankapp.exceptions.InvalidBalanceException;
 import com.example.aerobankapp.exceptions.InvalidBillPaymentException;
 import com.example.aerobankapp.model.*;
-import com.example.aerobankapp.services.BillPaymentHistoryService;
-import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import com.example.aerobankapp.workbench.data.AccountDataManager;
 import com.example.aerobankapp.workbench.data.BalanceHistoryDataManager;
 import com.example.aerobankapp.workbench.data.BillPaymentHistoryDataManager;
 import com.example.aerobankapp.workbench.scheduler.BillPaymentScheduler;
-import com.example.aerobankapp.workbench.utilities.notifications.BillPaymentNotificationSender;
-import com.example.aerobankapp.workbench.utilities.notifications.SystemNotificationSender;
+import com.example.aerobankapp.workbench.utilities.AccountNotificationUtil;
+import com.example.aerobankapp.workbench.utilities.notifications.ProcessedBillPaymentNotificationSender;
 import com.example.aerobankapp.workbench.verification.PaymentVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -34,7 +29,7 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
     private final BillPaymentHistoryDataManager billPaymentHistoryDataManager;
     private final PaymentVerifier<ProcessedBillPayment> processedPaymentVerifier;
     private final BillPaymentScheduler billPaymentScheduler;
-    private final BillPaymentNotificationSender billPaymentNotificationSender;
+    private final ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender;
     private TreeMap<LocalDate, List<ProcessedBillPayment>> processedBillPayments = new TreeMap<>();
     private Logger LOGGER = LoggerFactory.getLogger(BillPaymentProcessor.class);
 
@@ -44,13 +39,13 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
                                 BillPaymentHistoryDataManager billPaymentHistoryDataManager,
                                 PaymentVerifier<ProcessedBillPayment> processedPaymentVerifier,
                                 BillPaymentScheduler billPaymentScheduler,
-                                BillPaymentNotificationSender billPaymentNotificationSender){
+                                ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender){
         this.accountDataManager = accountDataManager;
         this.balanceHistoryDataManager = balanceHistoryDataManager;
         this.billPaymentHistoryDataManager = billPaymentHistoryDataManager;
         this.processedPaymentVerifier = processedPaymentVerifier;
         this.billPaymentScheduler = billPaymentScheduler;
-        this.billPaymentNotificationSender = billPaymentNotificationSender;
+        this.processedBillPaymentNotificationSender = processedBillPaymentNotificationSender;
     }
 
     @Override
@@ -58,6 +53,12 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
         TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap = new TreeMap<>();
         if(payment == null){
             throw new InvalidBillPaymentException("Unable to process null bill payment.");
+        }
+
+        if(!billPaymentScheduler.validatePaymentDatePriorDueDate(payment)){
+            // Add the Payment to the Late Payments
+
+            // Process the late payments
         }
 
 //        if(!validatePaymentDatePriorDueDate(billPayment)){
@@ -76,12 +77,14 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
 
         // Extract the Current Account Balance
         int acctID = payment.getAccountCode().getSequence();
-        BigDecimal newBalance = calculateNewPaymentBalance(acctID, payment.getPaymentAmount());
+        LOGGER.info("AcctID: {}", acctID);
+        processNewPaymentBalance(acctID, payment.getPaymentAmount());
 
         // Schedule the next payment date
         Optional<LocalDate> nextScheduledPaymentDate = getNextScheduledPaymentDate(payment);
-
+        LOGGER.info("Next Scheduled Payment Date: {}", nextScheduledPaymentDate);
         ProcessedBillPayment processedBillPayment = buildProcessedBillPayment(payment, nextScheduledPaymentDate.get());
+        LOGGER.info("Processed Bill Payment: {}", processedBillPayment);
         // Create a BillPayment History object
         processBillPaymentHistory(processedBillPayment);
         validateProcessedPayment(processedBillPayment);
@@ -89,53 +92,48 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
         return processedBillPayment;
     }
 
-    public BigDecimal calculateNewPaymentBalance(int acctID, BigDecimal paymentAmount){
+    public void processNewPaymentBalance(int acctID, BigDecimal paymentAmount){
         BigDecimal currentBalance = retrieveBalance(acctID);
         BigDecimal newBalance = getNewBalanceAfterPayment(paymentAmount, currentBalance);
         paymentPostProcessing(newBalance, acctID, currentBalance, paymentAmount);
-        return newBalance;
     }
 
-    public void sendNotification(ProcessedBillPayment processedBillPayment) {
+    public void sendNotification(final ProcessedBillPayment processedBillPayment) {
         // Send notification to the user that the payment has been processed
-        AccountNotification accountNotification = createAccountNotificationFromPayment(processedBillPayment);
-
-        billPaymentNotificationSender.send(accountNotification);
+        LOGGER.info("Building Notification");
+        StringBuilder paymentMessage = processedBillPaymentNotificationSender.createMessage(processedBillPayment);
+        AccountNotification accountNotification = AccountNotificationUtil.buildAccountNotificationModel(paymentMessage, processedBillPayment);
+        LOGGER.info("Sending Notification");
+        processedBillPaymentNotificationSender.send(accountNotification);
     }
 
-    public Optional<LocalDate> getNextScheduledPaymentDate(BillPayment payment) {
+    public Optional<LocalDate> getNextScheduledPaymentDate(final BillPayment payment) {
         return billPaymentScheduler.getNextPaymentDate(payment);
     }
 
-    public void processBillPaymentHistory(ProcessedBillPayment processedBillPayment) {
+    public void processBillPaymentHistory(final ProcessedBillPayment processedBillPayment) {
+        LOGGER.info("Processing Bill Payment History");
         BillPaymentHistory billPaymentHistory = billPaymentHistoryDataManager.createBillPaymentHistoryModel(processedBillPayment);
         // Save the BillPaymentHistory entity
         billPaymentHistoryDataManager.updateBillPaymentHistory(billPaymentHistory);
+        LOGGER.info("Saved Bill Payment History");
 
         // Update the BillPayment History isProcessed to true
         billPaymentHistoryDataManager.updateIsProcessed(billPaymentHistory);
     }
 
-    public void validateProcessedPayment(ProcessedBillPayment processedBillPayment) {
+    public boolean validateProcessedPayment(final ProcessedBillPayment processedBillPayment) {
         // Validate the payment has been processed
-        processedPaymentVerifier.verify(processedBillPayment);
+        LOGGER.info("Verifying the payment has been processed");
+        if(processedPaymentVerifier.verify(processedBillPayment)){
+            return true;
+        }
+        return false;
     }
 
-    public AccountNotification createAccountNotificationFromPayment(ProcessedBillPayment processedBillPayment) {
-        AccountNotification accountNotification = new AccountNotification();
-        accountNotification.setSevere(false);
-        accountNotification.setAccountID(processedBillPayment.getBillPayment().getAccountCode().getSequence());
-        accountNotification.setRead(false);
-        accountNotification.setTitle();
-        accountNotification.setPriority(1);
-        accountNotification.setMessage();
-        return accountNotification;
-    }
-
-    private ProcessedBillPayment buildProcessedBillPayment(BillPayment payment, LocalDate nextScheduledDate) {
+    public ProcessedBillPayment buildProcessedBillPayment(BillPayment payment, LocalDate nextScheduledDate) {
         return new ProcessedBillPayment(payment, true, payment.getScheduledPaymentDate(), nextScheduledDate);
     }
-
 
     public void paymentPostProcessing(BigDecimal newBalance, int acctID, BigDecimal prevBalance, BigDecimal amount){
 
@@ -152,11 +150,6 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
         return balanceHistoryDataManager.createBalanceHistoryModel(newBalance, adjusted, prevBalance, acctID);
     }
 
-    public void saveBillPaymentHistoryToDatabase(BillPaymentHistory billPaymentHistory){
-        billPaymentHistoryDataManager.updateBillPaymentHistory(billPaymentHistory);
-    }
-
-
     private BigDecimal getNewBalanceAfterPayment(BigDecimal paymentAmount, BigDecimal currentBalance){
         BigDecimal newBalance = currentBalance.subtract(paymentAmount);
         if(newBalance == null){
@@ -169,7 +162,7 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
         accountDataManager.updateAccountBalance(newBalance, acctID);
     }
 
-    private BigDecimal retrieveBalance(int acctID){
+    private BigDecimal retrieveBalance(final int acctID){
         BigDecimal currentBalance = accountDataManager.getCurrentAccountBalance(acctID);
         if(currentBalance == null){
             throw new InvalidBalanceException("Couldn't find current account balance");
@@ -182,7 +175,7 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
         return List.of();
     }
 
-    private void validateBillPayment(BillPayment billPayment) {
+    private void validateBillPayment(final BillPayment billPayment) {
         if(billPayment == null){
             throw new InvalidBillPaymentException("BillPayment is null");
         }

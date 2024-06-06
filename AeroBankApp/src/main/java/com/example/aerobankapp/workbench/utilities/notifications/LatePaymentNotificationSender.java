@@ -9,16 +9,28 @@ import com.example.aerobankapp.workbench.billPayment.NotificationMessageBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LatePaymentNotificationSender extends SystemNotificationSender<AccountNotification>
+public class LatePaymentNotificationSender extends SystemNotificationSender<AccountNotification, LateBillPayment>
 {
+    private NotificationStrategy<LateBillPayment> notificationStrategy;
 
-    public LatePaymentNotificationSender(AccountNotificationService accountNotificationService, NotificationMessageBuilder notificationMessageBuilder, EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityBuilder) {
-        super(accountNotificationService, notificationMessageBuilder, accountNotificationEntityBuilder);
+    public LatePaymentNotificationSender(AccountNotificationService accountNotificationService, EntityBuilder<AccountNotificationEntity, AccountNotification> accountNotificationEntityBuilder) {
+        super(accountNotificationService, accountNotificationEntityBuilder);
     }
+
+    @Override
+    public StringBuilder createMessage(LateBillPayment payment) {
+        return null;
+    }
+
 
     @Override
     boolean send(AccountNotification notification) {
         return false;
+    }
+
+    @Override
+    void validatePayment(LateBillPayment payment) {
+
     }
 
 }

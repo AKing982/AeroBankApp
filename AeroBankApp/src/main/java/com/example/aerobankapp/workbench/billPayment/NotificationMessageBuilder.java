@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Component
+@Deprecated
 public class NotificationMessageBuilder
 {
     public NotificationMessageBuilder(){

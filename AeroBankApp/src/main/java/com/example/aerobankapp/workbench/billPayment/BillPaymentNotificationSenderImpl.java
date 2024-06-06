@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@Deprecated
 public class BillPaymentNotificationSenderImpl implements BillPaymentNotificationSender
 {
     private final AccountNotificationService accountNotificationService;

@@ -3,12 +3,15 @@ package com.example.aerobankapp.workbench.scheduler;
 import com.example.aerobankapp.exceptions.IllegalDateException;
 import com.example.aerobankapp.exceptions.IllegalScheduleCriteriaException;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 public abstract class PaymentScheduler<T>
 {
+    private Logger LOGGER = LoggerFactory.getLogger(PaymentScheduler.class);
     public abstract Optional<LocalDate> getNextPaymentDate(T t);
     public abstract Optional<LocalDate> getPreviousPaymentDate(T t);
 
@@ -16,6 +19,7 @@ public abstract class PaymentScheduler<T>
         validateNextPaymentDateCriteria(currentDate, frequency);
         switch(frequency){
             case MONTHLY -> {
+                LOGGER.info("Building Next Payment Date by Month");
                 return buildNextPaymentDateByMonth(currentDate);
             }
             case WEEKLY -> {
@@ -25,6 +29,7 @@ public abstract class PaymentScheduler<T>
                 return buildNextPaymentDateByBiWeekly(currentDate);
             }
         }
+        LOGGER.info("Returning default value of current date: {}", currentDate);
         return Optional.ofNullable(currentDate);
     }
 

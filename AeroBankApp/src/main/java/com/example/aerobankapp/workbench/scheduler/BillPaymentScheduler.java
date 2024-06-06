@@ -50,8 +50,12 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
     }
 
     private void scheduleNextPayment(BillPayment payment, TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap) {
-        LocalDate nextPaymentDate = getNextPaymentDateFromPayment(payment);
-        nextScheduledPaymentMap.put(nextPaymentDate, payment.getPaymentAmount());
+      //  LocalDate nextPaymentDate = getNextPaymentDateFromPayment(payment);
+       // nextScheduledPaymentMap.put(nextPaymentDate, payment.getPaymentAmount());
+    }
+
+    public boolean validatePaymentDatePriorDueDate(BillPayment payment, LocalDate newDate) {
+        return false;
     }
 
 

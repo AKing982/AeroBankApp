@@ -17,6 +17,10 @@ public class ProcessedBillPayment
         this.isComplete = isComplete;
     }
 
+    public ProcessedBillPayment(){
+
+    }
+
     public ProcessedBillPayment(BillPayment billPayment, boolean isComplete, LocalDate lastProcessedDate) {
         this.billPayment = billPayment;
         this.isComplete = isComplete;

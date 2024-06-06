@@ -18,16 +18,6 @@ public class ProcessedBillPaymentVerification implements PaymentVerifier<Process
             throw new InvalidProcessedBillPaymentException("Processed bill payment cannot be null.");
         }
 
-//        if(!paymentCriteriaVerified(processedBillPayment)){
-//            return false;
-//        }
-        Long paymentID = getProcessedBillPaymentID(billPaymentHistory);
-        try{
-            validatePaymentWithDB(paymentID);
-        } catch(Exception e) {
-            LOGGER.error("Error while processing the payment", e);
-        }
-        return isPaymentProcessed(paymentID);
         return false;
     }
 
