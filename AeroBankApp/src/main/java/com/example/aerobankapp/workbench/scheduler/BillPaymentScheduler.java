@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,11 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
         return null;
     }
 
+    private void scheduleNextPayment(BillPayment payment, TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap) {
+        LocalDate nextPaymentDate = getNextPaymentDateFromPayment(payment);
+        nextScheduledPaymentMap.put(nextPaymentDate, payment.getPaymentAmount());
+    }
+
 
     @Override
     public Optional<LocalDate> getNextPaymentDate(BillPayment payment) {
@@ -66,17 +72,7 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
 
     @Override
     public Optional<LocalDate> getPreviousPaymentDate(BillPayment payment) {
-        validateBillPayment(billPayment);
-        if(!isPaymentScheduleCriteriaValid(billPayment)){
-            throw new InvalidDateException("Unable to retrieve last payment date from null payment schedule criteria.");
-        }
-        else if(!isDueDateValid(billPayment)){
-            return billPayment.getScheduledPaymentDate();
-        }
-        else if(!isPaymentScheduleDateValid(billPayment)) {
-            return billPayment.getDueDate();
-        }
-        return billPayment.getScheduledPaymentDate();
+       return Optional.empty();
     }
 
     private LocalDate getPaymentDate(BillPayment payment) {

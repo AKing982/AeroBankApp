@@ -3,22 +3,27 @@ package com.example.aerobankapp.model;
 import com.example.aerobankapp.workbench.AccountNotificationCategory;
 import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@Data
 @Builder
-public class AccountNotification {
+public class AccountNotification extends Notification {
 
     private Long accountNotificationID;
     private int accountID;
-    private String title;
-    private String message;
-    private int priority;
-    private boolean isRead;
-    private boolean isSevere;
     private AccountNotificationCategory category;
 
+    public AccountNotification(String title, String message, int priority, boolean isRead, boolean isSevere) {
+        super(title, message, priority, isRead, isSevere);
+    }
+
+    public AccountNotification(String title, String message, int priority, boolean isRead, boolean isSevere, Long accountNotificationID, int accountID, AccountNotificationCategory category) {
+        super(title, message, priority, isRead, isSevere);
+        this.accountNotificationID = accountNotificationID;
+        this.accountID = accountID;
+        this.category = category;
+    }
 }
 
 

@@ -1,10 +1,9 @@
 package com.example.aerobankapp.workbench.processor;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.TreeMap;
+import java.util.List;
 
-public interface PaymentProcessor<T>
+public interface PaymentProcessor<T, R>
 {
-    TreeMap<LocalDate, BigDecimal> processPaymentAndScheduleNextPayment(T payment);
+    List<R> processPayments(List<T> payments);
+    R processSinglePayment(T payment);
 }

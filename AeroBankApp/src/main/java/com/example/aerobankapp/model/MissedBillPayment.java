@@ -8,17 +8,11 @@ import java.time.LocalDate;
 @Data
 public class MissedBillPayment
 {
+    private BillPayment billPayment;
     private LocalDate originalDueDate;
-    private BigDecimal originalAmount;
-    private String payeeName;
-    private AccountCode payeeAccountCode;
 
-    public MissedBillPayment(LocalDate originalDueDate, BigDecimal originalAmount, String payeeName, AccountCode payeeAccountCode) {
+    public MissedBillPayment(BillPayment billPayment, LocalDate originalDueDate) {
+        this.billPayment = billPayment;
         this.originalDueDate = originalDueDate;
-        this.originalAmount = originalAmount;
-        this.payeeName = payeeName;
-        this.payeeAccountCode = payeeAccountCode;
     }
-
-
 }

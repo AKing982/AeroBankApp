@@ -37,7 +37,7 @@ public class BillPaymentRunner implements Runnable
     private final BillPaymentQueue billPaymentQueue;
 
     @Autowired
-    public BillPaymentRunner(@Qualifier("billPaymentEngineImpl") BillPaymentEngine billPaymentEngine,
+    public BillPaymentRunner(BillPaymentEngine billPaymentEngine,
                              @Qualifier("billPaymentDataManagerImpl") BillPaymentDataManager billPaymentDataManager,
                              BillPaymentQueue billPaymentQueue) {
         this.billPaymentEngine = billPaymentEngine;

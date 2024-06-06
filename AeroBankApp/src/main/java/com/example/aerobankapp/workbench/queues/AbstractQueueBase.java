@@ -1,9 +1,12 @@
 package com.example.aerobankapp.workbench.queues;
 
+import lombok.Getter;
+
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+@Getter
 public abstract class AbstractQueueBase<T>
 {
     private Queue<T> queue;
@@ -30,10 +33,6 @@ public abstract class AbstractQueueBase<T>
 
     public int size(){
         return this.queue.size();
-    }
-
-    public Queue<T> getQueue(){
-        return this.queue;
     }
 
     public T poll(){

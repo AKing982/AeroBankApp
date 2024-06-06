@@ -30,11 +30,15 @@ public class AccountDataManager
     }
 
 
-    private BigDecimal getCurrentAccountBalance(int acctID){
+    public BigDecimal getCurrentAccountBalance(int acctID){
         BigDecimal balance = accountService.getBalanceByAcctID(acctID);
         if(balance == null){
             LOGGER.error("Unable to retrieve balances for accountID: {}", acctID);
         }
         return balance;
+    }
+
+    public void updateAccountBalance(BigDecimal newBalance, int acctID) {
+
     }
 }
