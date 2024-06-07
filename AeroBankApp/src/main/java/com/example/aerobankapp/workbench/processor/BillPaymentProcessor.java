@@ -31,6 +31,7 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
     private final BillPaymentScheduler billPaymentScheduler;
     private final ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender;
     private TreeMap<LocalDate, List<ProcessedBillPayment>> processedBillPayments = new TreeMap<>();
+    private LatePaymentProcessor latePaymentProcessor;
     private Logger LOGGER = LoggerFactory.getLogger(BillPaymentProcessor.class);
 
     @Autowired
@@ -57,8 +58,11 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
 
         if(!billPaymentScheduler.validatePaymentDatePriorDueDate(payment)){
             // Add the Payment to the Late Payments
+            ProcessedBillPayment processedLatePayment = latePaymentProcessor.processLatePayment(payment);
 
-            // Process the late payments
+            // Retrieve the next scheduled date
+            // Retrieve the Payment amount withe the fee
+            // Add the result to the nextScheduledPaymentMap
         }
 
 //        if(!validatePaymentDatePriorDueDate(billPayment)){
@@ -69,6 +73,10 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
 //        }
 
         return nextScheduledPaymentMap;
+    }
+
+    public void processLatePayment(BillPayment payment) {
+
     }
 
     public ProcessedBillPayment processSinglePayment(BillPayment payment) {

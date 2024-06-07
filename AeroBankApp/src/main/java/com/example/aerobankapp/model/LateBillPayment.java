@@ -23,4 +23,8 @@ public class LateBillPayment
        this.lateFee = lateFee;
        this.billPayment = billPayment;
     }
+
+    public LateBillPayment(){
+
+    }
 }
