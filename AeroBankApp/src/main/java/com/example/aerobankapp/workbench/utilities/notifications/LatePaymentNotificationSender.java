@@ -24,9 +24,7 @@ public class LatePaymentNotificationSender extends SystemNotificationSender<Acco
 
     @Override
     public StringBuilder createMessage(LateBillPayment payment) {
-        if(payment == null){
-            throw new InvalidLatePaymentException("Late Payment cannot be null.");
-        }
+        validatePayment(payment);
         return notificationStrategy.buildMessage(payment);
     }
 
@@ -48,7 +46,9 @@ public class LatePaymentNotificationSender extends SystemNotificationSender<Acco
 
     @Override
     void validatePayment(LateBillPayment payment) {
-
+        if(payment == null){
+            throw new InvalidLatePaymentException("Late Payment cannot be null.");
+        }
     }
 
 }
