@@ -380,6 +380,27 @@ class LatePaymentProcessorTest {
 
     @Test
     @DisplayName("Test Process Single Payment when LatePayment is valid, then return processed LatePayment")
+    public void testProcessSinglePayment_whenPaymentIsValid_thenReturnProcessedPayment(){
+        AccountCode accountCode = mock(AccountCode.class);
+        BillPayment billPayment = BillPayment.builder()
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 5))
+                .dueDate(LocalDate.of(2024, 5, 29))
+                .userID(1)
+                .paymentType("ACCOUNT")
+                .paymentAmount(new BigDecimal("100.00"))
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .scheduleFrequency(ScheduleFrequency.MONTHLY)
+                .payeeName("Payee Test")
+                .isAutoPayEnabled(true)
+                .accountCode(accountCode)
+                .posted(LocalDate.now())
+                .build();
+
+        LateBillPayment lateBillPayment = new LateBillPayment(billPayment.getDueDate(), new BigDecimal("25.00"), billPayment);
+
+        when()
+
+    }
 
 
     @AfterEach

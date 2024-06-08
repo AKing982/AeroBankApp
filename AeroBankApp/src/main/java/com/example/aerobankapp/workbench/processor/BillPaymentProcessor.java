@@ -6,6 +6,8 @@ import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.workbench.data.AccountDataManager;
 import com.example.aerobankapp.workbench.data.BalanceHistoryDataManager;
 import com.example.aerobankapp.workbench.data.BillPaymentHistoryDataManager;
+import com.example.aerobankapp.workbench.generator.ReferenceNumberGenerator;
+import com.example.aerobankapp.workbench.generator.confirmation.ConfirmationNumberGenerator;
 import com.example.aerobankapp.workbench.scheduler.BillPaymentScheduler;
 import com.example.aerobankapp.workbench.utilities.AccountNotificationUtil;
 import com.example.aerobankapp.workbench.utilities.notifications.ProcessedBillPaymentNotificationSender;
@@ -22,7 +24,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 @Component
-public class BillPaymentProcessor implements PaymentProcessor<BillPayment, ProcessedBillPayment>, ScheduledPaymentProcessor<BillPayment>
+public class BillPaymentProcessor extends PaymentProcessor<BillPayment, ProcessedBillPayment> implements ScheduledPaymentProcessor<BillPayment>
 {
     private final AccountDataManager accountDataManager;
     private final BalanceHistoryDataManager balanceHistoryDataManager;
@@ -34,13 +36,8 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
     private LatePaymentProcessor latePaymentProcessor;
     private Logger LOGGER = LoggerFactory.getLogger(BillPaymentProcessor.class);
 
-    @Autowired
-    public BillPaymentProcessor(AccountDataManager accountDataManager,
-                                BalanceHistoryDataManager balanceHistoryDataManager,
-                                BillPaymentHistoryDataManager billPaymentHistoryDataManager,
-                                PaymentVerifier<ProcessedBillPayment> processedPaymentVerifier,
-                                BillPaymentScheduler billPaymentScheduler,
-                                ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender){
+    public BillPaymentProcessor(ConfirmationNumberGenerator confirmationNumberGenerator, ReferenceNumberGenerator referenceNumberGenerator, AccountDataManager accountDataManager, BalanceHistoryDataManager balanceHistoryDataManager, BillPaymentHistoryDataManager billPaymentHistoryDataManager, PaymentVerifier<ProcessedBillPayment> processedPaymentVerifier, BillPaymentScheduler billPaymentScheduler, ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender) {
+        super(confirmationNumberGenerator, referenceNumberGenerator);
         this.accountDataManager = accountDataManager;
         this.balanceHistoryDataManager = balanceHistoryDataManager;
         this.billPaymentHistoryDataManager = billPaymentHistoryDataManager;
@@ -58,7 +55,7 @@ public class BillPaymentProcessor implements PaymentProcessor<BillPayment, Proce
 
         if(!billPaymentScheduler.validatePaymentDatePriorDueDate(payment)){
             // Add the Payment to the Late Payments
-            ProcessedBillPayment processedLatePayment = latePaymentProcessor.processLatePayment(payment);
+            ProcessedLatePayment processedLatePayment = latePaymentProcessor.processLatePayment(payment);
 
             // Retrieve the next scheduled date
             // Retrieve the Payment amount withe the fee

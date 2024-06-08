@@ -3,11 +3,10 @@ package com.example.aerobankapp.workbench.processor;
 import com.example.aerobankapp.exceptions.IllegalDateException;
 import com.example.aerobankapp.exceptions.InvalidBillPaymentException;
 import com.example.aerobankapp.exceptions.InvalidLatePaymentException;
-import com.example.aerobankapp.model.AccountNotification;
-import com.example.aerobankapp.model.BillPayment;
-import com.example.aerobankapp.model.LateBillPayment;
-import com.example.aerobankapp.model.ProcessedBillPayment;
+import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.workbench.billPayment.BillPaymentNotificationSender;
+import com.example.aerobankapp.workbench.generator.ReferenceNumberGenerator;
+import com.example.aerobankapp.workbench.generator.confirmation.ConfirmationNumberGenerator;
 import com.example.aerobankapp.workbench.utilities.AccountNotificationUtil;
 import com.example.aerobankapp.workbench.utilities.notifications.LatePaymentMessageStrategy;
 import com.example.aerobankapp.workbench.utilities.notifications.LatePaymentNotificationSender;
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 @Service
-public class LatePaymentProcessor implements PaymentProcessor<LateBillPayment, ProcessedBillPayment>, ScheduledPaymentProcessor<LateBillPayment>
+public class LatePaymentProcessor extends PaymentProcessor<LateBillPayment, ProcessedLatePayment> implements ScheduledPaymentProcessor<LateBillPayment>
 {
 
     private LatePaymentNotificationSender latePaymentNotificationSender;
@@ -34,7 +33,8 @@ public class LatePaymentProcessor implements PaymentProcessor<LateBillPayment, P
     private Logger LOGGER = LoggerFactory.getLogger(LatePaymentProcessor.class);
 
     @Autowired
-    public LatePaymentProcessor(LatePaymentNotificationSender latePaymentNotificationSender){
+    public LatePaymentProcessor(ConfirmationNumberGenerator confirmationNumberGenerator, ReferenceNumberGenerator referenceNumberGenerator, LatePaymentNotificationSender latePaymentNotificationSender) {
+        super(confirmationNumberGenerator, referenceNumberGenerator);
         this.latePaymentNotificationSender = latePaymentNotificationSender;
     }
 
@@ -133,8 +133,9 @@ public class LatePaymentProcessor implements PaymentProcessor<LateBillPayment, P
         return false;
     }
 
-    public ProcessedBillPayment processLatePayment(final BillPayment payment){
+    public ProcessedLatePayment processLatePayment(final BillPayment payment){
         validateBillPayment(payment);
+        isBillPaymentLate(payment);
         LateBillPayment lateBillPayment = buildLateBillPayment(payment);
 
         return processSinglePayment(lateBillPayment);
@@ -161,18 +162,23 @@ public class LatePaymentProcessor implements PaymentProcessor<LateBillPayment, P
     }
 
     @Override
-    public List<ProcessedBillPayment> processPayments(List<LateBillPayment> payments) {
+    public List<ProcessedLatePayment> processPayments(List<LateBillPayment> payments) {
         return List.of();
     }
 
     @Override
-    public ProcessedBillPayment processSinglePayment(LateBillPayment payment) {
+    public ProcessedLatePayment processSinglePayment(LateBillPayment payment) {
         // Validate the late payment
         validateLatePayment(payment);
 
         // Calculate the Late Fee Amount
+        BigDecimal calculatedLateFee = calculateTotalAmountDue(payment);
 
-        // Add the Late Fee amount to the payment
+        // Generate the Confirmation and ReferenceNumber
+        ConfirmationNumber confirmationNumber = confirmationNumberGenerator.generateConfirmationNumber();
+        ReferenceNumber referenceNumber = referenceNumberGenerator.generateReferenceNumber();
+
+        // Update the transaction status
 
         // Send notification to the user
 

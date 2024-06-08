@@ -4,11 +4,13 @@ import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.ReferenceNumber;
 import com.example.aerobankapp.workbench.transactions.TransactionType;
 import com.example.aerobankapp.workbench.utilities.TransactionStatus;
+import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Component
 public class ReferenceNumberGeneratorImpl implements ReferenceNumberGenerator
 {
     private TransactionType transactionType;
