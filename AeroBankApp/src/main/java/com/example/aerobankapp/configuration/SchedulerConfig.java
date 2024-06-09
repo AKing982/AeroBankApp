@@ -4,6 +4,7 @@ import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.scheduler.CronExpressionBuilder;
 import com.example.aerobankapp.scheduler.factory.SpringJobFactory;
 import com.example.aerobankapp.scheduler.jobs.DepositJob;
+import com.example.aerobankapp.scheduler.jobs.LatePaymentJob;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import org.quartz.*;
 import org.quartz.spi.JobFactory;
@@ -91,6 +92,24 @@ public class SchedulerConfig
         Scheduler scheduler = schedulerFactoryBean().getScheduler();
         scheduler.start();
         return scheduler;
+    }
+
+    @Bean
+    public JobDetail latePaymentJobDetail(){
+        return JobBuilder.newJob(LatePaymentJob.class)
+                .withIdentity("latePaymentJob")
+                .storeDurably().build();
+    }
+
+    @Bean
+    public Trigger latePaymentTrigger(){
+        SimpleScheduleBuilder schedulerBuilder = SimpleScheduleBuilder.simpleSchedule()
+                .withIntervalInHours(1)
+                .repeatForever();
+        return TriggerBuilder.newTrigger()
+                .forJob(latePaymentJobDetail())
+                .withSchedule(schedulerBuilder)
+                .build();
     }
 
     public SimpleTriggerFactoryBean simpleJobTrigger(@Qualifier("simpleJobDetail") JobDetail jobDetail)

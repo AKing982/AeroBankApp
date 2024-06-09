@@ -4,6 +4,7 @@ import com.example.aerobankapp.exceptions.IllegalDateException;
 import com.example.aerobankapp.exceptions.InvalidBillPaymentException;
 import com.example.aerobankapp.exceptions.InvalidLatePaymentException;
 import com.example.aerobankapp.model.*;
+import com.example.aerobankapp.services.LatePaymentService;
 import com.example.aerobankapp.workbench.billPayment.BillPaymentNotificationSender;
 import com.example.aerobankapp.workbench.generator.ReferenceNumberGenerator;
 import com.example.aerobankapp.workbench.generator.confirmation.ConfirmationNumberGenerator;
@@ -21,7 +22,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 @Service
@@ -29,12 +32,17 @@ public class LatePaymentProcessor extends PaymentProcessor<LateBillPayment, Proc
 {
 
     private LatePaymentNotificationSender latePaymentNotificationSender;
-    private TreeMap<LocalDate, List<LateBillPayment>> latePayments = new TreeMap<>();
+    private LatePaymentService latePaymentService;
+    private TreeMap<LocalDate, List<ProcessedLatePayment>> processedLatePayments = new TreeMap<>();
     private Logger LOGGER = LoggerFactory.getLogger(LatePaymentProcessor.class);
 
     @Autowired
-    public LatePaymentProcessor(ConfirmationNumberGenerator confirmationNumberGenerator, ReferenceNumberGenerator referenceNumberGenerator, LatePaymentNotificationSender latePaymentNotificationSender) {
+    public LatePaymentProcessor(LatePaymentService latePaymentService,
+                                ConfirmationNumberGenerator confirmationNumberGenerator,
+                                ReferenceNumberGenerator referenceNumberGenerator,
+                                LatePaymentNotificationSender latePaymentNotificationSender) {
         super(confirmationNumberGenerator, referenceNumberGenerator);
+        this.latePaymentService = latePaymentService;
         this.latePaymentNotificationSender = latePaymentNotificationSender;
     }
 
@@ -44,9 +52,7 @@ public class LatePaymentProcessor extends PaymentProcessor<LateBillPayment, Proc
     }
 
     public int getTotalLatePayments(){
-        return latePayments.values().stream()
-                .mapToInt(List::size)
-                .sum();
+        return latePaymentService.findAll().size();
     }
 
     public LateBillPayment buildLateBillPayment(BillPayment billPayment) {
@@ -161,9 +167,23 @@ public class LatePaymentProcessor extends PaymentProcessor<LateBillPayment, Proc
         validateLatePaymentCriteria(lateBillPayment);
     }
 
+    public void processLatePayments(){
+        for(Map.Entry<LocalDate, List<LateBillPayment>> entry : latePayments.entrySet()){
+            List<LateBillPayment> payments = entry.getValue();
+            for(LateBillPayment payment : payments){
+                ProcessedLatePayment processedLatePayment = processSinglePayment(payment);
+                processedLatePayments.computeIfAbsent(processedLatePayment.getDateProcessed(), k -> new ArrayList<>()).add(processedLatePayment);
+            }
+        }
+    }
+
     @Override
     public List<ProcessedLatePayment> processPayments(List<LateBillPayment> payments) {
-        return List.of();
+        List<ProcessedLatePayment> processedPayments = new ArrayList<>();
+        for(LateBillPayment payment : payments){
+            processedPayments.add(processSinglePayment(payment));
+        }
+        return processedPayments;
     }
 
     @Override

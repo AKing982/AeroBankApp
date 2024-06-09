@@ -36,7 +36,7 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
     private LatePaymentProcessor latePaymentProcessor;
     private Logger LOGGER = LoggerFactory.getLogger(BillPaymentProcessor.class);
 
-    public BillPaymentProcessor(ConfirmationNumberGenerator confirmationNumberGenerator, ReferenceNumberGenerator referenceNumberGenerator, AccountDataManager accountDataManager, BalanceHistoryDataManager balanceHistoryDataManager, BillPaymentHistoryDataManager billPaymentHistoryDataManager, PaymentVerifier<ProcessedBillPayment> processedPaymentVerifier, BillPaymentScheduler billPaymentScheduler, ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender) {
+    public BillPaymentProcessor(ConfirmationNumberGenerator confirmationNumberGenerator, ReferenceNumberGenerator referenceNumberGenerator, AccountDataManager accountDataManager, BalanceHistoryDataManager balanceHistoryDataManager, BillPaymentHistoryDataManager billPaymentHistoryDataManager, PaymentVerifier<ProcessedBillPayment> processedPaymentVerifier, BillPaymentScheduler billPaymentScheduler, ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender, LatePaymentProcessor latePaymentProcessor) {
         super(confirmationNumberGenerator, referenceNumberGenerator);
         this.accountDataManager = accountDataManager;
         this.balanceHistoryDataManager = balanceHistoryDataManager;
@@ -44,6 +44,7 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
         this.processedPaymentVerifier = processedPaymentVerifier;
         this.billPaymentScheduler = billPaymentScheduler;
         this.processedBillPaymentNotificationSender = processedBillPaymentNotificationSender;
+        this.latePaymentProcessor = latePaymentProcessor;
     }
 
     @Override
@@ -53,27 +54,19 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
             throw new InvalidBillPaymentException("Unable to process null bill payment.");
         }
 
-        if(!billPaymentScheduler.validatePaymentDatePriorDueDate(payment)){
-            // Add the Payment to the Late Payments
-            ProcessedLatePayment processedLatePayment = latePaymentProcessor.processLatePayment(payment);
+        if(isBillPaymentLate(payment)){
 
-            // Retrieve the next scheduled date
-            // Retrieve the Payment amount withe the fee
-            // Add the result to the nextScheduledPaymentMap
+        }else{
+            processSinglePayment(payment);
+            Optional<LocalDate> nextScheduledPaymentDate = getNextScheduledPaymentDate(payment);
+            nextScheduledPaymentMap.put(nextScheduledPaymentDate.orElseThrow(() -> new IllegalStateException("Next scheduled payment date not found")), payment.getPaymentAmount());
         }
-
-//        if(!validatePaymentDatePriorDueDate(billPayment)){
-//            LateBillPayment lateBillPayment = buildLatePayment(billPayment);
-//            processLatePayment(lateBillPayment, nextScheduledPaymentMap);
-//        }else{
-//            processOnTimePayment(billPayment, nextScheduledPaymentMap);
-//        }
 
         return nextScheduledPaymentMap;
     }
 
-    public void processLatePayment(BillPayment payment) {
-
+    private boolean isBillPaymentLate(BillPayment payment){
+        return payment.getScheduledPaymentDate().isAfter(payment.getDueDate());
     }
 
     public ProcessedBillPayment processSinglePayment(BillPayment payment) {
