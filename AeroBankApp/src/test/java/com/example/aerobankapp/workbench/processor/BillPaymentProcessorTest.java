@@ -13,6 +13,7 @@ import com.example.aerobankapp.services.BillPaymentService;
 import com.example.aerobankapp.workbench.data.AccountDataManager;
 import com.example.aerobankapp.workbench.data.BalanceHistoryDataManager;
 import com.example.aerobankapp.workbench.data.BillPaymentHistoryDataManager;
+import com.example.aerobankapp.workbench.data.LatePaymentDataManager;
 import com.example.aerobankapp.workbench.generator.ReferenceNumberGenerator;
 import com.example.aerobankapp.workbench.generator.confirmation.ConfirmationNumberGenerator;
 import com.example.aerobankapp.workbench.scheduler.BillPaymentScheduler;
@@ -79,6 +80,9 @@ class BillPaymentProcessorTest {
     @Autowired
     private AccountDataManager accountDataManager;
 
+    @Autowired
+    private LatePaymentDataManager latePaymentDataManager;
+
     @Mock
     private PaymentVerifier<BillPayment> paymentVerifier;
 
@@ -89,7 +93,7 @@ class BillPaymentProcessorTest {
 
     @BeforeEach
     void setUp() {
-        billPaymentProcessor = new BillPaymentProcessor(confirmationNumberGenerator, referenceNumberGenerator, accountDataManager, balanceHistoryDataManager, billPaymentHistoryDataManager, processedBillPaymentVerification, billPaymentScheduler, processedBillPaymentNotificationSender);
+        billPaymentProcessor = new BillPaymentProcessor(confirmationNumberGenerator, referenceNumberGenerator, accountDataManager, balanceHistoryDataManager, billPaymentHistoryDataManager, processedBillPaymentVerification, billPaymentScheduler, processedBillPaymentNotificationSender, latePaymentDataManager);
         mockAccountCode = mock(AccountCode.class);
         mockStatic(AccountNotificationUtil.class);
     }

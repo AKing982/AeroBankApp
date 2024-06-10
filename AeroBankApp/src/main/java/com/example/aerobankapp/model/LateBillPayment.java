@@ -16,12 +16,21 @@ public class LateBillPayment
 
     private BigDecimal lateFee;
 
+    private int daysLate;
+
     private BillPayment billPayment;
 
     public LateBillPayment(LocalDate originalDueDate, BigDecimal lateFee, BillPayment billPayment) {
        this.originalDueDate = originalDueDate;
        this.lateFee = lateFee;
        this.billPayment = billPayment;
+    }
+
+    public LateBillPayment(LocalDate originalDueDate, BigDecimal lateFee, int daysLate, BillPayment billPayment) {
+        this.originalDueDate = originalDueDate;
+        this.lateFee = lateFee;
+        this.daysLate = daysLate;
+        this.billPayment = billPayment;
     }
 
     public LateBillPayment(){

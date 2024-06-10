@@ -6,6 +6,7 @@ import com.example.aerobankapp.exceptions.InvalidLatePaymentException;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.LatePaymentService;
 import com.example.aerobankapp.workbench.billPayment.BillPaymentNotificationSender;
+import com.example.aerobankapp.workbench.data.LatePaymentDataManager;
 import com.example.aerobankapp.workbench.generator.ReferenceNumberGenerator;
 import com.example.aerobankapp.workbench.generator.confirmation.ConfirmationNumberGenerator;
 import com.example.aerobankapp.workbench.utilities.AccountNotificationUtil;
@@ -32,17 +33,17 @@ public class LatePaymentProcessor extends PaymentProcessor<LateBillPayment, Proc
 {
 
     private LatePaymentNotificationSender latePaymentNotificationSender;
-    private LatePaymentService latePaymentService;
+    private LatePaymentDataManager latePaymentDataManager;
     private TreeMap<LocalDate, List<ProcessedLatePayment>> processedLatePayments = new TreeMap<>();
     private Logger LOGGER = LoggerFactory.getLogger(LatePaymentProcessor.class);
 
     @Autowired
-    public LatePaymentProcessor(LatePaymentService latePaymentService,
+    public LatePaymentProcessor(LatePaymentDataManager latePaymentDataManager,
                                 ConfirmationNumberGenerator confirmationNumberGenerator,
                                 ReferenceNumberGenerator referenceNumberGenerator,
                                 LatePaymentNotificationSender latePaymentNotificationSender) {
         super(confirmationNumberGenerator, referenceNumberGenerator);
-        this.latePaymentService = latePaymentService;
+        this.latePaymentDataManager = latePaymentDataManager;
         this.latePaymentNotificationSender = latePaymentNotificationSender;
     }
 
@@ -52,7 +53,7 @@ public class LatePaymentProcessor extends PaymentProcessor<LateBillPayment, Proc
     }
 
     public int getTotalLatePayments(){
-        return latePaymentService.findAll().size();
+        return latePaymentDataManager.fetchAllLatePayments().size();
     }
 
     public LateBillPayment buildLateBillPayment(BillPayment billPayment) {
@@ -129,6 +130,9 @@ public class LatePaymentProcessor extends PaymentProcessor<LateBillPayment, Proc
             throw new InvalidLatePaymentException("Found Null Late Payment Criteria: " + lateBillPayment.getBillPayment().toString());
         }
     }
+
+
+
 
     public boolean isBillPaymentLate(final BillPayment billPayment) {
         validateBillPayment(billPayment);
