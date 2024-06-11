@@ -1,6 +1,7 @@
 package com.example.aerobankapp.workbench.processor;
 
 import com.example.aerobankapp.workbench.generator.ReferenceNumberGenerator;
+import com.example.aerobankapp.workbench.generator.ReferenceNumberGeneratorImpl;
 import com.example.aerobankapp.workbench.generator.confirmation.ConfirmationNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,9 @@ public abstract class PaymentProcessor<T, R>
     protected ReferenceNumberGenerator referenceNumberGenerator;
 
     @Autowired
-    public PaymentProcessor(ConfirmationNumberGenerator confirmationNumberGenerator,
-                            ReferenceNumberGenerator referenceNumberGenerator){
+    public PaymentProcessor(ConfirmationNumberGenerator confirmationNumberGenerator){
         this.confirmationNumberGenerator = confirmationNumberGenerator;
-        this.referenceNumberGenerator = referenceNumberGenerator;
+        this.referenceNumberGenerator = new ReferenceNumberGeneratorImpl();
     }
 
     abstract List<R> processPayments(List<T> payments);

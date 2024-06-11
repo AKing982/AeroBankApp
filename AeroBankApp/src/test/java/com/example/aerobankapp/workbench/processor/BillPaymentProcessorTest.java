@@ -1,12 +1,10 @@
 package com.example.aerobankapp.workbench.processor;
 
 import com.example.aerobankapp.account.AccountType;
+import com.example.aerobankapp.entity.LatePaymentEntity;
 import com.example.aerobankapp.exceptions.InvalidBalanceException;
 import com.example.aerobankapp.exceptions.InvalidBillPaymentException;
-import com.example.aerobankapp.model.AccountCode;
-import com.example.aerobankapp.model.AccountNotification;
-import com.example.aerobankapp.model.BillPayment;
-import com.example.aerobankapp.model.ProcessedBillPayment;
+import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.BalanceHistoryService;
 import com.example.aerobankapp.services.BillPaymentHistoryService;
 import com.example.aerobankapp.services.BillPaymentService;
@@ -93,7 +91,7 @@ class BillPaymentProcessorTest {
 
     @BeforeEach
     void setUp() {
-        billPaymentProcessor = new BillPaymentProcessor(confirmationNumberGenerator, referenceNumberGenerator, accountDataManager, balanceHistoryDataManager, billPaymentHistoryDataManager, processedBillPaymentVerification, billPaymentScheduler, processedBillPaymentNotificationSender, latePaymentDataManager);
+        billPaymentProcessor = new BillPaymentProcessor(confirmationNumberGenerator, accountDataManager, balanceHistoryDataManager, billPaymentHistoryDataManager, processedBillPaymentVerification, billPaymentScheduler, processedBillPaymentNotificationSender, latePaymentDataManager);
         mockAccountCode = mock(AccountCode.class);
         mockStatic(AccountNotificationUtil.class);
     }
@@ -180,6 +178,7 @@ class BillPaymentProcessorTest {
         assertThrows(InvalidBillPaymentException.class, () -> billPaymentProcessor.processPaymentAndScheduleNextPayment(null));
     }
 
+
     @Test
     @DisplayName("Test processPaymentAndScheduleNextPayment when payment date after due date, then return next schedule date with payment amount with fee")
     public void testProcessPaymentAndScheduleNextPayment_whenPaymentDateAfterDueDate_thenReturnNextScheduleDateWithPaymentAmountWithFee(){
@@ -189,18 +188,22 @@ class BillPaymentProcessorTest {
                 .paymentType("ACCOUNT")
                 .accountCode(accountCode)
                 .dueDate(LocalDate.of(2024, 6, 1))
-                .scheduledPaymentDate(LocalDate.of(2024, 5, 28))
+                .scheduledPaymentDate(LocalDate.of(2024, 6, 4))
                 .isAutoPayEnabled(true)
                 .payeeName("Payee Test")
                 .scheduleFrequency(ScheduleFrequency.MONTHLY)
                 .scheduleStatus(ScheduleStatus.PENDING)
                 .userID(1)
+                .paymentID(1L)
                 .build();
+
+        LateBillPayment expectedLatePayment = new LateBillPayment(billPayment.getDueDate(), BigDecimal.valueOf(35), billPayment);
+        LatePaymentEntity latePaymentEntity = latePaymentDataManager.createPaymentEntity(expectedLatePayment);
 
         TreeMap<LocalDate, BigDecimal> expected = new TreeMap<>();
         expected.put(LocalDate.of(2024, 6, 1), BigDecimal.valueOf(70.00));
 
-        when(billPaymentScheduler.validatePaymentDatePriorDueDate(billPayment)).thenReturn(false);
+      //  when(billPaymentScheduler.validatePaymentDatePriorDueDate(billPayment)).thenReturn(true);
         TreeMap<LocalDate, BigDecimal> result = billPaymentProcessor.processPaymentAndScheduleNextPayment(billPayment);
 
         assertNotNull(result);

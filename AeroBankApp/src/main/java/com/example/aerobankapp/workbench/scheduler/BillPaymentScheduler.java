@@ -64,14 +64,18 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
         if(payment == null){
             throw new InvalidBillPaymentException("Unable to retrieve next payment date from null bill payment.");
         }
-        LocalDate dueDate = payment.getDueDate();
-        ScheduleFrequency frequency = payment.getScheduleFrequency();
-        LocalDate paymentDate = payment.getScheduledPaymentDate();
-
-        if(paymentDate == null){
-            return calculateNextPaymentDate(dueDate, frequency);
-        }
-        return calculateNextPaymentDate(paymentDate, frequency);
+//        LocalDate dueDate = payment.getDueDate();
+//        ScheduleFrequency frequency = payment.getScheduleFrequency();
+//        LocalDate paymentDate = payment.getScheduledPaymentDate();
+//        LOGGER.info("Due Date: {}, Frequency: {}, Payment Date: {}", dueDate, frequency, paymentDate);
+//
+//        if(paymentDate == null){
+//            LOGGER.info("Calculating next payment date by due date");
+//            return calculateNextPaymentDate(dueDate, frequency);
+//        }
+//        LOGGER.info("Calculating next payment date by payment date.");
+//        return calculateNextPaymentDate(paymentDate, frequency);
+        return null;
     }
 
     @Override

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-@Service
+
 public class FeeManagerImpl<T extends TransactionBase> implements FeeManager
 {
     @Override

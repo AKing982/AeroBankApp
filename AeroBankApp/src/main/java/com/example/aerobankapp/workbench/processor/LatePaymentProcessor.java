@@ -40,9 +40,8 @@ public class LatePaymentProcessor extends PaymentProcessor<LateBillPayment, Proc
     @Autowired
     public LatePaymentProcessor(LatePaymentDataManager latePaymentDataManager,
                                 ConfirmationNumberGenerator confirmationNumberGenerator,
-                                ReferenceNumberGenerator referenceNumberGenerator,
                                 LatePaymentNotificationSender latePaymentNotificationSender) {
-        super(confirmationNumberGenerator, referenceNumberGenerator);
+        super(confirmationNumberGenerator);
         this.latePaymentDataManager = latePaymentDataManager;
         this.latePaymentNotificationSender = latePaymentNotificationSender;
     }
@@ -172,13 +171,13 @@ public class LatePaymentProcessor extends PaymentProcessor<LateBillPayment, Proc
     }
 
     public void processLatePayments(){
-        for(Map.Entry<LocalDate, List<LateBillPayment>> entry : latePayments.entrySet()){
-            List<LateBillPayment> payments = entry.getValue();
-            for(LateBillPayment payment : payments){
-                ProcessedLatePayment processedLatePayment = processSinglePayment(payment);
-                processedLatePayments.computeIfAbsent(processedLatePayment.getDateProcessed(), k -> new ArrayList<>()).add(processedLatePayment);
-            }
-        }
+//        for(Map.Entry<LocalDate, List<LateBillPayment>> entry : latePayments.entrySet()){
+//            List<LateBillPayment> payments = entry.getValue();
+//            for(LateBillPayment payment : payments){
+//                ProcessedLatePayment processedLatePayment = processSinglePayment(payment);
+//                processedLatePayments.computeIfAbsent(processedLatePayment.getDateProcessed(), k -> new ArrayList<>()).add(processedLatePayment);
+//            }
+//        }
     }
 
     @Override

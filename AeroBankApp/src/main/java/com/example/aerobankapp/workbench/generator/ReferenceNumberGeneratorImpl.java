@@ -10,13 +10,16 @@ import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Component
+
 public class ReferenceNumberGeneratorImpl implements ReferenceNumberGenerator
 {
     private TransactionType transactionType;
     private TransactionStatus transactionStatus;
     private String acctRefCode;
 
+    public ReferenceNumberGeneratorImpl(){
+
+    }
 
     public ReferenceNumberGeneratorImpl(TransactionType type, TransactionStatus transactionStatus, String acctRefCode){
         // Basic constructor

@@ -22,13 +22,13 @@ public class LatePaymentDataManager
 {
     private final LatePaymentService latePaymentService;
 
-    private final FeeManagerImpl feeManager;
+    private final FeeManager feeManager;
 
     private final LatePaymentEntityBuilderImpl latePaymentEntityBuilder;
 
     @Autowired
     public LatePaymentDataManager(LatePaymentService latePaymentService, LatePaymentEntityBuilderImpl latePaymentEntityBuilder,
-                                   FeeManagerImpl feeManager){
+                                   @Qualifier("feeManagerImpl") FeeManager feeManager){
         this.latePaymentService = latePaymentService;
         this.latePaymentEntityBuilder = latePaymentEntityBuilder;
         this.feeManager = feeManager;

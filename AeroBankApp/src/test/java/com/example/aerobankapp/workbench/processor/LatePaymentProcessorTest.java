@@ -5,6 +5,9 @@ import com.example.aerobankapp.exceptions.InvalidBillPaymentException;
 import com.example.aerobankapp.exceptions.InvalidLatePaymentException;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.NotificationService;
+import com.example.aerobankapp.workbench.data.LatePaymentDataManager;
+import com.example.aerobankapp.workbench.generator.ReferenceNumberGenerator;
+import com.example.aerobankapp.workbench.generator.confirmation.ConfirmationNumberGenerator;
 import com.example.aerobankapp.workbench.utilities.AccountNotificationUtil;
 import com.example.aerobankapp.workbench.utilities.notifications.LatePaymentMessageStrategy;
 import com.example.aerobankapp.workbench.utilities.notifications.LatePaymentNotificationSender;
@@ -37,11 +40,20 @@ class LatePaymentProcessorTest {
     private LatePaymentProcessor processor;
 
     @Mock
+    private LatePaymentDataManager latePaymentDataManager;;
+
+    @Mock
+    private ConfirmationNumberGenerator confirmationNumberGenerator;
+
+    @Mock
+    private ReferenceNumberGenerator referenceNumberGenerator;
+
+    @Mock
     private LatePaymentNotificationSender notificationSender;
 
     @BeforeEach
     void setUp() {
-        processor = new LatePaymentProcessor(notificationSender);
+       processor = new LatePaymentProcessor(latePaymentDataManager, confirmationNumberGenerator, notificationSender);
     }
 
     @Test
@@ -118,7 +130,7 @@ class LatePaymentProcessorTest {
 
         ProcessedBillPayment expectedProcessedBillPayment = new ProcessedBillPayment();
 
-        ProcessedBillPayment processedBillPayment = processor.processLatePayment(billPayment);
+        ProcessedLatePayment processedBillPayment = processor.processLatePayment(billPayment);
 
         assertNotNull(processedBillPayment);
         assertEquals(expectedProcessedBillPayment, processedBillPayment);
@@ -397,9 +409,6 @@ class LatePaymentProcessorTest {
                 .build();
 
         LateBillPayment lateBillPayment = new LateBillPayment(billPayment.getDueDate(), new BigDecimal("25.00"), billPayment);
-
-        when()
-
     }
 
 

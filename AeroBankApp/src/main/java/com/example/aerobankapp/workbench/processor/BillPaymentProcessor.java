@@ -40,8 +40,8 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
     private TreeMap<LocalDate, List<ProcessedBillPayment>> processedBillPayments = new TreeMap<>();
     private Logger LOGGER = LoggerFactory.getLogger(BillPaymentProcessor.class);
 
-    public BillPaymentProcessor(ConfirmationNumberGenerator confirmationNumberGenerator, ReferenceNumberGenerator referenceNumberGenerator, AccountDataManager accountDataManager, BalanceHistoryDataManager balanceHistoryDataManager, BillPaymentHistoryDataManager billPaymentHistoryDataManager, PaymentVerifier<ProcessedBillPayment> processedPaymentVerifier, BillPaymentScheduler billPaymentScheduler, ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender, LatePaymentDataManager latePaymentDataManager) {
-        super(confirmationNumberGenerator, referenceNumberGenerator);
+    public BillPaymentProcessor(ConfirmationNumberGenerator confirmationNumberGenerator, AccountDataManager accountDataManager, BalanceHistoryDataManager balanceHistoryDataManager, BillPaymentHistoryDataManager billPaymentHistoryDataManager, PaymentVerifier<ProcessedBillPayment> processedPaymentVerifier, BillPaymentScheduler billPaymentScheduler, ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender, LatePaymentDataManager latePaymentDataManager) {
+        super(confirmationNumberGenerator);
         this.accountDataManager = accountDataManager;
         this.balanceHistoryDataManager = balanceHistoryDataManager;
         this.billPaymentHistoryDataManager = billPaymentHistoryDataManager;
@@ -66,20 +66,17 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
             // Persist the Late Bill Payment to the database
             latePaymentDataManager.saveLatePayment(latePayment);
 
-        }else{
-            processSinglePayment(payment);
-            Optional<LocalDate> nextScheduledPaymentDate = getNextScheduledPaymentDate(payment);
-            nextScheduledPaymentMap.put(nextScheduledPaymentDate.orElseThrow(() -> new IllegalStateException("Next scheduled payment date not found")), payment.getPaymentAmount());
         }
+        processSinglePayment(payment);
+        Optional<LocalDate> nextScheduledPaymentDate = getNextScheduledPaymentDate(payment);
+        nextScheduledPaymentMap.put(nextScheduledPaymentDate.orElseThrow(() -> new IllegalStateException("Next scheduled payment date not found")), payment.getPaymentAmount());
 
         return nextScheduledPaymentMap;
     }
 
-    private boolean isBillPaymentLate(BillPayment payment){
+    public boolean isBillPaymentLate(BillPayment payment){
         return payment.getScheduledPaymentDate().isAfter(payment.getDueDate());
     }
-
-
 
     public ProcessedBillPayment processSinglePayment(BillPayment payment) {
         // Validate the payment
@@ -92,14 +89,20 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
 
         // Schedule the next payment date
         Optional<LocalDate> nextScheduledPaymentDate = getNextScheduledPaymentDate(payment);
-        LOGGER.info("Next Scheduled Payment Date: {}", nextScheduledPaymentDate);
-        ProcessedBillPayment processedBillPayment = buildProcessedBillPayment(payment, nextScheduledPaymentDate.get());
-        LOGGER.info("Processed Bill Payment: {}", processedBillPayment);
-        // Create a BillPayment History object
-        processBillPaymentHistory(processedBillPayment);
-        validateProcessedPayment(processedBillPayment);
-        sendNotification(processedBillPayment);
-        return processedBillPayment;
+        if(nextScheduledPaymentDate.isPresent()){
+            LOGGER.info("Next Scheduled Payment Date: {}", nextScheduledPaymentDate);
+            ProcessedBillPayment processedBillPayment = buildProcessedBillPayment(payment, nextScheduledPaymentDate.get());
+            LOGGER.info("Processed Bill Payment: {}", processedBillPayment);
+            // Create a BillPayment History object
+            processBillPaymentHistory(processedBillPayment);
+            validateProcessedPayment(processedBillPayment);
+            sendNotification(processedBillPayment);
+            return processedBillPayment;
+        }else{
+            LOGGER.error("Error: Next scheduled payment date not found for payment {}", payment);
+            throw new IllegalStateException("Next Scheduled Payment date not found for payment " + payment.toString());
+        }
+
     }
 
     public void processNewPaymentBalance(int acctID, BigDecimal paymentAmount){
@@ -118,7 +121,12 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
     }
 
     public Optional<LocalDate> getNextScheduledPaymentDate(final BillPayment payment) {
-        return billPaymentScheduler.getNextPaymentDate(payment);
+        Optional<LocalDate> nextScheduledPaymentDate = billPaymentScheduler.getNextPaymentDate(payment);
+        if(nextScheduledPaymentDate.isPresent()){
+            return nextScheduledPaymentDate;
+        }else{
+            throw new IllegalStateException("Next scheduled payment date not found for payment " + payment.toString());
+        }
     }
 
     public void processBillPaymentHistory(final ProcessedBillPayment processedBillPayment) {
