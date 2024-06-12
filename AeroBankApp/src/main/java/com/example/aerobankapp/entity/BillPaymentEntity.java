@@ -58,7 +58,7 @@ public class BillPaymentEntity
     @Column(name="isProcessed")
     private boolean isProcessed;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="paymentScheduleID")
     private BillPaymentScheduleEntity paymentSchedule;
 

@@ -12,6 +12,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="billPaymentSchedule")
@@ -44,6 +46,9 @@ public class BillPaymentScheduleEntity {
 
     @Column(name="autoPayEnabled")
     private boolean autoPayEnabled;
+
+    @OneToMany(mappedBy = "paymentSchedule")
+    private Set<BillPaymentEntity> billPayments;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="paymentHistoryID")

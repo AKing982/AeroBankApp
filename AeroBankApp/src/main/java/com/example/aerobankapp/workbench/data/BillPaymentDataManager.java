@@ -6,6 +6,7 @@ import com.example.aerobankapp.entity.BillPaymentScheduleEntity;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeMap;
 
 public interface BillPaymentDataManager
@@ -16,6 +17,7 @@ public interface BillPaymentDataManager
     List<BillPaymentScheduleEntity> fetchBillPaymentSchedulesByPaymentDate(LocalDate paymentDate);
     List<BillPaymentScheduleEntity> fetchBillPaymentSchedulesByDueDate(LocalDate dueDate);
     List<BillPaymentHistoryEntity> fetchBillPaymentHistoryByID(Long id);
+    LocalDate findLastDueDateByPaymentID(Long id);
 
     void updateBillPaymentRecord(BillPaymentEntity billPaymentEntity);
     void updateBillPaymentHistoryRecord(BillPaymentHistoryEntity billPaymentHistory);

@@ -1,12 +1,16 @@
 package com.example.aerobankapp.workbench.scheduler;
 
 import com.example.aerobankapp.exceptions.InvalidBillPaymentException;
+import com.example.aerobankapp.exceptions.InvalidBillPaymentParametersException;
 import com.example.aerobankapp.exceptions.InvalidDateException;
 import com.example.aerobankapp.model.BillPayment;
 import com.example.aerobankapp.model.LateBillPayment;
+import com.example.aerobankapp.services.BillPaymentHistoryService;
+import com.example.aerobankapp.workbench.data.BillPaymentDataManager;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -18,11 +22,13 @@ import java.util.TreeMap;
 @Component
 public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
 
+    private final BillPaymentDataManager billPaymentDataManager;
     private Logger LOGGER = LoggerFactory.getLogger(BillPaymentScheduler.class);
     private TreeMap<LocalDate, List<BillPayment>> scheduledPayments = new TreeMap<>();
 
-    public BillPaymentScheduler() {
-
+    @Autowired
+    public BillPaymentScheduler(BillPaymentDataManager billPaymentDataManager) {
+        this.billPaymentDataManager = billPaymentDataManager;
     }
 
     public void cancelPayment(BillPayment billPayment) {
@@ -64,18 +70,34 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
         if(payment == null){
             throw new InvalidBillPaymentException("Unable to retrieve next payment date from null bill payment.");
         }
-//        LocalDate dueDate = payment.getDueDate();
-//        ScheduleFrequency frequency = payment.getScheduleFrequency();
-//        LocalDate paymentDate = payment.getScheduledPaymentDate();
-//        LOGGER.info("Due Date: {}, Frequency: {}, Payment Date: {}", dueDate, frequency, paymentDate);
-//
-//        if(paymentDate == null){
-//            LOGGER.info("Calculating next payment date by due date");
-//            return calculateNextPaymentDate(dueDate, frequency);
-//        }
-//        LOGGER.info("Calculating next payment date by payment date.");
-//        return calculateNextPaymentDate(paymentDate, frequency);
-        return null;
+       LocalDate dueDate = payment.getDueDate();
+       ScheduleFrequency frequency = payment.getScheduleFrequency();
+       LocalDate paymentDate = payment.getScheduledPaymentDate();
+       if(dueDate == null && paymentDate == null){
+           throw new InvalidBillPaymentParametersException("Invalid Date parameters: dueDate or paymentDate is null");
+       }
+
+       if(paymentDate == null){
+           LOGGER.info("Calculating next payment date for payment {}", payment);
+           return calculateNextPaymentDate(dueDate, frequency);
+       }
+
+       if(dueDate == null){
+            // Search for the last due date
+           LOGGER.info("Due date is null");
+           LOGGER.info("PaymentID: {}", payment.getPaymentID());
+           LocalDate lastDueDateForPayment = billPaymentDataManager.findLastDueDateByPaymentID(payment.getPaymentID());
+           LOGGER.info("Last due date for payment: {}", lastDueDateForPayment);
+           if(lastDueDateForPayment != null){
+               LOGGER.info("Last Due Date is {}", lastDueDateForPayment);
+               Optional<LocalDate> nextPaymentDate = calculateNextPaymentDate(lastDueDateForPayment,frequency);
+               LOGGER.info("Next Payment Date: {}", nextPaymentDate);
+               return nextPaymentDate;
+           }
+       }
+
+        LOGGER.info("Calculating next payment date for payment {}", payment);
+        return calculateNextPaymentDate(paymentDate, frequency);
     }
 
     @Override
