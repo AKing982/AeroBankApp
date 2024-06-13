@@ -59,6 +59,10 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
                     return executeScheduleJobTask(paymentDate);
                 }
             }
+            else
+            {
+                throw new InvalidBillPaymentIDException("Bill payment ID is not valid");
+            }
         }
         // Else if the scheduled payment is not null, then schedule the payment
         else
@@ -73,20 +77,38 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
         return false;
     }
 
-    public boolean executeScheduleJobTask(LocalDate scheduledPaymentDate)
-    {
-        JobDetail job = JobBuilder.newJob(BillPaymentJob.class)
-                .withIdentity("paymentJob", "group1").build();
-
-        ZonedDateTime zonedDateTime = scheduledPaymentDate.atStartOfDay(ZoneId.systemDefault());
-        Date scheduledDate = Date.from(zonedDateTime.toInstant());
-
-        Trigger trigger = TriggerBuilder
-                .newTrigger()
-                .withIdentity("trigger1", "group1")
-                .startAt(scheduledDate)
+    public Trigger createBillPaymentTrigger(final Date scheduleDate) {
+        return TriggerBuilder.newTrigger()
+                .withIdentity("paymentJob", "group1")
+                .startAt(scheduleDate)
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule())
                 .build();
+    }
+
+    public JobDetail createBillPaymentJobDetail() {
+        return JobBuilder.newJob(BillPaymentJob.class)
+                .withIdentity("paymentJob", "group1").build();
+    }
+
+    public ZonedDateTime createBillPaymentZonedDateTime(LocalDate scheduledPaymentDate) {
+        if(scheduledPaymentDate == null){
+            throw new IllegalDateException("Scheduled payment date cannot be null");
+        }
+        return scheduledPaymentDate.atStartOfDay(ZoneId.systemDefault());
+    }
+
+    public Date createScheduleDate(ZonedDateTime zonedDateTime) {
+        return Date.from(zonedDateTime.toInstant());
+    }
+
+    public boolean executeScheduleJobTask(LocalDate scheduledPaymentDate)
+    {
+        JobDetail job = createBillPaymentJobDetail();
+
+        ZonedDateTime zonedDateTime = createBillPaymentZonedDateTime(scheduledPaymentDate);
+        Date scheduledDate = createScheduleDate(zonedDateTime);
+
+        Trigger trigger = createBillPaymentTrigger(scheduledDate);
 
         try
         {
@@ -264,7 +286,7 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
     }
 
     @Override
-    public Optional<LocalDate> getPreviousPaymentDate(BillPayment payment)
+    public Optional<LocalDate> getPreviousPaymentDate(final BillPayment payment)
     {
         if(payment == null)
         {
