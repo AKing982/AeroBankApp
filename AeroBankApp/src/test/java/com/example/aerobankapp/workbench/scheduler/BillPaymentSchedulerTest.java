@@ -132,11 +132,29 @@ class BillPaymentSchedulerTest {
     }
 
     @Test
+    @DisplayName("Test calculateNextDueDate when frequency null, then throw exception")
+    public void testCalculateNextDueDate_whenFrequencyNull_thenThrowException(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            billPaymentScheduler.calculateNextDueDate(LocalDate.of(2024, 5, 1), null);
+        });
+    }
+
+    @Test
     @DisplayName("Test calculateNextDueDate when previous date is valid, return next due date")
     public void testCalculateNextDueDate_whenPreviousDateIsValid_returnNextDueDate() {
         LocalDate previousDueDate = LocalDate.of(2024, 6, 1);
         Optional<LocalDate> nextDueDate = billPaymentScheduler.calculateNextDueDate(previousDueDate, ScheduleFrequency.MONTHLY);
         assertEquals(LocalDate.of(2024, 7, 1), nextDueDate.get());
+    }
+
+    @Test
+    @DisplayName("Test calculateNextDueDate when frequency every three weeks, then return nextDueDate")
+    public void testCalculateNextDueDate_whenFrequencyEveryThreeWeeks_returnNextDueDate() {
+        LocalDate previousDueDate = LocalDate.of(2024, 6, 1);
+        Optional<LocalDate> expectedNextDue = Optional.of(LocalDate.of(2024, 6, 22));
+
+        Optional<LocalDate> actualNextDue = billPaymentScheduler.calculateNextDueDate(previousDueDate, ScheduleFrequency.TRI_WEEKLY);
+        assertEquals(expectedNextDue, actualNextDue);
     }
 
     @Test
@@ -257,8 +275,8 @@ class BillPaymentSchedulerTest {
     }
 
     @Test
-    @DisplayName("Test GetPreviousPaymentDate when payment id is valid, return Previous PaymentDate")
-    public void testGetPreviousPaymentDate_whenPaymentIdIsValid_fetchPreviousPaymentId_thenReturnPreviousPayment(){
+    @DisplayName("Test GetPreviousPaymentDate when payment id is valid, no previous payments, return empty optional")
+    public void testGetPreviousPaymentDate_whenPaymentIdIsValid_NoPreviousPayments_thenReturnEmptyOptional(){
         AccountCode accountCode = new AccountCode("A", "K", 1, AccountType.CHECKING, 24, 1);
         BillPayment billPayment = BillPayment.builder()
                 .paymentAmount(new BigDecimal("45.00"))
@@ -274,7 +292,7 @@ class BillPaymentSchedulerTest {
                 .paymentID(1L)
                 .build();
 
-        Optional<LocalDate> expectedPreviousPaymentDate = Optional.of(LocalDate.of(2024, 4, 28));
+        Optional<LocalDate> expectedPreviousPaymentDate = Optional.empty();
         Optional<LocalDate> actualPreviousPaymentDate = billPaymentScheduler.getPreviousPaymentDate(billPayment);
 
         assertEquals(expectedPreviousPaymentDate, actualPreviousPaymentDate);
@@ -329,6 +347,15 @@ class BillPaymentSchedulerTest {
                 .build();
 
         boolean result = billPaymentScheduler.schedulePayment(billPayment);
+        assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("Test cancel payment when bill payment is valid, then return true")
+    public void testCancelPayment_whenBillPaymentValid_thenReturnTrue(){
+        final String jobId = "paymentJob_32321";
+
+        boolean result = billPaymentScheduler.cancelPayment(jobId);
         assertTrue(result);
     }
 

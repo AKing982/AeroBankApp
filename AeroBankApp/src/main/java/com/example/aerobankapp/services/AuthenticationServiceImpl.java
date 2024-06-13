@@ -83,14 +83,15 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
     {
         Authentication authentication = authenticate(new UsernamePasswordAuthenticationToken(user, password));
         if(authentication.isAuthenticated()) {
-            String jwtToken = jwtUtil.generateToken(authentication);
-            if(jwtToken == null)
-            {
-                logger.error("Failed to generated token for user: {}", user);
-                throw new AuthenticationServiceException("Token Generation failed");
-            }
-            logger.warn("Token: " + jwtToken);
-            return new AuthDataResponse(jwtToken, "Bearer", user, authentication.getAuthorities());
+//            String jwtToken = jwtUtil.generateToken(authentication);
+//            if(jwtToken == null)
+//            {
+//                logger.error("Failed to generated token for user: {}", user);
+//                throw new AuthenticationServiceException("Token Generation failed");
+//            }
+            String uuidToken = UUID.randomUUID().toString();
+
+            return new AuthDataResponse(uuidToken, "Bearer", user, authentication.getAuthorities());
         }
         else
         {

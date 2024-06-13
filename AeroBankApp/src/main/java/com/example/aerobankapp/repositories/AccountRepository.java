@@ -44,7 +44,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("SELECT e FROM AccountEntity e JOIN e.user u WHERE e.accountCode =:acctCode AND u.userID =:userID")
     List<AccountEntity> findByAccountCodeAndUserID(@Param("acctCode") String acctCode, @Param("userID") int userID);
 
-    @Query("SELECT SUM(a.balance) FROM AccountEntity a JOIN a.users u WHERE u.userCredentials.username = :username")
+    @Query("SELECT SUM(a.balance) FROM AccountEntity a JOIN a.users u WHERE u.userCredentials.username =:username")
     BigDecimal getTotalAccountBalances(@Param("username") String username);
 
     @Query("SELECT COUNT(a) FROM AccountEntity a JOIN a.users u WHERE u.userCredentials.username =:username")

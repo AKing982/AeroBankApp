@@ -36,8 +36,21 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
         this.scheduler = scheduler;
     }
 
-    public void cancelPayment(BillPayment billPayment) {
+    public boolean cancelPayment(String jobId) {
+       if(jobId == null || jobId.isEmpty())
+       {
+           throw new IllegalArgumentException("Job ID cannot be null or empty");
+       }
+       try
+       {
+           scheduler.unscheduleJob(new TriggerKey("paymentJob_" + jobId, "group1"));
+           return true;
 
+       }catch(SchedulerException e)
+       {
+           LOGGER.error("There was a problem trying to cancel a payment job", e);
+           return false;
+       }
     }
 
     public boolean schedulePayment(BillPayment billPayment) {
@@ -64,17 +77,7 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
                 throw new InvalidBillPaymentIDException("Bill payment ID is not valid");
             }
         }
-        // Else if the scheduled payment is not null, then schedule the payment
-        else
-        {
-            return executeScheduleJobTask(scheduledPaymentDate);
-        }
-        // Fetch the scheduled PaymentDate from the BillPaymentSchedule table
-        // Once the scheduled payment is fetched, create the Quartz Job
-        // Then Schedule the payment job to quartz
-        // return true if no exceptions are caught during job scheduling
-        // else if an exception is caught, log the error and return false
-        return false;
+        return executeScheduleJobTask(scheduledPaymentDate);
     }
 
     public Trigger createBillPaymentTrigger(final Date scheduleDate) {
@@ -85,9 +88,9 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
                 .build();
     }
 
-    public JobDetail createBillPaymentJobDetail() {
+    public JobDetail createBillPaymentJobDetail(String uniqueId) {
         return JobBuilder.newJob(BillPaymentJob.class)
-                .withIdentity("paymentJob", "group1").build();
+                .withIdentity("paymentJob_" + uniqueId, "group1").build();
     }
 
     public ZonedDateTime createBillPaymentZonedDateTime(LocalDate scheduledPaymentDate) {
@@ -97,13 +100,18 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
         return scheduledPaymentDate.atStartOfDay(ZoneId.systemDefault());
     }
 
+    public String generateUniqueId(){
+        return String.valueOf(System.currentTimeMillis() % 1000000);
+    }
+
     public Date createScheduleDate(ZonedDateTime zonedDateTime) {
         return Date.from(zonedDateTime.toInstant());
     }
 
     public boolean executeScheduleJobTask(LocalDate scheduledPaymentDate)
     {
-        JobDetail job = createBillPaymentJobDetail();
+        String uniqueId = generateUniqueId();
+        JobDetail job = createBillPaymentJobDetail(uniqueId);
 
         ZonedDateTime zonedDateTime = createBillPaymentZonedDateTime(scheduledPaymentDate);
         Date scheduledDate = createScheduleDate(zonedDateTime);
@@ -123,29 +131,36 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
         }
     }
 
-    public void reschedulePayment(BillPayment billPayment, LocalDate newDate) {
+    public boolean reschedulePayment(String jobId, Date newDate) {
+        if(jobId == null || jobId.isEmpty())
+        {
+            throw new IllegalArgumentException("Job ID cannot be null or empty");
+        }
 
-    }
+        if(newDate == null)
+        {
+            throw new IllegalDateException("New date cannot be null");
+        }
 
-    public void rescheduleLatePayment(LateBillPayment latePayment, LocalDate newDate) {
+        try
+        {
+            Trigger newTrigger = createBillPaymentTrigger(newDate);
+            scheduler.rescheduleJob(new TriggerKey("paymentJob_" + jobId, "group1"), newTrigger);
+            return true;
 
+        }catch(SchedulerException e)
+        {
+            LOGGER.error("An Error occurred while rescheduling a payment job", e);
+            return false;
+        }
     }
 
     public boolean isPaymentScheduled(BillPayment billPayment) {
         return false;
     }
 
-    public List<BillPayment> getScheduledPaymentsForPeriod(LocalDate startDate, LocalDate endDate){
+    public TreeMap<LocalDate, BillPayment> getScheduledPaymentsForPeriod(LocalDate startDate, LocalDate endDate){
         return null;
-    }
-
-    private void scheduleNextPayment(BillPayment payment, TreeMap<LocalDate, BigDecimal> nextScheduledPaymentMap) {
-      //  LocalDate nextPaymentDate = getNextPaymentDateFromPayment(payment);
-       // nextScheduledPaymentMap.put(nextPaymentDate, payment.getPaymentAmount());
-    }
-
-    public boolean validatePaymentDatePriorDueDate(BillPayment payment, LocalDate newDate) {
-        return false;
     }
 
     public Optional<LocalDate> calculateNextDueDate(LocalDate previousDueDate, ScheduleFrequency frequency) {
@@ -153,7 +168,13 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
         {
             throw new IllegalDateException("The previous due date cannot be null");
         }
-        LocalDate nextDueDate = null;
+
+        if(frequency == null)
+        {
+            throw new IllegalArgumentException("The schedule frequency cannot be null");
+        }
+
+        LocalDate nextDueDate;
         switch(frequency)
         {
             case MONTHLY ->
@@ -168,25 +189,20 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
                 {
                     nextDueDate = nextDueDate.withDayOfMonth(previousDueDate.getDayOfMonth());
                 }
-                break;
             }
-            case WEEKLY ->
-            {
-                nextDueDate = previousDueDate.plusWeeks(1);
-                break;
-            }
-            case BI_WEEKLY ->
-            {
-                nextDueDate = previousDueDate.plusWeeks(2);
-                break;
-            }
-            default ->
-            {
+            case WEEKLY -> nextDueDate = getNextIncrementedWeek(previousDueDate, 1);
+            case BI_WEEKLY -> nextDueDate = getNextIncrementedWeek(previousDueDate, 2);
 
-            }
+            case TRI_WEEKLY -> nextDueDate = getNextIncrementedWeek(previousDueDate, 3);
+            default -> throw new IllegalArgumentException("Unsupported schedule frequency: " + frequency);
         }
-        return Optional.ofNullable(nextDueDate);
+        return Optional.of(nextDueDate);
     }
+
+    private LocalDate getNextIncrementedWeek(LocalDate previousDueDate, int numWeeks){
+        return previousDueDate.plusWeeks(numWeeks);
+    }
+
 
     public TreeMap<String, LocalDate> getNextPaymentDetails(final BillPayment payment)
     {
@@ -286,36 +302,20 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
     }
 
     @Override
-    public Optional<LocalDate> getPreviousPaymentDate(final BillPayment payment)
-    {
-        if(payment == null)
-        {
+    public Optional<LocalDate> getPreviousPaymentDate(final BillPayment payment) {
+        if (payment == null) {
             throw new InvalidBillPaymentException("Unable to retrieve previous payment date from null bill payment.");
         }
 
-        // Is the paymentID valid?
-        if(payment.getPaymentID() > 0)
+        if (payment.getPaymentID() > 0)
         {
-            Optional<LocalDate> lastPayment = billPaymentDataManager.findLastScheduledPaymentDateByPaymentID(payment.getSchedulePaymentID());
-            if(lastPayment.isPresent())
-            {
-                return lastPayment;
-            }
             // Else if the last payment is null or empty
-            else
-            {
-
-            }
+            return billPaymentDataManager.findLastScheduledPaymentDateByPaymentID(payment.getSchedulePaymentID());
         }
         else
         {
             throw new InvalidBillPaymentIDException("Bill payment ID must be greater than zero.");
         }
-        // If the paymentID is valid, then proceed to fetch the previous payment date
-        // Look up the previous payment date by fetching the previous payment date according to the payment ID
-
-
-       return Optional.empty();
     }
 
     private LocalDate getPaymentDate(BillPayment payment) {

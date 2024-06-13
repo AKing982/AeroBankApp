@@ -124,10 +124,12 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    @Transactional
     public BigDecimal getTotalAccountBalances(String user)
     {
         LOGGER.info("Getting Total Balances for User: " + user);
         BigDecimal totalBalances = accountRepository.getTotalAccountBalances(user);
+        LOGGER.info("Total Balances: ${}", totalBalances);
         if(totalBalances == null)
         {
             throw new IllegalArgumentException("Found No Balances for this account.");
