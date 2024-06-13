@@ -3,9 +3,10 @@ package com.example.aerobankapp.workbench.scheduler;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.BillPayment;
 import com.example.aerobankapp.model.LateBillPayment;
+import com.example.aerobankapp.scheduler.jobs.BillPaymentJob;
 import com.example.aerobankapp.workbench.data.BillPaymentDataManager;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
-import org.quartz.Scheduler;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -37,8 +41,64 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
     }
 
     public boolean schedulePayment(BillPayment billPayment) {
+        // Validate the bill payment
         validateBillPayment(billPayment);
+
+        // If the paymentID is valid
+        LocalDate scheduledPaymentDate = billPayment.getScheduledPaymentDate();
+        Long paymentID = billPayment.getPaymentID();
+        if(scheduledPaymentDate == null)
+        {
+            if(paymentID > 0)
+            {
+                // Fetch the scheduled payment from the database
+                Optional<LocalDate> scheduledPaymentOptional = billPaymentDataManager.findLastScheduledPaymentDateInScheduleTableByPaymentID(paymentID);
+                if(scheduledPaymentOptional.isPresent())
+                {
+                    LocalDate paymentDate = scheduledPaymentOptional.get();
+                    return executeScheduleJobTask(paymentDate);
+                }
+            }
+        }
+        // Else if the scheduled payment is not null, then schedule the payment
+        else
+        {
+            return executeScheduleJobTask(scheduledPaymentDate);
+        }
+        // Fetch the scheduled PaymentDate from the BillPaymentSchedule table
+        // Once the scheduled payment is fetched, create the Quartz Job
+        // Then Schedule the payment job to quartz
+        // return true if no exceptions are caught during job scheduling
+        // else if an exception is caught, log the error and return false
         return false;
+    }
+
+    public boolean executeScheduleJobTask(LocalDate scheduledPaymentDate)
+    {
+        JobDetail job = JobBuilder.newJob(BillPaymentJob.class)
+                .withIdentity("paymentJob", "group1").build();
+
+        ZonedDateTime zonedDateTime = scheduledPaymentDate.atStartOfDay(ZoneId.systemDefault());
+        Date scheduledDate = Date.from(zonedDateTime.toInstant());
+
+        Trigger trigger = TriggerBuilder
+                .newTrigger()
+                .withIdentity("trigger1", "group1")
+                .startAt(scheduledDate)
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule())
+                .build();
+
+        try
+        {
+            scheduler.start();
+            scheduler.scheduleJob(job, trigger);
+            return true;
+
+        }catch(SchedulerException e)
+        {
+            LOGGER.error("Error occurred while scheduling payment job", e);
+            return false;
+        }
     }
 
     public void reschedulePayment(BillPayment billPayment, LocalDate newDate) {

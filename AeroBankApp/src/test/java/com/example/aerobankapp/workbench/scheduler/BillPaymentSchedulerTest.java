@@ -303,7 +303,29 @@ class BillPaymentSchedulerTest {
                 .scheduleFrequency(ScheduleFrequency.MONTHLY)
                 .scheduleStatus(ScheduleStatus.PENDING)
                 .userID(1)
-                .paymentID(-1L)
+                .paymentID(1L)
+                .build();
+
+        boolean result = billPaymentScheduler.schedulePayment(billPayment);
+        assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("Test SchedulePayment when payment date is valid, then return true")
+    public void testSchedulePayment_whenPaymentDateValid_thenReturnTrue(){
+        AccountCode accountCode = new AccountCode("A", "K", 1, AccountType.CHECKING, 24, 1);
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .paymentType("ACCOUNT")
+                .accountCode(accountCode)
+                .dueDate(LocalDate.of(2024, 6, 1))
+                .scheduledPaymentDate(LocalDate.of(2024, 5, 28))
+                .isAutoPayEnabled(true)
+                .payeeName("Payee Test")
+                .scheduleFrequency(ScheduleFrequency.MONTHLY)
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .userID(1)
+                .paymentID(1L)
                 .build();
 
         boolean result = billPaymentScheduler.schedulePayment(billPayment);
