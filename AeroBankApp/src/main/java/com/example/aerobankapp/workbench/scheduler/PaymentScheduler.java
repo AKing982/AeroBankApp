@@ -16,7 +16,7 @@ public abstract class PaymentScheduler<T>
     public abstract Optional<LocalDate> getPreviousPaymentDate(T t);
 
     protected Optional<LocalDate> calculateNextPaymentDate(LocalDate currentDate, ScheduleFrequency frequency) {
-        validateNextPaymentDateCriteria(currentDate, frequency);
+     //   validateNextPaymentDateCriteria(currentDate, frequency);
         switch(frequency){
             case MONTHLY -> {
                 LOGGER.info("Building Next Payment Date by Month");
@@ -32,6 +32,7 @@ public abstract class PaymentScheduler<T>
         LOGGER.info("Returning default value of current date: {}", currentDate);
         return Optional.ofNullable(currentDate);
     }
+
 
     protected Optional<LocalDate> buildNextPaymentDateByBiWeekly(LocalDate date){
         if(date != null){

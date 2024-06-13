@@ -22,4 +22,7 @@ public interface BillPaymentDataManager
     void updateBillPaymentRecord(BillPaymentEntity billPaymentEntity);
     void updateBillPaymentHistoryRecord(BillPaymentHistoryEntity billPaymentHistory);
     void updateBillPaymentScheduleRecord(BillPaymentScheduleEntity billPaymentScheduleEntity);
+
+    Optional<LocalDate> findLastScheduledPaymentDateByPaymentID(Long paymentID);
+    Optional<LocalDate> findLastScheduledPaymentDateInScheduleTableByPaymentID(Long paymentID);
 }

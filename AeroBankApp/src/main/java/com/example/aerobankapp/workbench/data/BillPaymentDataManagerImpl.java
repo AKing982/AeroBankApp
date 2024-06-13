@@ -88,4 +88,14 @@ public class BillPaymentDataManagerImpl implements BillPaymentDataManager
     public void updateBillPaymentScheduleRecord(BillPaymentScheduleEntity billPaymentScheduleEntity) {
 
     }
+
+    @Override
+    public Optional<LocalDate> findLastScheduledPaymentDateByPaymentID(Long paymentID) {
+        return billPaymentDateQueryService.findScheduledPaymentDateById(paymentID);
+    }
+
+    @Override
+    public Optional<LocalDate> findLastScheduledPaymentDateInScheduleTableByPaymentID(Long paymentID) {
+        return billPaymentDateQueryService.findScheduledPaymentByScheduleTableById(paymentID);
+    }
 }
