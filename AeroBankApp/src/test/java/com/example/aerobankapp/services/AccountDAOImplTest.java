@@ -16,6 +16,7 @@ import jakarta.persistence.TypedQuery;
 import org.junit.internal.runners.JUnit38ClassRunner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -342,6 +343,16 @@ class AccountDAOImplTest
         BigDecimal actualBalance = accountDAO.getBalanceByAcctID(acctID);
 
         assertEquals(expectedBalance, actualBalance);
+    }
+
+    @Test
+    @DisplayName("Test getTotalBalances for acctID, return total balances")
+    public void testGetTotalBalancesForAcctID(){
+        int acctID = 1;
+        BigDecimal expectedBalances = new BigDecimal("4500.000");
+        BigDecimal actual = accountDAO.getTotalAccountBalances("AKing94");
+
+        assertEquals(expectedBalances, actual);
     }
 
     @Test

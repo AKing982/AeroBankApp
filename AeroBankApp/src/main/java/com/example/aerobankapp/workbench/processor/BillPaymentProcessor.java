@@ -4,12 +4,10 @@ import com.example.aerobankapp.entity.LatePaymentEntity;
 import com.example.aerobankapp.exceptions.InvalidBalanceException;
 import com.example.aerobankapp.exceptions.InvalidBillPaymentException;
 import com.example.aerobankapp.model.*;
-import com.example.aerobankapp.services.LatePaymentService;
 import com.example.aerobankapp.workbench.data.AccountDataManager;
 import com.example.aerobankapp.workbench.data.BalanceHistoryDataManager;
 import com.example.aerobankapp.workbench.data.BillPaymentHistoryDataManager;
 import com.example.aerobankapp.workbench.data.LatePaymentDataManager;
-import com.example.aerobankapp.workbench.generator.ReferenceNumberGenerator;
 import com.example.aerobankapp.workbench.generator.confirmation.ConfirmationNumberGenerator;
 import com.example.aerobankapp.workbench.scheduler.BillPaymentScheduler;
 import com.example.aerobankapp.workbench.utilities.AccountNotificationUtil;
@@ -17,12 +15,10 @@ import com.example.aerobankapp.workbench.utilities.notifications.ProcessedBillPa
 import com.example.aerobankapp.workbench.verification.PaymentVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;

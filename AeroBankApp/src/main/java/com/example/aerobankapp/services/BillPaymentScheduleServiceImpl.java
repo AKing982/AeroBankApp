@@ -20,7 +20,7 @@ public class BillPaymentScheduleServiceImpl implements BillPaymentScheduleServic
 
     @Override
     public List<BillPaymentScheduleEntity> findAll() {
-        return null;
+        return billPaymentScheduleRepository.findAll();
     }
 
     @Override

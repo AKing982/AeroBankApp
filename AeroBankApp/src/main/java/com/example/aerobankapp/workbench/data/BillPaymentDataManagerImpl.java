@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -35,6 +36,16 @@ public class BillPaymentDataManagerImpl implements BillPaymentDataManager
         this.billPaymentHistoryService = billPaymentHistoryService;
         this.billPaymentNotificationService = billPaymentNotificationService;
         this.billPaymentDateQueryService = billPaymentDateQueryService;
+    }
+
+    @Override
+    public Collection<BillPaymentEntity> findAllBillPayments() {
+        return billPaymentService.findAll();
+    }
+
+    @Override
+    public Collection<BillPaymentScheduleEntity> findAllBillPaymentSchedules() {
+        return billPaymentScheduleService.findAll();
     }
 
     @Override

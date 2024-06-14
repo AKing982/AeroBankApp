@@ -5,12 +5,15 @@ import com.example.aerobankapp.entity.BillPaymentHistoryEntity;
 import com.example.aerobankapp.entity.BillPaymentScheduleEntity;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
 
 public interface BillPaymentDataManager
 {
+    Collection<BillPaymentEntity> findAllBillPayments();
+    Collection<BillPaymentScheduleEntity> findAllBillPaymentSchedules();
     List<BillPaymentEntity> fetchPendingBillPaymentsByUserID(int userID);
     List<BillPaymentEntity> fetchNonProcessedBillPaymentsByUserID(int userID);
     TreeMap<BillPaymentEntity, BillPaymentScheduleEntity> fetchBillPaymentTreeMap(List<BillPaymentEntity> billPaymentEntities, List<BillPaymentScheduleEntity> billPaymentScheduleEntities);

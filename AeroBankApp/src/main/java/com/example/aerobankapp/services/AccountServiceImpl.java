@@ -123,24 +123,68 @@ public class AccountServiceImpl implements AccountService
         return balance;
     }
 
+    /**
+     * Retrieves the total balances for the given user.
+     *
+     * IMPORTANT NOTE:
+     * If This method returns null for the Total Account Balances, then this might indicate that
+     * The Account_Users table doesn't have any acctID, userID records for the user in question.
+     *
+     * @param user The username of the user
+     * @return The total account balances as a BigDecimal. If there are no balances found, it returns BigDecimal.ZERO
+     */
     @Override
     @Transactional
     public BigDecimal getTotalAccountBalances(String user)
     {
-        LOGGER.info("Getting Total Balances for User: " + user);
-        BigDecimal totalBalances = accountRepository.getTotalAccountBalances(user);
-        LOGGER.info("Total Balances: ${}", totalBalances);
-        if(totalBalances == null)
+        LOGGER.info("Getting Total Balances for User: {}", user);
+        try
         {
-            throw new IllegalArgumentException("Found No Balances for this account.");
+            BigDecimal totalBalances = accountRepository.getTotalAccountBalances(user);
+            if(totalBalances == null) {
+                LOGGER.error("Total Balances not found for User: {}", user);
+                return BigDecimal.ZERO;
+            }
+            LOGGER.info("Total Balances: ${}", totalBalances);
+            return totalBalances;
+        }catch(Exception e)
+        {
+            LOGGER.error("There was an error while getting Total Balances for User: {}", user, e);
+            return BigDecimal.ZERO;
         }
-        return totalBalances;
     }
 
+
+
+    /**
+     * Retrieves the number of accounts for a given user.
+     *
+     * IMPORTANT NOTE:
+     * If This method returns null for the Number of Accounts, then this might indicate that
+     * The Account_Users table doesn't have any acctID, userID records for the user in question.
+     *
+     * @param user The username of the user
+     * @return The number of accounts as a Long. If there are no accounts found, it returns 0L.
+     */
     @Override
+    @Transactional
     public Long getNumberOfAccounts(String user)
     {
-        return accountRepository.getNumberOfAccounts(user);
+        try
+        {
+            Long numberOfAccounts = accountRepository.getNumberOfAccounts(user);
+            if(numberOfAccounts == null || numberOfAccounts <= 0)
+            {
+                LOGGER.error("Number of Accounts not found for User: {}", user);
+                return 0L;
+            }
+            return numberOfAccounts;
+        }catch(Exception e)
+        {
+            LOGGER.error("There was an error while getting Number of Accounts for User: {}", user, e);
+            return 0L;
+        }
+
     }
 
     @Override

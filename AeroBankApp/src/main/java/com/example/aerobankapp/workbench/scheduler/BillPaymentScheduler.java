@@ -1,5 +1,7 @@
 package com.example.aerobankapp.workbench.scheduler;
 
+import com.example.aerobankapp.entity.BillPaymentEntity;
+import com.example.aerobankapp.entity.BillPaymentScheduleEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.BillPayment;
 import com.example.aerobankapp.model.LateBillPayment;
@@ -16,10 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 
 @Component
 public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
@@ -34,6 +33,14 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
                                 Scheduler scheduler) {
         this.billPaymentDataManager = billPaymentDataManager;
         this.scheduler = scheduler;
+    }
+
+    public Collection<BillPaymentEntity> getBillPaymentsFromDB(){
+        return billPaymentDataManager.findAllBillPayments();
+    }
+
+    public Collection<BillPaymentScheduleEntity> getBillPaymentSchedulesFromDB(){
+        return billPaymentDataManager.findAllBillPaymentSchedules();
     }
 
     public boolean cancelPayment(String jobId) {

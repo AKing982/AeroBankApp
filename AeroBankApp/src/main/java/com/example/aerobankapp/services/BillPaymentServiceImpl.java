@@ -27,7 +27,7 @@ public class BillPaymentServiceImpl implements BillPaymentService
 
     @Override
     public List<BillPaymentEntity> findAll() {
-        return null;
+        return billPaymentRepository.findAll();
     }
 
     @Override
