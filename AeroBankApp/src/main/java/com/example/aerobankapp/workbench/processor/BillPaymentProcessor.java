@@ -13,12 +13,14 @@ import com.example.aerobankapp.workbench.scheduler.BillPaymentScheduler;
 import com.example.aerobankapp.workbench.utilities.AccountNotificationUtil;
 import com.example.aerobankapp.workbench.utilities.notifications.ProcessedBillPaymentNotificationSender;
 import com.example.aerobankapp.workbench.verification.PaymentVerifier;
+import com.example.aerobankapp.workbench.verification.ProcessedBillPaymentVerification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -34,6 +36,7 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
     private final ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender;
     private final LatePaymentDataManager latePaymentDataManager;
     private TreeMap<LocalDate, List<ProcessedBillPayment>> processedBillPayments = new TreeMap<>();
+    private TreeMap<LocalDate, List<ProcessedBillPayment>> failedBillPayments = new TreeMap<>();
     private Logger LOGGER = LoggerFactory.getLogger(BillPaymentProcessor.class);
 
     public BillPaymentProcessor(ConfirmationNumberGenerator confirmationNumberGenerator, AccountDataManager accountDataManager, BalanceHistoryDataManager balanceHistoryDataManager, BillPaymentHistoryDataManager billPaymentHistoryDataManager, PaymentVerifier<ProcessedBillPayment> processedPaymentVerifier, BillPaymentScheduler billPaymentScheduler, ProcessedBillPaymentNotificationSender processedBillPaymentNotificationSender, LatePaymentDataManager latePaymentDataManager) {
@@ -47,6 +50,21 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
         this.latePaymentDataManager = latePaymentDataManager;
     }
 
+
+    public void addFailedPayment(final ProcessedBillPayment processedBillPayment) {
+        this.failedBillPayments.computeIfAbsent(processedBillPayment.getBillPayment().getDueDate(), k -> new ArrayList<>()).add(processedBillPayment);
+    }
+
+    public void addFailedPayments(final List<ProcessedBillPayment> processedBillPayments) {
+        for (ProcessedBillPayment processedBillPayment : processedBillPayments) {
+            LocalDate dueDate = processedBillPayment.getBillPayment().getDueDate();
+            this.failedBillPayments.computeIfAbsent(dueDate, k -> new ArrayList<>()).add(processedBillPayment);
+        }
+    }
+
+    public TreeMap<String, LocalDate> createNextPaymentDetails(BillPayment billPayment) {
+        return billPaymentScheduler.getNextPaymentDetails(billPayment);
+    }
 
     @Override
     public TreeMap<LocalDate, BigDecimal> processPaymentAndScheduleNextPayment(BillPayment payment) {

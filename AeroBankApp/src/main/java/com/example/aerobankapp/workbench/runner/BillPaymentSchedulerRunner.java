@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
+@Deprecated
 public class BillPaymentSchedulerRunner implements Runnable {
 
     private final BillPaymentScheduler billPaymentScheduler;
