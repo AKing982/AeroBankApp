@@ -86,6 +86,12 @@ public class BillPaymentDataManagerImpl implements BillPaymentDataManager
     }
 
     @Override
+    public Optional<BillPaymentHistoryEntity> getBillPaymentHistoryByPaymentCriteria(LocalDate lastProcessedDate, LocalDate nextPaymentDate, boolean isProcessed, Long id)
+    {
+        return billPaymentHistoryService.findPaymentHistoryByPaymentCriteria(lastProcessedDate, nextPaymentDate, isProcessed, id);
+    }
+
+    @Override
     public void updateBillPaymentRecord(BillPaymentEntity billPaymentEntity) {
 
     }

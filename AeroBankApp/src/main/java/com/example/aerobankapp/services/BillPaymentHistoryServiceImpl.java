@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +49,11 @@ public class BillPaymentHistoryServiceImpl implements BillPaymentHistoryService
     @Override
     public List<BillPaymentHistoryEntity> findByUserName(String user) {
         return null;
+    }
+
+    @Override
+    public Optional<BillPaymentHistoryEntity> findPaymentHistoryByPaymentCriteria(LocalDate lastProcessed, LocalDate nextProcessed, boolean isProcessed, Long id) {
+        return billPaymentHistoryRepository.findByPaymentHistoryCriteria(lastProcessed, nextProcessed, isProcessed, id);
     }
 
     @Override

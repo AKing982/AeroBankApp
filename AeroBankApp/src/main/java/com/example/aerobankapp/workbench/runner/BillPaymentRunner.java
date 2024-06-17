@@ -92,11 +92,6 @@ public class BillPaymentRunner implements Runnable
         return billPayments;
     }
 
-    public boolean processPaymentForDate(LocalDate date)
-    {
-        return false;
-    }
-
     public boolean scheduleAndExecuteAllPayments(final TreeMap<LocalDate, Collection<BillPayment>> billPaymentsByDate)
     {
         if(billPaymentsByDate == null || billPaymentsByDate.isEmpty())
@@ -108,8 +103,12 @@ public class BillPaymentRunner implements Runnable
             LocalDate paymentDate = entry.getKey();
             Collection<BillPayment> billPayments = entry.getValue();
             List<BillPayment> billPaymentList = billPayments.stream().toList();
+
             // Process the payments
-            List<ProcessedBillPayment> processedBillPayments = billPaymentProcessor.processPayments(billPaymentList);
+            for(BillPayment billPayment : billPaymentList)
+            {
+                ProcessedBillPayment processedBillPayments = billPaymentProcessor.processSinglePayment(billPayment);
+            }
 
             // Validate the Processed BillPayment
             if(validateProcessedPayments(processedBillPayments))
@@ -139,6 +138,20 @@ public class BillPaymentRunner implements Runnable
 
     @Override
     public void run() {
+        // Fetch all the BillPayments
+        Collection<BillPaymentEntity> billPaymentEntities = getAllBillPayments();
+        // Fetch all the BillPaymentSchedules
+        Collection<BillPaymentScheduleEntity> billPaymentScheduleEntities = getAllBillPaymentSchedules();
+
+        // Next Convert the Entities to a BillPayment Model
+        Collection<BillPayment> billPayments = getBillPaymentEntitiesConvertedToBillPaymentModel(billPaymentEntities, billPaymentScheduleEntities);
+
+        // Next group the Bill Payments by payment date
+        TreeMap<LocalDate, List<BillPayment>> groupedPaymentsByPaymentDate = groupBillPaymentsByPaymentDate(billPayments);
+
+        // BillPaymentRunner will execute
+
+
 
     }
 }

@@ -6,7 +6,7 @@ public class FundsAvailabilityVerifier implements PaymentVerifier<Account>
 {
 
     @Override
-    public boolean verify(Account payment) {
+    public Boolean verify(Account payment) {
         return false;
     }
 }

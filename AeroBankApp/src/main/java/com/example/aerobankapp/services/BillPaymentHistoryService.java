@@ -3,6 +3,7 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.entity.BillPaymentHistoryEntity;
 import com.example.aerobankapp.model.ServiceDAOModel;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,4 +27,6 @@ public interface BillPaymentHistoryService extends ServiceDAOModel<BillPaymentHi
 
     @Override
     List<BillPaymentHistoryEntity> findByUserName(String user);
+
+    Optional<BillPaymentHistoryEntity> findPaymentHistoryByPaymentCriteria(LocalDate lastProcessed, LocalDate nextProcessed, boolean isProcessed, Long id);
 }

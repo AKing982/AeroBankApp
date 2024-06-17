@@ -17,7 +17,7 @@ public class BillPaymentVerification implements PaymentVerifier<BillPayment>
     }
 
     @Override
-    public boolean verify(BillPayment payment) {
+    public Boolean verify(BillPayment payment) {
         return false;
     }
 }
