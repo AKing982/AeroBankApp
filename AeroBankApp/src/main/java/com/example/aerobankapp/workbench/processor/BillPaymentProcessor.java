@@ -62,6 +62,10 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
         }
     }
 
+    public void handleMissedPayments(List<BillPayment> billPayments) {
+
+    }
+
     public TreeMap<String, LocalDate> createNextPaymentDetails(BillPayment billPayment) {
         return billPaymentScheduler.getNextPaymentDetails(billPayment);
     }

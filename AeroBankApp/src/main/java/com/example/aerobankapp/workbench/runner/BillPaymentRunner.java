@@ -6,6 +6,7 @@ import com.example.aerobankapp.entity.BillPaymentEntity;
 import com.example.aerobankapp.entity.BillPaymentScheduleEntity;
 import com.example.aerobankapp.model.BillPayment;
 import com.example.aerobankapp.model.BillPaymentSchedule;
+import com.example.aerobankapp.model.ProcessedBillPayment;
 import com.example.aerobankapp.services.BillPaymentHistoryService;
 import com.example.aerobankapp.services.BillPaymentScheduleService;
 import com.example.aerobankapp.services.BillPaymentService;
@@ -46,20 +47,49 @@ public class BillPaymentRunner implements Runnable
     }
 
 
-    public Collection<BillPaymentEntity> getAllBillPayments() {
+    public Collection<BillPaymentEntity> getAllBillPayments()
+    {
         Collection<BillPaymentEntity> billPaymentEntities = billPaymentDataManager.findAllBillPayments();
-        if(billPaymentEntities == null) {
+        if(billPaymentEntities == null || billPaymentEntities.isEmpty())
+        {
             return Collections.emptyList();
         }
         return billPaymentEntities;
     }
 
-    public Collection<BillPaymentScheduleEntity> getAllBillPaymentSchedules() {
-        return null;
+    public Collection<BillPaymentScheduleEntity> getAllBillPaymentSchedules()
+    {
+        Collection<BillPaymentScheduleEntity> billPaymentScheduleEntities = billPaymentDataManager.findAllBillPaymentSchedules();
+        if(billPaymentScheduleEntities == null || billPaymentScheduleEntities.isEmpty())
+        {
+            return Collections.emptyList();
+        }
+        return billPaymentScheduleEntities;
     }
 
     public Collection<BillPayment> getBillPaymentEntitiesConvertedToBillPaymentModel(Collection<BillPaymentEntity> billPaymentEntities, Collection<BillPaymentScheduleEntity> billPaymentScheduleEntities) {
-        return null;
+        Collection<BillPayment> billPayments = new ArrayList<>();
+        if(billPaymentEntities == null || billPaymentEntities.isEmpty())
+        {
+            billPaymentEntities = new ArrayList<>();
+        }
+
+        if(billPaymentScheduleEntities == null || billPaymentScheduleEntities.isEmpty())
+        {
+            billPaymentScheduleEntities = new ArrayList<>();
+        }
+        for(BillPaymentEntity billPaymentEntity : billPaymentEntities)
+        {
+            for(BillPaymentScheduleEntity billPaymentScheduleEntity : billPaymentScheduleEntities)
+            {
+                if(billPaymentEntity != null && billPaymentScheduleEntity != null)
+                {
+                    BillPayment billPayment = billPaymentConverter.convert(billPaymentEntity, billPaymentScheduleEntity);
+                    billPayments.add(billPayment);
+                }
+            }
+        }
+        return billPayments;
     }
 
     public boolean processPaymentForDate(LocalDate date)
@@ -67,8 +97,37 @@ public class BillPaymentRunner implements Runnable
         return false;
     }
 
-    public boolean scheduleAndExecuteAllPayments(TreeMap<LocalDate, Collection<BillPayment>> billPaymentsByDate)
+    public boolean scheduleAndExecuteAllPayments(final TreeMap<LocalDate, Collection<BillPayment>> billPaymentsByDate)
     {
+        if(billPaymentsByDate == null || billPaymentsByDate.isEmpty())
+        {
+            return false;
+        }
+        for(Map.Entry<LocalDate, Collection<BillPayment>> entry : billPaymentsByDate.entrySet())
+        {
+            LocalDate paymentDate = entry.getKey();
+            Collection<BillPayment> billPayments = entry.getValue();
+            List<BillPayment> billPaymentList = billPayments.stream().toList();
+            // Process the payments
+            List<ProcessedBillPayment> processedBillPayments = billPaymentProcessor.processPayments(billPaymentList);
+
+            // Validate the Processed BillPayment
+            if(validateProcessedPayments(processedBillPayments))
+            {
+
+            }
+
+            // Were any payments missed?
+        }
+        return false;
+    }
+
+    public boolean validateProcessedPayments(final List<ProcessedBillPayment> processedBillPayments)
+    {
+        for(ProcessedBillPayment processedBillPayment : processedBillPayments)
+        {
+            return billPaymentProcessor.validateProcessedPayment(processedBillPayment);
+        }
         return false;
     }
 
