@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -107,16 +108,8 @@ public class BillPaymentRunner implements Runnable
             // Process the payments
             for(BillPayment billPayment : billPaymentList)
             {
-                ProcessedBillPayment processedBillPayments = billPaymentProcessor.processSinglePayment(billPayment);
+                TreeMap<LocalDate, BigDecimal> processPaymentAndScheduleNextPayment = billPaymentProcessor.processPaymentAndScheduleNextPayment(billPayment);
             }
-
-            // Validate the Processed BillPayment
-            if(validateProcessedPayments(processedBillPayments))
-            {
-
-            }
-
-            // Were any payments missed?
         }
         return false;
     }
@@ -132,6 +125,11 @@ public class BillPaymentRunner implements Runnable
 
     public TreeMap<LocalDate, List<BillPayment>> groupBillPaymentsByPaymentDate(Collection<BillPayment> billPayments)
     {
+        TreeMap<LocalDate, List<BillPayment>> billPaymentsByDate = new TreeMap<>();
+        if(billPayments == null || billPayments.isEmpty())
+        {
+            return new TreeMap<>();
+        }
         return null;
     }
 

@@ -118,6 +118,28 @@ class BillPaymentRunnerTest {
 
     }
 
+    @Test
+    @DisplayName("Test GroupBillPaymentsByPaymentDate when bill payment collection null, then return empty collection")
+    public void testGroupBillPaymentsByPaymentDate_whenbillPaymentCollectionIsNull_returnEmptyCollection() {
+        //when(billPaymentRunner.groupBillPaymentsByPaymentDate(null)).thenReturn(new TreeMap<>());
+
+        TreeMap<LocalDate, List<BillPayment>> billPaymentsByDate = billPaymentRunner.groupBillPaymentsByPaymentDate(null);
+        assertEquals(0, billPaymentsByDate.size());
+    }
+
+    @Test
+    @DisplayName("Test GroupBillPaymentsByPaymentDate when bill payment collection is empty, then return empty treeMap")
+    public void testGroupBillPaymentsByPaymentDate_whenbillPaymentCollectionIsEmpty_returnEmptyTreeMap() {
+        TreeMap<LocalDate, List<BillPayment>> billPaymentsByDate = billPaymentRunner.groupBillPaymentsByPaymentDate(Collections.emptyList());
+        assertEquals(0, billPaymentsByDate.size());
+    }
+
+    @Test
+    @DisplayName("Test GroupBillPaymentsByPaymentDate when bill payments valid, then return TreeMap")
+    public void testGroupBillPaymentsByPaymentDate_whenbillPaymentsValid_returnTreeMap() {
+
+    }
+
     static BillPaymentEntity createBillPaymentEntity() {
         // replace with actual BillPaymentEntity creation
         return BillPaymentEntity.builder()
