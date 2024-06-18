@@ -62,10 +62,6 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
         }
     }
 
-    public void handleMissedPayments(List<BillPayment> billPayments) {
-
-    }
-
     public TreeMap<String, LocalDate> createNextPaymentDetails(BillPayment billPayment) {
         return billPaymentScheduler.getNextPaymentDetails(billPayment);
     }
@@ -87,6 +83,7 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
         }
         processSinglePayment(payment);
         Optional<LocalDate> nextScheduledPaymentDate = getNextScheduledPaymentDate(payment);
+        TreeMap<String, LocalDate> nextScheduledPaymentDetails = createNextPaymentDetails(payment);
         nextScheduledPaymentMap.put(nextScheduledPaymentDate.orElseThrow(() -> new IllegalStateException("Next scheduled payment date not found")), payment.getPaymentAmount());
 
         return nextScheduledPaymentMap;

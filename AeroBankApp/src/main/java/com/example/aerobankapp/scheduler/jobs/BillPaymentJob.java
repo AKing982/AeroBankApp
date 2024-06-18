@@ -34,7 +34,7 @@ public class BillPaymentJob implements Job, ApplicationContextAware
         Optional<BillPaymentScheduleEntity> billPaymentSchedule = billPaymentDataManager.findBillPaymentScheduleByID(sId);
         if(paymentEntity.isPresent() && billPaymentSchedule.isPresent()) {
             BillPayment payment = billPaymentConverter.convert(paymentEntity.get(), billPaymentSchedule.get());
-            billPaymentProcessor.processSinglePayment(payment);
+            billPaymentProcessor.processPaymentAndScheduleNextPayment(payment);
         }
 
     }

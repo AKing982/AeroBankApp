@@ -7,3 +7,4 @@ public interface Convert
 {
     BalanceHistoryEntity getConversion(com.example.aerobankapp.workbench.history.BalanceHistory balanceHistory);
 }
+
