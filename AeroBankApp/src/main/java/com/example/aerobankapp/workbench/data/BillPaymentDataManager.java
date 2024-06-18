@@ -22,6 +22,9 @@ public interface BillPaymentDataManager
     List<BillPaymentHistoryEntity> fetchBillPaymentHistoryByID(Long id);
     LocalDate findLastDueDateByPaymentID(Long id);
 
+    Optional<BillPaymentEntity> findBillPaymentByID(Long id);
+    Optional<BillPaymentScheduleEntity> findBillPaymentScheduleByID(Long id);
+
     Optional<BillPaymentHistoryEntity> getBillPaymentHistoryByPaymentCriteria(LocalDate lastProcessedDate, LocalDate nextPaymentDate, boolean isProcessed, Long id);
     void updateBillPaymentRecord(BillPaymentEntity billPaymentEntity);
     void updateBillPaymentHistoryRecord(BillPaymentHistoryEntity billPaymentHistory);

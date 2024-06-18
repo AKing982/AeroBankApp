@@ -183,8 +183,45 @@ class BillPaymentRunnerTest {
 
     @Test
     @DisplayName("Test GroupBillPaymentsByPaymentDate when payment date criteria is null, then throw exception")
-    public void testGroupBillPaymentsByPaymentDate_whenpaymentDateCriteriaIsNull_throwException() {
-        
+    public void testGroupBillPaymentsByPaymentDate_whenPaymentDateCriteriaIsNull_throwException() {
+        AccountCode accountCode = new AccountCode("A", "K", 1, AccountType.CHECKING, 24, 1);
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .paymentType("ACCOUNT")
+                .accountCode(accountCode)
+                .dueDate(LocalDate.of(2024, 6, 1))
+                .scheduledPaymentDate(LocalDate.of(2024, 5, 28))
+                .isAutoPayEnabled(true)
+                .payeeName("Payee Test")
+                .scheduleFrequency(ScheduleFrequency.MONTHLY)
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isProcessed(false)
+                .userID(1)
+                .build();
+
+        BillPayment billPayment2 = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .paymentType("ACCOUNT")
+                .accountCode(accountCode)
+                .dueDate(LocalDate.of(2024, 6, 1))
+                .scheduledPaymentDate(null)
+                .isAutoPayEnabled(true)
+                .payeeName("Payee Test")
+                .scheduleFrequency(ScheduleFrequency.MONTHLY)
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isProcessed(false)
+                .userID(1)
+                .build();
+
+        Collection<BillPayment> billPayments = Arrays.asList(billPayment, billPayment2);
+        TreeMap<LocalDate, List<BillPayment>> billPaymentsByDate = new TreeMap<>();
+        billPaymentsByDate.put(LocalDate.of(2024, 5, 28), List.of(billPayment));
+        billPaymentsByDate.put(LocalDate.of(2024, 5, 20), List.of(billPayment2));
+
+        TreeMap<LocalDate, List<BillPayment>> actual = billPaymentRunner.groupBillPaymentsByPaymentDate(billPayments);
+        assertEquals(1, actual.size());
+        assertEquals(LocalDate.of(2024, 5, 28), actual.firstKey());
+        assertEquals(LocalDate.of(2024, 5, 20), actual.lastKey());
     }
 
     static BillPaymentEntity createBillPaymentEntity() {

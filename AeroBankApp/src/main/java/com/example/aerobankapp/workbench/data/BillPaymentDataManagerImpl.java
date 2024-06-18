@@ -86,6 +86,16 @@ public class BillPaymentDataManagerImpl implements BillPaymentDataManager
     }
 
     @Override
+    public Optional<BillPaymentEntity> findBillPaymentByID(Long id) {
+        return billPaymentService.findById(id);
+    }
+
+    @Override
+    public Optional<BillPaymentScheduleEntity> findBillPaymentScheduleByID(Long id) {
+        return billPaymentScheduleService.findAllById(id);
+    }
+
+    @Override
     public Optional<BillPaymentHistoryEntity> getBillPaymentHistoryByPaymentCriteria(LocalDate lastProcessedDate, LocalDate nextPaymentDate, boolean isProcessed, Long id)
     {
         return billPaymentHistoryService.findPaymentHistoryByPaymentCriteria(lastProcessedDate, nextPaymentDate, isProcessed, id);

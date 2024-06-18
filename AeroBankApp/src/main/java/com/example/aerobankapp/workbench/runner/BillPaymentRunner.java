@@ -15,6 +15,8 @@ import com.example.aerobankapp.workbench.data.BillPaymentDataManagerImpl;
 import com.example.aerobankapp.workbench.processor.BillPaymentProcessor;
 import com.example.aerobankapp.workbench.queues.BillPaymentQueue;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,11 +32,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * This class will manage when the BillPaymentRunner will run and schedule payment tasks
  */
 @Component
+@Deprecated
 public class BillPaymentRunner implements Runnable
 {
     private final BillPaymentProcessor billPaymentProcessor;
     private final BillPaymentConverter billPaymentConverter;
     private BillPaymentDataManager billPaymentDataManager;
+    private Logger LOGGER = LoggerFactory.getLogger(BillPaymentRunner.class);
     private RabbitTemplate rabbitTemplate;
     private TreeMap<LocalDate, Collection<BillPayment>> groupedBillPaymentsByDate = new TreeMap<>();
 
@@ -135,7 +139,12 @@ public class BillPaymentRunner implements Runnable
         {
             if(billPayment != null)
             {
-                billPaymentsByDate.put(billPayment.getScheduledPaymentDate(), List.of(billPayment));
+                LocalDate paymentDate = billPayment.getScheduledPaymentDate();
+                if(paymentDate != null)
+                {
+                    List<BillPayment> billPaymentsForDate = billPaymentsByDate.computeIfAbsent(paymentDate, k -> new ArrayList<>());
+                    billPaymentsForDate.add(billPayment);
+                }
             }
         }
 
@@ -155,8 +164,6 @@ public class BillPaymentRunner implements Runnable
 
         // Next group the Bill Payments by payment date
         TreeMap<LocalDate, List<BillPayment>> groupedPaymentsByPaymentDate = groupBillPaymentsByPaymentDate(billPayments);
-
-        // BillPaymentRunner will execute
 
 
 

@@ -4,7 +4,6 @@ import com.example.aerobankapp.entity.BillPaymentEntity;
 import com.example.aerobankapp.entity.BillPaymentScheduleEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.BillPayment;
-import com.example.aerobankapp.model.LateBillPayment;
 import com.example.aerobankapp.scheduler.jobs.BillPaymentJob;
 import com.example.aerobankapp.workbench.data.BillPaymentDataManager;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -76,7 +74,7 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
                 if(scheduledPaymentOptional.isPresent())
                 {
                     LocalDate paymentDate = scheduledPaymentOptional.get();
-                    return executeScheduleJobTask(paymentDate);
+                    return executeScheduleJobTask(billPayment);
                 }
             }
             else
@@ -84,7 +82,7 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
                 throw new InvalidBillPaymentIDException("Bill payment ID is not valid");
             }
         }
-        return executeScheduleJobTask(scheduledPaymentDate);
+        return executeScheduleJobTask(billPayment);
     }
 
     public Trigger createBillPaymentTrigger(final Date scheduleDate) {
@@ -95,8 +93,10 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
                 .build();
     }
 
-    public JobDetail createBillPaymentJobDetail(String uniqueId) {
+    public JobDetail createBillPaymentJobDetail(String uniqueId, Long paymentId, Long schedulePaymentId) {
         return JobBuilder.newJob(BillPaymentJob.class)
+                .usingJobData("billPaymentId", paymentId)
+                .usingJobData("billPaymentScheduleId", schedulePaymentId)
                 .withIdentity("paymentJob_" + uniqueId, "group1").build();
     }
 
@@ -115,10 +115,11 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
         return Date.from(zonedDateTime.toInstant());
     }
 
-    public boolean executeScheduleJobTask(LocalDate scheduledPaymentDate)
+    public boolean executeScheduleJobTask(BillPayment billPayment)
     {
         String uniqueId = generateUniqueId();
-        JobDetail job = createBillPaymentJobDetail(uniqueId);
+        JobDetail job = createBillPaymentJobDetail(uniqueId, billPayment.getPaymentID(), billPayment.getSchedulePaymentID());
+        LocalDate scheduledPaymentDate = billPayment.getScheduledPaymentDate();
 
         ZonedDateTime zonedDateTime = createBillPaymentZonedDateTime(scheduledPaymentDate);
         Date scheduledDate = createScheduleDate(zonedDateTime);
@@ -160,10 +161,6 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
             LOGGER.error("An Error occurred while rescheduling a payment job", e);
             return false;
         }
-    }
-
-    public boolean isPaymentScheduled(BillPayment billPayment) {
-        return false;
     }
 
     public TreeMap<LocalDate, BillPayment> getScheduledPaymentsForPeriod(LocalDate startDate, LocalDate endDate){
