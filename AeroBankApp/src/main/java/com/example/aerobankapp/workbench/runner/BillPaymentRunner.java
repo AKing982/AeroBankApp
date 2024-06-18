@@ -130,7 +130,16 @@ public class BillPaymentRunner implements Runnable
         {
             return new TreeMap<>();
         }
-        return null;
+
+        for(BillPayment billPayment : billPayments)
+        {
+            if(billPayment != null)
+            {
+                billPaymentsByDate.put(billPayment.getScheduledPaymentDate(), List.of(billPayment));
+            }
+        }
+
+        return billPaymentsByDate;
     }
 
 

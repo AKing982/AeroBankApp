@@ -1,10 +1,12 @@
 package com.example.aerobankapp.workbench.runner;
 
+import com.example.aerobankapp.account.AccountType;
 import com.example.aerobankapp.converter.BillPaymentConverter;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.BillPaymentEntity;
 import com.example.aerobankapp.entity.BillPaymentScheduleEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.BillPayment;
 import com.example.aerobankapp.workbench.data.BillPaymentDataManager;
 import com.example.aerobankapp.workbench.processor.BillPaymentProcessor;
@@ -135,9 +137,54 @@ class BillPaymentRunnerTest {
     }
 
     @Test
-    @DisplayName("Test GroupBillPaymentsByPaymentDate when bill payments valid, then return TreeMap")
-    public void testGroupBillPaymentsByPaymentDate_whenbillPaymentsValid_returnTreeMap() {
+    @DisplayName("Test GroupBillPaymentsByPaymentDate when bill payment is valid, then return TreeMap")
+    public void testGroupBillPaymentsByPaymentDate_whenbillPaymentNull_returnTreeMap() {
+        AccountCode accountCode = new AccountCode("A", "K", 1, AccountType.CHECKING, 24, 1);
+        BillPayment billPayment = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .paymentType("ACCOUNT")
+                .accountCode(accountCode)
+                .dueDate(LocalDate.of(2024, 6, 1))
+                .scheduledPaymentDate(LocalDate.of(2024, 5, 28))
+                .isAutoPayEnabled(true)
+                .payeeName("Payee Test")
+                .scheduleFrequency(ScheduleFrequency.MONTHLY)
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isProcessed(false)
+                .userID(1)
+                .build();
 
+        BillPayment billPayment2 = BillPayment.builder()
+                .paymentAmount(new BigDecimal("45.00"))
+                .paymentType("ACCOUNT")
+                .accountCode(accountCode)
+                .dueDate(LocalDate.of(2024, 6, 1))
+                .scheduledPaymentDate(LocalDate.of(2024, 5, 20))
+                .isAutoPayEnabled(true)
+                .payeeName("Payee Test")
+                .scheduleFrequency(ScheduleFrequency.MONTHLY)
+                .scheduleStatus(ScheduleStatus.PENDING)
+                .isProcessed(false)
+                .userID(1)
+                .build();
+
+
+        Collection<BillPayment> billPayments = Arrays.asList(billPayment, billPayment2);
+        TreeMap<LocalDate, List<BillPayment>> billPaymentsByDate = new TreeMap<>();
+        billPaymentsByDate.put(LocalDate.of(2024, 5, 28), List.of(billPayment));
+        billPaymentsByDate.put(LocalDate.of(2024, 5, 20), List.of(billPayment2));
+
+        TreeMap<LocalDate, List<BillPayment>> actual = billPaymentRunner.groupBillPaymentsByPaymentDate(billPayments);
+
+        assertEquals(2, actual.size());
+        assertEquals(LocalDate.of(2024, 5, 20), actual.firstKey());
+        assertEquals(LocalDate.of(2024, 5, 28), actual.lastKey());
+    }
+
+    @Test
+    @DisplayName("Test GroupBillPaymentsByPaymentDate when payment date criteria is null, then throw exception")
+    public void testGroupBillPaymentsByPaymentDate_whenpaymentDateCriteriaIsNull_throwException() {
+        
     }
 
     static BillPaymentEntity createBillPaymentEntity() {
