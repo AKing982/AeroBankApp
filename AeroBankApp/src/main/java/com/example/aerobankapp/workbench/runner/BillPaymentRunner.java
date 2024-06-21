@@ -5,6 +5,7 @@ import com.example.aerobankapp.engine.BillPaymentEngine;
 import com.example.aerobankapp.entity.BillPaymentEntity;
 import com.example.aerobankapp.entity.BillPaymentScheduleEntity;
 import com.example.aerobankapp.model.BillPayment;
+import com.example.aerobankapp.model.BillPaymentIdCriteria;
 import com.example.aerobankapp.model.BillPaymentSchedule;
 import com.example.aerobankapp.model.ProcessedBillPayment;
 import com.example.aerobankapp.services.BillPaymentHistoryService;
@@ -15,6 +16,7 @@ import com.example.aerobankapp.workbench.data.BillPaymentDataManagerImpl;
 import com.example.aerobankapp.workbench.processor.BillPaymentProcessor;
 import com.example.aerobankapp.workbench.queues.BillPaymentQueue;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -32,140 +34,71 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * This class will manage when the BillPaymentRunner will run and schedule payment tasks
  */
 @Component
-@Deprecated
+@Data
 public class BillPaymentRunner implements Runnable
 {
     private final BillPaymentProcessor billPaymentProcessor;
     private final BillPaymentConverter billPaymentConverter;
     private BillPaymentDataManager billPaymentDataManager;
+    private BillPaymentIdCriteria billPaymentIdCriteria;
     private Logger LOGGER = LoggerFactory.getLogger(BillPaymentRunner.class);
-    private RabbitTemplate rabbitTemplate;
     private TreeMap<LocalDate, Collection<BillPayment>> groupedBillPaymentsByDate = new TreeMap<>();
 
     @Autowired
     public BillPaymentRunner(BillPaymentProcessor billPaymentProcessor,
                              BillPaymentConverter billPaymentConverter,
-                             BillPaymentDataManager billPaymentDataManager) {
+                             BillPaymentDataManager billPaymentDataManager,
+                             BillPaymentIdCriteria billPaymentIdCriteria) {
         this.billPaymentProcessor = billPaymentProcessor;
         this.billPaymentConverter = billPaymentConverter;
         this.billPaymentDataManager = billPaymentDataManager;
+        this.billPaymentIdCriteria = billPaymentIdCriteria;
     }
 
 
-    public Collection<BillPaymentEntity> getAllBillPayments()
+    public Optional<BillPaymentEntity> getBillPaymentById(Long paymentId)
     {
-        Collection<BillPaymentEntity> billPaymentEntities = billPaymentDataManager.findAllBillPayments();
-        if(billPaymentEntities == null || billPaymentEntities.isEmpty())
-        {
-            return Collections.emptyList();
-        }
-        return billPaymentEntities;
+        return billPaymentDataManager.findBillPaymentByID(paymentId);
     }
 
-    public Collection<BillPaymentScheduleEntity> getAllBillPaymentSchedules()
+    public Optional<BillPaymentScheduleEntity> getBillPaymentScheduleById(Long paymentScheduleId)
     {
-        Collection<BillPaymentScheduleEntity> billPaymentScheduleEntities = billPaymentDataManager.findAllBillPaymentSchedules();
-        if(billPaymentScheduleEntities == null || billPaymentScheduleEntities.isEmpty())
-        {
-            return Collections.emptyList();
-        }
-        return billPaymentScheduleEntities;
+        return billPaymentDataManager.findBillPaymentScheduleByID(paymentScheduleId);
     }
 
-    public Collection<BillPayment> getBillPaymentEntitiesConvertedToBillPaymentModel(Collection<BillPaymentEntity> billPaymentEntities, Collection<BillPaymentScheduleEntity> billPaymentScheduleEntities) {
+    public Collection<BillPayment> getBillPaymentEntitiesConvertedToBillPaymentModel(final Optional<BillPaymentEntity> billPaymentEntity, final Optional<BillPaymentScheduleEntity> billPaymentScheduleEntity) {
         Collection<BillPayment> billPayments = new ArrayList<>();
-        if(billPaymentEntities == null || billPaymentEntities.isEmpty())
-        {
-            billPaymentEntities = new ArrayList<>();
-        }
-
-        if(billPaymentScheduleEntities == null || billPaymentScheduleEntities.isEmpty())
-        {
-            billPaymentScheduleEntities = new ArrayList<>();
-        }
-        for(BillPaymentEntity billPaymentEntity : billPaymentEntities)
-        {
-            for(BillPaymentScheduleEntity billPaymentScheduleEntity : billPaymentScheduleEntities)
-            {
-                if(billPaymentEntity != null && billPaymentScheduleEntity != null)
-                {
-                    BillPayment billPayment = billPaymentConverter.convert(billPaymentEntity, billPaymentScheduleEntity);
-                    billPayments.add(billPayment);
-                }
+        if(billPaymentEntity.isPresent()) {
+            if(billPaymentScheduleEntity.isPresent()) {
+                BillPaymentEntity billPaymentEntity1 = billPaymentEntity.get();
+                BillPaymentScheduleEntity billPaymentScheduleEntity1 = billPaymentScheduleEntity.get();
+                BillPayment billPayment = billPaymentConverter.convert(billPaymentEntity1, billPaymentScheduleEntity1);
+                billPayments.add(billPayment);
             }
         }
         return billPayments;
     }
 
-    public boolean scheduleAndExecuteAllPayments(final TreeMap<LocalDate, Collection<BillPayment>> billPaymentsByDate)
+    public boolean scheduleAndExecutePayments(final Collection<BillPayment> billPayments)
     {
-        if(billPaymentsByDate == null || billPaymentsByDate.isEmpty())
-        {
-            return false;
-        }
-        for(Map.Entry<LocalDate, Collection<BillPayment>> entry : billPaymentsByDate.entrySet())
-        {
-            LocalDate paymentDate = entry.getKey();
-            Collection<BillPayment> billPayments = entry.getValue();
-            List<BillPayment> billPaymentList = billPayments.stream().toList();
-
-            // Process the payments
-            for(BillPayment billPayment : billPaymentList)
-            {
-                TreeMap<LocalDate, BigDecimal> processPaymentAndScheduleNextPayment = billPaymentProcessor.processPaymentAndScheduleNextPayment(billPayment);
-            }
-        }
-        return false;
-    }
-
-    public boolean validateProcessedPayments(final List<ProcessedBillPayment> processedBillPayments)
-    {
-        for(ProcessedBillPayment processedBillPayment : processedBillPayments)
-        {
-            return billPaymentProcessor.validateProcessedPayment(processedBillPayment);
-        }
-        return false;
-    }
-
-    public TreeMap<LocalDate, List<BillPayment>> groupBillPaymentsByPaymentDate(Collection<BillPayment> billPayments)
-    {
-        TreeMap<LocalDate, List<BillPayment>> billPaymentsByDate = new TreeMap<>();
-        if(billPayments == null || billPayments.isEmpty())
-        {
-            return new TreeMap<>();
-        }
-
-        for(BillPayment billPayment : billPayments)
-        {
-            if(billPayment != null)
-            {
-                LocalDate paymentDate = billPayment.getScheduledPaymentDate();
-                if(paymentDate != null)
-                {
-                    List<BillPayment> billPaymentsForDate = billPaymentsByDate.computeIfAbsent(paymentDate, k -> new ArrayList<>());
-                    billPaymentsForDate.add(billPayment);
-                }
-            }
-        }
-
-        return billPaymentsByDate;
+       return false;
     }
 
 
     @Override
     public void run() {
+
+        Long paymentId = billPaymentIdCriteria.getPaymentId();
+        Long scheduleId = billPaymentIdCriteria.getScheduleId();
+
         // Fetch all the BillPayments
-        Collection<BillPaymentEntity> billPaymentEntities = getAllBillPayments();
+        Optional<BillPaymentEntity> billPaymentEntities = getBillPaymentById(paymentId);
         // Fetch all the BillPaymentSchedules
-        Collection<BillPaymentScheduleEntity> billPaymentScheduleEntities = getAllBillPaymentSchedules();
+        Optional<BillPaymentScheduleEntity> billPaymentScheduleEntities = getBillPaymentScheduleById(scheduleId);
 
         // Next Convert the Entities to a BillPayment Model
         Collection<BillPayment> billPayments = getBillPaymentEntitiesConvertedToBillPaymentModel(billPaymentEntities, billPaymentScheduleEntities);
 
-        // Next group the Bill Payments by payment date
-        TreeMap<LocalDate, List<BillPayment>> groupedPaymentsByPaymentDate = groupBillPaymentsByPaymentDate(billPayments);
-
-
-
+        scheduleAndExecutePayments(billPayments);
     }
 }

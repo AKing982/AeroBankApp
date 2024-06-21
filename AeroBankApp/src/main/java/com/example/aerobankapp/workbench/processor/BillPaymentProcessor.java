@@ -51,18 +51,7 @@ public class BillPaymentProcessor extends PaymentProcessor<BillPayment, Processe
     }
 
 
-    public void addFailedPayment(final ProcessedBillPayment processedBillPayment) {
-        this.failedBillPayments.computeIfAbsent(processedBillPayment.getBillPayment().getDueDate(), k -> new ArrayList<>()).add(processedBillPayment);
-    }
-
-    public void addFailedPayments(final List<ProcessedBillPayment> processedBillPayments) {
-        for (ProcessedBillPayment processedBillPayment : processedBillPayments) {
-            LocalDate dueDate = processedBillPayment.getBillPayment().getDueDate();
-            this.failedBillPayments.computeIfAbsent(dueDate, k -> new ArrayList<>()).add(processedBillPayment);
-        }
-    }
-
-    public TreeMap<String, LocalDate> createNextPaymentDetails(BillPayment billPayment) {
+    public TreeMap<String, LocalDate> createNextPaymentDetails(final BillPayment billPayment) {
         return billPaymentScheduler.getNextPaymentDetails(billPayment);
     }
 

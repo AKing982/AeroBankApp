@@ -1,10 +1,7 @@
 package com.example.aerobankapp.workbench.security.authentication;
 
 
-import io.jsonwebtoken.Claims;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -24,9 +21,10 @@ public class JWTUtil {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        return Jwts.builder()
-                .claim("authorities", authorities)
-                .compact();
+//        return Jwts.builder()
+//                .claim("authorities", authorities)
+//                .compact();
+        return null;
     }
 
     public String generateToken(String username)
@@ -34,12 +32,7 @@ public class JWTUtil {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + EXPIRATION_TIME);
 
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(now)
-                .setExpiration(expiration)
-                .signWith(SignatureAlgorithm.ES256, SECRET_KEY)
-                .compact();
+      return null;
     }
 
 

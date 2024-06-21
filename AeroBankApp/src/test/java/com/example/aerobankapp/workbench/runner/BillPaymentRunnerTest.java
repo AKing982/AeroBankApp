@@ -102,7 +102,7 @@ class BillPaymentRunnerTest {
     public void testScheduleAndExecuteAllPayments_whenTreeMapIsNull_returnFalse() {
         TreeMap<LocalDate, Collection<BillPayment>> billPaymentsByDate = new TreeMap<>();
 
-        boolean result = billPaymentRunner.scheduleAndExecuteAllPayments(null);
+        boolean result = billPaymentRunner.scheduleAndExecutePayments(null);
         assertFalse(result);
     }
 
@@ -110,7 +110,7 @@ class BillPaymentRunnerTest {
     @DisplayName("Test ScheduleAndExecuteAllPayments when treeMap is empty, then return false")
     public void testScheduleAndExecuteAllPayments_whenTreeMapIsEmpty_returnFalse() {
         TreeMap<LocalDate, Collection<BillPayment>> billPaymentsByDate = new TreeMap<>();
-        boolean result = billPaymentRunner.scheduleAndExecuteAllPayments(billPaymentsByDate);
+        boolean result = billPaymentRunner.scheduleAndExecutePayments(billPaymentsByDate);
         assertFalse(result);
     }
 
