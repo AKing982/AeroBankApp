@@ -38,6 +38,8 @@ public class ScheduleRunner implements Runnable
         }catch(SchedulerException e)
         {
 
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -47,7 +49,7 @@ public class ScheduleRunner implements Runnable
         {
             schedulerEngine.startScheduler();
 
-        }catch(SchedulerException ex)
+        }catch(SchedulerException | InterruptedException ex)
         {
 
         }

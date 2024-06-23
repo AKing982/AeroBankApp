@@ -5,6 +5,7 @@ import com.example.aerobankapp.entity.BillPaymentScheduleEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.BillPayment;
 import com.example.aerobankapp.scheduler.jobs.BillPaymentJob;
+import com.example.aerobankapp.workbench.billPayment.BillPaymentJobManager;
 import com.example.aerobankapp.workbench.data.BillPaymentDataManager;
 import com.example.aerobankapp.workbench.utilities.schedule.ScheduleFrequency;
 import org.quartz.*;
@@ -22,15 +23,15 @@ import java.util.*;
 public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
 
     private final BillPaymentDataManager billPaymentDataManager;
-    private final Scheduler scheduler;
+    private final BillPaymentJobManager billPaymentJobManager;
     private Logger LOGGER = LoggerFactory.getLogger(BillPaymentScheduler.class);
     private TreeMap<LocalDate, List<BillPayment>> scheduledPayments = new TreeMap<>();
 
     @Autowired
     public BillPaymentScheduler(BillPaymentDataManager billPaymentDataManager,
-                                Scheduler scheduler) {
+                                BillPaymentJobManager billPaymentJobManager) {
         this.billPaymentDataManager = billPaymentDataManager;
-        this.scheduler = scheduler;
+        this.billPaymentJobManager = billPaymentJobManager;
     }
 
     public Collection<BillPaymentEntity> getBillPaymentsFromDB(){
@@ -41,22 +42,7 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
         return billPaymentDataManager.findAllBillPaymentSchedules();
     }
 
-    public boolean cancelPayment(String jobId) {
-       if(jobId == null || jobId.isEmpty())
-       {
-           throw new IllegalArgumentException("Job ID cannot be null or empty");
-       }
-       try
-       {
-           scheduler.unscheduleJob(new TriggerKey("paymentJob_" + jobId, "group1"));
-           return true;
 
-       }catch(SchedulerException e)
-       {
-           LOGGER.error("There was a problem trying to cancel a payment job", e);
-           return false;
-       }
-    }
 
     public boolean schedulePayment(BillPayment billPayment) {
         // Validate the bill payment
@@ -74,7 +60,7 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
                 if(scheduledPaymentOptional.isPresent())
                 {
                     LocalDate paymentDate = scheduledPaymentOptional.get();
-                    return executeScheduleJobTask(billPayment);
+                    return billPaymentJobManager.executeScheduleJobTask(billPayment);
                 }
             }
             else
@@ -82,85 +68,14 @@ public class BillPaymentScheduler extends PaymentScheduler<BillPayment> {
                 throw new InvalidBillPaymentIDException("Bill payment ID is not valid");
             }
         }
-        return executeScheduleJobTask(billPayment);
+        return billPaymentJobManager.executeScheduleJobTask(billPayment);
     }
 
-    public Trigger createBillPaymentTrigger(final Date scheduleDate) {
-        return TriggerBuilder.newTrigger()
-                .withIdentity("paymentJob", "group1")
-                .startAt(scheduleDate)
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule())
-                .build();
-    }
 
-    public JobDetail createBillPaymentJobDetail(String uniqueId, Long paymentId, Long schedulePaymentId) {
-        return JobBuilder.newJob(BillPaymentJob.class)
-                .usingJobData("billPaymentId", paymentId)
-                .usingJobData("billPaymentScheduleId", schedulePaymentId)
-                .withIdentity("paymentJob_" + uniqueId, "group1").build();
-    }
 
-    public ZonedDateTime createBillPaymentZonedDateTime(LocalDate scheduledPaymentDate) {
-        if(scheduledPaymentDate == null){
-            throw new IllegalDateException("Scheduled payment date cannot be null");
-        }
-        return scheduledPaymentDate.atStartOfDay(ZoneId.systemDefault());
-    }
-
-    public String generateUniqueId(){
-        return String.valueOf(System.currentTimeMillis() % 1000000);
-    }
-
-    public Date createScheduleDate(ZonedDateTime zonedDateTime) {
-        return Date.from(zonedDateTime.toInstant());
-    }
-
-    public boolean executeScheduleJobTask(BillPayment billPayment)
+    public boolean reschedulePayment(String jobId, Date newDate)
     {
-        String uniqueId = generateUniqueId();
-        JobDetail job = createBillPaymentJobDetail(uniqueId, billPayment.getPaymentID(), billPayment.getSchedulePaymentID());
-        LocalDate scheduledPaymentDate = billPayment.getScheduledPaymentDate();
-
-        ZonedDateTime zonedDateTime = createBillPaymentZonedDateTime(scheduledPaymentDate);
-        Date scheduledDate = createScheduleDate(zonedDateTime);
-
-        Trigger trigger = createBillPaymentTrigger(scheduledDate);
-
-        try
-        {
-            scheduler.start();
-            scheduler.scheduleJob(job, trigger);
-            return true;
-
-        }catch(SchedulerException e)
-        {
-            LOGGER.error("Error occurred while scheduling payment job", e);
-            return false;
-        }
-    }
-
-    public boolean reschedulePayment(String jobId, Date newDate) {
-        if(jobId == null || jobId.isEmpty())
-        {
-            throw new IllegalArgumentException("Job ID cannot be null or empty");
-        }
-
-        if(newDate == null)
-        {
-            throw new IllegalDateException("New date cannot be null");
-        }
-
-        try
-        {
-            Trigger newTrigger = createBillPaymentTrigger(newDate);
-            scheduler.rescheduleJob(new TriggerKey("paymentJob_" + jobId, "group1"), newTrigger);
-            return true;
-
-        }catch(SchedulerException e)
-        {
-            LOGGER.error("An Error occurred while rescheduling a payment job", e);
-            return false;
-        }
+        return false;
     }
 
     public TreeMap<LocalDate, BillPayment> getScheduledPaymentsForPeriod(LocalDate startDate, LocalDate endDate){

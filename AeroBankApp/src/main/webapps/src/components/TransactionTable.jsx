@@ -190,7 +190,7 @@ export default function TransactionTable({accountID}) {
             <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
                 <DialogTitle>Transaction Details</DialogTitle>
                 <DialogContent>
-                    {selectedTransaction && <TransactionDetails transaction={selectedTransaction} />}
+                    {selectedTransaction && <TransactionDetails transaction={selectedTransaction} open={isDialogOpen} close={handleCloseDialog} />}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog} color="primary">

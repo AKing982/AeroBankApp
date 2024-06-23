@@ -81,7 +81,7 @@ function NavigationMenu({anchorEl, isOpen, onClose, handleNavigation, isActive, 
             <StyledMenuItem onClick={() => handleNavigation("/dashboard")} selected={isActive("/dashboard")}>
                 <Typography>Dashboard</Typography>
             </StyledMenuItem>
-            <StyledMenuItem onClick={() => handleNavigation("/accounts")} selected={isActive("/accounts")}>
+            <StyledMenuItem onClick={() => handleNavigation("/summary")} selected={isActive("/summary")}>
                 <Typography>Account Summaries</Typography>
             </StyledMenuItem>
             <StyledMenuItem onClick={() => handleNavigation("/transfers")} selected={isActive("/transfers")}>

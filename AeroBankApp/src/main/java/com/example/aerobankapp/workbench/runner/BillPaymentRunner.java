@@ -66,19 +66,6 @@ public class BillPaymentRunner implements Runnable
         return billPaymentDataManager.findBillPaymentScheduleByID(paymentScheduleId);
     }
 
-    public Collection<BillPayment> getBillPaymentEntitiesConvertedToBillPaymentModel(final Optional<BillPaymentEntity> billPaymentEntity, final Optional<BillPaymentScheduleEntity> billPaymentScheduleEntity) {
-        Collection<BillPayment> billPayments = new ArrayList<>();
-        if(billPaymentEntity.isPresent()) {
-            if(billPaymentScheduleEntity.isPresent()) {
-                BillPaymentEntity billPaymentEntity1 = billPaymentEntity.get();
-                BillPaymentScheduleEntity billPaymentScheduleEntity1 = billPaymentScheduleEntity.get();
-                BillPayment billPayment = billPaymentConverter.convert(billPaymentEntity1, billPaymentScheduleEntity1);
-                billPayments.add(billPayment);
-            }
-        }
-        return billPayments;
-    }
-
     public boolean scheduleAndExecutePayments(final Collection<BillPayment> billPayments)
     {
        return false;
@@ -88,17 +75,26 @@ public class BillPaymentRunner implements Runnable
     @Override
     public void run() {
 
-        Long paymentId = billPaymentIdCriteria.getPaymentId();
-        Long scheduleId = billPaymentIdCriteria.getScheduleId();
+        try
+        {
+            Long paymentId = billPaymentIdCriteria.getPaymentId();
+            Long scheduleId = billPaymentIdCriteria.getScheduleId();
+            LOGGER.info("Processing Payment ID: {} and scheduleID: {}", paymentId, scheduleId);
 
-        // Fetch all the BillPayments
-        Optional<BillPaymentEntity> billPaymentEntities = getBillPaymentById(paymentId);
-        // Fetch all the BillPaymentSchedules
-        Optional<BillPaymentScheduleEntity> billPaymentScheduleEntities = getBillPaymentScheduleById(scheduleId);
+            // Fetch all the BillPayments
+            Optional<BillPayment> billPayment = getBillPaymentById(paymentId)
+                    .flatMap(payment -> getBillPaymentScheduleById(scheduleId)
+                            .map(schedule -> billPaymentConverter.convert(payment, schedule)));
 
-        // Next Convert the Entities to a BillPayment Model
-        Collection<BillPayment> billPayments = getBillPaymentEntitiesConvertedToBillPaymentModel(billPaymentEntities, billPaymentScheduleEntities);
-
-        scheduleAndExecutePayments(billPayments);
+            if(billPayment.isPresent()) {
+                boolean success = scheduleAndExecutePayments(Collections.singleton(billPayment.get()));
+                LOGGER.info("Payment processing result: {}", success ? "Success" : "Failure");
+            }else {
+                LOGGER.warn("No Valid bill payment found for processing");
+            }
+        }catch(Exception e)
+        {
+            LOGGER.error("Error Processing BillPayment", e);
+        }
     }
 }

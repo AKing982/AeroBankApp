@@ -19,31 +19,58 @@ import java.util.UUID;
 @Service
 public class SchedulerEngineImpl implements SchedulerEngine
 {
-    private final CronExpressionBuilder cronExpressionBuilder;
     private final Scheduler scheduler;
+    private final int MAX_RETRIES = 5;
     private Logger LOGGER = LoggerFactory.getLogger(SchedulerEngineImpl.class);
 
     @Autowired
-    public SchedulerEngineImpl(Scheduler scheduler, CronExpressionBuilder cronExpressionBuilder)
+    public SchedulerEngineImpl(Scheduler scheduler)
     {
-        this.cronExpressionBuilder = cronExpressionBuilder;
         this.scheduler = scheduler;
     }
 
     @Override
-    public void startScheduler() throws SchedulerException {
-        if(!scheduler.isStarted())
+    public void startScheduler() throws SchedulerException, InterruptedException
+    {
+        int attempts = 0;
+        while(!scheduler.isStarted() && attempts < MAX_RETRIES)
         {
-            scheduler.start();
+            try
+            {
+                scheduler.start();
+                LOGGER.info("Scheduler started successfully");
+                return;
+
+            }catch(Exception se)
+            {
+                attempts++;
+                LOGGER.warn("Failed to start scheduler, retrying...", se);
+                if(attempts >= MAX_RETRIES)
+                {
+                    throw new SchedulerException("Failed to start scheduler after " + MAX_RETRIES, se);
+                }
+                Thread.sleep(1000);
+            }
         }
+        LOGGER.info("Scheduler is already started");
     }
 
     @Override
     public void stopScheduler() throws SchedulerException {
-        if(!scheduler.isShutdown())
+        do
         {
-            scheduler.shutdown();
-        }
+            try
+            {
+                scheduler.shutdown(true);
+                LOGGER.info("Scheduler stopped successfully");
+                return;
+
+            }catch(SchedulerException se)
+            {
+                LOGGER.warn("Failed to stop scheduler", se);
+            }
+
+        }while(scheduler.isStarted());
     }
 
     @Override
@@ -108,44 +135,103 @@ public class SchedulerEngineImpl implements SchedulerEngine
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void pauseJob(String jobName, String groupName) {
+    public Boolean pauseJob(String jobName, String groupName) throws SchedulerException {
         JobKey jobKey = new JobKey(jobName, groupName);
         try
         {
-            scheduler.pauseJob(jobKey);
-
-        }catch(SchedulerException e)
+            if(scheduler.checkExists(jobKey))
+            {
+                scheduler.pauseJob(jobKey);
+                return true;
+            }
+            else
+            {
+                LOGGER.warn("Attempt to pause non existent job: {}", jobKey);
+                return true;
+            }
+        }catch(SchedulerException ex)
         {
-            LOGGER.error("An exception has occurred pausing Job: ", e);
+            LOGGER.error("An exception has occurred pausing Job: ", ex);
+            return false;
         }
     }
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void resumeJob(String jobName, String groupName) {
+    public Boolean resumeJob(String jobName, String groupName) throws SchedulerException {
         JobKey jobKey = new JobKey(jobName, groupName);
-        try
+        int maxAttempts = 5;
+        int attempts = 0;
+        while(attempts < maxAttempts)
         {
-            scheduler.resumeJob(jobKey);
+            try
+            {
+                if(scheduler.isInStandbyMode())
+                {
+                    LOGGER.warn("Scheduler is in standby mode. Waiting before attempting to resume job.");
+                    Thread.sleep(1000);
+                    attempts++;
+                }
+                else
+                {
+                    if(scheduler.checkExists(jobKey))
+                    {
+                        scheduler.resumeJob(jobKey);
+                        LOGGER.info("Job Resumed Successfully: {}", jobKey);
+                        return true;
+                    }
+                    else
+                    {
+                        LOGGER.warn("Job Does Not Exist: {}", jobKey);
+                        return false;
+                    }
+                }
 
-        }catch(SchedulerException e)
-        {
-            LOGGER.error("An exception has occurred while resuming job: ", e);
+            }catch(SchedulerException e)
+            {
+                LOGGER.error("An exception has occurred resuming Job: {} ", jobKey, e);
+                throw e;
+
+            }catch(InterruptedException ie)
+            {
+                LOGGER.error("An exception has occurred resuming Job: {}", jobKey, ie);
+                Thread.currentThread().interrupt();
+                return false;
+            }
         }
+        LOGGER.error("Failed to resume job after {} attempts: {}", maxAttempts, attempts);
+        return false;
     }
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void deleteJob(String jobName, String groupName)
+    public Boolean deleteJob(String jobName, String groupName)
     {
         JobKey jobKey = new JobKey(jobName, groupName);
         try
         {
-            scheduler.deleteJob(jobKey);
-
-        }catch(SchedulerException ex)
+            if(scheduler.checkExists(jobKey))
+            {
+                boolean deleted = scheduler.deleteJob(jobKey);
+                if(deleted)
+                {
+                    LOGGER.info("Job deleted successfully");
+                }
+                else
+                {
+                    LOGGER.warn("Failed to delete Job: {}", jobKey);
+                }
+                return deleted;
+            }
+            else
+            {
+                LOGGER.warn("Job does not exist: {}", jobKey);
+                return false;
+            }
+        }catch(SchedulerException e)
         {
-            LOGGER.error("An exception has ocurred while deleting a job: ", ex);
+            LOGGER.warn("Job Does not exist: {}", jobKey);
+            return false;
         }
     }
 

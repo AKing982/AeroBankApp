@@ -54,7 +54,8 @@ public class BillPaymentSchedulerRunner implements Runnable {
     }
 
     public boolean cancelExistingPayment(String jobId){
-        return billPaymentScheduler.cancelPayment(jobId);
+      //  return billPaymentScheduler.cancelPayment(jobId);
+        return false;
     }
 
     public Optional<LocalDate> getNextPaymentDate(BillPayment billPayment)
