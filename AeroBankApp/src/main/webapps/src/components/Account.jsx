@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
-import {Box, Typography, Grid, Paper, Avatar, CardContent, Card, IconButton, Badge} from '@mui/material';
+import {Box, Typography, Grid, Paper, Avatar, CardContent, Card, IconButton, Badge, Collapse} from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import {blue} from "@mui/material/colors";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import axios from "axios";
 import NotificationBell from "./NotificationBell";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 const NotificationCategory = {
     TRANSACTION_ALERT: "TransactionAlert",
@@ -45,6 +47,7 @@ const testNotifications = [
 export default function Account({ color, accountCode, acctID, acctCodeID, accountName, balance, pending, available, notifications, onNotificationClick, notificationCount, onAccountClick, isSelected, backgroundImageUrl})
 {
     const [newNotificationCount, setNewNotificationCount] = useState(notifications.length);
+    const [expanded, setExpanded] = useState(false);
 
     const handleUpdateNotificationCount = (newCount) => {
         setNewNotificationCount(newCount);
@@ -87,6 +90,12 @@ export default function Account({ color, accountCode, acctID, acctCodeID, accoun
         // If the selected color is a gradient, we'll use the text color that ensures readability
         color: 'contrastText', // Adjust text color for readability if necessary
     };
+
+    const handleExpandClick = (event) => {
+        event.stopPropagation(); // Prevent the card click event from firing
+        setExpanded(!expanded);
+    };
+
 
     return (
         <Card
@@ -134,8 +143,25 @@ export default function Account({ color, accountCode, acctID, acctCodeID, accoun
                         {accountName}
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 1 }}>Balance: <strong>${balance}</strong></Typography>
-                    <Typography variant="body1" sx={{ mb: 1 }}>Pending: <strong>${pending}</strong></Typography>
-                    <Typography variant="body1">Available: <strong>${available}</strong></Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <IconButton
+                            onClick={handleExpandClick}
+                            aria-expanded={expanded}
+                            aria-label="show more"
+                            size="small"
+                        >
+                            {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </IconButton>
+                    </Box>
+
+                    <Collapse in={expanded} timeout="auto" unmountOnExit>
+                        <Box sx={{ mt: 1 }}>
+                            <Typography variant="body1" sx={{ mb: 1 }}>Pending: <strong>${pending}</strong></Typography>
+                            <Typography variant="body1">Available: <strong>${available}</strong></Typography>
+                        </Box>
+                    </Collapse>
+                    {/*<Typography variant="body1" sx={{ mb: 1 }}>Pending: <strong>${pending}</strong></Typography>*/}
+                    {/*<Typography variant="body1">Available: <strong>${available}</strong></Typography>*/}
                 </Card>
                 {/* Existing Content */}
 

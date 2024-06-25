@@ -1,7 +1,22 @@
-import {Badge, IconButton, List, ListItem, ListItemText, Popover} from "@mui/material";
+import {
+    Badge,
+    ClickAwayListener,
+    Grow,
+    IconButton,
+    List,
+    ListItem,
+    ListItemText,
+    Paper,
+    Popover,
+    Typography
+} from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import axios from "axios";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import CloseIcon from "@mui/icons-material/Close";
+import DialogContent from "@mui/material/DialogContent";
 
 
 
@@ -16,9 +31,8 @@ const notificationColors = {
 
 
 function NotificationBell({notificationCount, initialNotifications, onBellClick}){
-    const [anchorEl, setAnchorEl] = useState(null);
+    const [open, setOpen] = useState(false);
     const [notifications, setNotifications] = useState(initialNotifications);
-
 
     useEffect(() => {
         console.log('Current Notifications:', notifications);
@@ -29,7 +43,7 @@ function NotificationBell({notificationCount, initialNotifications, onBellClick}
 
     const handleBellClick = (event) => {
         console.log('Notification Bell Clicked. Current Notifications:', notifications);
-        setAnchorEl(event.currentTarget);
+        setOpen(true);
     };
 
     const handleNotificationClick = async(index) => {
@@ -55,12 +69,10 @@ function NotificationBell({notificationCount, initialNotifications, onBellClick}
     };
 
 
-
     const handleClose = () => {
-        setAnchorEl(null);
+        setOpen(false);
     };
 
-    const open = Boolean(anchorEl);
     const id = open ? 'notification-popover' : undefined;
 
     return (
@@ -70,44 +82,114 @@ function NotificationBell({notificationCount, initialNotifications, onBellClick}
                     <NotificationsIcon />
                 </Badge>
             </IconButton>
-            <Popover
-                id={id}
+            <Dialog
                 open={open}
-                anchorEl={anchorEl}
                 onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
+                fullWidth
+                maxWidth="sm"
             >
-                <List>
-                    {notifications.map((notification, index) => (
-                        <ListItem
-                            key={index}
-                            button
-                            onClick={() => handleNotificationClick(index)}
-                            style={{
-                                backgroundColor: notificationColors[notification.accountNotificationCategory] || "#ffffff",
-                                color: notification.severe ? "#ff0000" : "#000000",
-                                fontWeight: notification.read ? "normal" : "bold"
-                            }}
-                        >
-                            <ListItemText
-                                primary={notification.title}
-                                secondary={notification.message}
-                                primaryTypographyProps={{ style: { color: notification.read ? "#000" : "#0000ff" } }}
-                                secondaryTypographyProps={{ style: { color: notification.read ? "#666" : "#444" } }}
-                            />
-                        </ListItem>
-                    ))}
-                </List>
-            </Popover>
+                <DialogTitle>
+                    Notifications
+                    <IconButton
+                        aria-label="close"
+                        onClick={handleClose}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent dividers>
+                    {notifications.length === 0 ? (
+                        <Typography>No notifications</Typography>
+                    ) : (
+                        <List>
+                            {notifications.map((notification, index) => (
+                                <ListItem
+                                    key={index}
+                                    button
+                                    onClick={() => handleNotificationClick(index)}
+                                    sx={{
+                                        bgcolor: notificationColors[notification.accountNotificationCategory] || "#ffffff",
+                                        color: notification.severe ? "#ff0000" : "#000000",
+                                        fontWeight: notification.read ? "normal" : "bold",
+                                        '&:hover': {
+                                            bgcolor: 'action.hover',
+                                        },
+                                        mb: 1,
+                                        borderRadius: 1,
+                                    }}
+                                >
+                                    <ListItemText
+                                        primary={notification.title}
+                                        secondary={notification.message}
+                                        primaryTypographyProps={{
+                                            style: { color: notification.read ? "#000" : "#0000ff" },
+                                            variant: 'subtitle2'
+                                        }}
+                                        secondaryTypographyProps={{
+                                            style: { color: notification.read ? "#666" : "#444" },
+                                            variant: 'body2'
+                                        }}
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                    )}
+                </DialogContent>
+            </Dialog>
         </>
     );
+
+    // return (
+    //     <>
+    //         <IconButton color="inherit" onClick={handleBellClick}>
+    //             <Badge badgeContent={notificationCount} color="secondary">
+    //                 <NotificationsIcon />
+    //             </Badge>
+    //         </IconButton>
+    //         <Popover
+    //             id={id}
+    //             open={open}
+    //             anchorEl={anchorEl}
+    //             onClose={handleClose}
+    //             anchorOrigin={{
+    //                 vertical: 'bottom',
+    //                 horizontal: 'left',
+    //             }}
+    //             transformOrigin={{
+    //                 vertical: 'top',
+    //                 horizontal: 'center',
+    //             }}
+    //         >
+    //             <List>
+    //                 {notifications.map((notification, index) => (
+    //                     <ListItem
+    //                         key={index}
+    //                         button
+    //                         onClick={() => handleNotificationClick(index)}
+    //                         style={{
+    //                             backgroundColor: notificationColors[notification.accountNotificationCategory] || "#ffffff",
+    //                             color: notification.severe ? "#ff0000" : "#000000",
+    //                             fontWeight: notification.read ? "normal" : "bold"
+    //                         }}
+    //                     >
+    //                         <ListItemText
+    //                             primary={notification.title}
+    //                             secondary={notification.message}
+    //                             primaryTypographyProps={{ style: { color: notification.read ? "#000" : "#0000ff" } }}
+    //                             secondaryTypographyProps={{ style: { color: notification.read ? "#666" : "#444" } }}
+    //                         />
+    //                     </ListItem>
+    //                 ))}
+    //             </List>
+    //         </Popover>
+    //     </>
+    // );
 }
 
 export default NotificationBell;

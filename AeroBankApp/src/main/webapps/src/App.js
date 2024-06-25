@@ -3,7 +3,7 @@ import './App.css';
 import Header from './components/Header'
 import LoginFormOLD from "./components/LoginFormOLD";
 import RegistrationForm from "./components/RegistrationForm";
-import {BrowserRouter, Route, Router, Routes} from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Router, Routes} from "react-router-dom";
 import Home from "./components/Home";
 import LoginForm from "./components/LoginForm";
 import ForgotPasswordForm from "./components/ForgotPasswordForm";
@@ -23,6 +23,7 @@ import SupportChat from "./components/SupportChat";
 import SummaryAccounts from "./components/SummaryAccounts";
 import AccountHistoryPage from "./components/AccountHistoryPage";
 import BillPaymentPage from "./components/BillPaymentPage";
+import PayeesContentPage from "./components/PayeesContentPage";
 
 
 function App() {
@@ -43,13 +44,15 @@ function App() {
                   <Route path="/withdraws" element={<WithdrawView />}/>
                   <Route path="/transfers" element={<TransferView/>}/>
                   <Route path="/transactionAnalytics" element={<TransactionSummary />}/>
-                  <Route path="/billPay" element={<BillPaymentPage />}/>
+                  {/*<Route path="/billPay" element={<BillPaymentPage />}/>*/}
                   <Route path="/reports" element={<AccountSummaries/>}/>
                   <Route path="/profile" element={<ProfilePage />}/>
                   <Route path="/transactions" element={<TransactionBuilder />}/>
                   <Route path="/summary" element={<SummaryAccounts />}/>
                   <Route path="/accounts/:id/:year/:month" element={<AccountHistoryPage />}/>
+                  <Route path="/billPay/*" element={<BillPaymentPage />} />
               </Routes>
+
           </BrowserRouter>
       </div>
   );

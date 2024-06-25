@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM openjdk:17-jre-slim
 
 # Set the working directory
 WORKDIR /app
@@ -13,4 +13,4 @@ EXPOSE 8080
 ENV NAME World
 
 # Run application when the container launches
-CMD ["Java", "-jar", ""]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

@@ -4,7 +4,7 @@ import {Box} from "@mui/system";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 
-function AccountSummaryBox({id, name, available, color, onSelect})
+function AccountSummaryBox({id, name, balance, color, onSelect})
 {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -65,7 +65,7 @@ function AccountSummaryBox({id, name, available, color, onSelect})
                 }
                 secondary={
                     <Typography variant="body1" color="rgba(255,255,255,0.9)">
-                        Available: ${available.toFixed(2)}
+                        Balance: ${balance}
                     </Typography>
                 }
                 primaryTypographyProps={{ fontWeight: 'bold', variant: 'body1' }}
