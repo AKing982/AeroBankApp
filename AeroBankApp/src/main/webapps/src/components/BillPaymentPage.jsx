@@ -28,6 +28,7 @@ import {AlertTitle} from "@mui/lab";
 import PayeesContentPage from "./PayeesContentPage";
 import TransfersContentPage from "./TransfersContentPage";
 import CalendarsContentPage from "./CalendarsContentPage";
+import BillPaymentHistoryPage from "./BillPaymentHistoryPage";
 
 function TabPanel({children, value, index})
 {
@@ -71,6 +72,8 @@ function BillPaymentPage()
                 return <TransfersContentPage />
             case 3:
                 return <CalendarsContentPage />
+            case 4:
+                return <BillPaymentHistoryPage />
             default:
                 return <PaymentsContent />
         }

@@ -15,9 +15,15 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import {HourglassTop} from "@mui/icons-material";
 import {ClockIcon} from "@mui/x-date-pickers";
+import {useNavigate} from "react-router-dom";
 
-function TransfersContentPage()
+function TransfersContentPage({viewHistory})
 {
+    const navigate = useNavigate();
+    const handleViewHistory = () => {
+        navigate('/billPay/Payments/PaymentHistory');
+    }
+
     return (
             <Box sx={{flexGrow: 1, p: 3 }}>
                 <Typography variant="h6" align="left" gutterBottom>
@@ -98,19 +104,16 @@ function TransfersContentPage()
                             <Divider />
                             <Box sx={{display: 'flex', justifyContent: 'space-between', mt: 2}}>
                                 <Box>
-                                    <Button variant="outlined" sx={{mr: 1}}>
-                                        Review
-                                    </Button>
-                                    <Button variant="contained" color="primary">
-                                        Submit
-                                    </Button>
                                 </Box>
                             </Box>
                             <Box sx={{display: 'flex', justifyContent: 'space-between', mt: 2}}>
                                 <Button variant="outlined" startIcon={<HourglassTop />} sx={{mr: 1}}>
                                     View Pending
                                 </Button>
-                                <Button variant="outlined" startIcon={<ClockIcon />} sx={{mr: 1}}>
+                                <Button variant="contained" color="primary">
+                                    Submit
+                                </Button>
+                                <Button variant="outlined" startIcon={<ClockIcon />} sx={{mr: 1}} onClick={handleViewHistory}>
                                     View history
                                 </Button>
                             </Box>
