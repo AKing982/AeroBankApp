@@ -46,7 +46,7 @@ public class UserProfileDataService implements CustomQueryService<UserProfileDTO
 
             for(int i = 0; i < params.length; i++)
             {
-                query.setParameter(i, params[i]);
+                query.setParameter(i+1, params[i]);
             }
 
             Object[] result = query.getSingleResult();
