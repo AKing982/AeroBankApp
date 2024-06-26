@@ -8,7 +8,7 @@ function DownLoadPDF(){
             const blob = await response.blob();
             const downloadUrl = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = downloadUrl;
+            link.href = downloadUrl;\\
             link.setAttribute('download', 'generated_report.pdf'); // Define the download file name
             document.body.appendChild(link);
             link.click();

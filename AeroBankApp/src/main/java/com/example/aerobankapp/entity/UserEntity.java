@@ -37,6 +37,9 @@ public class UserEntity
     @Embedded
     private UserCredentials userCredentials;
 
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserLogEntity> userLogs;
+
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="account_users",
@@ -49,6 +52,15 @@ public class UserEntity
         this.userDetails = userDetails;
         this.userSecurity = userSecurity;
         this.userCredentials = userCredentials;
+    }
+
+    public UserEntity(int userID, UserDetails userDetails, UserSecurity userSecurity, UserCredentials userCredentials, Set<UserLogEntity> userLogs, Set<AccountEntity> accounts) {
+        this.userID = userID;
+        this.userDetails = userDetails;
+        this.userSecurity = userSecurity;
+        this.userCredentials = userCredentials;
+        this.userLogs = userLogs;
+        this.accounts = accounts;
     }
 
     public UserEntity(int userID, UserDetails userDetails, UserSecurity userSecurity, UserCredentials userCredentials, Set<AccountEntity> accounts) {

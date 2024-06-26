@@ -25,6 +25,7 @@ import AccountHistoryPage from "./components/AccountHistoryPage";
 import BillPaymentPage from "./components/BillPaymentPage";
 import PayeesContentPage from "./components/PayeesContentPage";
 import BillPaymentHistoryPage from "./components/BillPaymentHistoryPage";
+import PendingPaymentsPage from "./components/PendingPaymentsPage";
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
                   <Route path="/summary" element={<SummaryAccounts />}/>
                   <Route path="/accounts/:id/:year/:month" element={<AccountHistoryPage />}/>
                   <Route path="/billPay/*" element={<BillPaymentPage />} />
+                  <Route path="/billPay/Payments/Pending" element={<PendingPaymentsPage />}/>
                   <Route path="/billPay/Payments/PaymentHistory" element={<BillPaymentHistoryPage />}/>
               </Routes>
 

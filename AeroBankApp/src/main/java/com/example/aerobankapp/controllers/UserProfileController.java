@@ -1,5 +1,6 @@
 package com.example.aerobankapp.controllers;
 
+import com.example.aerobankapp.dto.UserProfileDTO;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.utilities.Role;
 import com.example.aerobankapp.workbench.utilities.response.UserProfileResponse;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value="/api/profile", method= RequestMethod.GET)
@@ -18,14 +20,17 @@ import java.math.BigDecimal;
 public class UserProfileController {
 
     private UserServiceImpl userDAO;
+    private UserProfileDataService userProfileDataService;
     private AccountService accountDAO;
     private Logger LOGGER = LoggerFactory.getLogger(UserProfileController.class);
 
     @Autowired
-    public UserProfileController(UserServiceImpl userDAO, AccountService accountDAO)
+    public UserProfileController(UserServiceImpl userDAO, AccountService accountDAO,
+                                 UserProfileDataService userProfileDataService)
     {
         this.userDAO = userDAO;
         this.accountDAO = accountDAO;
+        this.userProfileDataService = userProfileDataService;
     }
 
     @GetMapping(value="/{username}")
@@ -42,6 +47,15 @@ public class UserProfileController {
         System.out.println("UserID: " + userID);
 
         return ResponseEntity.ok(new UserProfileResponse(userID, username, accountNumber, totalBalances, numberOfAccounts, role));
+    }
+
+    @GetMapping(value="/{userID}/data")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public ResponseEntity<?> getUserProfileInformation(@PathVariable int userID)
+    {
+        Optional<UserProfileDTO> userProfileDTOOptional = userProfileDataService.runUserProfileQuery(userID);
+        return ResponseEntity.ok(userProfileDTOOptional.get());
     }
 
 }

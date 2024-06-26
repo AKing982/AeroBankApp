@@ -20,9 +20,6 @@ import {useNavigate} from "react-router-dom";
 function TransfersContentPage({viewHistory})
 {
     const navigate = useNavigate();
-    const handleViewHistory = () => {
-        navigate('/billPay/Payments/PaymentHistory');
-    }
 
     return (
             <Box sx={{flexGrow: 1, p: 3 }}>
@@ -113,7 +110,7 @@ function TransfersContentPage({viewHistory})
                                 <Button variant="contained" color="primary">
                                     Submit
                                 </Button>
-                                <Button variant="outlined" startIcon={<ClockIcon />} sx={{mr: 1}} onClick={handleViewHistory}>
+                                <Button variant="outlined" startIcon={<ClockIcon />} sx={{mr: 1}} onClick={viewHistory}>
                                     View history
                                 </Button>
                             </Box>

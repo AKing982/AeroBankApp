@@ -5,6 +5,7 @@ import com.example.aerobankapp.embeddables.UserDetails;
 import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.services.AccountService;
+import com.example.aerobankapp.services.UserProfileDataService;
 import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.UserServiceImpl;
 import com.example.aerobankapp.workbench.utilities.Role;
@@ -52,6 +53,9 @@ class UserProfileControllerTest {
     @MockBean
     private AccountService accountService;
 
+    @MockBean
+    private UserProfileDataService userProfileDataService;
+
     private UserProfileController userProfileController;
 
 
@@ -59,7 +63,7 @@ class UserProfileControllerTest {
     void setUp(WebApplicationContext webApplicationContext) {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
-        userProfileController = new UserProfileController(userService, accountService);
+        userProfileController = new UserProfileController(userService, accountService, userProfileDataService);
     }
 
     @Test
