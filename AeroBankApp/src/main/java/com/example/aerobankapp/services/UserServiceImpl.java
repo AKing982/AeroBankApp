@@ -187,6 +187,15 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
+    public Boolean userIDExists(int id) {
+        if(id < 1)
+        {
+            return false;
+        }
+        return userRepository.userIDExists(id);
+    }
+
+    @Override
     //TODO: UNIT TEST THIS METHOD
     public boolean doesNewPasswordMatchCurrentPassword(String user, String newPassword){
         if(user.isEmpty() || newPassword.isEmpty()){

@@ -1,5 +1,7 @@
 package com.example.aerobankapp.controllers;
 
+import com.example.aerobankapp.configuration.AppConfig;
+import com.example.aerobankapp.configuration.JpaConfig;
 import com.example.aerobankapp.embeddables.UserCredentials;
 import com.example.aerobankapp.embeddables.UserDetails;
 import com.example.aerobankapp.embeddables.UserSecurity;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -42,6 +45,7 @@ import static org.hamcrest.Matchers.is;
 
 @WebMvcTest(value=UserProfileController.class)
 @RunWith(SpringRunner.class)
+@Import({AppConfig.class, JpaConfig.class})
 class UserProfileControllerTest {
 
     @Autowired
@@ -67,8 +71,7 @@ class UserProfileControllerTest {
     }
 
     @Test
-    void getUserProfileData_ValidUserName() throws Exception
-    {
+    void getUserProfileData_ValidUserName() throws Exception {
         String username = "AKing94";
         String email = "alex@utahkings.com";
         String pin = "5988";
@@ -89,7 +92,7 @@ class UserProfileControllerTest {
         when(userService.findByUserName(username)).thenReturn(userEntityList);
 
         mockMvc.perform(get("/api/profile/" + username)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 //.andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$.username", is(username)));
@@ -116,11 +119,47 @@ class UserProfileControllerTest {
         when(userService.findByUserName(username)).thenReturn(userEntityList);
 
         mockMvc.perform(get("/api/profile/" + username)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 //.andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$.username", is(username)));
     }
+
+    @Test
+    @WithMockUser
+    public void testGetUserProfileInformation_InvalidUserID_returnBadRequest() throws Exception {
+        int userID = -1;
+        mockMvc.perform(get("/api/profile/" + userID + "/data")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetUserProfileInformation_ValidUserID_DoesNotExist_returnNotFound() throws Exception {
+        int userID = 3;
+        mockMvc.perform(get("/api/profile/" + userID + "/data")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetUserProfileInformation_ValidUserID_returnUserProfileData() throws Exception
+    {
+        int userID = 1;
+        final String email = "alex@utahkings.com";
+        final String name = "Alex King";
+        final String lastLogin = "2:52:00 AM";
+
+        mockMvc.perform(get("/api/profile/" + userID + "/data")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email", is(email)))
+                .andExpect(jsonPath("$.name", is(name)));
+    }
+
 
 
     @AfterEach

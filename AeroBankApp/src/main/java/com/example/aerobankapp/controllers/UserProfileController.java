@@ -3,6 +3,7 @@ package com.example.aerobankapp.controllers;
 import com.example.aerobankapp.dto.UserProfileDTO;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.utilities.Role;
+import com.example.aerobankapp.workbench.utilities.response.UserProfileDataResponse;
 import com.example.aerobankapp.workbench.utilities.response.UserProfileResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,8 +55,36 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<?> getUserProfileInformation(@PathVariable int userID)
     {
-        Optional<UserProfileDTO> userProfileDTOOptional = userProfileDataService.runUserProfileQuery(userID);
-        return ResponseEntity.ok(userProfileDTOOptional.get());
+        if(userID < 1)
+        {
+            return ResponseEntity.badRequest().body("Invalid userID");
+        }
+
+        // Does the userID exist in the database?
+        Boolean userIDFound = userDAO.userIDExists(userID);
+        if(userIDFound)
+        {
+            LOGGER.info("User Profile for userID: {}", userID);
+            Optional<UserProfileDTO> userProfileDTOOptional = userProfileDataService.runUserProfileQuery(userID);
+            if(userProfileDTOOptional.isPresent())
+            {
+                LOGGER.info("User Profile Data is Present");
+                String name = userProfileDTOOptional.get().name();
+                String email = userProfileDTOOptional.get().email();
+                String lastLogin = userProfileDTOOptional.get().lastLogin();
+                if(!name.isEmpty() && !email.isEmpty() && !lastLogin.isEmpty())
+                {
+                    LOGGER.info("Return UserProfile Data Response: {}", userProfileDTOOptional.get());
+                    return ResponseEntity.ok(new UserProfileDataResponse(name, email, lastLogin));
+                }
+            }
+        }
+        else
+        {
+            LOGGER.warn("User Profile Data for UserID: {} not found", userID);
+            return ResponseEntity.notFound().build();
+        }
+        return null;
     }
 
 }

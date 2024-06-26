@@ -243,4 +243,14 @@ class UserServiceImplTest {
     @AfterEach
     void tearDown() {
     }
+
+    @Test
+    public void userIDExists_ValidId() {
+        assertTrue(userService.userIDExists(1));
+    }
+
+    @Test
+    public void userIDExists_InValidId() {
+        assertFalse(userService.userIDExists(0));
+    }
 }

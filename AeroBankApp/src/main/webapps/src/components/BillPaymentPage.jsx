@@ -47,12 +47,13 @@ function BillPaymentPage()
     const navigate = useNavigate();
     const location = useLocation();
     const [userInfo, setUserInfo] = useState({
-        name: 'Alexander King',
-        email: 'alex@utahkings.com',
-        lastLogin: '11:31 AM on 06/22/2024'
+        name: '',
+        email: '',
+        lastLogin: ''
     });
     const [tabValue, setTabValue] = useState(0);
     const {handleLogout, currentUserLog} = UserSessionUtils();
+    const userID = sessionStorage.getItem('userID');
 
     useEffect(() => {
         const path = location.pathname.split('/')[2] || 'Payments';
@@ -61,7 +62,7 @@ function BillPaymentPage()
 
     const handleTabChange = (event, newValue) => {
         const tabs = ['Payments', 'Payees', 'Transfers', 'Calendar'];
-        const userID = sessionStorage.getItem('userID');
+
         navigate(`/billPay/${tabs[newValue]}?userID=${userID}`);
     }
 
@@ -73,6 +74,18 @@ function BillPaymentPage()
     const handlePending = () => {
         navigate('/billPay/Payments/Pending');
     }
+
+    useEffect(() => {
+        axios.get(`http://localhost:8080/AeroBankApp/api/profile/${userID}/data`)
+            .then(response => {
+                    const responseData = response.data;
+                    console.log("User Profile Data Response: ", responseData);
+                    setUserInfo(responseData);
+            })
+            .catch(error => {
+                console.error("There was an error fetching the User Profile Data: ", error);
+            })
+    }, [])
 
 
     const renderTabContent = () => {
@@ -116,7 +129,7 @@ function BillPaymentPage()
             }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Typography variant="body2">
-                        Welcome Alexander King
+                        Welcome {userInfo.name}
                     </Typography>
                     <Divider orientation="vertical" flexItem sx={{bgcolor: 'white', mx: 1}}/>
                     <Typography variant="body2">
