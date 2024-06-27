@@ -4,6 +4,7 @@ import com.example.aerobankapp.embeddables.UserCredentials;
 import com.example.aerobankapp.embeddables.UserDetails;
 import com.example.aerobankapp.embeddables.UserSecurity;
 import com.example.aerobankapp.workbench.utilities.Role;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -38,6 +39,7 @@ public class UserEntity
     private UserCredentials userCredentials;
 
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private Set<UserLogEntity> userLogs;
 
     @JsonIgnore

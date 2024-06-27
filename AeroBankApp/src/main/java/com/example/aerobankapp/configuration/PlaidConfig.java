@@ -2,6 +2,7 @@ package com.example.aerobankapp.configuration;
 
 import com.plaid.client.request.PlaidApi;
 import com.plaid.client.ApiClient;
+import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import com.plaid.client.ServerConfiguration;
@@ -19,6 +20,21 @@ public class PlaidConfig {
     @Bean
     public PlaidApi plaidApi()
     {
-        ApiClient apiClient = ApiClient.newBuilder()
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(chain -> {
+            okhttp3.Request original = chain.request();
+            okhttp3.Request request = original.newBuilder()
+                    .header("PLAID-CLIENT-ID", plaidClientId)
+                    .header("PLAID-SECRET", plaidSecret)
+                    .method(original.method(), original.body())
+                    .build();
+            return chain.proceed(request);
+        });
+
+        ApiClient apiClient = new ApiClient();
+        apiClient.setPlaidAdapter("https://sandbox.plaid.com");
+        apiClient.configureFromOkclient(httpClient.build());
+
+        return apiClient.createService(PlaidApi.class);
     }
 }
