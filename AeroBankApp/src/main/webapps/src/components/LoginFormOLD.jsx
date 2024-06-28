@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import Header from "./Header";
 import '../LoginForm.css';
@@ -26,6 +26,7 @@ import axios from "axios";
 import {Link} from 'react-router-dom';
 import {usePlaidLink} from 'react-plaid-link';
 import PlaidLink from "./PlaidLink";
+import {bool} from "prop-types";
 
 export default function LoginFormOLD()
 {
@@ -157,6 +158,22 @@ export default function LoginFormOLD()
         }
     }
 
+    const handlePlaidSuccess = useCallback(async(public_token, metadata) => {
+        try
+        {
+            let userId = sessionStorage.getItem('userID');
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/plaid/exchange_public_token`, {
+                public_token: public_token,
+                userId: userId
+        });
+            navigateToHomePage();
+        }catch(error)
+        {
+            console.error('Error exchanging public token: ', error);
+            setError('Failed to link account. Please try again.');
+        }
+    }, [userID])
+
     const handleLoginResponse = async (response, data) => {
         if (response && response.ok) {
             const token = data.token;
@@ -166,7 +183,27 @@ export default function LoginFormOLD()
             console.log('Role: ', roles);
             saveJWTSession(token);
             await setSessionAttributes(username, roles, token);
-            navigateToHomePage();
+
+            const hasPlaidAccount = data.hasPlaidAccount;
+            if(hasPlaidAccount)
+            {
+                navigateToHomePage();
+            }
+            else
+            {
+                try
+                {
+                    const { linkToken, showPlaidLink } = await fetchLinkTokenResponse(userID);
+                    setLinkToken(linkToken);
+                    setShowPlaidLink(showPlaidLink);
+                    console.log("ShowPlaidLink: ", showPlaidLink);
+
+                }catch(error)
+                {
+                    console.error("There was an error exchanging the public token: ", error);
+                }
+            }
+
         } else {
             setError('Incorrect Username or Password');
             setDialogMessage('Incorrect Username or Password');
@@ -187,7 +224,7 @@ export default function LoginFormOLD()
                 },
                 body: JSON.stringify({
                     username: username,
-                    password: password
+                    password: password,
                 })
             });
 
@@ -266,6 +303,34 @@ export default function LoginFormOLD()
         }
     }
 
+    useEffect(() => {
+        console.log('showPlaidLink updated:', showPlaidLink);
+    }, [showPlaidLink]);
+
+    const fetchLinkTokenResponse = async (userID) => {
+        let userIDAsString = String(userID);
+        try
+        {
+            const linkTokenResponse = await axios.post(`http://localhost:8080/AeroBankApp/api/plaid/create_link_token`, {userId: userIDAsString});
+            if(linkTokenResponse.status === 200 || linkTokenResponse.status === 201)
+            {
+                const responseData = linkTokenResponse.data;
+                console.log("Link Token Response: ", responseData);
+                let linkToken = responseData.link_token;
+                console.log("Link Token: ", linkToken);
+                if (linkToken != null)
+                {
+                    return { linkToken, showPlaidLink: true };
+                }
+            }
+
+        }catch(error)
+        {
+            console.error("There was an error fetching the Link token: ", error);
+        }
+        return { linkToken, showPlaidLink: true };
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
@@ -296,20 +361,7 @@ export default function LoginFormOLD()
                     console.log('Creating User Log for userID: ', userID);
                     sendUserLogRequest(userID, 1, 1);
 
-                    try
-                    {
-                        let userIDAsString = String(userID);
-                        const linkTokenResponse = await axios.post(`http://localhost:8080/AeroBankApp/api/plaid/create_link_token`, {userId: userIDAsString});
-                        console.log("LinkTokenResponse: ", linkTokenResponse);
-                        let linkTokenData = linkTokenResponse.data;
-                        console.log("LinkTokenData: ", linkTokenData.link_token);
-                        setLinkToken(linkTokenResponse.data.link_token);
-                        console.log('Link Token: ', linkToken);
-                        setShowPlaidLink(true);
-                        console.log('Rendering PlaidLink, showPlaidLink:', showPlaidLink)
-                    }catch(error) {
-                        console.error('Error Fetching link token: ', error);
-                    }
+
                 } else {
                     console.log('Login Failed');
                     setDialogMessage('Incorrect Username or Password');
@@ -576,7 +628,7 @@ export default function LoginFormOLD()
                                     >
                                         Login
                                     </Button>
-                                    {showPlaidLink && linkToken && <PlaidLink linkToken={linkToken} userID={userID}/>}
+                                    {showPlaidLink && linkToken && <PlaidLink linkToken={linkToken} userID={userID} onSuccess={handlePlaidSuccess}/>}
                                 </Box>
                             </Box>
                         </CardContent>

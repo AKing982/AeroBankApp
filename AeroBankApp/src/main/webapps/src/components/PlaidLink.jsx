@@ -3,53 +3,28 @@ import axios from "axios";
 import {usePlaidLink} from 'react-plaid-link';
 import {Button} from "@mui/material";
 
-function PlaidLink({userID, linkToken})
+function PlaidLink({userID, linkToken, onSuccess})
 {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isLinked, setIsLinked] = useState(false);
 
-
-    // useEffect(() => {
-    //     const fetchLinkToken = async () => {
-    //         setIsLoading(true);
-    //         try
-    //         {
-    //             const response = await fetch(`http://localhost:8080/AeroBankApp/api/plaid/create_link_token`, {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify({userId: userID}),
-    //             });
-    //
-    //             const data = response.json();
-    //             console.log('Link Token: ', data.link_token);
-    //             setLinkToken(response.data.link_token);
-    //
-    //         }catch(err)
-    //         {
-    //             console.error("There was an error fetching the create link token: ", err);
-    //         }
-    //         setIsLoading(false);
-    //     };
-    //     fetchLinkToken();
-    // }, []);
-
-    const onSuccess = useCallback(async (publicToken, metadata) => {
-        setIsLoading(true);
-        try
-        {
-            await axios.post(`http:/localhost:8080/AeroBankApp/api/plaid/exchange_public_token`, {publicToken: publicToken});
-            setIsLinked(true);
-        }catch(err)
-        {
-            setError('Failed to exchange public token');
-            console.error("There was an error exchanging the public token: ", err);
-        }
-       setIsLoading(false);
-        console.log('Account linked successfully');
-    }, [userID]);
+    // const onSuccess = useCallback(async (publicToken, metadata) => {
+    //     setIsLoading(true);
+    //     try
+    //     {
+    //         const response = await axios.post(`http:/localhost:8080/AeroBankApp/api/plaid/exchange_public_token`,
+    //             {publicToken: publicToken, userId: userID});
+    //         console.log('Exchange public token response: ', response.data);
+    //         setIsLinked(true);
+    //     }catch(err)
+    //     {
+    //         setError('Failed to exchange public token');
+    //         console.error("There was an error exchanging the public token: ", err);
+    //     }
+    //    setIsLoading(false);
+    //     console.log('Account linked successfully');
+    // }, [userID]);
 
     const onExit = useCallback((err, metadata) => {
         if(err != null)
@@ -60,7 +35,21 @@ function PlaidLink({userID, linkToken})
 
     const config = {
         token: linkToken,
-        onSuccess,
+        onSuccess: async (public_token, metadata) => {
+            setIsLoading(true);
+            try
+            {
+                await onSuccess(public_token, metadata);
+                setIsLinked(true);
+
+            } catch (err)
+            {
+                setError('Failed to exchange public token');
+                console.error('There was an error exchanging the public token: ', err);
+            }
+            setIsLoading(false);
+        },
+        onExit,
     };
 
     const handleConnectClick = () => {
@@ -75,15 +64,8 @@ function PlaidLink({userID, linkToken})
     if(error) return <div>Error: {error}</div>
     if(isLinked) return <div>Account successfully linked</div>
 
-    return linkToken && (
-            <Button
-                onClick={() => open()}
-                disabled={!ready}
-                variant="contained"
-                color="secondary">
-                Connect to your Bank account
-            </Button>
-    );
+    return open();
+
 }
 
 export default PlaidLink;

@@ -45,12 +45,18 @@ class AuthenticationServiceImplTest {
     @MockBean
     private AuthenticationServiceImpl authenticationService;
 
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private PlaidAccountsServiceImpl plaidAccountsService;
+
 
 
     @BeforeEach
     void setUp()
     {
-        authenticationService = new AuthenticationServiceImpl(userDetailsService);
+        authenticationService = new AuthenticationServiceImpl(userDetailsService, userService, plaidAccountsService);
     }
 
     @Test

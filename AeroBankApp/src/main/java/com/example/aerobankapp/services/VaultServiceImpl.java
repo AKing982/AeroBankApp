@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class VaultServiceImpl implements VaultService{
+public class VaultServiceImpl implements VaultService
+{
 
     private final String vaultUri = "http://localhost:8200/";
     private String roleId;

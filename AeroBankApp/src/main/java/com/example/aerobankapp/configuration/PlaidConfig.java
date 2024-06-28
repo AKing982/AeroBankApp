@@ -5,11 +5,13 @@ import com.plaid.client.ApiClient;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import com.plaid.client.ServerConfiguration;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PlaidConfig {
+
+    @Value("${plaid.url}")
+    private String plaidUrl;
 
     @Value("${plaid.client-id}")
     private String plaidClientId;
@@ -32,7 +34,7 @@ public class PlaidConfig {
         });
 
         ApiClient apiClient = new ApiClient();
-        apiClient.setPlaidAdapter("https://sandbox.plaid.com");
+        apiClient.setPlaidAdapter(plaidUrl);
         apiClient.configureFromOkclient(httpClient.build());
 
         return apiClient.createService(PlaidApi.class);

@@ -34,15 +34,20 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
 
     private UserDetailsService userDetailsService;
     private PasswordEncoder passwordEncoder;
+    private UserService userDAO;
+    private PlaidAccountsServiceImpl plaidAccountsService;
     private JWTUtil jwtUtil = new JWTUtil();
     private Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     @Autowired
-    public AuthenticationServiceImpl(@Qualifier("userDetailsServiceImpl") UserDetailsServiceImpl userService)
+    public AuthenticationServiceImpl(@Qualifier("userDetailsServiceImpl") UserDetailsServiceImpl userService,
+                                     UserService userDAO,
+                                     PlaidAccountsServiceImpl plaidAccountsService)
     {
         this.userDetailsService = userService;
+        this.userDAO = userDAO;
+        this.plaidAccountsService = plaidAccountsService;
         this.passwordEncoder = new BCryptPasswordEncoder();
-
     }
 
     @Override
@@ -83,15 +88,11 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
     {
         Authentication authentication = authenticate(new UsernamePasswordAuthenticationToken(user, password));
         if(authentication.isAuthenticated()) {
-//            String jwtToken = jwtUtil.generateToken(authentication);
-//            if(jwtToken == null)
-//            {
-//                logger.error("Failed to generated token for user: {}", user);
-//                throw new AuthenticationServiceException("Token Generation failed");
-//            }
-            String uuidToken = UUID.randomUUID().toString();
 
-            return new AuthDataResponse(uuidToken, "Bearer", user, authentication.getAuthorities());
+            String uuidToken = UUID.randomUUID().toString();
+            int userID = userDAO.getUserIDByUserName(user);
+            Boolean hasPlaidAccount = plaidAccountsService.hasPlaidAccount(userID);
+            return new AuthDataResponse(uuidToken, "Bearer", hasPlaidAccount, user, authentication.getAuthorities());
         }
         else
         {

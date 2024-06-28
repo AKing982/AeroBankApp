@@ -1,5 +1,7 @@
 package com.example.aerobankapp.services.plaid;
 
+import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.services.PlaidAccountsService;
 import com.plaid.client.model.*;
 import com.plaid.client.request.PlaidApi;
 import org.slf4j.Logger;
@@ -10,18 +12,43 @@ import retrofit2.Response;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 public class PlaidService
 {
     private final PlaidApi plaidApi;
+    private final PlaidAccountsService plaidAccountsService;
 
     private Logger LOGGER = LoggerFactory.getLogger(PlaidService.class);
 
     @Autowired
-    public PlaidService(PlaidApi plaidApi)
+    public PlaidService(PlaidApi plaidApi, PlaidAccountsService plaidAccountsService)
     {
         this.plaidApi = plaidApi;
+        this.plaidAccountsService = plaidAccountsService;
+    }
+
+    public void createAndSavePlaidAccountEntity(String item_id, int userID, String access_token)
+    {
+        PlaidAccountsEntity plaidAccountsEntity = plaidAccountsService.buildPlaidAccountsEntity(access_token, item_id, userID, "sandBox");
+
+        plaidAccountsService.save(plaidAccountsEntity);
+    }
+
+    public Optional<PlaidAccountsEntity> getPlaidAccountEntityByUserId(int userID)
+    {
+        return plaidAccountsService.findPlaidAccountEntityByUserId(userID);
+    }
+
+    public LinkTokenCreateRequest buildLinkTokenRequest(String clientUserID)
+    {
+        return new LinkTokenCreateRequest()
+                .user(new LinkTokenCreateRequestUser().clientUserId(clientUserID))
+                .clientName("Utah Kings Credit Union")
+                .products(Arrays.asList(Products.AUTH, Products.TRANSACTIONS, Products.STATEMENTS, Products.RECURRING_TRANSACTIONS))
+                .countryCodes(Arrays.asList(CountryCode.US))
+                .language("en");
     }
 
     /**
@@ -33,36 +60,44 @@ public class PlaidService
      */
     public LinkTokenCreateResponse createLinkToken(String clientUserId) throws Exception
     {
-        try
+        if(clientUserId == null || clientUserId.isEmpty())
         {
-            LinkTokenCreateRequest request = new LinkTokenCreateRequest()
-                    .user(new LinkTokenCreateRequestUser().clientUserId(clientUserId))
-                    .clientName("AeroBankApp")
-                    .products(Arrays.asList(Products.AUTH, Products.TRANSACTIONS))
-                    .countryCodes(Arrays.asList(CountryCode.US))
-                    .language("en");
-
-            Response<LinkTokenCreateResponse> response = plaidApi.linkTokenCreate(request).execute();
-
-            if (!response.isSuccessful())
-            {
-                LOGGER.error("Error creating link token. Code: {}, Message: {}", response.code(), response.message());
-                throw new Exception(response.message());
-            }
-
-            LinkTokenCreateResponse linkTokenCreateResponse = response.body();
-            if(linkTokenCreateResponse == null)
-            {
-                LOGGER.error("Link token response is null");
-                throw new Exception("Link token response is null");
-            }
-            return linkTokenCreateResponse;
-
-        }catch(Exception e)
-        {
-            LOGGER.error("Exception while creating link token", e);
-            throw e;
+            throw new IllegalArgumentException("Client user ID cannot be null or empty");
         }
+
+        LinkTokenCreateRequest linkTokenCreateRequest = buildLinkTokenRequest(clientUserId);
+
+        return null;
+//        try
+//        {
+//            LinkTokenCreateRequest request = new LinkTokenCreateRequest()
+//                    .user(new LinkTokenCreateRequestUser().clientUserId(clientUserId))
+//                    .clientName("AeroBankApp")
+//                    .products(Arrays.asList(Products.AUTH, Products.TRANSACTIONS, Products.STATEMENTS, Products.BALANCE, Products.RECURRING_TRANSACTIONS))
+//                    .countryCodes(Arrays.asList(CountryCode.US))
+//                    .language("en");
+//
+//            Response<LinkTokenCreateResponse> response = plaidApi.linkTokenCreate(request).execute();
+//
+//            if (!response.isSuccessful())
+//            {
+//                LOGGER.error("Error creating link token. Code: {}, Message: {}", response.code(), response.message());
+//                throw new Exception(response.message());
+//            }
+//
+//            LinkTokenCreateResponse linkTokenCreateResponse = response.body();
+//            if(linkTokenCreateResponse == null)
+//            {
+//                LOGGER.error("Link token response is null");
+//                throw new Exception("Link token response is null");
+//            }
+//            return linkTokenCreateResponse;
+//
+//        }catch(Exception e)
+//        {
+//            LOGGER.error("Exception while creating link token", e);
+//            throw e;
+//        }
     }
 
     /**
@@ -109,7 +144,14 @@ public class PlaidService
                 .accessToken(accessToken)
                 .startDate(startDate)
                 .endDate(endDate);
-        return plaidApi.transactionsGet(request).execute().body();
+
+        Response<TransactionsGetResponse> response = plaidApi.transactionsGet(request).execute();
+        if(!response.isSuccessful())
+        {
+            LOGGER.error("Error retrieving transactions. Code: {}, Message: {}", response.code(), response.message());
+            throw new Exception(response.message());
+        }
+        return response.body();
     }
 
     /**
@@ -126,6 +168,27 @@ public class PlaidService
                 .accessToken(accessToken)
                 .cursor(cursor);
         return plaidApi.transactionsSync(request).execute().body();
+    }
+
+    /**
+     * Retrieves the account balances for a given access token.
+     *
+     * @param accessToken The access token used to authenticate the request.
+     * @return An AccountsGetResponse object representing the account balances.
+     * @throws Exception if an error occurs while retrieving the account balances.
+     */
+    public AccountsGetResponse getAccounts(String accessToken) throws Exception {
+        AccountsGetRequest request = new AccountsGetRequest()
+                .accessToken(accessToken);
+
+        Response<AccountsGetResponse> response = plaidApi.accountsGet(request)
+                .execute();
+
+        if (!response.isSuccessful()) {
+            throw new Exception("Failed to get accounts: " + response.errorBody().string());
+        }
+
+        return response.body();
     }
 
 

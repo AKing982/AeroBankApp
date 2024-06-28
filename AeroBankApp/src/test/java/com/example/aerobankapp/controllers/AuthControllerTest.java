@@ -1,6 +1,7 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.services.AuthenticationServiceImpl;
+import com.example.aerobankapp.services.PlaidAccountsServiceImpl;
 import com.example.aerobankapp.workbench.security.authentication.JWTUtil;
 import com.example.aerobankapp.workbench.tokens.AuthTokenResponse;
 import com.example.aerobankapp.workbench.utilities.LoginRequest;
@@ -53,6 +54,9 @@ class AuthControllerTest {
     private AuthenticationServiceImpl authenticationManager;
 
     @MockBean
+    private PlaidAccountsServiceImpl accountsService;
+
+    @MockBean
     private JWTUtil jwtUtil;
 
     private AuthController authController;
@@ -97,6 +101,7 @@ class AuthControllerTest {
 
     @Test
     public void testAuthenticateUser_ValidCredentials() {
+        int userID = 1;
         String username = "AKing94";
         String password = "Halflifer45!";
         LoginRequest loginRequest = new LoginRequest(username, password);
@@ -136,7 +141,7 @@ class AuthControllerTest {
     @Test
     public void createAuthenticationTokenSuccess()
     {
-        LoginRequest loginRequest = new LoginRequest("AKing94", "Halflifer45!");
+        LoginRequest loginRequest = new LoginRequest( "AKing94", "Halflifer45!");
         String mockToken = "eyJhbGciOiJub25lIn0.eyJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4ifQ.";
 
      //   when(authenticationManager.login(anyString(), anyString())).thenReturn(mockToken);
