@@ -7,7 +7,7 @@ import com.plaid.client.model.LinkTokenCreateResponse;
 
 public interface PlaidTokenProcessor
 {
-    LinkTokenCreateResponse createLinkToken(String clientUserId);
+    LinkTokenCreateResponse createLinkToken(String clientUserId) throws Exception;
 
     ItemPublicTokenExchangeResponse exchangeItemPublicToken(ItemPublicTokenExchangeRequest request);
 }

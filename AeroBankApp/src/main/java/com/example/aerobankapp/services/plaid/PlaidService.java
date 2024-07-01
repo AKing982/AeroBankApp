@@ -2,6 +2,7 @@ package com.example.aerobankapp.services.plaid;
 
 import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.services.PlaidAccountsService;
+import com.example.aerobankapp.workbench.plaid.PlaidTokenProcessorImpl;
 import com.plaid.client.model.*;
 import com.plaid.client.request.PlaidApi;
 import org.slf4j.Logger;
@@ -18,15 +19,18 @@ import java.util.Optional;
 public class PlaidService
 {
     private final PlaidApi plaidApi;
+    private final PlaidTokenProcessorImpl plaidTokenProcessor;
     private final PlaidAccountsService plaidAccountsService;
 
     private Logger LOGGER = LoggerFactory.getLogger(PlaidService.class);
 
     @Autowired
-    public PlaidService(PlaidApi plaidApi, PlaidAccountsService plaidAccountsService)
+    public PlaidService(PlaidApi plaidApi, PlaidAccountsService plaidAccountsService,
+                        PlaidTokenProcessorImpl plaidTokenProcessor)
     {
         this.plaidApi = plaidApi;
         this.plaidAccountsService = plaidAccountsService;
+        this.plaidTokenProcessor = plaidTokenProcessor;
     }
 
     public void createAndSavePlaidAccountEntity(String item_id, int userID, String access_token)
@@ -66,32 +70,33 @@ public class PlaidService
         }
 
         LOGGER.info("ClientUserId: {}", clientUserId);
-
-        try
-        {
-            LinkTokenCreateRequest request = buildLinkTokenRequest(clientUserId);
-
-            Response<LinkTokenCreateResponse> response = plaidApi.linkTokenCreate(request).execute();
-
-            if (!response.isSuccessful())
-            {
-                LOGGER.error("Error creating link token. Code: {}, Message: {}", response.code(), response.message());
-                throw new Exception(response.message());
-            }
-
-            LinkTokenCreateResponse linkTokenCreateResponse = response.body();
-            if(linkTokenCreateResponse == null)
-            {
-                LOGGER.error("Link token response is null");
-                throw new Exception("Link token response is null");
-            }
-            return linkTokenCreateResponse;
-
-        }catch(Exception e)
-        {
-            LOGGER.error("Exception while creating link token", e);
-            throw e;
-        }
+        //
+//        try
+//        {
+//            LinkTokenCreateRequest request = buildLinkTokenRequest(clientUserId);
+//
+//            Response<LinkTokenCreateResponse> response = plaidApi.linkTokenCreate(request).execute();
+//
+//            if (!response.isSuccessful())
+//            {
+//                LOGGER.error("Error creating link token. Code: {}, Message: {}", response.code(), response.message());
+//                throw new Exception(response.message());
+//            }
+//
+//            LinkTokenCreateResponse linkTokenCreateResponse = response.body();
+//            if(linkTokenCreateResponse == null)
+//            {
+//                LOGGER.error("Link token response is null");
+//                throw new Exception("Link token response is null");
+//            }
+//            return linkTokenCreateResponse;
+//
+//        }catch(Exception e)
+//        {
+//            LOGGER.error("Exception while creating link token", e);
+//            throw e;
+//        }
+        return plaidTokenProcessor.createLinkToken(clientUserId);
     }
 
     /**
