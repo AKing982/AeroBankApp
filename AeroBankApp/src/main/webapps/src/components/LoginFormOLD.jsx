@@ -193,6 +193,7 @@ export default function LoginFormOLD()
             {
                 try
                 {
+                    let userID = sessionStorage.getItem('userID');
                     const { linkToken, showPlaidLink } = await fetchLinkTokenResponse(userID);
                     setLinkToken(linkToken);
                     setShowPlaidLink(showPlaidLink);
@@ -309,6 +310,7 @@ export default function LoginFormOLD()
 
     const fetchLinkTokenResponse = async (userID) => {
         let userIDAsString = String(userID);
+        console.log('UserIDAsString: ', userIDAsString);
         try
         {
             const linkTokenResponse = await axios.post(`http://localhost:8080/AeroBankApp/api/plaid/create_link_token`, {userId: userIDAsString});

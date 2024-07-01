@@ -65,39 +65,33 @@ public class PlaidService
             throw new IllegalArgumentException("Client user ID cannot be null or empty");
         }
 
-        LinkTokenCreateRequest linkTokenCreateRequest = buildLinkTokenRequest(clientUserId);
+        LOGGER.info("ClientUserId: {}", clientUserId);
 
-        return null;
-//        try
-//        {
-//            LinkTokenCreateRequest request = new LinkTokenCreateRequest()
-//                    .user(new LinkTokenCreateRequestUser().clientUserId(clientUserId))
-//                    .clientName("AeroBankApp")
-//                    .products(Arrays.asList(Products.AUTH, Products.TRANSACTIONS, Products.STATEMENTS, Products.BALANCE, Products.RECURRING_TRANSACTIONS))
-//                    .countryCodes(Arrays.asList(CountryCode.US))
-//                    .language("en");
-//
-//            Response<LinkTokenCreateResponse> response = plaidApi.linkTokenCreate(request).execute();
-//
-//            if (!response.isSuccessful())
-//            {
-//                LOGGER.error("Error creating link token. Code: {}, Message: {}", response.code(), response.message());
-//                throw new Exception(response.message());
-//            }
-//
-//            LinkTokenCreateResponse linkTokenCreateResponse = response.body();
-//            if(linkTokenCreateResponse == null)
-//            {
-//                LOGGER.error("Link token response is null");
-//                throw new Exception("Link token response is null");
-//            }
-//            return linkTokenCreateResponse;
-//
-//        }catch(Exception e)
-//        {
-//            LOGGER.error("Exception while creating link token", e);
-//            throw e;
-//        }
+        try
+        {
+            LinkTokenCreateRequest request = buildLinkTokenRequest(clientUserId);
+
+            Response<LinkTokenCreateResponse> response = plaidApi.linkTokenCreate(request).execute();
+
+            if (!response.isSuccessful())
+            {
+                LOGGER.error("Error creating link token. Code: {}, Message: {}", response.code(), response.message());
+                throw new Exception(response.message());
+            }
+
+            LinkTokenCreateResponse linkTokenCreateResponse = response.body();
+            if(linkTokenCreateResponse == null)
+            {
+                LOGGER.error("Link token response is null");
+                throw new Exception("Link token response is null");
+            }
+            return linkTokenCreateResponse;
+
+        }catch(Exception e)
+        {
+            LOGGER.error("Exception while creating link token", e);
+            throw e;
+        }
     }
 
     /**

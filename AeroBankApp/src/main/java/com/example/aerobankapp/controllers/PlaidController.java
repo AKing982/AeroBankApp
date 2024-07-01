@@ -57,10 +57,10 @@ public class PlaidController {
             return ResponseEntity.badRequest().body("Invalid request");
         }
 
-        if (hasInvalidValue(request) || hasInvalidKey(request))
-                {
-            return ResponseEntity.badRequest().body("Invalid request values.");
-        }
+//        if (hasInvalidValue(request) || hasInvalidKey(request))
+//        {
+//            return ResponseEntity.badRequest().body("Invalid request values.");
+//        }
 
         int userID = request.get("userId");
         String userIDAsString = String.valueOf(userID);
@@ -69,13 +69,13 @@ public class PlaidController {
             LinkTokenCreateResponse linkTokenCreateResponse = plaidService.createLinkToken(userIDAsString);
             if(linkTokenCreateResponse == null || linkTokenCreateResponse.getLinkToken() == null)
             {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                return getInternalServerErrorResponse("Link token creation failed");
             }
-            return ResponseEntity.ok().body(Map.of("link_token", linkTokenCreateResponse.getLinkToken()));
+            return getStatusOkResponse(Map.of("link_token", linkTokenCreateResponse.getLinkToken()));
 
         }catch(Exception e)
         {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return getInternalServerErrorResponse(e.getMessage());
         }
     }
 
@@ -124,7 +124,7 @@ public class PlaidController {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No account found for this user");
                 }
                 Set<PlaidAccount> plaidAccounts = getPlaidAccountsSetFromResponse(accountsGetResponse.getAccounts());
-                return ResponseEntity.ok().body(plaidAccounts);
+                return getStatusOkResponse(plaidAccounts);
             }
 
         }catch(Exception e)
@@ -174,7 +174,7 @@ public class PlaidController {
                     {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                     }
-                    return ResponseEntity.ok().body(accounts);
+                    return getStatusOkResponse(accounts);
                 }
 
             }
@@ -182,6 +182,16 @@ public class PlaidController {
         {
             return getInternalServerErrorResponse("Failed to get balances");
         }
+    }
+
+    private ResponseEntity<?> getStatusOkResponse(Collection<?> objects)
+    {
+        return ResponseEntity.ok().body(objects);
+    }
+
+    private ResponseEntity<?> getStatusOkResponse(Map<Object, Object> objectObjectMap)
+    {
+        return ResponseEntity.ok().body(objectObjectMap);
     }
 
     private ResponseEntity<?> getInternalServerErrorResponse(String message)
