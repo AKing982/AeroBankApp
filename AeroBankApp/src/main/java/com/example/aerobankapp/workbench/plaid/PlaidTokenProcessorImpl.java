@@ -18,7 +18,7 @@ import java.util.Arrays;
 public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
 {
     private PlaidApi plaidApi;
-    private final int RETRY_ATTEMPTS = 3;
+    private final int RETRY_ATTEMPTS = 10;
     private Logger LOGGER = LoggerFactory.getLogger(PlaidTokenProcessor.class);
 
     @Autowired
@@ -32,7 +32,7 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
         return new LinkTokenCreateRequest()
                 .user(new LinkTokenCreateRequestUser().clientUserId(clientUserId))
                 .clientName("Utah Kings Credit Union")
-                .products(Arrays.asList(Products.AUTH, Products.TRANSACTIONS, Products.STATEMENTS, Products.RECURRING_TRANSACTIONS))
+                .products(Arrays.asList(Products.AUTH, Products.TRANSACTIONS))
                 .countryCodes(Arrays.asList(CountryCode.US))
                 .language("en");
     }
@@ -44,7 +44,14 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
         LinkTokenCreateRequest request = buildLinkTokenRequest(clientUserId);
         validateLinkTokenCreateRequest(request);
 
-        return getLinkTokenResponseWithRetry(request);
+        try
+        {
+            return getLinkTokenResponseWithRetry(request);
+
+        }catch(Exception e)
+        {
+            throw e;
+        }
     }
 
 
@@ -59,32 +66,34 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
         {
             try
             {
+                LOGGER.info("Getting the link token response");
                 response = plaidApi.linkTokenCreate(request).execute();
-                if(response.isSuccessful() && response.body() != null)
+                if(response.isSuccessful())
                 {
-                   return response.body();
+                    LOGGER.info("Link Token response success");
+                    break;
                 }
                 else
                 {
                     attempts++;
+                    LOGGER.info("Attempts: {}", attempts);
                     if(attempts < RETRY_ATTEMPTS)
                     {
                         Thread.sleep(100);
                     }
                     if(attempts == RETRY_ATTEMPTS)
                     {
+                        LOGGER.info("Max attempts reached");
                         throw new InvalidLinkTokenRequestException("Failed to create link token");
                     }
                 }
 
             }catch(IOException e)
             {
-                if(attempts < RETRY_ATTEMPTS)
-                {
-                    throw e;
-                }
+                throw e;
             }
         }
+        return response.body();
     }
 
     private void validateClientUserId(String clientUserId)
@@ -121,12 +130,61 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
         return null;
     }
 
+    private ItemPublicTokenExchangeRequest itemPublicTokenExchangeRequest(String publicToken)
+    {
+        return new ItemPublicTokenExchangeRequest()
+                .publicToken(publicToken);
+    }
+
     @Override
-    public ItemPublicTokenExchangeResponse exchangeItemPublicToken(ItemPublicTokenExchangeRequest request) throws IOException {
-        if(request == null)
+    public ItemPublicTokenExchangeResponse exchangePublicToken(String publicToken) throws IOException, InterruptedException {
+        if(publicToken.isEmpty())
         {
-            throw new IllegalArgumentException("request cannot be null");
+            throw new IllegalArgumentException("publicToken cannot be null or empty");
         }
-        return plaidApi.itemPublicTokenExchange(request).execute().body();
+        ItemPublicTokenExchangeRequest request = itemPublicTokenExchangeRequest(publicToken);
+        try
+        {
+            return exchangePublicTokenResponseWithRetry(request);
+
+        }catch(Exception e)
+        {
+            throw e;
+        }
+    }
+
+    public ItemPublicTokenExchangeResponse exchangePublicTokenResponseWithRetry(ItemPublicTokenExchangeRequest request) throws IOException, InterruptedException {
+        int attempts = 0;
+        Response<ItemPublicTokenExchangeResponse> response;
+        while(true)
+        {
+            try
+            {
+                response = plaidApi.itemPublicTokenExchange(request).execute();
+                if(response.isSuccessful() && response.body() != null)
+                {
+                    return response.body();
+                }
+                else
+                {
+                    attempts++;
+                    if(attempts < RETRY_ATTEMPTS)
+                    {
+                        Thread.sleep(100);
+                    }
+                    else
+                    {
+                        throw new IllegalArgumentException("Failed to create item public token");
+                    }
+                }
+
+            }catch(Exception e)
+            {
+                if(attempts < RETRY_ATTEMPTS)
+                {
+                    throw e;
+                }
+            }
+        }
     }
 }

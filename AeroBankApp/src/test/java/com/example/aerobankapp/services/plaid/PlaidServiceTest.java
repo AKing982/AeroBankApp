@@ -39,14 +39,7 @@ class PlaidServiceTest {
         assertThrows(IllegalArgumentException.class, () -> plaidService.createLinkToken(""));
     }
 
-    @Test
-    @DisplayName("Test create Link Token with valid clientUserId, null link token request, then throw exception")
-    public void testCreateLinkTokenWithValidClientUserId_NullLinkTokenRequest_throwException() throws Exception {
 
-        when(plaidService.buildLinkTokenRequest("1")).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> plaidService.createLinkToken("1"));
-
-    }
 
     @Test
     @DisplayName("Test create Link Token with valid clientUserId, then return link token response")

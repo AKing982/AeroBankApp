@@ -45,16 +45,6 @@ public class PlaidService
         return plaidAccountsService.findPlaidAccountEntityByUserId(userID);
     }
 
-    public LinkTokenCreateRequest buildLinkTokenRequest(String clientUserID)
-    {
-        return new LinkTokenCreateRequest()
-                .user(new LinkTokenCreateRequestUser().clientUserId(clientUserID))
-                .clientName("Utah Kings Credit Union")
-                .products(Arrays.asList(Products.AUTH, Products.TRANSACTIONS, Products.STATEMENTS, Products.RECURRING_TRANSACTIONS))
-                .countryCodes(Arrays.asList(CountryCode.US))
-                .language("en");
-    }
-
     /**
      * Creates a link token for a given client user ID.
      *
@@ -70,32 +60,6 @@ public class PlaidService
         }
 
         LOGGER.info("ClientUserId: {}", clientUserId);
-        //
-//        try
-//        {
-//            LinkTokenCreateRequest request = buildLinkTokenRequest(clientUserId);
-//
-//            Response<LinkTokenCreateResponse> response = plaidApi.linkTokenCreate(request).execute();
-//
-//            if (!response.isSuccessful())
-//            {
-//                LOGGER.error("Error creating link token. Code: {}, Message: {}", response.code(), response.message());
-//                throw new Exception(response.message());
-//            }
-//
-//            LinkTokenCreateResponse linkTokenCreateResponse = response.body();
-//            if(linkTokenCreateResponse == null)
-//            {
-//                LOGGER.error("Link token response is null");
-//                throw new Exception("Link token response is null");
-//            }
-//            return linkTokenCreateResponse;
-//
-//        }catch(Exception e)
-//        {
-//            LOGGER.error("Exception while creating link token", e);
-//            throw e;
-//        }
         return plaidTokenProcessor.createLinkToken(clientUserId);
     }
 
@@ -111,7 +75,7 @@ public class PlaidService
         ItemPublicTokenExchangeRequest request = new ItemPublicTokenExchangeRequest()
                 .publicToken(publicToken);
 
-        return plaidApi.itemPublicTokenExchange(request).execute().body();
+        return plaidTokenProcessor.exchangePublicToken(publicToken);
     }
 
     /**

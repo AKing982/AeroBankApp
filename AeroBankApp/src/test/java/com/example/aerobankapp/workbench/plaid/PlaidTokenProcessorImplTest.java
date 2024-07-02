@@ -204,21 +204,105 @@ class PlaidTokenProcessorImplTest {
         });
     }
 
-    @Test
-    @DisplayName("Test exchangeItemPublicToken when Public Token request is null, then throw exception")
-    public void testExchangeItemPublicToken_whenPublicTokenRequestIsNull_thenThrowException() throws Exception {
-        assertThrows(IllegalArgumentException.class, () -> plaidTokenProcessor.exchangeItemPublicToken(null));
+   @Test
+   @DisplayName("Test exchangePublicToken when public token is empty or null")
+   public void testExchangePublicToken_whenPublicTokenIsNull_thenThrowException() throws Exception {
+        assertThrows(NullPointerException.class, () -> plaidTokenProcessor.exchangePublicToken(null));
+        assertThrows(IllegalArgumentException.class, () -> plaidTokenProcessor.exchangePublicToken(""));
+   }
+
+   @Test
+   @DisplayName("Test exchangePublicToken when public token is valid, then return PublicToken response")
+   public void testExchangePublicToken_whenPublicTokenIsValid_thenReturnPublicTokenResponse() throws Exception {
+        String publicToken = "e234234234";
+        ItemPublicTokenExchangeRequest request = new ItemPublicTokenExchangeRequest().publicToken(publicToken);
+        Call<ItemPublicTokenExchangeResponse> callSuccessful = mock(Call.class);
+        when(callSuccessful.execute()).thenReturn(Response.success(new ItemPublicTokenExchangeResponse().accessToken(publicToken)));
+
+        when(plaidApi.itemPublicTokenExchange(request)).thenReturn(callSuccessful);
+
+        ItemPublicTokenExchangeResponse response = plaidTokenProcessor.exchangePublicToken(publicToken);
+        assertEquals(publicToken, response.getAccessToken());
     }
 
     @Test
-    @DisplayName("Test exchangeItemPublicToken when Public Token request is valid then return public token exchange response")
-    public void testExchangeItemPublicToken_whenPublicTokenIsValid_returnPublicTokenExchangeResponse() throws Exception {
-        ItemPublicTokenExchangeRequest itemPublicTokenExchangeRequest = new ItemPublicTokenExchangeRequest();
-        ItemPublicTokenExchangeResponse itemPublicTokenExchangeResponse = new ItemPublicTokenExchangeResponse().accessToken("e8242342342");
+    @DisplayName("Test exchangePublicToken when public token is valid, exchange request is null, throw exception")
+    public void testExchangePublicToken_whenPublicTokenIsValid_ExchangeRequestIsNull_thenThrowException() throws Exception {
+        String publicToken = "e234234234";
+        Call<ItemPublicTokenExchangeResponse> callSuccessful = mock(Call.class);
+        when(callSuccessful.execute()).thenReturn(Response.success(new ItemPublicTokenExchangeResponse().accessToken(publicToken)));
 
-        ItemPublicTokenExchangeResponse actual = plaidTokenProcessor.exchangeItemPublicToken(itemPublicTokenExchangeRequest);
-        assertEquals(itemPublicTokenExchangeResponse.getAccessToken(), actual.getAccessToken());
+        when(plaidApi.itemPublicTokenExchange(null)).thenThrow(new NullPointerException());
+
+        assertThrows(NullPointerException.class, () -> {
+            plaidTokenProcessor.exchangePublicToken(publicToken);
+        });
     }
+
+    @Test
+    @DisplayName("Test exchangePublicTokenResponseWithRetry when request is null, then throw exception")
+    public void testExchangePublicTokenResponseWithRetry_whenRequestIsNull_thenThrowException() throws Exception {
+        assertThrows(NullPointerException.class, () -> {plaidTokenProcessor.exchangePublicToken(null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test exchangePublicTokenResponseWithRetry when request is valid, then return ItemPublicTokenResponse")
+    public void testExchangePublicTokenResponse_whenRequestIsValid_thenReturnItemPublicTokenResponse() throws Exception {
+        ItemPublicTokenExchangeRequest request = new ItemPublicTokenExchangeRequest().publicToken("e234234234234");
+        Call<ItemPublicTokenExchangeResponse> callSuccessful = mock(Call.class);
+
+        when(callSuccessful.execute()).thenReturn(Response.success(new ItemPublicTokenExchangeResponse().accessToken("e234234234234")));
+        when(plaidApi.itemPublicTokenExchange(request)).thenReturn(callSuccessful);
+
+        ItemPublicTokenExchangeResponse response = plaidTokenProcessor.exchangePublicTokenResponseWithRetry(request);
+        assertEquals("e234234234234", response.getAccessToken());
+    }
+
+    //TODO: Rewrite Test
+    @Test
+    @DisplayName("Test exchangePublicTokenResponseWithRetry when request is valid and 1 re-attempt, then return response")
+    public void testExchangePublicTokenResponseWithRetry_whenRequestIsValid_AndOneReAttempts_ThenReturnResponse() throws Exception {
+        String publicToken = "e234234234234";
+        ItemPublicTokenExchangeRequest request = new ItemPublicTokenExchangeRequest().publicToken(publicToken);
+        Call<ItemPublicTokenExchangeResponse> callSuccessful = mock(Call.class);
+        when(callSuccessful.execute()).thenReturn(Response.success(new ItemPublicTokenExchangeResponse().accessToken(publicToken)));
+
+        Call<ItemPublicTokenExchangeResponse> callUnsuccessful = mock(Call.class);
+        when(callUnsuccessful.execute()).thenReturn(Response.error(500, ResponseBody.create(MediaType.parse("application/json"), "Internal Server Error")));
+
+        when(plaidApi.itemPublicTokenExchange(request)).thenReturn(callSuccessful);
+
+        ItemPublicTokenExchangeResponse response = plaidTokenProcessor.exchangePublicTokenResponseWithRetry(request);
+        assertEquals("e234234234234", response.getAccessToken());
+    }
+
+    @Test
+    @DisplayName("Test exchangePublicTokenResponseWithRetry when request is valid and throw exception after 2 re-attempts, then throw exception")
+    public void testExchangePublicTokenResponseWithRetry_whenRequestIsValid_ThrowExceptionAfterTwoRetries_ThenThrowException() throws Exception
+    {
+        String publicToken = "e234234234234";
+        ItemPublicTokenExchangeRequest request = new ItemPublicTokenExchangeRequest().publicToken(publicToken);
+        ItemPublicTokenExchangeResponse response = new ItemPublicTokenExchangeResponse().accessToken(publicToken);
+        Call<ItemPublicTokenExchangeResponse> callUnsuccessful = mock(Call.class);
+        when(callUnsuccessful.execute()).thenReturn(Response.error(500, ResponseBody.create(MediaType.parse("application/json"), "Internal Server Error")));
+
+        when(callUnsuccessful.execute()).thenReturn(Response.error(500, ResponseBody.create(MediaType.parse("application/json"), "Internal Server Error")));
+
+        when(plaidApi.itemPublicTokenExchange(request)).thenReturn(callUnsuccessful);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            plaidTokenProcessor.exchangePublicTokenResponseWithRetry(request);
+        });
+    }
+
+    @Test
+    @DisplayName("Test exchangePublicTokenResponseWithRetry when request is valid and throw exception after three re-attempts")
+    public void testExchangePublicTokenResponseWithRetry_whenRequestIsValid_throwExceptionAfterThreeReAttempts() throws Exception
+    {
+
+    }
+
 
     private static Call<LinkTokenCreateResponse> UnsuccessfulCall() throws Exception {
         Call<LinkTokenCreateResponse> unsuccessfulCall = mock(Call.class);

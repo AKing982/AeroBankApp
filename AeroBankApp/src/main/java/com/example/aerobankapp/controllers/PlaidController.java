@@ -57,11 +57,6 @@ public class PlaidController {
             return ResponseEntity.badRequest().body("Invalid request");
         }
 
-//        if (hasInvalidValue(request) || hasInvalidKey(request))
-//        {
-//            return ResponseEntity.badRequest().body("Invalid request values.");
-//        }
-
         int userID = request.get("userId");
         String userIDAsString = String.valueOf(userID);
         try

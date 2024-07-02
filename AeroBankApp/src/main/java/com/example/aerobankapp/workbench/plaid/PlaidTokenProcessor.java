@@ -11,5 +11,5 @@ public interface PlaidTokenProcessor
 {
     LinkTokenCreateResponse createLinkToken(String clientUserId) throws Exception;
 
-    ItemPublicTokenExchangeResponse exchangeItemPublicToken(ItemPublicTokenExchangeRequest request) throws IOException;
+    ItemPublicTokenExchangeResponse exchangePublicToken(String publicToken) throws IOException, InterruptedException;
 }
