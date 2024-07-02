@@ -5,9 +5,11 @@ import com.plaid.client.model.ItemPublicTokenExchangeResponse;
 import com.plaid.client.model.LinkTokenCreateRequest;
 import com.plaid.client.model.LinkTokenCreateResponse;
 
+import java.io.IOException;
+
 public interface PlaidTokenProcessor
 {
     LinkTokenCreateResponse createLinkToken(String clientUserId) throws Exception;
 
-    ItemPublicTokenExchangeResponse exchangeItemPublicToken(ItemPublicTokenExchangeRequest request);
+    ItemPublicTokenExchangeResponse exchangeItemPublicToken(ItemPublicTokenExchangeRequest request) throws IOException;
 }

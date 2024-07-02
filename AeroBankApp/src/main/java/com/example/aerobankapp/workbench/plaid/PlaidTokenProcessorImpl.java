@@ -64,58 +64,27 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
                 {
                    return response.body();
                 }
-
-                if(response.body() == null)
+                else
                 {
-                    throw new NullPointerException("Link token response body is null");
+                    attempts++;
+                    if(attempts < RETRY_ATTEMPTS)
+                    {
+                        Thread.sleep(100);
+                    }
+                    if(attempts == RETRY_ATTEMPTS)
+                    {
+                        throw new InvalidLinkTokenRequestException("Failed to create link token");
+                    }
                 }
 
             }catch(IOException e)
             {
-                attempts++;
                 if(attempts < RETRY_ATTEMPTS)
-                {
-                    Thread.sleep(1000);
-                }
-                else
                 {
                     throw e;
                 }
             }
         }
-//        while(true)
-//        {
-//            try
-//            {
-//                response = getLinkTokenCreateResponse(request);
-//                if(response.isSuccessful() && response.body() != null)
-//                {
-//                    return response.body();
-//                }
-//                else
-//                {
-//                    currAttempts++;
-//                    if(currAttempts < RETRY_ATTEMPTS)
-//                    {
-//                        Thread.sleep(100);
-//                    }
-//                    else
-//                    {
-//                        throw new IllegalArgumentException("Failed to create link token");
-//                    }
-//                }
-//            }catch(Exception e) {
-//                currAttempts++;
-//                if(currAttempts < RETRY_ATTEMPTS)
-//                {
-//                    Thread.sleep(1000);
-//                }
-//                else
-//                {
-//                    throw e;
-//                }
-//            }
-//        }
     }
 
     private void validateClientUserId(String clientUserId)
@@ -153,7 +122,11 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
     }
 
     @Override
-    public ItemPublicTokenExchangeResponse exchangeItemPublicToken(ItemPublicTokenExchangeRequest request) {
-        return null;
+    public ItemPublicTokenExchangeResponse exchangeItemPublicToken(ItemPublicTokenExchangeRequest request) throws IOException {
+        if(request == null)
+        {
+            throw new IllegalArgumentException("request cannot be null");
+        }
+        return plaidApi.itemPublicTokenExchange(request).execute().body();
     }
 }

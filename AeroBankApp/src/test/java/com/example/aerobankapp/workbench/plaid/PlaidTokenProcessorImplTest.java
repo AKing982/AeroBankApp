@@ -5,6 +5,7 @@ import com.plaid.client.model.*;
 import com.plaid.client.request.PlaidApi;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
+import org.junit.Ignore;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
 import org.mockito.DoNotMock;
@@ -154,6 +155,21 @@ class PlaidTokenProcessorImplTest {
     }
 
     @Test
+    @DisplayName("Test GetLinkTokenResponseWithRetry with valid request, throw exception after max retries, then return exception")
+    public void testGetLinkTokenResponseWithRetry_validRequest_throwExceptionAfterMaxRetries_ThenThrowException() throws Exception {
+        LinkTokenCreateRequest createRequest = buildLinkTokenRequest(clientId);
+
+        Call<LinkTokenCreateResponse> callThrowsException = mock(Call.class);
+        when(callThrowsException.execute()).thenThrow(new IOException("Mocked Exception"));
+
+        when(plaidApi.linkTokenCreate(createRequest)).thenReturn(callThrowsException);
+
+        assertThrows(IOException.class, () -> {
+            spyPlaidTokenProcessor.getLinkTokenResponseWithRetry(createRequest);
+        });
+    }
+
+    @Test
     @DisplayName("Test GetLinkTokenResponseWithRetry with valid request, fails on max retries, then exit and throw exception")
     public void testGetLinkTokenResponseWithRetry_ValidRequest_FailsOnMaxRetries_thenThrowException() throws Exception {
         LinkTokenCreateRequest createRequest = buildLinkTokenRequest(clientId);
@@ -165,9 +181,43 @@ class PlaidTokenProcessorImplTest {
         when(plaidApi.linkTokenCreate(createRequest))
                 .thenReturn(callUnsuccessful, callUnsuccessful);
 
-        assertThrows(InterruptedException.class, () -> {
+        assertThrows(InvalidLinkTokenRequestException.class, () -> {
             spyPlaidTokenProcessor.getLinkTokenResponseWithRetry(createRequest);
         });
+    }
+
+    @Test
+    @DisplayName("Test GetLinkTokenResponseWithRetry with valid request, exception is thrown during link token fetch, 2 retries, throw exception")
+    public void testGetLinkTokenResponseWithRetry_validRequest_exceptionThrownDuringFetch_TwoRetries_thenThrowException() throws Exception {
+
+        LinkTokenCreateRequest createRequest = buildLinkTokenRequest(clientId);
+        LinkTokenCreateResponse plaidResponse = new LinkTokenCreateResponse().linkToken("e234234234234");
+
+        Call<LinkTokenCreateResponse> callUnsuccessful = mock(Call.class);
+        when(callUnsuccessful.execute()).thenThrow(new IOException());
+
+        when(plaidApi.linkTokenCreate(createRequest))
+                .thenReturn(callUnsuccessful, callUnsuccessful);
+
+        assertThrows(IOException.class, () -> {
+            spyPlaidTokenProcessor.getLinkTokenResponseWithRetry(createRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("Test exchangeItemPublicToken when Public Token request is null, then throw exception")
+    public void testExchangeItemPublicToken_whenPublicTokenRequestIsNull_thenThrowException() throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> plaidTokenProcessor.exchangeItemPublicToken(null));
+    }
+
+    @Test
+    @DisplayName("Test exchangeItemPublicToken when Public Token request is valid then return public token exchange response")
+    public void testExchangeItemPublicToken_whenPublicTokenIsValid_returnPublicTokenExchangeResponse() throws Exception {
+        ItemPublicTokenExchangeRequest itemPublicTokenExchangeRequest = new ItemPublicTokenExchangeRequest();
+        ItemPublicTokenExchangeResponse itemPublicTokenExchangeResponse = new ItemPublicTokenExchangeResponse().accessToken("e8242342342");
+
+        ItemPublicTokenExchangeResponse actual = plaidTokenProcessor.exchangeItemPublicToken(itemPublicTokenExchangeRequest);
+        assertEquals(itemPublicTokenExchangeResponse.getAccessToken(), actual.getAccessToken());
     }
 
     private static Call<LinkTokenCreateResponse> UnsuccessfulCall() throws Exception {
