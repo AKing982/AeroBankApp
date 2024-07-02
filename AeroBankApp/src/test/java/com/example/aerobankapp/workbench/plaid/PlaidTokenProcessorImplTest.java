@@ -3,6 +3,8 @@ package com.example.aerobankapp.workbench.plaid;
 import com.example.aerobankapp.exceptions.InvalidLinkTokenRequestException;
 import com.plaid.client.model.*;
 import com.plaid.client.request.PlaidApi;
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
 import org.mockito.DoNotMock;
@@ -10,10 +12,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.retry.RetryPolicy;
 import org.springframework.test.context.junit4.SpringRunner;
+import retrofit2.Call;
 import retrofit2.Response;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,12 +34,15 @@ class PlaidTokenProcessorImplTest {
     @InjectMocks
     private PlaidTokenProcessorImpl plaidTokenProcessor;
 
+    private PlaidTokenProcessorImpl spyPlaidTokenProcessor;
+
     private String clientId = "clientId";
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         plaidTokenProcessor = new PlaidTokenProcessorImpl(plaidApi);
+        spyPlaidTokenProcessor = spy(plaidTokenProcessor);
     }
 
     @Test
@@ -91,14 +100,88 @@ class PlaidTokenProcessorImplTest {
     @Test
     @DisplayName("Test GetLinkTokenResponseWithRetry with valid request, then return response body")
     public void testGetLinkTokenResponseWithRetry_whenRequestIsValid_thenReturnResponse() throws Exception {
-        PlaidTokenProcessorImpl spyTokenProcessor = spy(plaidTokenProcessor);
 
         LinkTokenCreateRequest createRequest = buildLinkTokenRequest(clientId);
         LinkTokenCreateResponse plaidResponse = new LinkTokenCreateResponse().linkToken("e234234234234");
-        doReturn(Response.success(plaidResponse)).when(plaidApi).linkTokenCreate(any());
+        Call<LinkTokenCreateResponse> mockedCall = mock(Call.class);
+        when(mockedCall.execute()).thenReturn(Response.success(plaidResponse));
+        when(plaidApi.linkTokenCreate(createRequest)).thenReturn(mockedCall);
+
+        LinkTokenCreateResponse response = spyPlaidTokenProcessor.getLinkTokenResponseWithRetry(createRequest);
+        assertEquals("e234234234234", response.getLinkToken());
+    }
+
+    @Test
+    @DisplayName("Test GetLinkTokenResponseWithRetry with valid request, retry link token attempts, then return response body")
+    public void testGetLinkTokenResponseWithRetry_ValidRequest_RetryLinkTokenAttempts_thenReturn_ResponseBody() throws Exception {
+        PlaidTokenProcessorImpl spyTokenProcessor = spy(plaidTokenProcessor);
+        LinkTokenCreateRequest createRequest = buildLinkTokenRequest(clientId);
+        LinkTokenCreateResponse plaidResponse = new LinkTokenCreateResponse().linkToken("e234234234234");
+
+        Call<LinkTokenCreateResponse> callUnsuccessful = mock(Call.class);
+        when(callUnsuccessful.execute()).thenReturn(Response.error(500, ResponseBody.create(MediaType.parse("application/json"), "Internal Server Error")));
+
+        Call<LinkTokenCreateResponse> callSuccessful = mock(Call.class);
+        when(callSuccessful.execute()).thenReturn(Response.success(plaidResponse));
+
+        when(plaidApi.linkTokenCreate(createRequest)).thenReturn(callUnsuccessful, callSuccessful);
+       // when(plaidApi.linkTokenCreate(createRequest)).thenReturn(callSuccessful);
 
         LinkTokenCreateResponse response = spyTokenProcessor.getLinkTokenResponseWithRetry(createRequest);
+        assertNotNull(response);
         assertEquals("e234234234234", response.getLinkToken());
+        verify(plaidApi, times(2)).linkTokenCreate(createRequest);
+    }
+
+    @Test
+    @DisplayName("Test GetLinkTokenResponseWithRetry with valid request, retry twice for token attempts, and response body null, then throw exception")
+    public void testGetLinkTokenResponseWithRetry_ValidRequest_RetryTokenAttempts_ResponseBodyNull_thenThrowException() throws Exception {
+        PlaidTokenProcessorImpl spyTokenProcessor = spy(plaidTokenProcessor);
+        LinkTokenCreateRequest createRequest = buildLinkTokenRequest(clientId);
+        LinkTokenCreateResponse plaidResponse = new LinkTokenCreateResponse().linkToken(null);
+
+        Call<LinkTokenCreateResponse> callUnsuccessful = mock(Call.class);
+        when(callUnsuccessful.execute()).thenReturn(Response.error(500, ResponseBody.create(MediaType.parse("application/json"), "Internal Server Error")));
+
+        Call<LinkTokenCreateResponse> callSuccessful = mock(Call.class);
+        when(callSuccessful.execute()).thenReturn(Response.success(plaidResponse));
+
+        when(plaidApi.linkTokenCreate(createRequest)).thenReturn(callUnsuccessful, callSuccessful);
+
+        assertThrows(NullPointerException.class, () -> {
+            spyTokenProcessor.getLinkTokenResponseWithRetry(createRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("Test GetLinkTokenResponseWithRetry with valid request, fails on max retries, then exit and throw exception")
+    public void testGetLinkTokenResponseWithRetry_ValidRequest_FailsOnMaxRetries_thenThrowException() throws Exception {
+        LinkTokenCreateRequest createRequest = buildLinkTokenRequest(clientId);
+        LinkTokenCreateResponse plaidResponse = new LinkTokenCreateResponse().linkToken("e234234234234");
+
+        Call<LinkTokenCreateResponse> callUnsuccessful = mock(Call.class);
+        when(callUnsuccessful.execute()).thenReturn(Response.error(500, ResponseBody.create(MediaType.parse("application/json"), "Internal Server Error")));
+
+        when(plaidApi.linkTokenCreate(createRequest))
+                .thenReturn(callUnsuccessful, callUnsuccessful);
+
+        assertThrows(InterruptedException.class, () -> {
+            spyPlaidTokenProcessor.getLinkTokenResponseWithRetry(createRequest);
+        });
+    }
+
+    private static Call<LinkTokenCreateResponse> UnsuccessfulCall() throws Exception {
+        Call<LinkTokenCreateResponse> unsuccessfulCall = mock(Call.class);
+        when(unsuccessfulCall.execute())
+                .thenReturn(Response.error(500, ResponseBody.create(MediaType.parse("application/json"), "Internal server error")));
+        return unsuccessfulCall;
+    }
+
+    private static Call<LinkTokenCreateResponse> SuccessfulCall(LinkTokenCreateResponse body) throws Exception {
+        Call<LinkTokenCreateResponse> successfulCall = mock(Call.class);
+        when(successfulCall.execute())
+                .thenReturn(Response.success(body));
+        return successfulCall;
     }
 
     public LinkTokenCreateRequest buildLinkTokenRequest(String clientUserId)

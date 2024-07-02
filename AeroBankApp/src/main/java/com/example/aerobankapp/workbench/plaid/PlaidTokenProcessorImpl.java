@@ -54,8 +54,35 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
             throw new InvalidLinkTokenRequestException("Link token request is null");
         }
         Response<LinkTokenCreateResponse> response;
-        int retryAttempts = 0;
-        return plaidApi.linkTokenCreate(request).execute().body();
+        int attempts = 0;
+        while(true)
+        {
+            try
+            {
+                response = plaidApi.linkTokenCreate(request).execute();
+                if(response.isSuccessful() && response.body() != null)
+                {
+                   return response.body();
+                }
+
+                if(response.body() == null)
+                {
+                    throw new NullPointerException("Link token response body is null");
+                }
+
+            }catch(IOException e)
+            {
+                attempts++;
+                if(attempts < RETRY_ATTEMPTS)
+                {
+                    Thread.sleep(1000);
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+        }
 //        while(true)
 //        {
 //            try
