@@ -83,13 +83,13 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
                     }
                     if(attempts == RETRY_ATTEMPTS)
                     {
-                        LOGGER.info("Max attempts reached");
-                        throw new InvalidLinkTokenRequestException("Failed to create link token");
+                        break;
                     }
                 }
 
             }catch(IOException e)
             {
+                LOGGER.info("Max attempts reached");
                 throw e;
             }
         }
@@ -163,7 +163,7 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
                 response = plaidApi.itemPublicTokenExchange(request).execute();
                 if(response.isSuccessful() && response.body() != null)
                 {
-                    return response.body();
+                    break;
                 }
                 else
                 {
@@ -172,19 +172,16 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
                     {
                         Thread.sleep(100);
                     }
-                    else
-                    {
-                        throw new IllegalArgumentException("Failed to create item public token");
-                    }
                 }
 
             }catch(Exception e)
             {
-                if(attempts < RETRY_ATTEMPTS)
+                if(attempts <= RETRY_ATTEMPTS)
                 {
                     throw e;
                 }
             }
         }
+        return response.body();
     }
 }
