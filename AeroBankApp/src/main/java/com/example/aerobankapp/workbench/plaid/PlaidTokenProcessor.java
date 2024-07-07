@@ -7,6 +7,9 @@ import com.plaid.client.model.LinkTokenCreateResponse;
 
 import java.io.IOException;
 
+/**
+ * The PlaidTokenProcessor interface provides methods for creating link tokens and exchanging public tokens.
+ */
 public interface PlaidTokenProcessor
 {
     LinkTokenCreateResponse createLinkToken(String clientUserId) throws Exception;

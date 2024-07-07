@@ -231,7 +231,7 @@ public class PlaidController {
                 {
                     return getInternalServerErrorResponse("No access token found for this user");
                 }
-                TransactionsGetResponse transactionsGetResponse = plaidService.getTransactions(accessToken, startDate, endDate);
+                TransactionsGetResponse transactionsGetResponse = plaidService.getTransactions(userId, startDate, endDate);
                 return createTransactionResponse(transactionsGetResponse);
             }
         }catch(Exception e)

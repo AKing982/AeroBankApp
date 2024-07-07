@@ -55,6 +55,15 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
     }
 
 
+    /**
+     * Gets the link token response with retries.
+     *
+     * @param request the link token create request
+     * @return the link token create response
+     * @throws IOException if an I/O error occurs while making the API call
+     * @throws InterruptedException if the thread is interrupted while sleeping
+     * @throws InvalidLinkTokenRequestException if the link token request is null
+     */
     public LinkTokenCreateResponse getLinkTokenResponseWithRetry(LinkTokenCreateRequest request) throws IOException, InterruptedException {
         if(request == null)
         {
@@ -130,12 +139,27 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
         return null;
     }
 
+    /**
+     * Creates an ItemPublicTokenExchangeRequest object with the provided public token.
+     *
+     * @param publicToken the public token to be included in the request
+     * @return the created ItemPublicTokenExchangeRequest object
+     */
     private ItemPublicTokenExchangeRequest itemPublicTokenExchangeRequest(String publicToken)
     {
         return new ItemPublicTokenExchangeRequest()
                 .publicToken(publicToken);
     }
 
+    /**
+     * Exchanges a public token for an access token and item ID.
+     *
+     * @param publicToken the public token to exchange
+     * @return an ItemPublicTokenExchangeResponse object containing the access token and item ID
+     * @throws IOException if an I/O error occurs while making the API call
+     * @throws InterruptedException if the thread is interrupted while sleeping
+     * @throws IllegalArgumentException if the public token is null or empty
+     */
     @Override
     public ItemPublicTokenExchangeResponse exchangePublicToken(String publicToken) throws IOException, InterruptedException {
         if(publicToken.isEmpty())
@@ -153,6 +177,14 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
         }
     }
 
+    /**
+     * Attempts to exchange a public token and retrieve the response. If the request is unsuccessful or the response body is null, it retries up to a certain number of attempts.
+     *
+     * @param request the item public token exchange request
+     * @return the item public token exchange response
+     * @throws IOException if an I/O error occurs while making the API call
+     * @throws InterruptedException if the thread is interrupted while sleeping
+     */
     public ItemPublicTokenExchangeResponse exchangePublicTokenResponseWithRetry(ItemPublicTokenExchangeRequest request) throws IOException, InterruptedException {
         int attempts = 0;
         Response<ItemPublicTokenExchangeResponse> response;

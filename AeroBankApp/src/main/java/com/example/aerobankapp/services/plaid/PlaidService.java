@@ -3,6 +3,7 @@ package com.example.aerobankapp.services.plaid;
 import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.services.PlaidAccountsService;
 import com.example.aerobankapp.workbench.plaid.PlaidTokenProcessorImpl;
+import com.example.aerobankapp.workbench.plaid.PlaidTransactionManagerImpl;
 import com.plaid.client.model.*;
 import com.plaid.client.request.PlaidApi;
 import org.slf4j.Logger;
@@ -18,19 +19,17 @@ import java.util.Optional;
 @Service
 public class PlaidService
 {
-    private final PlaidApi plaidApi;
     private final PlaidTokenProcessorImpl plaidTokenProcessor;
-    private final PlaidAccountsService plaidAccountsService;
+    private final PlaidTransactionManagerImpl plaidTransactionManager;
 
     private Logger LOGGER = LoggerFactory.getLogger(PlaidService.class);
 
     @Autowired
-    public PlaidService(PlaidApi plaidApi, PlaidAccountsService plaidAccountsService,
-                        PlaidTokenProcessorImpl plaidTokenProcessor)
+    public PlaidService(PlaidTokenProcessorImpl plaidTokenProcessor,
+                        PlaidTransactionManagerImpl plaidTransactionManager)
     {
-        this.plaidApi = plaidApi;
-        this.plaidAccountsService = plaidAccountsService;
         this.plaidTokenProcessor = plaidTokenProcessor;
+        this.plaidTransactionManager = plaidTransactionManager;
     }
 
     public void createAndSavePlaidAccountEntity(String item_id, int userID, String access_token)
@@ -72,9 +71,6 @@ public class PlaidService
      */
     public ItemPublicTokenExchangeResponse exchangePublicToken(String publicToken) throws Exception
     {
-        ItemPublicTokenExchangeRequest request = new ItemPublicTokenExchangeRequest()
-                .publicToken(publicToken);
-
         return plaidTokenProcessor.exchangePublicToken(publicToken);
     }
 
@@ -87,50 +83,37 @@ public class PlaidService
      */
     public AccountsGetResponse getAccountBalances(String accessToken) throws Exception
     {
-        AccountsGetRequest request = new AccountsGetRequest()
-                .accessToken(accessToken);
-        return plaidApi.accountsGet(request).execute().body();
+//        AccountsGetRequest request = new AccountsGetRequest()
+//                .accessToken(accessToken);
+//        return plaidApi.accountsGet(request).execute().body();
+        return null;
     }
 
     /**
      * Retrieves the transactions for a given access token within a specified date range.
      *
-     * @param accessToken The access token used to authenticate the request.
+     * @param userID The UserID.
      * @param startDate The start date of the transaction range.
      * @param endDate The end date of the transaction range.
      * @return A TransactionsGetResponse object representing the transactions.
      * @throws Exception if an error occurs while retrieving the transactions.
      */
-    public TransactionsGetResponse getTransactions(String accessToken, LocalDate startDate, LocalDate endDate) throws Exception
+    public TransactionsGetResponse getTransactions(int userID, LocalDate startDate, LocalDate endDate) throws Exception
     {
-        TransactionsGetRequest request = new TransactionsGetRequest()
-                .accessToken(accessToken)
-                .startDate(startDate)
-                .endDate(endDate);
-
-        Response<TransactionsGetResponse> response = plaidApi.transactionsGet(request).execute();
-        if(!response.isSuccessful())
-        {
-            LOGGER.error("Error retrieving transactions. Code: {}, Message: {}", response.code(), response.message());
-            throw new Exception(response.message());
-        }
-        return response.body();
+        return plaidTransactionManager.getTransactionResponse(userID, startDate, endDate);
     }
 
     /**
      * Synchronizes transactions for a given access token with a specified cursor.
      *
-     * @param accessToken The access token used to authenticate the request.
+     * @param userID The UserID.
      * @param cursor The cursor indicating the position to start syncing transactions from.
      * @return A TransactionsSyncResponse object representing the synchronized transactions.
      * @throws Exception if an error occurs while synchronizing the transactions.
      */
-    public TransactionsSyncResponse syncTransactions(String accessToken, String cursor) throws Exception
+    public TransactionsSyncResponse syncTransactions(int userID, String cursor) throws Exception
     {
-        TransactionsSyncRequest request = new TransactionsSyncRequest()
-                .accessToken(accessToken)
-                .cursor(cursor);
-        return plaidApi.transactionsSync(request).execute().body();
+        return plaidTransactionManager.getTransactionSyncResponse(userID, cursor);
     }
 
     /**
@@ -141,17 +124,18 @@ public class PlaidService
      * @throws Exception if an error occurs while retrieving the account balances.
      */
     public AccountsGetResponse getAccounts(String accessToken) throws Exception {
-        AccountsGetRequest request = new AccountsGetRequest()
-                .accessToken(accessToken);
-
-        Response<AccountsGetResponse> response = plaidApi.accountsGet(request)
-                .execute();
-
-        if (!response.isSuccessful()) {
-            throw new Exception("Failed to get accounts: " + response.errorBody().string());
-        }
-
-        return response.body();
+//        AccountsGetRequest request = new AccountsGetRequest()
+//                .accessToken(accessToken);
+//
+//        Response<AccountsGetResponse> response = plaidApi.accountsGet(request)
+//                .execute();
+//
+//        if (!response.isSuccessful()) {
+//            throw new Exception("Failed to get accounts: " + response.errorBody().string());
+//        }
+//
+//        return response.body();
+        return null;
     }
 
 
