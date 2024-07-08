@@ -19,6 +19,7 @@ public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
 {
     private PlaidApi plaidApi;
     private final int RETRY_ATTEMPTS = 10;
+
     private Logger LOGGER = LoggerFactory.getLogger(PlaidTokenProcessor.class);
 
     @Autowired
