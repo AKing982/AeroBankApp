@@ -144,17 +144,18 @@ public class PlaidService
      * @throws Exception if an error occurs while retrieving the account balances.
      */
     public AccountsGetResponse getAccounts(String accessToken) throws Exception {
-        AccountsGetRequest request = new AccountsGetRequest()
-                .accessToken(accessToken);
-
-        Response<AccountsGetResponse> response = plaidAccountManager.getAccountById()
-                .execute();
-
-        if (!response.isSuccessful()) {
-            throw new Exception("Failed to get accounts: " + response.errorBody().string());
-        }
-
-        return response.body();
+//        AccountsGetRequest request = new AccountsGetRequest()
+//                .accessToken(accessToken);
+//
+////        Response<AccountsGetResponse> response = plaidAccountManager.getAccountById()
+////                .execute();
+//
+//        if (!response.isSuccessful()) {
+//            throw new Exception("Failed to get accounts: " + response.errorBody().string());
+//        }
+////
+//        return response.body();
+        return null;
     }
 
 
