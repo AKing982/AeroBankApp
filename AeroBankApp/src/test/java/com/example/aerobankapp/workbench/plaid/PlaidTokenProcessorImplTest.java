@@ -1,6 +1,7 @@
 package com.example.aerobankapp.workbench.plaid;
 
 import com.example.aerobankapp.exceptions.InvalidLinkTokenRequestException;
+import com.example.aerobankapp.services.PlaidAccountsService;
 import com.plaid.client.model.*;
 import com.plaid.client.request.PlaidApi;
 import okhttp3.MediaType;
@@ -32,6 +33,9 @@ class PlaidTokenProcessorImplTest {
     @Mock
     private PlaidApi plaidApi;
 
+    @Mock
+    private PlaidAccountsService accountsService;
+
     @InjectMocks
     private PlaidTokenProcessorImpl plaidTokenProcessor;
 
@@ -42,7 +46,7 @@ class PlaidTokenProcessorImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        plaidTokenProcessor = new PlaidTokenProcessorImpl(plaidApi);
+        plaidTokenProcessor = new PlaidTokenProcessorImpl(accountsService, plaidApi);
         spyPlaidTokenProcessor = spy(plaidTokenProcessor);
     }
 

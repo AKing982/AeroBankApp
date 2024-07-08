@@ -17,8 +17,5 @@ public abstract class AbstractPlaidDataManager
         this.plaidApi = plaidApi;
     }
 
-    protected Optional<PlaidAccountsEntity> getPlaidAccountEntityByUserId(int userID)
-    {
-        return plaidAccountsService.findPlaidAccountEntityByUserId(userID);
-    }
+
 }

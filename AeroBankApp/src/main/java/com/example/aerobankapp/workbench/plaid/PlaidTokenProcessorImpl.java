@@ -1,6 +1,7 @@
 package com.example.aerobankapp.workbench.plaid;
 
 import com.example.aerobankapp.exceptions.InvalidLinkTokenRequestException;
+import com.example.aerobankapp.services.PlaidAccountsService;
 import com.example.aerobankapp.services.plaid.PlaidService;
 import com.plaid.client.model.*;
 import com.plaid.client.request.PlaidApi;
@@ -15,17 +16,14 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @Component
-public class PlaidTokenProcessorImpl implements PlaidTokenProcessor
+public class PlaidTokenProcessorImpl extends AbstractPlaidDataManager implements PlaidTokenProcessor
 {
-    private PlaidApi plaidApi;
     private final int RETRY_ATTEMPTS = 10;
-
     private Logger LOGGER = LoggerFactory.getLogger(PlaidTokenProcessor.class);
 
     @Autowired
-    public PlaidTokenProcessorImpl(PlaidApi plaidApi)
-    {
-        this.plaidApi = plaidApi;
+    public PlaidTokenProcessorImpl(PlaidAccountsService plaidAccountsService, PlaidApi plaidApi) {
+        super(plaidAccountsService, plaidApi);
     }
 
     public LinkTokenCreateRequest buildLinkTokenRequest(String clientUserId)

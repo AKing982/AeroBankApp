@@ -452,9 +452,10 @@ class PlaidControllerTest {
         String accessToken = mockOptional.get().getAccessToken();
         LocalDate startDate = LocalDate.of(2024, 6, 1);
         LocalDate endDate = LocalDate.of(2024, 6, 5);
+        int userID = 1;
 
         when(plaidService.getPlaidAccountEntityByUserId(1)).thenReturn(mockOptional);
-        when(plaidService.getTransactions(accessToken, startDate, endDate)).thenReturn(null);
+        when(plaidService.getTransactions(userID, startDate, endDate)).thenReturn(null);
 
         mockMvc.perform(get("/api/plaid/transactions")
                 .param("userId", "1")
@@ -472,9 +473,10 @@ class PlaidControllerTest {
         LocalDate startDate = LocalDate.of(2024, 6, 1);
         LocalDate endDate = LocalDate.of(2024, 6, 5);
         TransactionsGetResponse transactionsGetResponse = new TransactionsGetResponse();
+        int userID = 1;
 
         when(plaidService.getPlaidAccountEntityByUserId(1)).thenReturn(mockOptional);
-        when(plaidService.getTransactions(accessToken, startDate, endDate)).thenReturn(transactionsGetResponse);
+        when(plaidService.getTransactions(userID, startDate, endDate)).thenReturn(transactionsGetResponse);
 
         mockMvc.perform(get("/api/plaid/transactions")
                 .param("userId", "1")

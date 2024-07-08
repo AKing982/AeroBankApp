@@ -17,6 +17,8 @@ public class PlaidTransactionEntity {
     private UserEntity user;
 
 
+
+
     public PlaidTransactionEntity() {
 
     }

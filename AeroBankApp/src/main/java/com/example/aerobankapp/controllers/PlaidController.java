@@ -70,7 +70,7 @@ public class PlaidController {
 
         }catch(Exception e)
         {
-            return getInternalServerErrorResponse(e.getMessage());
+            return getInternalServerErrorResponse(e.toString());
         }
     }
 
@@ -98,7 +98,6 @@ public class PlaidController {
         {
             return ResponseEntity.badRequest().body("Invalid request");
         }
-
         try
         {
             Optional<PlaidAccountsEntity> plaidAccountsEntityOptional = plaidService.getPlaidAccountEntityByUserId(userId);
@@ -142,41 +141,41 @@ public class PlaidController {
         {
             return ResponseEntity.badRequest().body("Invalid request");
         }
-
-        try
-        {
-            Optional<PlaidAccountsEntity> mockOptional = plaidService.getPlaidAccountEntityByUserId(userId);
-            if (mockOptional.isEmpty())
-            {
-                return getInternalServerErrorResponse("No Plaid account found for this user");
-            }
-            else
-            {
-                String accessToken = getAccessTokenFromEntity(mockOptional);
-                if(accessToken == null || accessToken.isEmpty())
-                {
-                    return getInternalServerErrorResponse("No access token found for this user");
-                }
-                AccountsGetResponse accountsGetResponse = plaidService.getAccounts(accessToken);
-                if(accountsGetResponse == null)
-                {
-                    return getInternalServerErrorResponse("No account found for this user");
-                }
-                else
-                {
-                    List<AccountBase> accounts = accountsGetResponse.getAccounts();
-                    if(accounts.isEmpty())
-                    {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-                    }
-                    return getStatusOkResponse(accounts);
-                }
-
-            }
-        }catch(Exception e)
-        {
-            return getInternalServerErrorResponse("Failed to get balances");
-        }
+    return null;
+//        try
+//        {
+//            Optional<PlaidAccountsEntity> mockOptional = plaidService.getPlaidAccountEntityByUserId(userId);
+//            if (mockOptional.isEmpty())
+//            {
+//                return getInternalServerErrorResponse("No Plaid account found for this user");
+//            }
+//            else
+//            {
+//                String accessToken = getAccessTokenFromEntity(mockOptional);
+//                if(accessToken == null || accessToken.isEmpty())
+//                {
+//                    return getInternalServerErrorResponse("No access token found for this user");
+//                }
+//                AccountsGetResponse accountsGetResponse = plaidService.getAccounts(accessToken);
+//                if(accountsGetResponse == null)
+//                {
+//                    return getInternalServerErrorResponse("No account found for this user");
+//                }
+//                else
+//                {
+//                    List<AccountBase> accounts = accountsGetResponse.getAccounts();
+//                    if(accounts.isEmpty())
+//                    {
+//                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//                    }
+//                    return getStatusOkResponse(accounts);
+//                }
+//
+//            }
+//        }catch(Exception e)
+//        {
+//            return getInternalServerErrorResponse("Failed to get balances");
+//        }
     }
 
     private ResponseEntity<?> getStatusOkResponse(Collection<?> objects)
@@ -217,27 +216,7 @@ public class PlaidController {
             return ResponseEntity.badRequest().body("Invalid request");
         }
 
-        try
-        {
-            Optional<PlaidAccountsEntity> plaidAccountsEntityOptional = plaidService.getPlaidAccountEntityByUserId(userId);
-            if(plaidAccountsEntityOptional.isEmpty())
-            {
-                return getInternalServerErrorResponse("No account found for this user");
-            }
-            else
-            {
-                String accessToken = getAccessTokenFromEntity(plaidAccountsEntityOptional);
-                if(accessToken == null || accessToken.isEmpty())
-                {
-                    return getInternalServerErrorResponse("No access token found for this user");
-                }
-                TransactionsGetResponse transactionsGetResponse = plaidService.getTransactions(userId, startDate, endDate);
-                return createTransactionResponse(transactionsGetResponse);
-            }
-        }catch(Exception e)
-        {
-            return getInternalServerErrorResponse("Internal Server Error");
-        }
+       return ResponseEntity.ok().body(plaidService.getTransactions(userId, startDate, endDate));
     }
 
 
