@@ -2,11 +2,14 @@ package com.example.aerobankapp.converter;
 
 import com.example.aerobankapp.model.PlaidAccount;
 import com.plaid.client.model.AccountBase;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
 @Component
+@NoArgsConstructor
 public class AccountBaseToPlaidAccountConverter implements ModelConverter<PlaidAccount, AccountBase>
 {
 

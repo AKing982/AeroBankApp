@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Data
 public class PlaidAccount
@@ -37,5 +38,18 @@ public class PlaidAccount
     public PlaidAccount()
     {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlaidAccount that = (PlaidAccount) o;
+        return Objects.equals(accountId, that.accountId) && Objects.equals(mask, that.mask) && Objects.equals(name, that.name) && Objects.equals(officialName, that.officialName) && Objects.equals(type, that.type) && Objects.equals(subtype, that.subtype) && Objects.equals(currentBalance, that.currentBalance) && Objects.equals(availableBalance, that.availableBalance) && Objects.equals(limit, that.limit) && Objects.equals(verificationStatus, that.verificationStatus) && Objects.equals(lastUpdated, that.lastUpdated);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountId, mask, name, officialName, type, subtype, currentBalance, availableBalance, limit, verificationStatus, lastUpdated);
     }
 }

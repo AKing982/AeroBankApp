@@ -10,10 +10,13 @@ import com.plaid.client.model.AccountsGetRequest;
 import com.plaid.client.model.AccountsGetResponse;
 import com.plaid.client.model.LinkTokenCreateResponse;
 import com.plaid.client.request.PlaidApi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import retrofit2.Response;
 
 import java.io.IOException;
 import java.util.*;
@@ -22,11 +25,12 @@ import java.util.*;
 public class PlaidAccountManager extends AbstractPlaidDataManager {
 
     private AccountBaseToPlaidAccountConverter accountBaseToPlaidAccountConverter;
+    private Logger LOGGER = LoggerFactory.getLogger(PlaidAccountManager.class);
 
     @Autowired
-    public PlaidAccountManager(PlaidAccountsService plaidAccountsService, PlaidApi plaidApi, AccountBaseToPlaidAccountConverter accountBaseToPlaidAccountConverter) {
+    public PlaidAccountManager(PlaidAccountsService plaidAccountsService, PlaidApi plaidApi) {
         super(plaidAccountsService, plaidApi);
-        this.accountBaseToPlaidAccountConverter = accountBaseToPlaidAccountConverter;
+        this.accountBaseToPlaidAccountConverter = new AccountBaseToPlaidAccountConverter();
     }
 
     public AccountsGetRequest buildAccountsGetRequest(String accessToken) {
@@ -39,13 +43,22 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
     {
         Set<PlaidAccount> plaidAccounts = new HashSet<>();
         assertAccountBaseListIsNull(accountBaseList);
-     //   assertAccountBaseListIsEmpty(accountBaseList);
-
+       // assertAccountBaseListIsEmpty(accountBaseList);
         for(AccountBase accountBase : accountBaseList)
         {
-            PlaidAccount convertedAccount = accountBaseToPlaidAccountConverter.convert(accountBase);
-            plaidAccounts.add(convertedAccount);
+            if(accountBase != null)
+            {
+                LOGGER.info("AccountBase: {}", accountBase);
+                PlaidAccount convertedAccount = accountBaseToPlaidAccountConverter.convert(accountBase);
+                if(convertedAccount != null)
+                {
+                    plaidAccounts.add(convertedAccount);
+                }
+                LOGGER.info("Converted Account: {}", convertedAccount);
+            }
+
         }
+
         return plaidAccounts;
     }
 
@@ -61,14 +74,11 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
 
     public AccountsGetResponse getAllAccounts(final int userId) throws IOException
     {
-        if(userId < 1)
-        {
-            throw new InvalidUserIDException("Invalid user ID");
-        }
-        Optional<PlaidAccountsEntity> optional = plaidAccountsService.findPlaidAccountEntityByUserId(userId);
+        validateUserID(userId);
+        Optional<PlaidAccountsEntity> optional = getPlaidAccountEntityByUserId(userId);
         if(optional.isPresent())
         {
-           String accessToken = optional.get().getAccessToken();
+           String accessToken = getAccessTokenFromResponse(optional);
            if(accessToken == null || accessToken.isEmpty())
            {
                throw new PlaidAccessTokenNotFoundException("Plaid access token not found");
@@ -90,14 +100,48 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
         }
     }
 
-    public AccountsGetResponse getAllAccountsRetryResponse(AccountsGetRequest accountsGetRequest)
-    {
-        return null;
+    public AccountsGetResponse getAllAccountsRetryResponse(AccountsGetRequest accountsGetRequest) throws IOException, InterruptedException {
+        if(accountsGetRequest == null)
+        {
+            throw new NullPointerException("accountsGetRequest cannot be null");
+        }
+
+        return executeWithRetry(() ->
+        {
+            try
+            {
+                return plaidApi.accountsGet(accountsGetRequest).execute();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+//        try
+//        {
+//            while(attempts < TOTAL_ATTEMPTS)
+//            {
+//                accountsGetResponse = plaidApi.accountsGet(accountsGetRequest).execute();
+//                if(accountsGetResponse.isSuccessful() && accountsGetResponse.body() != null)
+//                {
+//                    return accountsGetResponse.body();
+//                }
+//                else
+//                {
+//                    attempts++;
+//
+//                    if(attempts == TOTAL_ATTEMPTS)
+//                    {
+//                        throw new PlaidAccountsGetResponseNullPointerException("Accounts Response is null");
+//                    }
+//                }
+//            }
+//
+//        }catch(Exception ex)
+//        {
+//            throw ex;
+//        }
     }
 
-    public AccountsGetResponse getAccountById(String accountId) {
-        return null;
-    }
 
     public LinkTokenCreateResponse linkAccount(int userId, String linkToken) {
         return null;
@@ -107,10 +151,8 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
         return null;
     }
 
-    public AccountsGetResponse getAccountBalancesForAcctID(String acctId)
+    public AccountsGetResponse getBalancesByUserId(int userID)
     {
         return null;
     }
-
-
 }

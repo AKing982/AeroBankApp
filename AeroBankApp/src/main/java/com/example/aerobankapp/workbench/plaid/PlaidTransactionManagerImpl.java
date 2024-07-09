@@ -22,7 +22,6 @@ import java.util.Optional;
 @Service
 public class PlaidTransactionManagerImpl extends AbstractPlaidDataManager
 {
-    private final int TOTAL_ATTEMPTS = 5;
 
     @Autowired
     public PlaidTransactionManagerImpl(PlaidAccountsService plaidAccountsService, PlaidApi plaidApi)
@@ -68,11 +67,11 @@ public class PlaidTransactionManagerImpl extends AbstractPlaidDataManager
             throw new IllegalArgumentException("Transaction Request parameters are invalid");
         }
         // Does the user have an access token already?
-        Optional<PlaidAccountsEntity> plaidAccountsEntityOptional = plaidAccountsService.findPlaidAccountEntityByUserId(userID);
+        Optional<PlaidAccountsEntity> plaidAccountsEntityOptional = getPlaidAccountEntityByUserId(userID);
         if(plaidAccountsEntityOptional.isPresent())
         {
             // Fetch the access Token
-            String accessToken = plaidAccountsEntityOptional.get().getAccessToken();
+            String accessToken = getAccessTokenFromResponse(plaidAccountsEntityOptional);
             if(accessToken == null)
             {
                 throw new PlaidAccessTokenNotFoundException("Plaid access token not found");
@@ -104,31 +103,41 @@ public class PlaidTransactionManagerImpl extends AbstractPlaidDataManager
         {
             throw new IllegalArgumentException("TransactionsGetRequest cannot be null");
         }
-        int attempts = 0;
-        Response<TransactionsGetResponse> response;
-        try
-        {
-            while(attempts < TOTAL_ATTEMPTS)
+
+        return executeWithRetry(() -> {
+            try
             {
-                response = plaidApi.transactionsGet(transactionsGetRequest).execute();
-                if(response.isSuccessful() && response.body() != null)
-                {
-                    return response.body();
-                }
-                else
-                {
-                    attempts++;
-                    if(attempts == TOTAL_ATTEMPTS)
-                    {
-                        break;
-                    }
-                }
+                return plaidApi.transactionsGet(transactionsGetRequest).execute();
+            }catch(IOException e)
+            {
+                throw new RuntimeException(e);
             }
-        }catch(Exception e)
-        {
-            throw e;
-        }
-        throw new IOException("Failed to get transactions response");
+        });
+//        int attempts = 0;
+//        Response<TransactionsGetResponse> response;
+//        try
+//        {
+//            while(attempts < TOTAL_ATTEMPTS)
+//            {
+//                response = plaidApi.transactionsGet(transactionsGetRequest).execute();
+//                if(response.isSuccessful() && response.body() != null)
+//                {
+//                    return response.body();
+//                }
+//                else
+//                {
+//                    attempts++;
+//                    if(attempts == TOTAL_ATTEMPTS)
+//                    {
+//                        break;
+//                    }
+//                }
+//            }
+//        }catch(Exception e)
+//        {
+//            throw e;
+//        }
+//        throw new IOException("Failed to get transactions response");
     }
 
     private TransactionsGetRequest buildTransactionsGetRequest(String accessToken, LocalDate startDate, LocalDate endDate) {

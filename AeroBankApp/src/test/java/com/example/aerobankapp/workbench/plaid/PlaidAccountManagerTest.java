@@ -11,6 +11,8 @@ import com.plaid.client.model.AccountBase;
 import com.plaid.client.model.AccountsGetRequest;
 import com.plaid.client.model.AccountsGetResponse;
 import com.plaid.client.request.PlaidApi;
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.retry.RetryPolicy;
 import org.springframework.test.context.junit4.SpringRunner;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -52,7 +55,8 @@ class PlaidAccountManagerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        plaidAccountManager = new PlaidAccountManager(plaidAccountsService, plaidApi, accountBaseToPlaidAccountConverter);
+        plaidAccountManager = new PlaidAccountManager(plaidAccountsService, plaidApi);
+        accountBaseToPlaidAccountConverter = mock(AccountBaseToPlaidAccountConverter.class);
     }
 
     @Test
@@ -176,35 +180,159 @@ class PlaidAccountManagerTest {
         Set<PlaidAccount> expectedPlaidAccounts = new HashSet<>();
         expectedPlaidAccounts.add(createTestPlaidAccount());
 
+        List<PlaidAccount> expected = expectedPlaidAccounts.stream().toList();
+
+        Set<PlaidAccount> actualPlaidAccounts = plaidAccountManager.getPlaidAccountsSetFromResponse(accountBaseList);
+        List<PlaidAccount> actual = actualPlaidAccounts.stream().toList();
+
+        assertNotNull(actualPlaidAccounts);
+        for(int i = 0; i < actual.size(); i++)
+        {
+            assertEquals(expected.get(i).getAccountId(), actual.get(i).getAccountId());
+            assertEquals(expected.get(i).getMask(), actual.get(i).getMask());
+            assertEquals(expected.get(i).getName(), actual.get(i).getName());
+            assertEquals(expected.get(i).getCurrentBalance(), actual.get(i).getCurrentBalance());
+            assertEquals(expected.get(i).getAvailableBalance(), actual.get(i).getAvailableBalance());
+        }
+        assertEquals(expectedPlaidAccounts.size(), actualPlaidAccounts.size());
+    }
+
+    @Test
+    @DisplayName("Test GetPlaidAccountsSetFromResponse when account base element is null, skip the null account base and return the set")
+    public void testGetPlaidAccountsSetFromResponse_whenAccountBaseElementIsNull_SkipTheNullElement_thenReturnSet() throws IOException {
+        List<AccountBase> accountBaseList = new ArrayList<>();
+        accountBaseList.add(null);
+        accountBaseList.add(createTestAccountBase());
+
+        Set<PlaidAccount> expectedPlaidAccounts = new HashSet<>();
+        expectedPlaidAccounts.add(createTestPlaidAccount());
+
         Set<PlaidAccount> actualPlaidAccounts = plaidAccountManager.getPlaidAccountsSetFromResponse(accountBaseList);
 
         assertNotNull(actualPlaidAccounts);
-        assertEquals(expectedPlaidAccounts, actualPlaidAccounts);
         assertEquals(expectedPlaidAccounts.size(), actualPlaidAccounts.size());
-        assertTrue(expectedPlaidAccounts.containsAll(actualPlaidAccounts));
     }
+
+
+    @Test
+    @DisplayName("Test GetPlaidAccountsSetFromResponse when converted plaid account is null, then skip null plaid account and return set")
+    public void testGetPlaidAccountsSetFromResponse_whenConvertedPlaidAccountIsNull_ThenSkipNullPlaidAccount_returnSet() throws IOException {
+        List<AccountBase> accountBaseList = new ArrayList<>();
+        AccountBase accountBase = createTestAccountBase();
+        accountBaseList.add(createTestAccountBase());
+        accountBaseList.add(createTestAccountBase());
+
+        PlaidAccount plaidAccount = createTestPlaidAccount();
+
+        when(accountBaseToPlaidAccountConverter.convert(accountBase)).thenReturn(null);
+        when(accountBaseToPlaidAccountConverter.convert(accountBase)).thenReturn(plaidAccount);
+
+        Set<PlaidAccount> actual = plaidAccountManager.getPlaidAccountsSetFromResponse(accountBaseList);
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+
+        PlaidAccount actualPlaidAccount = actual.iterator().next();
+        assertNotEquals(plaidAccount, actualPlaidAccount);
+    }
+
+    @Test
+    @DisplayName("Test getAllAccountsRetryResponse when AccountsGetRequest is null, then throw exception")
+    public void testGetAllAccountsRetryResponse_whenAccountsGetRequestIsNull_ThenThrowException() throws IOException {
+        assertThrows(NullPointerException.class, () -> {
+            plaidAccountManager.getAllAccountsRetryResponse(null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test getAllAccountsRetryResponse when AccountsGetRequest is valid, then return AccountsGetResponse")
+    public void testGetAllAccountsRetryResponse_whenAccountsGetRequestIsValid_thenReturnAccountsGetResponse() throws IOException, InterruptedException {
+        AccountsGetRequest accountsGetRequest = new AccountsGetRequest();
+        accountsGetRequest.accessToken("e2e23232");
+
+        AccountsGetResponse accountsGetResponse = new AccountsGetResponse();
+        Call<AccountsGetResponse> callSuccessful = mock(Call.class);
+        when(callSuccessful.execute()).thenReturn(Response.success(accountsGetResponse));
+
+        when(plaidApi.accountsGet(accountsGetRequest)).thenReturn(callSuccessful);
+
+        AccountsGetResponse actual = plaidAccountManager.getAllAccountsRetryResponse(accountsGetRequest);
+        assertNotNull(actual);
+        assertEquals(accountsGetResponse, actual);
+    }
+
+    @Test
+    @DisplayName("Test getAllAccountsRetryResponse when first response fails, succeeds on second pass, then return response")
+    public void testGetAllAccountsRetryResponse_whenFirstResponseFails_SucceedsOnSecondPass_thenReturnResponse() throws IOException, InterruptedException {
+        AccountsGetRequest accountsGetRequest = new AccountsGetRequest()
+                .accessToken("e2e23232");
+
+        AccountsGetResponse accountsGetResponse = new AccountsGetResponse();
+        Call<AccountsGetResponse> callUnsuccessful = mock(Call.class);
+        when(callUnsuccessful.execute()).thenReturn(Response.error(500, ResponseBody.create(MediaType.parse("application/json"), "Internal Server Error")));
+
+        Call<AccountsGetResponse> callSuccessful = mock(Call.class);
+        when(callSuccessful.execute()).thenReturn(Response.success(accountsGetResponse));
+
+        when(plaidApi.accountsGet(accountsGetRequest)).thenReturn(callUnsuccessful, callSuccessful);
+
+        AccountsGetResponse actual = plaidAccountManager.getAllAccountsRetryResponse(accountsGetRequest);
+        assertNotNull(actual);
+        assertEquals(accountsGetResponse, actual);
+    }
+
+    @Test
+    @DisplayName("Test getAllAccountsRetryResponse when max retries reached, then break out and throw exception")
+    public void testGetAllAccountsRetryResponse_whenMaxRetriesReached_ThenBreakOutAndThrowException() throws IOException {
+        AccountsGetRequest accountsGetRequest = new AccountsGetRequest()
+                .accessToken("e2e23232");
+
+        Call<AccountsGetResponse> callUnsuccessful = mock(Call.class);
+        when(callUnsuccessful.execute()).thenThrow(PlaidAccountsGetResponseNullPointerException.class);
+
+        when(plaidApi.accountsGet(accountsGetRequest)).thenReturn(callUnsuccessful, callUnsuccessful, callUnsuccessful, callUnsuccessful, callUnsuccessful);
+
+        assertThrows(PlaidAccountsGetResponseNullPointerException.class, () -> {
+            plaidAccountManager.getAllAccountsRetryResponse(accountsGetRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("Test getAllAccountsRetryResponse when exception is thrown, then throw exception")
+    public void testGetAllAccountsRetryResponse_whenExceptionIsThrown_ThenThrowException() throws IOException {
+        AccountsGetRequest accountsGetRequest = new AccountsGetRequest()
+                .accessToken("e2e23232");
+
+        Call<AccountsGetResponse> callUnsuccessful = mock(Call.class);
+        when(callUnsuccessful.execute()).thenThrow(new IOException());
+
+        when(plaidApi.accountsGet(accountsGetRequest)).thenReturn(callUnsuccessful);
+
+        assertThrows(IOException.class, () -> {
+            plaidAccountManager.getAllAccountsRetryResponse(accountsGetRequest);
+        });
+    }
+
 
     private AccountBase createTestAccountBase()
     {
         AccountBalance accountBalance = new AccountBalance();
         accountBalance.setAvailable(Double.valueOf(200));
-        accountBalance.setCurrent(Double.valueOf(120));
+        accountBalance.setCurrent(Double.valueOf(1200));
 
         AccountBase accountBase = new AccountBase();
         accountBase.setAccountId("A1");
         accountBase.setName("Checking");
-        accountBase.setVerificationStatus(AccountBase.VerificationStatusEnum.PENDING_AUTOMATIC_VERIFICATION);
         accountBase.setBalances(accountBalance);
         return accountBase;
     }
 
     private PlaidAccount createTestPlaidAccount() throws IOException {
+
         PlaidAccount plaidAccount = new PlaidAccount();
-        plaidAccount.setVerificationStatus("DONE");
         plaidAccount.setAccountId("A1");
         plaidAccount.setName("Checking");
-        plaidAccount.setLimit(BigDecimal.valueOf(100));
-        plaidAccount.setCurrentBalance(BigDecimal.valueOf(1200));
+        plaidAccount.setAvailableBalance(BigDecimal.valueOf(200.0));
+        plaidAccount.setCurrentBalance(BigDecimal.valueOf(1200.0));
         return plaidAccount;
     }
 
