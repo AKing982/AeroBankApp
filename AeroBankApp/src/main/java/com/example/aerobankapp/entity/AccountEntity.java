@@ -27,6 +27,9 @@ public class AccountEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int acctID;
 
+    @Column(name="externalId")
+    private String externalId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="accountCodeID")
     @JsonIgnore
@@ -64,6 +67,9 @@ public class AccountEntity
 
     @Column(name="hasMortgage")
     private boolean hasMortgage;
+
+    @Column(name="subtype")
+    private String subtype;
 
     @ManyToMany(mappedBy = "accounts")
     private Set<UserEntity> users = new HashSet<>();

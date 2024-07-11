@@ -1,10 +1,13 @@
 package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="plaidTransactions")
@@ -20,14 +23,19 @@ public class PlaidTransactionEntity {
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="accountId")
+    @JoinColumn(name="acctID")
     private AccountEntity account;
+
+    @Column(name="externalAcctID")
+    private String externalAcctID;
+
+    @Column(name="externalId")
+    @NotNull
+    @NotBlank
+    private String externalId;
 
     @Column(name="amount")
     private BigDecimal amount;
-
-    @Column(name="location")
-    private String location;
 
     @Column(name="name")
     private String name;
@@ -43,6 +51,9 @@ public class PlaidTransactionEntity {
 
     @Column(name="authorizedDate")
     private LocalDate authorizedDate;
+
+    @Column(name="createdAt")
+    private LocalDateTime createdAt;
 
 
     public PlaidTransactionEntity() {
