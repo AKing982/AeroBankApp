@@ -119,7 +119,44 @@ class PlaidTransactionServiceImplTest {
 
     @Test
     @DisplayName("Test getTransactionsByUser when user entity is valid and userId is valid, and transaction list has invalid plaid transactions data, then throw exception")
-    public void testGetTransactionsByUser
+    public void testGetTransactionsByUser_whenUserEntityIsValid_AndUserIdIsValid_AndTransactionsListHasInvalidData_thenThrowException() {
+        List<PlaidTransactionEntity> plaidTransactionEntities = new ArrayList<>();
+        plaidTransactionEntities.add(createPlaidTransactionEntityWithInvalidParams());
+
+        when(plaidTransactionRepository.findByUserId(anyInt())).thenReturn(plaidTransactionEntities);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            plaidTransactionService.getTransactionsByUser(createUserEntityWithInvalidUserId());
+        });
+    }
+
+    @Test
+    @DisplayName("Test getTransactionsByUser when user entity is valid and userId is valid, and transaction list is valid, return list")
+    public void testGetTransactionsByUser_WhenUserEntityIsValid_AndUserIdIsValid_AndTransactionsListHasValidData_thenReturnList()
+    {
+        List<PlaidTransactionEntity> plaidTransactionEntities = new ArrayList<>();
+        plaidTransactionEntities.add(createPlaidTransactionEntity());
+
+        when(plaidTransactionRepository.findByUserId(anyInt())).thenReturn(plaidTransactionEntities);
+
+        List<PlaidTransactionEntity> actual = plaidTransactionService.getTransactionsByUser(createUserEntity());
+        assertEquals(1, actual.size());
+        assertEquals(createPlaidTransactionEntity().getUser().getUserID(), actual.get(0).getUser().getUserID());
+        assertEquals(createPlaidTransactionEntity().getAmount(), actual.get(0).getAmount());
+        assertEquals(createPlaidTransactionEntity().getDate(), actual.get(0).getDate());
+        assertEquals(createPlaidTransactionEntity().getId(), actual.get(0).getId());
+        assertEquals(createPlaidTransactionEntity().getName(), actual.get(0).getName());
+        assertEquals(createPlaidTransactionEntity().getMerchantName(), actual.get(0).getMerchantName());
+        assertNotNull(actual);
+    }
+
+    @Test
+    @DisplayName("Test GetTransactionsByAccount when account is null, then throw exception")
+    public void testGetTransactionsByAccount_whenAccountIsNull_thenThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            plaidTransactionService.getTransactionsByAccount(null);
+        });
+    }
 
     private UserEntity createUserEntityWithInvalidUserId()
     {
@@ -135,8 +172,32 @@ class PlaidTransactionServiceImplTest {
         return userEntity;
     }
 
-    private PlaidTransactionEntity createPlaidTransactionEntity() {
+    private PlaidTransactionEntity createPlaidTransactionEntityWithInvalidParams()
+    {
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setBalance(null);
+        accountEntity.setAccountName(null);
+        accountEntity.setUser(createUserEntity());
+        accountEntity.setAcctID(1);
 
+        PlaidTransactionEntity plaidTransactionEntity = new PlaidTransactionEntity();
+        plaidTransactionEntity.setCreatedAt(LocalDateTime.now());
+        plaidTransactionEntity.setId(1L);
+        plaidTransactionEntity.setDate(LocalDate.of(2024, 6, 1));
+        plaidTransactionEntity.setAmount(null);
+        plaidTransactionEntity.setAccount(accountEntity);
+        plaidTransactionEntity.setName("Test Transaction #33333");
+        plaidTransactionEntity.setPending(false);
+        plaidTransactionEntity.setUser(null);
+        plaidTransactionEntity.setExternalId("z7Qody755jfzBvXJxM9MCaRvWXDPBNilND1Wd");
+        plaidTransactionEntity.setExternalAcctID("v4PezG4RRaIAGn7JPExEinZD1jrE3GtqeyEvZ");
+        plaidTransactionEntity.setMerchantName("Plaid Transaction Merchant Name");
+        plaidTransactionEntity.setAuthorizedDate(LocalDate.of(2024, 6, 4));
+        return plaidTransactionEntity;
+    }
+
+    private PlaidTransactionEntity createPlaidTransactionEntity()
+    {
 
         AccountEntity accountEntity = new AccountEntity();
         accountEntity.setBalance(new BigDecimal("100"));

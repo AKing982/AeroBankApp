@@ -39,13 +39,14 @@ public class UserDataManagerImpl extends AbstractDataManager
     public UserDataManagerImpl(UserService userService, AccountService accountService, AccountSecurityService accountSecurityService,
                                AccountPropertiesService accountPropertiesService,
                                AccountNotificationService accountNotificationService,
+                               PlaidAccountsService plaidAccountsService,
                                AccountCodeService accountCodeService,
                                AccountUsersEntityService accountUsersEntityService,
                                UserLogService userLogService,
                                AccountNumberGenerator accountNumberGenerator,
                                DatabaseUtilities databaseUtilities)
     {
-        super(userService, accountService, accountSecurityService, accountPropertiesService, accountNotificationService, accountCodeService, accountUsersEntityService, userLogService);
+        super(userService, accountService, accountSecurityService, accountPropertiesService, accountNotificationService, accountCodeService, plaidAccountsService, accountUsersEntityService, userLogService);
         this.accountNumberGenerator = accountNumberGenerator;
         this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
         this.databaseUtilities = databaseUtilities;

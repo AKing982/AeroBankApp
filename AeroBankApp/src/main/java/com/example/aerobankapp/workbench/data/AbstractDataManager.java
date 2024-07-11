@@ -10,6 +10,7 @@ public abstract class AbstractDataManager
     protected final AccountPropertiesService accountPropertiesService;
     protected final AccountNotificationService accountNotificationService;
     protected final AccountCodeService accountCodeService;
+    protected final PlaidAccountsService plaidAccountsService;
     protected final AccountUsersEntityService accountUsersEntityService;
     protected final UserLogService userLogService;
 
@@ -18,6 +19,7 @@ public abstract class AbstractDataManager
                                AccountPropertiesService accountPropertiesService,
                                AccountNotificationService accountNotificationService,
                                AccountCodeService accountCodeService,
+                               PlaidAccountsService plaidAccountsService,
                                AccountUsersEntityService accountUsersEntityService,
                                UserLogService userLogService)
     {
@@ -27,6 +29,7 @@ public abstract class AbstractDataManager
         this.accountPropertiesService = accountPropertiesService;
         this.accountNotificationService = accountNotificationService;
         this.accountCodeService = accountCodeService;
+        this.plaidAccountsService = plaidAccountsService;
         this.accountUsersEntityService = accountUsersEntityService;
         this.userLogService = userLogService;
     }

@@ -63,6 +63,9 @@ class UserDataManagerImplTest {
     private AccountUsersEntityService accountUsersEntityService;
 
     @Autowired
+    private PlaidAccountsService plaidAccountsService;
+
+    @Autowired
     private UserLogService userLogService;
 
     @Autowired
@@ -76,7 +79,7 @@ class UserDataManagerImplTest {
 
     @BeforeEach
     void setUp() {
-        userDataManager = new UserDataManagerImpl(userService, accountService, accountSecurityService, accountPropertiesService,accountNotificationService, accountCodeService, accountUsersEntityService, userLogService, accountNumberGenerator, databaseUtilities);
+        userDataManager = new UserDataManagerImpl(userService, accountService, accountSecurityService, accountPropertiesService,accountNotificationService,plaidAccountsService, accountCodeService,  accountUsersEntityService, userLogService, accountNumberGenerator, databaseUtilities);
     }
 
     static Stream<Arguments> provideUsernamesAndAccountNumbers() {

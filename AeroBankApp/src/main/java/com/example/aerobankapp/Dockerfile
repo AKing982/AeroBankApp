@@ -1,16 +1,25 @@
-FROM openjdk:17-jre-slim
+FROM openjdk:24-slim as builder
+
+# Install Maven
+RUN apt-get update && apt-get install -y maven
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the current directoryt contents into the container at /app
-COPY . /app
+COPY pom.xml .
+COPY src ./src
 
-# Make port 8080 available
+RUN mvn clean package
+
+# Use a smaller base image for the run time
+FROM openjdk:24-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the packaged application from the builder stage
+COPY --from=builder /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Define environment variable
-ENV NAME World
-
-# Run application when the container launches
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+CMD ["java", "-jar", "app.jar"]

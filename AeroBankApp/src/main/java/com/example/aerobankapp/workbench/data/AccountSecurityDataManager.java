@@ -11,8 +11,8 @@ import java.math.BigDecimal;
 @Component
 public class AccountSecurityDataManager extends AbstractDataManager
 {
-    public AccountSecurityDataManager(UserService userService, AccountService accountService, AccountSecurityService accountSecurityService, AccountPropertiesService accountPropertiesService, AccountNotificationService accountNotificationService, AccountCodeService accountCodeService, AccountUsersEntityService accountUsersEntityService, UserLogService userLogService) {
-        super(userService, accountService, accountSecurityService, accountPropertiesService, accountNotificationService, accountCodeService, accountUsersEntityService, userLogService);
+    public AccountSecurityDataManager(UserService userService, AccountService accountService, AccountSecurityService accountSecurityService, AccountPropertiesService accountPropertiesService, AccountNotificationService accountNotificationService, PlaidAccountsService plaidAccountsService, AccountCodeService accountCodeService, AccountUsersEntityService accountUsersEntityService, UserLogService userLogService) {
+        super(userService, accountService, accountSecurityService, accountPropertiesService, accountNotificationService, accountCodeService, plaidAccountsService,accountUsersEntityService, userLogService);
     }
 
     public AccountSecurityEntity buildAccountSecurityEntity(AccountEntity account){
