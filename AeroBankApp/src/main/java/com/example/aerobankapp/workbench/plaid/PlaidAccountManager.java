@@ -4,6 +4,7 @@ import com.example.aerobankapp.converter.AccountBaseToPlaidAccountConverter;
 import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.PlaidAccount;
+import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.services.PlaidAccountsService;
 import com.plaid.client.model.AccountBase;
 import com.plaid.client.model.AccountsGetRequest;
@@ -19,7 +20,9 @@ import org.springframework.util.CollectionUtils;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PlaidAccountManager extends AbstractPlaidDataManager {
@@ -72,8 +75,7 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
         Assert.notNull(accountBaseList, "accountBaseList cannot be null");
     }
 
-    public AccountsGetResponse getAllAccounts(final int userId) throws IOException
-    {
+    public AccountsGetResponse getAllAccounts(final int userId) throws IOException, InterruptedException {
         validateUserID(userId);
         Optional<PlaidAccountsEntity> optional = getPlaidAccountEntityByUserId(userId);
         if(optional.isPresent())
@@ -84,14 +86,14 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
                throw new PlaidAccessTokenNotFoundException("Plaid access token not found");
            }
            AccountsGetRequest accountsGetRequest = buildAccountsGetRequest(accessToken);
-           AccountsGetResponse response = plaidApi.accountsGet(accountsGetRequest).execute().body();
+           Response<AccountsGetResponse> response = plaidApi.accountsGet(accountsGetRequest).execute();
            if(response == null)
            {
                throw new PlaidAccountsGetResponseNullPointerException("Accounts Response is null");
            }
            else
            {
-               return response;
+                return getAllAccountsRetryResponse(accountsGetRequest);
            }
         }
         else
@@ -100,7 +102,7 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
         }
     }
 
-    public AccountsGetResponse getAllAccountsRetryResponse(AccountsGetRequest accountsGetRequest) throws IOException, InterruptedException {
+    public AccountsGetResponse getAllAccountsRetryResponse(final AccountsGetRequest accountsGetRequest) throws IOException, InterruptedException {
         if(accountsGetRequest == null)
         {
             throw new NullPointerException("accountsGetRequest cannot be null");
@@ -115,35 +117,11 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
                 throw new RuntimeException(e);
             }
         });
-
-//        try
-//        {
-//            while(attempts < TOTAL_ATTEMPTS)
-//            {
-//                accountsGetResponse = plaidApi.accountsGet(accountsGetRequest).execute();
-//                if(accountsGetResponse.isSuccessful() && accountsGetResponse.body() != null)
-//                {
-//                    return accountsGetResponse.body();
-//                }
-//                else
-//                {
-//                    attempts++;
-//
-//                    if(attempts == TOTAL_ATTEMPTS)
-//                    {
-//                        throw new PlaidAccountsGetResponseNullPointerException("Accounts Response is null");
-//                    }
-//                }
-//            }
-//
-//        }catch(Exception ex)
-//        {
-//            throw ex;
-//        }
     }
 
 
     public LinkTokenCreateResponse linkAccount(int userId, String linkToken) {
+
         return null;
     }
 
@@ -151,8 +129,39 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
         return null;
     }
 
-    public AccountsGetResponse getBalancesByUserId(int userID)
+    public TreeMap<Integer, Collection<PlaidAccountBalances>> getPlaidBalancesTreeMap(final List<PlaidAccountBalances> plaidAccountBalances)
     {
-        return null;
+        TreeMap<Integer, Collection<PlaidAccountBalances>> plaidBalancesTreeMap = new TreeMap<>();
+        if(plaidAccountBalances == null)
+        {
+            throw new NullPointerException("plaidAccountBalances cannot be null");
+        }
+        for(PlaidAccountBalances plaidAccountBalance : plaidAccountBalances)
+        {
+            if(plaidAccountBalance != null)
+            {
+                Integer userId = plaidAccountBalance.getUserId();
+                plaidBalancesTreeMap.put(userId, plaidAccountBalances);
+            }
+        }
+        return plaidBalancesTreeMap;
+    }
+
+    private PlaidAccountBalances createPlaidAccountBalances(AccountBase model, int userID)
+    {
+        PlaidAccountBalances plaidAccountBalances = new PlaidAccountBalances();
+        plaidAccountBalances.setAvailableBalance(BigDecimal.valueOf(model.getBalances().getAvailable()));
+        plaidAccountBalances.setCurrentBalance(BigDecimal.valueOf(model.getBalances().getCurrent()));
+        plaidAccountBalances.setAccountId(model.getAccountId());
+        plaidAccountBalances.setUserId(userID);
+        return plaidAccountBalances;
+    }
+
+    public List<PlaidAccountBalances> getBalancesByUserId(int userID) throws IOException, InterruptedException {
+        validateUserID(userID);
+        AccountsGetResponse accountsGetResponse = getAllAccounts(userID);
+        return accountsGetResponse.getAccounts().stream()
+                .map(accountBase -> createPlaidAccountBalances(accountBase, userID))
+                .collect(Collectors.toList());
     }
 }

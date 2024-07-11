@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
+@Deprecated
 public final class SchedulerSecurityDTO {
 
     private Long schedulerSecurityID;

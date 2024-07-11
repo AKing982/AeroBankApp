@@ -19,7 +19,6 @@ public class InvestmentAccount extends AbstractAccountBase
     private BigDecimal dividend_amt;
     private InvestmentStrategy investmentStrategy;
     private LiquidityRules liquidityRules;
-    private Returns returns;
 
     @Override
     protected void deposit(BigDecimal amount) {

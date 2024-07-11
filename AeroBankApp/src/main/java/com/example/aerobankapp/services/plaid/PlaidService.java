@@ -2,6 +2,7 @@ package com.example.aerobankapp.services.plaid;
 
 import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.repositories.PlaidAccountsRepository;
 import com.example.aerobankapp.workbench.plaid.PlaidAccountManager;
 import com.example.aerobankapp.workbench.plaid.PlaidTokenProcessorImpl;
@@ -16,6 +17,7 @@ import retrofit2.Response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -97,16 +99,13 @@ public class PlaidService
     /**
      * Retrieves the account balances for a given access token.
      *
-     * @param accessToken The access token used to authenticate the request.
+     * @param userID The access token used to authenticate the request.
      * @return An AccountsGetResponse object representing the account balances.
      * @throws Exception if an error occurs while retrieving the account balances.
      */
-    public AccountsGetResponse getAccountBalances(String accessToken) throws Exception
+    public List<PlaidAccountBalances> getAccountBalances(int userID) throws Exception
     {
-//        AccountsGetRequest request = new AccountsGetRequest()
-//                .accessToken(accessToken);
-//        return plaidApi.accountsGet(request).execute().body();
-        return null;
+        return plaidAccountManager.getBalancesByUserId(userID);
     }
 
     /**
@@ -139,25 +138,12 @@ public class PlaidService
     /**
      * Retrieves the account balances for a given access token.
      *
-     * @param accessToken The access token used to authenticate the request.
+     * @param userID The access token used to authenticate the request.
      * @return An AccountsGetResponse object representing the account balances.
      * @throws Exception if an error occurs while retrieving the account balances.
      */
-    public AccountsGetResponse getAccounts(String accessToken) throws Exception {
-//        AccountsGetRequest request = new AccountsGetRequest()
-//                .accessToken(accessToken);
-//
-////        Response<AccountsGetResponse> response = plaidAccountManager.getAccountById()
-////                .execute();
-//
-//        if (!response.isSuccessful()) {
-//            throw new Exception("Failed to get accounts: " + response.errorBody().string());
-//        }
-////
-//        return response.body();
-        return null;
+    public AccountsGetResponse getAccounts(int userID) throws Exception
+    {
+        return plaidAccountManager.getAllAccounts(userID);
     }
-
-
-
 }

@@ -5,6 +5,7 @@ import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.PlaidAccount;
+import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.services.PlaidAccountsService;
 import com.plaid.client.model.AccountBalance;
 import com.plaid.client.model.AccountBase;
@@ -69,7 +70,7 @@ class PlaidAccountManagerTest {
 
     @Test
     @DisplayName("Test GetAllAccounts when userID is valid, user has plaid accounts, then return ListOfAccountsGetResponse")
-    public void testGetAllAccountsValidUserID_UserHasPlaidAccounts_thenReturnListOfAccountsGetResponse() throws IOException {
+    public void testGetAllAccountsValidUserID_UserHasPlaidAccounts_thenReturnListOfAccountsGetResponse() throws IOException, InterruptedException {
         int userID = 1;
 
         AccountsGetResponse response1 = new AccountsGetResponse();
@@ -310,6 +311,94 @@ class PlaidAccountManagerTest {
         assertThrows(IOException.class, () -> {
             plaidAccountManager.getAllAccountsRetryResponse(accountsGetRequest);
         });
+    }
+
+    @Test
+    @DisplayName("Test getBalancesByUserId when userID is invalid, then throw exception")
+    public void testGetBalancesByUserID_whenUserIDIsInvalid_ThenThrowException() throws IOException {
+        assertThrows(InvalidUserIDException.class, () -> {
+            plaidAccountManager.getBalancesByUserId(-1);
+        });
+    }
+
+    @Test
+    @DisplayName("Test getBalancesByUserId when UserId is valid, user has plaid account, then return")
+    public void testGetBalancesByUserId_whenUserIDIsValid_thenReturnAccountsGetResponse() throws IOException, InterruptedException {
+        final int userID = 1;
+
+        when(plaidAccountsService.findPlaidAccountEntityByUserId(userID)).thenReturn(Optional.of(createPlaidAccountEntity()));
+        AccountsGetRequest accountsGetRequest = new AccountsGetRequest()
+                .accessToken(createPlaidAccountEntity().getAccessToken());
+
+        AccountsGetResponse accountsGetResponse = new AccountsGetResponse();
+
+        List<PlaidAccountBalances> expectedPlaidAccountBalancesList = new ArrayList<>();
+        expectedPlaidAccountBalancesList.add(createTestPlaidAccountBalances());
+
+        Call<AccountsGetResponse> callSuccessful = mock(Call.class);
+        when(callSuccessful.execute()).thenReturn(Response.success(accountsGetResponse));
+
+        when(plaidApi.accountsGet(accountsGetRequest)).thenReturn(callSuccessful);
+
+        List<PlaidAccountBalances> actual = plaidAccountManager.getBalancesByUserId(userID);
+        assertNotNull(actual);
+        for(int i = 0; i < actual.size(); i++) {
+            assertEquals(expectedPlaidAccountBalancesList.get(i).getCurrentBalance(), actual.get(i).getCurrentBalance());
+            assertEquals(expectedPlaidAccountBalancesList.get(i).getAvailableBalance(), actual.get(i).getAvailableBalance());
+            assertEquals(expectedPlaidAccountBalancesList.get(i).getUserId(), actual.get(i).getUserId());
+        }
+    }
+
+    @Test
+    @DisplayName("Test getPlaidBalancesTreeMap when plaid balances list is null, then throw exception")
+    public void testGetPlaidBalances_whenPlaidBalancesListIsNull_thenThrowException()
+    {
+        assertThrows(NullPointerException.class, () -> {
+            plaidAccountManager.getPlaidBalancesTreeMap(null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test getPlaidBalancesTreeMap when plaid balances list is non empty then return TreeMap")
+    public void testGetPlaidBalances_whenPlaidBalancesListIsNonEmpty_thenReturnTreeMap() throws IOException, InterruptedException {
+        List<PlaidAccountBalances> expectedPlaidAccountBalancesList = new ArrayList<>();
+        expectedPlaidAccountBalancesList.add(createTestPlaidAccountBalances());
+
+        TreeMap<Integer, Collection<PlaidAccountBalances>> expectedTreeMap = new TreeMap<>();
+        expectedTreeMap.put(1, expectedPlaidAccountBalancesList);
+
+        TreeMap<Integer, Collection<PlaidAccountBalances>> actualTreeMap = plaidAccountManager.getPlaidBalancesTreeMap(expectedPlaidAccountBalancesList);
+
+        assertNotNull(actualTreeMap);
+        assertEquals(expectedTreeMap.get(1), actualTreeMap.get(1));
+        assertEquals(expectedTreeMap.size(), actualTreeMap.size());
+    }
+
+    @Test
+    @DisplayName("Test getPlaidBalancesTreeMap when balances list is non empty and plaid account balance is null, then skip plaid account balance and return treeMap")
+    public void testGetPlaidBalancesTreeMap_whenBalancesListIsNonEmptyAndPlaidAccountBalancesListIsNull_ThenSkip_thenReturnTreeMap() throws IOException, InterruptedException {
+        List<PlaidAccountBalances> expectedPlaidAccountBalancesList = new ArrayList<>();
+        expectedPlaidAccountBalancesList.add(null);
+        expectedPlaidAccountBalancesList.add(createTestPlaidAccountBalances());
+        expectedPlaidAccountBalancesList.add(null);
+
+        TreeMap<Integer, Collection<PlaidAccountBalances>> expectedTreeMap = new TreeMap<>();
+        expectedTreeMap.put(1, expectedPlaidAccountBalancesList);
+
+        TreeMap<Integer, Collection<PlaidAccountBalances>> actualTreeMap = plaidAccountManager.getPlaidBalancesTreeMap(expectedPlaidAccountBalancesList);
+        assertNotNull(actualTreeMap);
+        assertEquals(expectedTreeMap.get(1), actualTreeMap.get(1));
+        assertEquals(expectedTreeMap.size(), actualTreeMap.size());
+    }
+
+    private PlaidAccountBalances createTestPlaidAccountBalances()
+    {
+        PlaidAccountBalances plaidAccountBalances = new PlaidAccountBalances();
+        plaidAccountBalances.setUserId(1);
+        plaidAccountBalances.setAvailableBalance(BigDecimal.valueOf(200));
+        plaidAccountBalances.setCurrentBalance(BigDecimal.valueOf(1200));
+        plaidAccountBalances.setAccountId("A1");
+        return plaidAccountBalances;
     }
 
 

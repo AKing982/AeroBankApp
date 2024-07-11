@@ -4,6 +4,7 @@ import com.example.aerobankapp.converter.AccountBaseToPlaidAccountConverter;
 import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.exceptions.AccountNotFoundException;
 import com.example.aerobankapp.model.PlaidAccount;
+import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.services.plaid.PlaidService;
 import com.plaid.client.model.*;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,30 +26,14 @@ import java.util.stream.Collectors;
 public class PlaidController {
 
     private final PlaidService plaidService;
-    private final AccountBaseToPlaidAccountConverter accountBaseToPlaidAccountConverter;
     private Logger LOGGER = LoggerFactory.getLogger(PlaidController.class);
 
     @Autowired
-    public PlaidController(PlaidService plaidService,
-                           AccountBaseToPlaidAccountConverter accountBaseToPlaidAccountConverter)
+    public PlaidController(PlaidService plaidService)
     {
         this.plaidService = plaidService;
-        this.accountBaseToPlaidAccountConverter = accountBaseToPlaidAccountConverter;
     }
 
-    private boolean hasInvalidValue(Map<String, Integer> mapRequest)
-    {
-        return mapRequest.values()
-                .stream()
-                .anyMatch(value -> value == null || value < 1);
-    }
-
-    private boolean hasInvalidKey(Map<String, Integer> mapRequest)
-    {
-        return mapRequest.keySet()
-                .stream()
-                .anyMatch(key -> key == null || key.isEmpty());
-    }
 
     @PostMapping("/create_link_token")
     public ResponseEntity<?> createLinkToken(@RequestBody Map<String, Integer> request)
@@ -74,22 +60,6 @@ public class PlaidController {
         }
     }
 
-    private Set<PlaidAccount> getPlaidAccountsSetFromResponse(final List<AccountBase> accounts)
-    {
-        Set<PlaidAccount> plaidAccounts = new HashSet<>();
-        for(AccountBase account : accounts)
-        {
-            if(account != null)
-            {
-                PlaidAccount plaidAccount = accountBaseToPlaidAccountConverter.convert(account);
-                if(plaidAccount != null)
-                {
-                    plaidAccounts.add(plaidAccount);
-                }
-            }
-        }
-        return plaidAccounts;
-    }
 
     @GetMapping("/accounts")
     public ResponseEntity<?> getAccounts(@RequestParam int userId)
@@ -100,30 +70,17 @@ public class PlaidController {
         }
         try
         {
-            Optional<PlaidAccountsEntity> plaidAccountsEntityOptional = plaidService.getPlaidAccountEntityByUserId(userId);
-            if(plaidAccountsEntityOptional.isEmpty())
+            AccountsGetResponse accountsGetResponse = plaidService.getAccounts(userId);
+            if(accountsGetResponse == null || accountsGetResponse.getAccounts() == null)
             {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No Plaid account found for this user");
+                return ResponseEntity.noContent().build();
             }
-            else
-            {
-                String accessToken = getAccessTokenFromEntity(plaidAccountsEntityOptional);
-                if(accessToken == null || accessToken.isEmpty())
-                {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No access token found for this user");
-                }
-                AccountsGetResponse accountsGetResponse = plaidService.getAccounts(accessToken);
-                if(accountsGetResponse == null)
-                {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No account found for this user");
-                }
-                Set<PlaidAccount> plaidAccounts = getPlaidAccountsSetFromResponse(accountsGetResponse.getAccounts());
-                return getStatusOkResponse(plaidAccounts);
-            }
+            List<AccountBase> accountBaseList = accountsGetResponse.getAccounts();
+            return ResponseEntity.ok().body(accountBaseList);
 
-        }catch(Exception e)
+        }catch(Exception ex)
         {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return getInternalServerErrorResponse(ex.toString());
         }
     }
 
@@ -135,47 +92,17 @@ public class PlaidController {
     }
 
     @GetMapping("/balances")
-    public ResponseEntity<?> getBalances(@RequestParam int userId)
-    {
+    public ResponseEntity<?> getBalances(@RequestParam int userId) throws Exception {
         if (userId < 1)
         {
             return ResponseEntity.badRequest().body("Invalid request");
         }
-    return null;
-//        try
-//        {
-//            Optional<PlaidAccountsEntity> mockOptional = plaidService.getPlaidAccountEntityByUserId(userId);
-//            if (mockOptional.isEmpty())
-//            {
-//                return getInternalServerErrorResponse("No Plaid account found for this user");
-//            }
-//            else
-//            {
-//                String accessToken = getAccessTokenFromEntity(mockOptional);
-//                if(accessToken == null || accessToken.isEmpty())
-//                {
-//                    return getInternalServerErrorResponse("No access token found for this user");
-//                }
-//                AccountsGetResponse accountsGetResponse = plaidService.getAccounts(accessToken);
-//                if(accountsGetResponse == null)
-//                {
-//                    return getInternalServerErrorResponse("No account found for this user");
-//                }
-//                else
-//                {
-//                    List<AccountBase> accounts = accountsGetResponse.getAccounts();
-//                    if(accounts.isEmpty())
-//                    {
-//                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//                    }
-//                    return getStatusOkResponse(accounts);
-//                }
-//
-//            }
-//        }catch(Exception e)
-//        {
-//            return getInternalServerErrorResponse("Failed to get balances");
-//        }
+        List<PlaidAccountBalances> accountsGetResponse = plaidService.getAccountBalances(userId);
+        if(accountsGetResponse.isEmpty())
+        {
+            return ResponseEntity.ok().body("No Balances found.");
+        }
+        return ResponseEntity.ok().body(accountsGetResponse);
     }
 
     private ResponseEntity<?> getStatusOkResponse(Collection<?> objects)
@@ -191,11 +118,6 @@ public class PlaidController {
     private ResponseEntity<?> getInternalServerErrorResponse(String message)
     {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-    }
-
-    private String getAccessTokenFromEntity(Optional<PlaidAccountsEntity> plaidAccountsEntityOptional)
-    {
-        return plaidAccountsEntityOptional.get().getAccessToken();
     }
 
     /**
@@ -217,20 +139,6 @@ public class PlaidController {
         }
 
        return ResponseEntity.ok().body(plaidService.getTransactions(userId, startDate, endDate));
-    }
-
-
-    private ResponseEntity<?> createTransactionResponse(final TransactionsGetResponse transactionsGetResponse)
-    {
-        if(transactionsGetResponse == null)
-        {
-            return getInternalServerErrorResponse("No transactions found for this user");
-        }
-        else
-        {
-            //TODO: Convert the Transactions from getTransactions to PlaidTransactions and persist to database
-            return ResponseEntity.ok().body(transactionsGetResponse.getTransactions());
-        }
     }
 
 

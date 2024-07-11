@@ -4,12 +4,9 @@ import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.exceptions.PlaidApiResponseException;
 import com.example.aerobankapp.services.PlaidAccountsService;
-import com.plaid.client.StringUtil;
 import com.plaid.client.request.PlaidApi;
-import org.springframework.util.StringUtils;
 import retrofit2.Response;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -32,6 +29,7 @@ public abstract class AbstractPlaidDataManager
             throw new InvalidUserIDException("Invalid user ID");
         }
     }
+
 
     protected Optional<PlaidAccountsEntity> getPlaidAccountEntityByUserId(int userID)
     {

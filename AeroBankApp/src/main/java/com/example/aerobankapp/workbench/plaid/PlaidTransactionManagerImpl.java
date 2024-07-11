@@ -3,6 +3,7 @@ package com.example.aerobankapp.workbench.plaid;
 import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.exceptions.PlaidAccessTokenNotFoundException;
 import com.example.aerobankapp.model.SearchCriteria;
+import com.example.aerobankapp.model.TransactionStatement;
 import com.example.aerobankapp.services.PlaidAccountsService;
 import com.plaid.client.model.TransactionsGetRequest;
 import com.plaid.client.model.TransactionsGetResponse;
@@ -61,6 +62,11 @@ public class PlaidTransactionManagerImpl extends AbstractPlaidDataManager
         return null;
     }
 
+    public List<TransactionStatement> getTransactionStatementsFromResponse(TransactionsGetResponse transactionsGetResponse)
+    {
+        return null;
+    }
+
     public TransactionsGetResponse getTransactionResponse(int userID, LocalDate startDate, LocalDate endDate) throws IOException {
         if(userID < 1 || startDate == null || endDate == null)
         {
@@ -113,31 +119,6 @@ public class PlaidTransactionManagerImpl extends AbstractPlaidDataManager
                 throw new RuntimeException(e);
             }
         });
-//        int attempts = 0;
-//        Response<TransactionsGetResponse> response;
-//        try
-//        {
-//            while(attempts < TOTAL_ATTEMPTS)
-//            {
-//                response = plaidApi.transactionsGet(transactionsGetRequest).execute();
-//                if(response.isSuccessful() && response.body() != null)
-//                {
-//                    return response.body();
-//                }
-//                else
-//                {
-//                    attempts++;
-//                    if(attempts == TOTAL_ATTEMPTS)
-//                    {
-//                        break;
-//                    }
-//                }
-//            }
-//        }catch(Exception e)
-//        {
-//            throw e;
-//        }
-//        throw new IOException("Failed to get transactions response");
     }
 
     private TransactionsGetRequest buildTransactionsGetRequest(String accessToken, LocalDate startDate, LocalDate endDate) {
