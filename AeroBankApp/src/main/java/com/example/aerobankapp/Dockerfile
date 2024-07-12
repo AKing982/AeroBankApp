@@ -1,3 +1,4 @@
+
 FROM openjdk:24-slim as builder
 
 # Install Maven
@@ -8,6 +9,10 @@ WORKDIR /app
 
 COPY pom.xml .
 COPY src ./src
+
+# Enable Lombok annotation processing
+RUN mkdir -p /root/.m2 \
+    && echo "<settings><profiles><profile><id>lombok</id><activation><activeByDefault>true</activeByDefault></activation><properties><lombok.version>1.18.30</lombok.version></properties></profile></profiles></settings>" > /root/.m2/settings.xml
 
 RUN mvn clean package
 

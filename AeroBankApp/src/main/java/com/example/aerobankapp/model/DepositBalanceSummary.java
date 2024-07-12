@@ -7,8 +7,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+
 public class DepositBalanceSummary extends TransactionBalanceSummary<Deposit>
 {
     public DepositBalanceSummary(Deposit deposit, BigDecimal balanceAfterDeposit, LocalDate dateProcessed) {
@@ -19,6 +18,8 @@ public class DepositBalanceSummary extends TransactionBalanceSummary<Deposit>
     public DepositBalanceSummary(){
         super();
     }
+
+
 
     @Override
     protected String generateReportSummary() {

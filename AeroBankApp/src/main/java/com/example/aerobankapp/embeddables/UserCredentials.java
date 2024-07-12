@@ -13,9 +13,6 @@ import lombok.NoArgsConstructor;
 
 @Embeddable
 @Builder
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserCredentials {
 
     @Column(name="username")
@@ -30,4 +27,19 @@ public class UserCredentials {
     @Column(name="password", nullable = false)
     private String password;
 
+    public UserCredentials(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public UserCredentials() {
+    }
+
+    public @NotBlank @NotEmpty @Size(min = 8, message = "You must choose at least 8 characters") String getUsername() {
+        return username;
+    }
+
+    public @NotNull @NotBlank @Size(min = 24, max = 225, message = "You must choose at least 24 characters") String getPassword() {
+        return password;
+    }
 }

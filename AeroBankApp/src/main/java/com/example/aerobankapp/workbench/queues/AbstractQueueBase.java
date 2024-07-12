@@ -1,10 +1,12 @@
 package com.example.aerobankapp.workbench.queues;
 
+import com.example.aerobankapp.model.BillPayment;
 import lombok.Getter;
 
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 
 @Getter
 public abstract class AbstractQueueBase<T>

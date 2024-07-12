@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Data
+
 @Builder
 public class BillPayment
 {
@@ -77,6 +77,117 @@ public class BillPayment
 
     }
 
+    public Long getPaymentID() {
+        return paymentID;
+    }
+
+    public void setPaymentID(Long paymentID) {
+        this.paymentID = paymentID;
+    }
+
+    public int getUserID() {
+        return userID;
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
+    }
+
+    public String getPayeeName() {
+        return payeeName;
+    }
+
+    public void setPayeeName(String payeeName) {
+        this.payeeName = payeeName;
+    }
+
+    public AccountCode getAccountCode() {
+        return accountCode;
+    }
+
+    public void setAccountCode(AccountCode accountCode) {
+        this.accountCode = accountCode;
+    }
+
+    public BigDecimal getPaymentAmount() {
+        return paymentAmount;
+    }
+
+    public void setPaymentAmount(BigDecimal paymentAmount) {
+        this.paymentAmount = paymentAmount;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public LocalDate getScheduledPaymentDate() {
+        return scheduledPaymentDate;
+    }
+
+    public void setScheduledPaymentDate(LocalDate scheduledPaymentDate) {
+        this.scheduledPaymentDate = scheduledPaymentDate;
+    }
+
+    public ScheduleStatus getScheduleStatus() {
+        return scheduleStatus;
+    }
+
+    public void setScheduleStatus(ScheduleStatus scheduleStatus) {
+        this.scheduleStatus = scheduleStatus;
+    }
+
+    public ScheduleFrequency getScheduleFrequency() {
+        return scheduleFrequency;
+    }
+
+    public void setScheduleFrequency(ScheduleFrequency scheduleFrequency) {
+        this.scheduleFrequency = scheduleFrequency;
+    }
+
+    public Long getSchedulePaymentID() {
+        return schedulePaymentID;
+    }
+
+    public void setSchedulePaymentID(Long schedulePaymentID) {
+        this.schedulePaymentID = schedulePaymentID;
+    }
+
+    public boolean isAutoPayEnabled() {
+        return isAutoPayEnabled;
+    }
+
+    public void setAutoPayEnabled(boolean autoPayEnabled) {
+        isAutoPayEnabled = autoPayEnabled;
+    }
+
+    public boolean isProcessed() {
+        return isProcessed;
+    }
+
+    public void setProcessed(boolean processed) {
+        isProcessed = processed;
+    }
+
+    public LocalDate getPosted() {
+        return posted;
+    }
+
+    public void setPosted(LocalDate posted) {
+        this.posted = posted;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -16,7 +16,6 @@ import java.util.Random;
 import static org.quartz.DateBuilder.dateOf;
 
 @Service
-@Getter
 public class SchedulerTriggerImpl implements SchedulerTriggerModel {
     private final TriggerCriteria triggerCriteria;
     private final CronExpressionBuilder cronExpressionBuilder;
@@ -28,6 +27,18 @@ public class SchedulerTriggerImpl implements SchedulerTriggerModel {
         Objects.requireNonNull(cronExpressionBuilder, "Non Null CronExpression required");
         this.triggerCriteria = triggerCriteria;
         this.cronExpressionBuilder = cronExpressionBuilder;
+    }
+
+    public TriggerCriteria getTriggerCriteria() {
+        return triggerCriteria;
+    }
+
+    public CronExpressionBuilder getCronExpressionBuilder() {
+        return cronExpressionBuilder;
+    }
+
+    public Logger getLOGGER() {
+        return LOGGER;
     }
 
     private int generateRandomNumber() {

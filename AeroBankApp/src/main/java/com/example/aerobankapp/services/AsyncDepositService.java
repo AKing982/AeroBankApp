@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.function.Consumer;
 
 @Service
+@Deprecated
 public class AsyncDepositService
 {
     private SchedulerEngine schedulerEngine;

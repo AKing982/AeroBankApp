@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
-@Data
+
 public class LateBillPayment
 {
     private LocalDate originalDueDate;
@@ -35,5 +35,37 @@ public class LateBillPayment
 
     public LateBillPayment(){
 
+    }
+
+    public LocalDate getOriginalDueDate() {
+        return originalDueDate;
+    }
+
+    public void setOriginalDueDate(LocalDate originalDueDate) {
+        this.originalDueDate = originalDueDate;
+    }
+
+    public BigDecimal getLateFee() {
+        return lateFee;
+    }
+
+    public void setLateFee(BigDecimal lateFee) {
+        this.lateFee = lateFee;
+    }
+
+    public int getDaysLate() {
+        return daysLate;
+    }
+
+    public void setDaysLate(int daysLate) {
+        this.daysLate = daysLate;
+    }
+
+    public BillPayment getBillPayment() {
+        return billPayment;
+    }
+
+    public void setBillPayment(BillPayment billPayment) {
+        this.billPayment = billPayment;
     }
 }

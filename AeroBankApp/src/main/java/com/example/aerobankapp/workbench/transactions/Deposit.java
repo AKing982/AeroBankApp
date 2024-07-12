@@ -14,12 +14,11 @@ import java.time.LocalTime;
 import java.util.Currency;
 
 
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Component
 @Builder
-@Getter
-@Setter
+@Data
 public class Deposit extends TransactionBase implements Serializable
 {
     private int depositID;

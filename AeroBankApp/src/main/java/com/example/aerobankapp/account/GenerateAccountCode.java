@@ -6,8 +6,7 @@ import lombok.Setter;
 
 import java.util.Objects;
 
-@Getter
-@Setter
+
 public class GenerateAccountCode
 {
     private AccountCodeModel accountCode;
@@ -22,6 +21,14 @@ public class GenerateAccountCode
         Objects.requireNonNull(accountType, "AccountType cannot be null");
         Objects.requireNonNull(fullName, "FullName cannot be null");
         this.accountCode = new AccountCodeModel(accountType, fullName);
+    }
+
+    public AccountCodeModel getAccountCode() {
+        return accountCode;
+    }
+
+    public void setAccountCode(AccountCodeModel accountCode) {
+        this.accountCode = accountCode;
     }
 
     private String getFirstNamePrefix()

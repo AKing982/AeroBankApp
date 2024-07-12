@@ -1,0 +1,20 @@
+2024-07-10T18:26:45.088-06:00  WARN 8024 --- [main] ory$DuplicateJsonObjectContextCustomizer : 
+
+Found multiple occurrences of org.json.JSONObject on the class path:
+
+	jar:file:/C:/Users/Alexander%20King/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar!/org/json/JSONObject.class
+	jar:file:/C:/Users/Alexander%20King/.m2/repository/org/json/json/20140107/json-20140107.jar!/org/json/JSONObject.class
+
+You may wish to exclude one of them to ensure predictable runtime behavior
+
+2024-07-10T18:26:45.108-06:00  INFO 8024 --- [main] c.e.a.controllers.PlaidControllerTest    : Starting PlaidControllerTest using Java 20.0.2 with PID 8024 (started by Alexander King in C:\Users\Alexander King\Documents\GitHub\AeroBankApp\AeroBankApp)
+2024-07-10T18:26:45.109-06:00  INFO 8024 --- [main] c.e.a.controllers.PlaidControllerTest    : No active profile set, falling back to 1 default profile: "default"
+2024-07-10T18:26:45.147-06:00  WARN 8024 --- [main] ironmentPostProcessorApplicationListener : Your Okta Issuer URL is missing. You can copy your domain from the Okta Developer Console. Follow these instructions to find it: https://bit.ly/finding-okta-domain
+To fix this add the `okta.oauth2.issuer` property to your application environments.
+2024-07-10T18:26:47.967-06:00  INFO 8024 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-07-10T18:26:50.211-06:00  INFO 8024 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-10T18:26:51.208-06:00  INFO 8024 --- [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2024-07-10T18:26:51.209-06:00  INFO 8024 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2024-07-10T18:26:51.219-06:00  INFO 8024 --- [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 10 ms
+2024-07-10T18:26:51.262-06:00  INFO 8024 --- [main] c.e.a.controllers.PlaidControllerTest    : Started PlaidControllerTest in 6.529 seconds (process running for 7.961)
+2024-07-10T18:26:51.511-06:00  INFO 8024 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'

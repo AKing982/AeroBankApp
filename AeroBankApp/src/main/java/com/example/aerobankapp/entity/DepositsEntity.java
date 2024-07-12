@@ -14,13 +14,12 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name="deposit")
-@Getter
-@Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class DepositsEntity extends AbstractTransactionEntityModel
 {
     @Id

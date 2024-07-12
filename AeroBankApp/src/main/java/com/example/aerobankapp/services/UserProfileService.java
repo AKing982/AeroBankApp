@@ -9,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Getter
-@Setter
+
 @Deprecated
 public class UserProfileService
 {
@@ -46,5 +45,39 @@ public class UserProfileService
         this.userSecurityProfile = securityProfile;
     }
 
+    public AccountManager getAccountManager() {
+        return accountManager;
+    }
 
+    public BalanceHistoryManager getBalanceHistoryModel() {
+        return balanceHistoryModel;
+    }
+
+    public DepositManager getDepositManager() {
+        return depositManager;
+    }
+
+    public WithdrawManager getWithdrawManager() {
+        return withdrawManager;
+    }
+
+    public PurchaseManager getPurchaseManager() {
+        return purchaseManager;
+    }
+
+    public TransferManager getTransferManager() {
+        return transferManager;
+    }
+
+    public FeeManager getFeeManager() {
+        return feeManager;
+    }
+
+    public UserServiceImpl getUserManager() {
+        return userManager;
+    }
+
+    public UserSecurityProfile getUserSecurityProfile() {
+        return userSecurityProfile;
+    }
 }

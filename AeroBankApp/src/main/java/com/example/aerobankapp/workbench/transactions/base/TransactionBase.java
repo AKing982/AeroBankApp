@@ -13,7 +13,6 @@ import java.time.LocalTime;
 import java.util.Currency;
 
 @Data
-@NoArgsConstructor
 public abstract class TransactionBase
 {
     protected int userID;
@@ -49,5 +48,10 @@ public abstract class TransactionBase
         this.amount = amount;
         this.timeScheduled = timeScheduled;
         this.dateScheduled = dateScheduled;
+    }
+
+    public TransactionBase()
+    {
+
     }
 }

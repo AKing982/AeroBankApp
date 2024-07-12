@@ -7,8 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.stereotype.Component;
 
-@Getter
-@Setter
+
 @ToString
 @EqualsAndHashCode
 @Deprecated
@@ -20,6 +19,27 @@ public class AccountCodeModel
     public AccountCodeModel(AccountType accountType, String firstName)
     {
         this.accountType = accountType;
+        this.firstName = firstName;
+    }
+
+    public AccountCodeModel()
+    {
+
+    }
+
+    public AccountType getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(AccountType accountType) {
+        this.accountType = accountType;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 }

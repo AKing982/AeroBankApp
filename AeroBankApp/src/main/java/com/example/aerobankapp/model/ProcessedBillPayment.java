@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-@Data
+
 public class ProcessedBillPayment
 {
     private BillPayment billPayment;
@@ -31,6 +31,38 @@ public class ProcessedBillPayment
         this.billPayment = billPayment;
         this.isComplete = isComplete;
         this.lastProcessedDate = lastProcessedDate;
+        this.nextPaymentDate = nextPaymentDate;
+    }
+
+    public BillPayment getBillPayment() {
+        return billPayment;
+    }
+
+    public void setBillPayment(BillPayment billPayment) {
+        this.billPayment = billPayment;
+    }
+
+    public boolean isComplete() {
+        return isComplete;
+    }
+
+    public void setComplete(boolean complete) {
+        isComplete = complete;
+    }
+
+    public LocalDate getLastProcessedDate() {
+        return lastProcessedDate;
+    }
+
+    public void setLastProcessedDate(LocalDate lastProcessedDate) {
+        this.lastProcessedDate = lastProcessedDate;
+    }
+
+    public LocalDate getNextPaymentDate() {
+        return nextPaymentDate;
+    }
+
+    public void setNextPaymentDate(LocalDate nextPaymentDate) {
         this.nextPaymentDate = nextPaymentDate;
     }
 }

@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService
     public void save(UserEntity obj)
     {
         aeroLogger.info("Saving User: " + obj);
-        getUserRepository().save(obj);
+        userRepository.save(obj);
     }
 
     @Override

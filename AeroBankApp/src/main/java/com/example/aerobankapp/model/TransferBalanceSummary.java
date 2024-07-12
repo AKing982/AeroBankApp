@@ -6,8 +6,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+
 public class TransferBalanceSummary extends TransactionBalanceSummary<Transfer>{
 
     private BigDecimal toAccountPostBalance;
@@ -15,5 +14,13 @@ public class TransferBalanceSummary extends TransactionBalanceSummary<Transfer>{
     @Override
     protected String generateReportSummary() {
         return null;
+    }
+
+    public BigDecimal getToAccountPostBalance() {
+        return toAccountPostBalance;
+    }
+
+    public void setToAccountPostBalance(BigDecimal toAccountPostBalance) {
+        this.toAccountPostBalance = toAccountPostBalance;
     }
 }

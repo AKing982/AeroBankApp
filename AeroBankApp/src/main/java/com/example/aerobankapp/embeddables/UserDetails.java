@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Embeddable
-@Data
 @Builder
 @NoArgsConstructor
 public class UserDetails {
@@ -45,5 +44,45 @@ public class UserDetails {
         this.email = email;
         this.accountNumber = accountNumber;
         this.profileImgUrl = userProfileImg;
+    }
+
+    public @NotEmpty @NotBlank String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(@NotEmpty @NotBlank String firstName) {
+        this.firstName = firstName;
+    }
+
+    public @NotEmpty @NotBlank String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(@NotEmpty @NotBlank String lastName) {
+        this.lastName = lastName;
+    }
+
+    public @NotEmpty @NotBlank String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@NotEmpty @NotBlank String email) {
+        this.email = email;
+    }
+
+    public @NotBlank @NotEmpty String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(@NotBlank @NotEmpty String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public @NotEmpty @NotBlank String getProfileImgUrl() {
+        return profileImgUrl;
+    }
+
+    public void setProfileImgUrl(@NotEmpty @NotBlank String profileImgUrl) {
+        this.profileImgUrl = profileImgUrl;
     }
 }

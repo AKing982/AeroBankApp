@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 import java.util.Set;
 
-@Getter
-
 @Builder
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class UserSecurityProfile implements Cloneable {
@@ -35,6 +33,70 @@ public class UserSecurityProfile implements Cloneable {
         String user = getSecurityUser().getUsername();
         Role bankRole = getRole().getRoleByUserName(user);
         return new UserSecurityProfileProducer().getSecurityProfileFactory(bankRole);
+    }
+
+    public SecurityUser getSecurityUser() {
+        return securityUser;
+    }
+
+    public void setSecurityUser(SecurityUser securityUser) {
+        this.securityUser = securityUser;
+    }
+
+    public RoleService getRole() {
+        return role;
+    }
+
+    public void setRole(RoleService role) {
+        this.role = role;
+    }
+
+    public Set<AccountStatus> getAccountStatusSet() {
+        return accountStatusSet;
+    }
+
+    public void setAccountStatusSet(Set<AccountStatus> accountStatusSet) {
+        this.accountStatusSet = accountStatusSet;
+    }
+
+    public Set<TransactionSecurity> getTransactionSecuritySet() {
+        return transactionSecuritySet;
+    }
+
+    public void setTransactionSecuritySet(Set<TransactionSecurity> transactionSecuritySet) {
+        this.transactionSecuritySet = transactionSecuritySet;
+    }
+
+    public Set<SchedulingSecurity> getSchedulingSecuritySet() {
+        return schedulingSecuritySet;
+    }
+
+    public void setSchedulingSecuritySet(Set<SchedulingSecurity> schedulingSecuritySet) {
+        this.schedulingSecuritySet = schedulingSecuritySet;
+    }
+
+    public Set<UserSecurityModelImpl> getUserStatusSet() {
+        return userStatusSet;
+    }
+
+    public void setUserStatusSet(Set<UserSecurityModelImpl> userStatusSet) {
+        this.userStatusSet = userStatusSet;
+    }
+
+    public UserSecurityModelImpl getUserSecurity() {
+        return userSecurity;
+    }
+
+    public void setUserSecurity(UserSecurityModelImpl userSecurity) {
+        this.userSecurity = userSecurity;
+    }
+
+    public UserProfileFacade getUserProfileFacade() {
+        return userProfileFacade;
+    }
+
+    public void setUserProfileFacade(UserProfileFacade userProfileFacade) {
+        this.userProfileFacade = userProfileFacade;
     }
 
     public UserSecurityProfile getUserSecurityProfile(Role role)

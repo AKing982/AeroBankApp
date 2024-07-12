@@ -9,8 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor(access=AccessLevel.PUBLIC, force=true)
 @AllArgsConstructor(access=AccessLevel.PUBLIC)
 @Table(name="balanceHistory")
@@ -59,4 +58,5 @@ public class BalanceHistoryEntity
                 ", posted=" + posted +
                 '}';
     }
+
 }

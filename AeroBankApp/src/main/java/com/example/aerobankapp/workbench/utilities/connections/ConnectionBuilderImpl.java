@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
 
 @Service
-@Getter
 public class ConnectionBuilderImpl implements ConnectionBuilder
 {
     private final ConnectionRequest connectionRequest;
@@ -20,6 +19,10 @@ public class ConnectionBuilderImpl implements ConnectionBuilder
     public ConnectionBuilderImpl(ConnectionRequest connectionRequest)
     {
        this.connectionRequest = connectionRequest;
+    }
+
+    public ConnectionRequest getConnectionRequest() {
+        return connectionRequest;
     }
 
     public DBType getDBType()

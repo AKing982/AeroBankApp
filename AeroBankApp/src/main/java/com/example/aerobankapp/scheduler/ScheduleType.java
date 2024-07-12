@@ -29,4 +29,12 @@ public enum ScheduleType
     {
         this.schedule = type;
     }
+
+    public String getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(String schedule) {
+        this.schedule = schedule;
+    }
 }

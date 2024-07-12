@@ -14,11 +14,9 @@ import java.time.LocalTime;
 import java.util.Currency;
 
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
 @NoArgsConstructor
 @Builder
-@Component
+@Data
 public class Withdraw extends TransactionBase implements Serializable
 {
     private Long id;
@@ -34,4 +32,6 @@ public class Withdraw extends TransactionBase implements Serializable
         this.id = id;
         this.fromAccountID = fromAccountID;
     }
+
+
 }

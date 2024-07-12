@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Table(name="plaidAccounts")
 @Data
 @Builder
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class PlaidAccountsEntity
 {
 
@@ -47,5 +46,10 @@ public class PlaidAccountsEntity
         this.institution_name = institution_name;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public PlaidAccountsEntity()
+    {
+
     }
 }

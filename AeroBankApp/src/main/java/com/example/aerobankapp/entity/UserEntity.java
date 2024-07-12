@@ -16,13 +16,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
 @Builder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @NoArgsConstructor
 @Table(name="users")
 @Access(AccessType.FIELD)
+@Data
 public class UserEntity
 {
     @Id
@@ -84,6 +83,5 @@ public class UserEntity
         accounts.remove(accountEntity);
         accountEntity.getUsers().remove(this);
     }
-
 
 }

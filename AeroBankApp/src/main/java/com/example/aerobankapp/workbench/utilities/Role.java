@@ -3,7 +3,7 @@ package com.example.aerobankapp.workbench.utilities;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
-@Getter
+
 public enum Role
 {
     USER("USER"),
@@ -19,4 +19,11 @@ public enum Role
        this.description = code;
    }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
