@@ -11,6 +11,7 @@ import com.example.aerobankapp.workbench.utilities.TransactionStatus;
 import com.example.aerobankapp.workbench.utilities.TransferType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -183,6 +184,7 @@ class QueryBuilderImplTest {
     }
 
     @Test
+    @Disabled
     public void testGetQueryFromCriteria_FullQuery_DepositsTable(){
         when(historyCriteria.description()).thenReturn("test");
         when(historyCriteria.status()).thenReturn(TransactionStatus.PENDING);

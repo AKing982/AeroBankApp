@@ -15,21 +15,22 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+
 @Getter
 public class MonthlyTriggerFactory extends AbstractTriggerBase implements CronTriggerFactory
 {
     private final AeroLogger aeroLogger = new AeroLogger(MonthlyTriggerFactory.class);
     private final CronBuilderFactory cronBuilderFactory;
+    private TriggerCriteria triggerCriteria;
     private List<String> cronSchedules = new ArrayList<>();
     private final int RANDOM_SEED = 42;
     private final int INTERVAL = 24;
 
-    @Autowired
-    public MonthlyTriggerFactory(final TriggerCriteria triggerCriteria)
+
+    public MonthlyTriggerFactory(TriggerCriteria triggerCriteria)
     {
         super(triggerCriteria);
-        this.cronBuilderFactory = new MonthlyCronBuilderFactory(triggerCriteria);
+        this.cronBuilderFactory = new MonthlyCronBuilderFactory();
     }
 
     public List<String> getMonthlyCronSchedulesList()

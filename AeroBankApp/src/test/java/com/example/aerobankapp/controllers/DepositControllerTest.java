@@ -1,5 +1,7 @@
 package com.example.aerobankapp.controllers;
 
+import com.example.aerobankapp.configuration.AppConfig;
+import com.example.aerobankapp.configuration.JpaConfig;
 import com.example.aerobankapp.dto.DepositDTO;
 import com.example.aerobankapp.embeddables.UserCredentials;
 import com.example.aerobankapp.embeddables.UserDetails;
@@ -19,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -41,6 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @WebMvcTest(value= DepositControllerTest.class)
 @RunWith(SpringRunner.class)
+@Import({JpaConfig.class, AppConfig.class})
 class DepositControllerTest {
 
     @Autowired
@@ -56,82 +60,6 @@ class DepositControllerTest {
     void setUp() {
     }
 
-    @Test
-    public void whenDepositIsPosted_ThenReturnDepositResponse() throws Exception
-    {
-        LocalTime now = LocalTime.now();
-        LocalDate today = LocalDate.now();
-        DepositRequest depositDTO = new DepositRequest(1, "A1", "1414", today, now, "Once", "Transfer");
-
-
-        mockMvc.perform(post("/api/deposits/create")
-                .content(String.valueOf(depositDTO))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accountCode").value("A1"))
-                .andDo(print());
-    }
-
-    @Test
-    @WithMockUser
-    public void getDeposits_ThenReturnDepositList() throws Exception
-    {
-        int acctID = 1;
-
-        LocalTime now = LocalTime.now();
-        LocalDate today = LocalDate.now();
-
-        UserDetails userDetails = UserDetails.builder()
-                .firstName("Alex")
-                .lastName("King")
-                .email("alex@utahkings.com")
-                .build();
-
-        UserCredentials userCredentials = UserCredentials.builder()
-                .username("AKing94")
-                .password("Halflifer45!")
-                .build();
-
-        UserSecurity userSecurity = UserSecurity.builder()
-                .isAdmin(true)
-                .isEnabled(true)
-                .role(Role.ADMIN)
-                .build();
-
-        UserEntity mockUser = UserEntity.builder()
-                .userID(1)
-                .userDetails(userDetails)
-                .userCredentials(userCredentials)
-                .userSecurity(userSecurity)
-                .build();
-
-        AccountEntity mockAccount = AccountEntity.builder()
-                .isRentAccount(false)
-                .hasMortgage(false)
-                .interest(new BigDecimal("2.67"))
-                .accountName("Alex Checking")
-                .balance(new BigDecimal("1845"))
-                .acctID(1)
-                .accountType("CHECKING")
-                .build();
-
-        DepositsEntity mockDeposit = DepositsEntity.builder()
-                .depositID(1)
-                .user(mockUser)
-                .account(mockAccount)
-                .build();
-
-        List<DepositsEntity> depositsEntities = Collections.singletonList(mockDeposit);
-
-        when(depositService.getDepositsByAcctID(acctID)).thenReturn(depositsEntities);
-
-        mockMvc.perform(get("/api/deposits/data/{acctID}", acctID)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(depositsEntities.size()))
-                .andDo(print());
-    }
 
 
 

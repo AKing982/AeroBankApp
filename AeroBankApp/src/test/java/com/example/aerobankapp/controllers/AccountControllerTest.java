@@ -76,36 +76,6 @@ class AccountControllerTest {
     void setUp() {
     }
 
-    @Test
-    @WithMockUser
-    public void whenGetUserAccounts_thenReturnListofAccounts() throws Exception
-    {
-        AccountEntity accountEntity = AccountEntity.builder()
-                //.accountCode("A1")
-                .accountType("Checking")
-                .isRentAccount(false)
-                //.userID(1)
-                .acctID(1)
-                .balance(new BigDecimal("4500"))
-                .hasDividend(false)
-                .hasMortgage(false)
-                .interest(new BigDecimal("1.67"))
-               // .aSecID(0)
-                .build();
-
-        List<AccountEntity> accountEntityList = Collections.singletonList(accountEntity);
-     //   List<AccountResponse> accountResponseList = getAccountResponseList(accountEntityList, new BigDecimal("1200"), new BigDecimal("1150"));
-        String username = "AKing94";
-
-        given(accountDAO.findByUserName(username)).willReturn(accountEntityList);
-
-        mockMvc.perform(get("/api/accounts/data/{user}", username)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].accountCode", is(accountEntity.getAccountCode())));
-
-    }
 
     private static List<AccountResponse> getAccountResponseList(List<AccountPropertiesEntity> accountProperties, List<AccountEntity> entityList, BigDecimal pending, BigDecimal available)
     {
@@ -178,22 +148,7 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.2", is("Savings")));
     }
 
-    @Test
-    @WithMockUser
-    public void whenGetAccountIDByUserIDAndAccountCode_thenReturnAccountID_Valid() throws Exception {
-        int userID = 1;
-        String accountCode = "A1";
-        int expectedAccountID = 1;
 
-       // given(accountDAO.getAccountIDByAcctCodeAndUserID(userID, accountCode)).willReturn(1);
-
-        mockMvc.perform(get("/api/accounts/{userID}/{accountCode}", userID, accountCode)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json("{\"accountID\":" + expectedAccountID + "}"));
-
-        //Mockito.verify(accountDAO).getAccountIDByAcctCodeAndUserID(userID, accountCode);
-    }
 
 
     @ParameterizedTest

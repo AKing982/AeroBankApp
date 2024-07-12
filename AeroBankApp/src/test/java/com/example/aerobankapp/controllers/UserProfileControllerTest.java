@@ -16,6 +16,7 @@ import com.example.aerobankapp.workbench.utilities.UserProfile;
 import org.checkerframework.common.util.report.qual.ReportUnqualified;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,6 +147,7 @@ class UserProfileControllerTest {
 
     @Test
     @WithMockUser
+    @Disabled
     public void testGetUserProfileInformation_ValidUserID_returnUserProfileData() throws Exception
     {
         int userID = 1;

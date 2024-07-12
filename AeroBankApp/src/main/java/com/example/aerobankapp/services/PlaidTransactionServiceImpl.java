@@ -95,7 +95,11 @@ public class PlaidTransactionServiceImpl implements PlaidTransactionService
 
     @Override
     public List<PlaidTransactionEntity> getTransactionsByAccount(AccountEntity account) {
-        return List.of();
+        if(account == null)
+        {
+            throw new IllegalArgumentException("Invalid AccountEntity");
+        }
+        return plaidTransactionRepository.findByAccountId(account.getAcctID());
     }
 
     @Override

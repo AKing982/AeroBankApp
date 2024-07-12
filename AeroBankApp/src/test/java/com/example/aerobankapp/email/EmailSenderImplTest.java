@@ -1,6 +1,8 @@
 package com.example.aerobankapp.email;
 
+import com.example.aerobankapp.configuration.AppConfig;
 import com.example.aerobankapp.configuration.EmailTestConfig;
+import com.example.aerobankapp.configuration.JpaConfig;
 import jakarta.mail.MessagingException;
 import org.junit.internal.runners.JUnit38ClassRunner;
 import org.junit.jupiter.api.AfterEach;
@@ -12,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -24,8 +28,9 @@ import java.util.function.BooleanSupplier;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(JUnit38ClassRunner.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest
+@Import({JpaConfig.class, AppConfig.class})
 class EmailSenderImplTest
 {
 

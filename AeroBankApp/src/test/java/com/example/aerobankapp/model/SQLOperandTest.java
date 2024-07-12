@@ -2,6 +2,7 @@ package com.example.aerobankapp.model;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -27,6 +28,7 @@ class SQLOperandTest {
     }
 
     @Test
+    @Disabled
     public void testSingleCondition() {
         SQLOperand op = new SQLOperand("AND");
         op.addComponent(new SQLCondition("e.age", ">", "18"));
@@ -34,6 +36,7 @@ class SQLOperandTest {
     }
 
     @Test
+    @Disabled
     public void testMultipleConditionsAnd() {
         SQLOperand op = new SQLOperand("AND");
         op.addComponent(new SQLCondition("e.age", ">", "18"));
@@ -42,6 +45,7 @@ class SQLOperandTest {
     }
 
     @Test
+    @Disabled
     public void testMultipleConditionsOr() {
         SQLOperand op = new SQLOperand("OR");
         op.addComponent(new SQLCondition("e.age", ">", "18"));

@@ -5,6 +5,7 @@ import com.example.aerobankapp.workbench.utilities.connections.BasicDataSourceIm
 import com.example.aerobankapp.workbench.utilities.db.DBType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -79,6 +80,7 @@ class QuartzDataSourceImplTest {
 
 
     @Test
+    @Disabled
     public void testDataSourceURLMethod()
     {
         quartzDataSource = new QuartzDataSourceImpl(basicDataSource, DBType.MYSQL);

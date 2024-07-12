@@ -158,6 +158,25 @@ class PlaidTransactionServiceImplTest {
         });
     }
 
+    @Test
+    @DisplayName("Test GetTransactionsByAccount when account is valid return plaid transactions")
+    public void testGetTransactionsByAccount_whenAccountIsValid_PlaidTransactions_thenReturnPlaidTransactions() {
+        List<PlaidTransactionEntity> plaidTransactionEntities = new ArrayList<>();
+        plaidTransactionEntities.add(createPlaidTransactionEntity());
+
+        when(plaidTransactionRepository.findByAccountId(1)).thenReturn(plaidTransactionEntities);
+
+        List<PlaidTransactionEntity> actual = plaidTransactionService.getTransactionsByAccount(createAccountEntity());
+        assertEquals(1, actual.size());
+        assertEquals(createPlaidTransactionEntity().getAccount().getAcctID(), actual.get(0).getAccount().getAcctID());
+        assertEquals(createPlaidTransactionEntity().getAmount(), actual.get(0).getAmount());
+        assertEquals(createPlaidTransactionEntity().getDate(), actual.get(0).getDate());
+        assertEquals(createPlaidTransactionEntity().getId(), actual.get(0).getId());
+        assertEquals(createPlaidTransactionEntity().getName(), actual.get(0).getName());
+        assertEquals(createPlaidTransactionEntity().getMerchantName(), actual.get(0).getMerchantName());
+        assertNotNull(actual);
+    }
+
     private UserEntity createUserEntityWithInvalidUserId()
     {
         UserEntity userEntity = new UserEntity();
@@ -170,6 +189,16 @@ class PlaidTransactionServiceImplTest {
         UserEntity userEntity = new UserEntity();
         userEntity.setUserID(1);
         return userEntity;
+    }
+
+    private AccountEntity createAccountEntity()
+    {
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setBalance(new BigDecimal("100"));
+        accountEntity.setAccountName("Test Checking");
+        accountEntity.setUser(createUserEntity());
+        accountEntity.setAcctID(1);
+        return accountEntity;
     }
 
     private PlaidTransactionEntity createPlaidTransactionEntityWithInvalidParams()
@@ -199,18 +228,14 @@ class PlaidTransactionServiceImplTest {
     private PlaidTransactionEntity createPlaidTransactionEntity()
     {
 
-        AccountEntity accountEntity = new AccountEntity();
-        accountEntity.setBalance(new BigDecimal("100"));
-        accountEntity.setAccountName("Test Checking");
-        accountEntity.setUser(createUserEntity());
-        accountEntity.setAcctID(1);
+
 
         PlaidTransactionEntity plaidTransactionEntity = new PlaidTransactionEntity();
         plaidTransactionEntity.setCreatedAt(LocalDateTime.now());
         plaidTransactionEntity.setId(1L);
         plaidTransactionEntity.setDate(LocalDate.of(2024, 6, 1));
         plaidTransactionEntity.setAmount(BigDecimal.valueOf(200));
-        plaidTransactionEntity.setAccount(accountEntity);
+        plaidTransactionEntity.setAccount(createAccountEntity());
         plaidTransactionEntity.setName("Test Transaction #33333");
         plaidTransactionEntity.setPending(false);
         plaidTransactionEntity.setUser(createUserEntity());

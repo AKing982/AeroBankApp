@@ -15,11 +15,10 @@ public class CronExpressionBuilderImpl implements CronExpressionBuilder
     private final TriggerCriteria triggerCriteria;
     private Logger LOGGER = LoggerFactory.getLogger(CronExpressionBuilderImpl.class);
 
-    @Autowired
-    public CronExpressionBuilderImpl(TriggerCriteria triggerCriteria)
-    {
+
+    public CronExpressionBuilderImpl() {
+        this.triggerCriteria = new TriggerCriteria();
         Objects.requireNonNull(triggerCriteria, "TriggerCriteria cannot be null");
-        this.triggerCriteria = triggerCriteria;
     }
 
     @Override

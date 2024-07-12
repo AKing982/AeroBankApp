@@ -121,24 +121,6 @@ public class SchedulerConfig
         return trigger;
     }
 
-    @Bean
-    public JobDetailFactoryBean depositJobDetail(Deposit deposit)
-    {
-        JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
-
-        String uniqueIdentifier = UUID.randomUUID().toString();
-
-        jobDetailFactory.setJobClass(DepositJob.class);
-        jobDetailFactory.setName("DepositJob" + uniqueIdentifier);
-        jobDetailFactory.setGroup("BankingJobs" + uniqueIdentifier);
-        jobDetailFactory.setDurability(true);
-
-        JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("DepositData", deposit);
-        jobDetailFactory.setJobDataMap(jobDataMap);
-
-        return jobDetailFactory;
-    }
 
 
 

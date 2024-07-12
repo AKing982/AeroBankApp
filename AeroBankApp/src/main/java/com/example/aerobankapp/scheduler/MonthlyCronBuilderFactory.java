@@ -17,17 +17,11 @@ public class MonthlyCronBuilderFactory implements CronBuilderFactory {
     private TriggerCriteria triggerCriteria;
     private final AeroLogger aeroLogger = new AeroLogger(MonthlyCronBuilderFactory.class);
 
-    @Autowired
-    public MonthlyCronBuilderFactory(TriggerCriteria triggerCriteria) {
-        this.triggerCriteria = triggerCriteria;
-    }
 
-    /**
-     * To be used with methods not needing MonthlySchedules
-     */
     public MonthlyCronBuilderFactory() {
-
+        this.triggerCriteria = new TriggerCriteria();
     }
+
 
     public List<String> getMonthlyCronSchedules() {
 

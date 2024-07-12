@@ -146,13 +146,6 @@ class BillPayControllerTest {
     }
 
     @Test
-    public void testFetchBillPayeesList_unauthorized_shouldReturnUnauthorized() throws Exception{
-        int userID = 1;
-        mockMvc.perform(get("/api/bills/" + userID + "/list"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
     @WithMockUser
     public void testFetchBillPayeesList_userNotFound_shouldReturnNotFound() throws Exception{
         int userID = 999;

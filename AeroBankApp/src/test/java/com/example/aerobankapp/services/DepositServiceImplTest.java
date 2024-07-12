@@ -43,9 +43,6 @@ class DepositServiceImplTest
     @MockBean
     private DepositRepository depositRepository;
 
-    @MockBean
-    private AsyncDepositService asyncDepositService;
-
 
     @BeforeEach
     void setUp()

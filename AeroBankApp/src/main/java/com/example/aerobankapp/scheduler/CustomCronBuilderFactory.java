@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Component
 @Getter
 public class CustomCronBuilderFactory implements CCronBuilderFactory
@@ -20,12 +19,13 @@ public class CustomCronBuilderFactory implements CCronBuilderFactory
     private AeroLogger aeroLogger = new AeroLogger(CustomCronBuilderFactory.class);
     private TriggerCriteria triggerCriteria;
     private String customCronExpression;
-    @Autowired
-    public CustomCronBuilderFactory(TriggerCriteria triggerCriteria)
+
+
+    public CustomCronBuilderFactory()
     {
         if(triggerCriteria != null)
         {
-            this.triggerCriteria = triggerCriteria;
+            this.triggerCriteria = new TriggerCriteria();
            // this.customCronExpression = getCronExpression(triggerCriteria);
         }
     }
