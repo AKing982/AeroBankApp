@@ -3,6 +3,7 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.PlaidTransactionEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.exceptions.InvalidAccountIDException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.repositories.PlaidTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,26 +100,47 @@ public class PlaidTransactionServiceImpl implements PlaidTransactionService
         {
             throw new IllegalArgumentException("Invalid AccountEntity");
         }
+
+        if(account.getAcctID() < 1)
+        {
+            throw new InvalidAccountIDException("Account ID Is invalid");
+        }
         return plaidTransactionRepository.findByAccountId(account.getAcctID());
     }
 
     @Override
     public List<PlaidTransactionEntity> getPendingTransactionsByUser(UserEntity user) {
-        return List.of();
+        if(user == null)
+        {
+            throw new IllegalArgumentException("User is null");
+        }
+        return plaidTransactionRepository.findByUserId(user.getUserID());
     }
 
     @Override
     public Optional<PlaidTransactionEntity> getTransactionByExternalAcctId(String externalAcctId) {
-        return Optional.empty();
+        if(externalAcctId == null || externalAcctId.isEmpty())
+        {
+            throw new IllegalArgumentException("External Account ID cannot be null or empty");
+        }
+        return plaidTransactionRepository.findByExternalAcctID(externalAcctId);
     }
 
     @Override
-    public Optional<PlaidTransactionEntity> getTransactionsByAmountBetweenAndUser(BigDecimal minAmount, BigDecimal maxAmount, UserEntity user) {
-        return Optional.empty();
+    public List<PlaidTransactionEntity> getTransactionsByAmountBetweenAndUser(BigDecimal minAmount, BigDecimal maxAmount, UserEntity user) {
+        if(minAmount == null || maxAmount == null)
+        {
+            throw new IllegalArgumentException("Amount cannot be null");
+        }
+        return plaidTransactionRepository.findByAmountBetweenAndUserId(minAmount, maxAmount, user.getUserID());
     }
 
     @Override
     public List<PlaidTransactionEntity> getTransactionsByDateRangeAndUser(LocalDate startDate, LocalDate endDate, UserEntity user) {
-        return List.of();
+        if(startDate == null || endDate == null || user == null)
+        {
+            throw new IllegalArgumentException("Transaction criteria is null");
+        }
+        return plaidTransactionRepository.findByDateBetweenAndUserId(startDate, endDate, user.getUserID());
     }
 }

@@ -19,7 +19,7 @@ public interface PlaidTransactionService extends ServiceDAOModel<PlaidTransactio
     List<PlaidTransactionEntity> getPendingTransactionsByUser(UserEntity user);
     Optional<PlaidTransactionEntity> getTransactionByExternalAcctId(String externalAcctId);
 
-    Optional<PlaidTransactionEntity> getTransactionsByAmountBetweenAndUser(BigDecimal minAmount, BigDecimal maxAmount, UserEntity user);
+    List<PlaidTransactionEntity> getTransactionsByAmountBetweenAndUser(BigDecimal minAmount, BigDecimal maxAmount, UserEntity user);
 
     List<PlaidTransactionEntity> getTransactionsByDateRangeAndUser(LocalDate startDate, LocalDate endDate, UserEntity user);
 

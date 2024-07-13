@@ -11,4 +11,5 @@ FROM tomcat:9.0-jdk11-openjdk
 WORKDIR /usr/local/tomcat/webapps
 COPY --from=builder /app/target/*.war app.war
 EXPOSE 8080
+ENTRYPOINT ["java", "-cp", "/usr/local/tomcat/webapps/app.war:/usr/local/tomcat/lib/*", "com.example.aerobankapp.AeroBankAppApplication"]
 CMD ["catalina.sh", "run"]
