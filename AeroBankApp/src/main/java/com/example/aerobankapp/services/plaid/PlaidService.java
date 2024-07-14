@@ -4,6 +4,7 @@ import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.repositories.PlaidAccountsRepository;
+import com.example.aerobankapp.services.PlaidTransactionService;
 import com.example.aerobankapp.workbench.plaid.PlaidAccountManager;
 import com.example.aerobankapp.workbench.plaid.PlaidTokenProcessorImpl;
 import com.example.aerobankapp.workbench.plaid.PlaidTransactionManagerImpl;
@@ -27,6 +28,7 @@ public class PlaidService
     private final PlaidTransactionManagerImpl plaidTransactionManager;
     private final PlaidAccountManager plaidAccountManager;
     private final PlaidAccountsRepository plaidAccountsRepository;
+    private final PlaidTransactionService plaidTransactionService;
 
     private Logger LOGGER = LoggerFactory.getLogger(PlaidService.class);
 
@@ -34,11 +36,13 @@ public class PlaidService
     public PlaidService(PlaidTokenProcessorImpl plaidTokenProcessor,
                         PlaidTransactionManagerImpl plaidTransactionManager,
                         PlaidAccountsRepository plaidAccountsRepository,
+                        PlaidTransactionService plaidTransactionService,
                         PlaidAccountManager plaidAccountManager)
     {
         this.plaidTokenProcessor = plaidTokenProcessor;
         this.plaidTransactionManager = plaidTransactionManager;
         this.plaidAccountsRepository = plaidAccountsRepository;
+        this.plaidTransactionService = plaidTransactionService;
         this.plaidAccountManager = plaidAccountManager;
     }
 
