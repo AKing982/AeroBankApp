@@ -14,19 +14,19 @@ public class PlaidAccountBalances
     private BigDecimal availableBalance;
     private BigDecimal pendingBalance;
 
-    public PlaidAccountBalances(int userId, String accountId, BigDecimal currentBalance, BigDecimal availableBalance, BigDecimal pendingBalance) {
-        this.userId = userId;
+    public PlaidAccountBalances(String accountId, BigDecimal currentBalance, BigDecimal availableBalance, BigDecimal pendingBalance) {
         this.accountId = accountId;
         this.currentBalance = currentBalance;
         this.availableBalance = availableBalance;
         this.pendingBalance = pendingBalance;
     }
 
-    public PlaidAccountBalances(int userId, String accountId, BigDecimal currentBalance, BigDecimal availableBalance) {
+    public PlaidAccountBalances(int userId, String accountId, BigDecimal currentBalance, BigDecimal availableBalance, BigDecimal pendingBalance) {
         this.userId = userId;
         this.accountId = accountId;
         this.currentBalance = currentBalance;
         this.availableBalance = availableBalance;
+        this.pendingBalance = pendingBalance;
     }
 
     public PlaidAccountBalances()
@@ -39,19 +39,18 @@ public class PlaidAccountBalances
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PlaidAccountBalances that = (PlaidAccountBalances) o;
-        return userId == that.userId && Objects.equals(accountId, that.accountId) && Objects.equals(currentBalance, that.currentBalance) && Objects.equals(availableBalance, that.availableBalance) && Objects.equals(pendingBalance, that.pendingBalance);
+        return Objects.equals(accountId, that.accountId) && Objects.equals(currentBalance, that.currentBalance) && Objects.equals(availableBalance, that.availableBalance) && Objects.equals(pendingBalance, that.pendingBalance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, accountId, currentBalance, availableBalance, pendingBalance);
+        return Objects.hash(accountId, currentBalance, availableBalance, pendingBalance);
     }
 
     @Override
     public String toString() {
         return "PlaidAccountBalances{" +
-                "userId=" + userId +
-                ", accountId='" + accountId + '\'' +
+                "accountId='" + accountId + '\'' +
                 ", currentBalance=" + currentBalance +
                 ", availableBalance=" + availableBalance +
                 ", pendingBalance=" + pendingBalance +

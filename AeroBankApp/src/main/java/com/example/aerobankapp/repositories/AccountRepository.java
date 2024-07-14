@@ -23,6 +23,9 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("SELECT a FROM AccountEntity a WHERE a.acctID=:id")
     Optional<AccountEntity> findById(@Param("id") int acctID);
 
+    @Query("SELECT a FROM AccountEntity a WHERE a.user.userID =:userId")
+    List<AccountEntity> findByUserId(@Param("userId") int userId);
+
     @Query("SELECT CONCAT(ac.first_initial_segment, ac.accountType) AS shortSegment " +
             "FROM AccountEntity a " +
             "JOIN a.accountCode ac " +

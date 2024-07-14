@@ -1,11 +1,15 @@
 package com.example.aerobankapp.services.plaid;
 
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.entity.PlaidTransactionEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.PlaidAccountBalances;
+import com.example.aerobankapp.model.PlaidTransactionCriteria;
 import com.example.aerobankapp.repositories.PlaidAccountsRepository;
 import com.example.aerobankapp.services.PlaidTransactionService;
 import com.example.aerobankapp.workbench.plaid.PlaidAccountManager;
+import com.example.aerobankapp.workbench.plaid.PlaidFilterCriteriaService;
 import com.example.aerobankapp.workbench.plaid.PlaidTokenProcessorImpl;
 import com.example.aerobankapp.workbench.plaid.PlaidTransactionManagerImpl;
 import com.plaid.client.model.*;
@@ -13,6 +17,8 @@ import com.plaid.client.request.PlaidApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import retrofit2.Response;
 
@@ -29,7 +35,7 @@ public class PlaidService
     private final PlaidAccountManager plaidAccountManager;
     private final PlaidAccountsRepository plaidAccountsRepository;
     private final PlaidTransactionService plaidTransactionService;
-
+    private final PlaidFilterCriteriaService plaidFilterCriteriaService;
     private Logger LOGGER = LoggerFactory.getLogger(PlaidService.class);
 
     @Autowired
@@ -37,13 +43,15 @@ public class PlaidService
                         PlaidTransactionManagerImpl plaidTransactionManager,
                         PlaidAccountsRepository plaidAccountsRepository,
                         PlaidTransactionService plaidTransactionService,
-                        PlaidAccountManager plaidAccountManager)
+                        PlaidAccountManager plaidAccountManager,
+                        PlaidFilterCriteriaService plaidFilterCriteriaService)
     {
         this.plaidTokenProcessor = plaidTokenProcessor;
         this.plaidTransactionManager = plaidTransactionManager;
         this.plaidAccountsRepository = plaidAccountsRepository;
         this.plaidTransactionService = plaidTransactionService;
         this.plaidAccountManager = plaidAccountManager;
+        this.plaidFilterCriteriaService = plaidFilterCriteriaService;
     }
 
     public PlaidAccountsEntity buildPlaidAccountsEntity(String accessToken, String item_id, int userID, String institutionName)
@@ -149,5 +157,18 @@ public class PlaidService
     public AccountsGetResponse getAccounts(int userID) throws Exception
     {
         return plaidAccountManager.getAllAccounts(userID);
+    }
+
+    public Page<PlaidTransactionCriteria> getPaginatedFilteredTransactionsFromResponse(int userID, LocalDate startDate, LocalDate endDate, Pageable pageable) throws Exception
+    {
+        TransactionsGetResponse transactionsGetResponse = getTransactions(userID, startDate, endDate);
+        return plaidFilterCriteriaService.getPlaidTransactionCriteriaFromResponse(pageable, transactionsGetResponse);
+    }
+
+    // TODO: Test method
+    public void createAndSavePlaidTransactionEntity(UserEntity user, AccountEntity account, PlaidTransactionCriteria plaidTransactionCriteria)
+    {
+        PlaidTransactionEntity plaidTransactionEntity =  plaidTransactionService.createPlaidTransactionEntity(user, account, plaidTransactionCriteria);
+        plaidTransactionService.save(plaidTransactionEntity);
     }
 }

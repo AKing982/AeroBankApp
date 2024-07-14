@@ -37,6 +37,8 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
 
     Optional<AccountEntity> findById(int id);
 
+   List<AccountEntity> findByUserId(int userId);
+
     @Override
     List<AccountEntity> findByUserName(String user);
 

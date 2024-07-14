@@ -1,36 +1,128 @@
 package com.example.aerobankapp.workbench.plaid;
 
+import com.example.aerobankapp.converter.AccountBaseToPlaidAccountBalancesConverter;
+import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.model.PlaidTransactionCriteria;
+import com.example.aerobankapp.services.PlaidAccountsService;
+import com.example.aerobankapp.workbench.utilities.User;
+import com.example.aerobankapp.workbench.utilities.conversion.AccountBaseToAccountBalancesUtil;
+import com.plaid.client.model.AccountBase;
+import com.plaid.client.model.Transaction;
 import com.plaid.client.model.TransactionsGetResponse;
+import com.plaid.client.request.PlaidApi;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
-public class PlaidFilterCriteriaServiceImpl implements PlaidFilterCriteriaService
+public class PlaidFilterCriteriaServiceImpl extends AbstractPlaidDataManager implements PlaidFilterCriteriaService
 {
+    private AccountBaseToPlaidAccountBalancesConverter accountBaseToPlaidAccountBalancesConverter;
+
+    @Autowired
+    public PlaidFilterCriteriaServiceImpl(PlaidAccountsService plaidAccountsService, PlaidApi plaidApi) {
+        super(plaidAccountsService, plaidApi);
+        this.accountBaseToPlaidAccountBalancesConverter = new AccountBaseToPlaidAccountBalancesConverter();
+    }
 
     @Override
-    public Page<PlaidTransactionCriteria> getPlaidTransactionCriteriaFromResponse(TransactionsGetResponse transactionsGetResponse, Pageable pageable) {
-        return null;
+    public Page<PlaidTransactionCriteria> getPlaidTransactionCriteriaFromResponse(Pageable pageable, TransactionsGetResponse transactionsGetResponse) {
+
+        if(transactionsGetResponse == null || pageable == null) {
+            throw new RuntimeException("TransactionsGetResponse or pageable is null");
+        }
+
+        List<Transaction> transactions = transactionsGetResponse.getTransactions();
+
+        List<PlaidTransactionCriteria> allTransactions = convertTransactionListToCriteriaList(transactions);
+        int start = (int) pageable.getOffset();
+        int end = getPageableEnd(start, pageable, allTransactions);
+
+        List<PlaidTransactionCriteria> paginatedTransactions = getPaginatedCriteriaList(allTransactions, start, end);
+        return getPaginatedTransactionCriteria(paginatedTransactions, pageable);
     }
 
-    public List<PlaidTransactionCriteria> convertResponseToCriteria(TransactionsGetResponse transactionsGetResponse) {
-        return null;
+    private Page<PlaidTransactionCriteria> getPaginatedTransactionCriteria(List<PlaidTransactionCriteria> transactions, Pageable pageable) {
+        return new PageImpl<>(transactions, pageable, transactions.size());
     }
 
-    public List<PlaidTransactionCriteria> getPaginatedCriteriaList(List<PlaidTransactionCriteria> transactions)
+    public int getPageableEnd(int start, Pageable pageable, List<PlaidTransactionCriteria> plaidTransactionCriteriaList) {
+        return Math.min(start + pageable.getPageSize(), plaidTransactionCriteriaList.size());
+    }
+
+    public List<PlaidTransactionCriteria> convertTransactionListToCriteriaList(List<Transaction> transactions) {
+        if(transactions == null)
+        {
+            throw new RuntimeException("Transactions is null");
+        }
+
+        List<PlaidTransactionCriteria> criteriaList = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            PlaidTransactionCriteria criteria = buildPlaidTransactionCriteria(transaction);
+            criteriaList.add(criteria);
+        }
+        return criteriaList;
+    }
+
+    public List<PlaidTransactionCriteria> getPaginatedCriteriaList(List<PlaidTransactionCriteria> transactions, int start, int end)
     {
-        return null;
+        return transactions.subList(start, end);
     }
 
-    public PlaidTransactionCriteria buildPlaidTransactionCriteria()
+    public List<PlaidAccountBalances> getAccountBalancesForTransactions(TransactionsGetResponse transactionsGetResponse) {
+        List<PlaidAccountBalances> accountBalances = new ArrayList<>();
+        if(transactionsGetResponse == null || transactionsGetResponse.getTransactions() == null)
+        {
+            throw new RuntimeException("TransactionsGetResponse or getTransactions is null");
+        }
+        List<AccountBase> accounts = transactionsGetResponse.getAccounts();
+        if(accounts == null || accounts.isEmpty())
+        {
+            throw new RuntimeException("Accounts list is null or empty");
+        }
+
+        for(AccountBase accountBase : accounts)
+        {
+            if(accountBase != null)
+            {
+                PlaidAccountBalances plaidAccountBalances = accountBaseToPlaidAccountBalancesConverter.convert(accountBase);
+                if(plaidAccountBalances != null)
+                {
+                    accountBalances.add(plaidAccountBalances);
+                }
+            }
+        }
+        return accountBalances;
+    }
+
+
+    public PlaidTransactionCriteria buildPlaidTransactionCriteria(Transaction transaction)
     {
-        return null;
+        if(transaction == null)
+        {
+            throw new RuntimeException("Transaction is null");
+        }
+        PlaidTransactionCriteria plaidTransactionCriteria = new PlaidTransactionCriteria();
+        plaidTransactionCriteria.setMerchantName(transaction.getMerchantName());
+        plaidTransactionCriteria.setDescription(transaction.getOriginalDescription());
+        plaidTransactionCriteria.setDate(transaction.getDate());
+        plaidTransactionCriteria.setAuthorizedDate(transaction.getAuthorizedDate());
+        plaidTransactionCriteria.setPending(transaction.getPending());
+        plaidTransactionCriteria.setExternalAcctID(transaction.getAccountId());
+        plaidTransactionCriteria.setExternalId(transaction.getTransactionId());
+        plaidTransactionCriteria.setAmount(BigDecimal.valueOf(transaction.getAmount()));
+        return plaidTransactionCriteria;
     }
 }

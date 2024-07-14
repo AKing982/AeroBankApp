@@ -2,9 +2,12 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.PlaidTransactionEntity;
+import com.example.aerobankapp.entity.TransactionEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidAccountIDException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
+import com.example.aerobankapp.model.PlaidTransactionCriteria;
+import com.example.aerobankapp.model.TransactionCriteria;
 import com.example.aerobankapp.repositories.PlaidTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +28,24 @@ public class PlaidTransactionServiceImpl implements PlaidTransactionService
     public PlaidTransactionServiceImpl(PlaidTransactionRepository plaidTransactionRepository)
     {
         this.plaidTransactionRepository = plaidTransactionRepository;
+    }
+
+    @Override
+    public PlaidTransactionEntity createPlaidTransactionEntity(UserEntity userEntity, AccountEntity accountEntity, PlaidTransactionCriteria transactionCriteria)
+    {
+        PlaidTransactionEntity plaidTransactionEntity = new PlaidTransactionEntity();
+        plaidTransactionEntity.setAccount(accountEntity);
+        plaidTransactionEntity.setUser(userEntity);
+        plaidTransactionEntity.setMerchantName(transactionCriteria.getMerchantName());
+        plaidTransactionEntity.setCreatedAt(LocalDateTime.now());
+        plaidTransactionEntity.setAuthorizedDate(transactionCriteria.getAuthorizedDate());
+        plaidTransactionEntity.setDate(transactionCriteria.getDate());
+        plaidTransactionEntity.setExternalId(transactionCriteria.getExternalId());
+        plaidTransactionEntity.setPending(transactionCriteria.isPending());
+        plaidTransactionEntity.setName(transactionCriteria.getDescription());
+        plaidTransactionEntity.setAmount(transactionCriteria.getAmount());
+        plaidTransactionEntity.setExternalAcctID(transactionCriteria.getExternalAcctID());
+        return plaidTransactionEntity;
     }
 
     @Override

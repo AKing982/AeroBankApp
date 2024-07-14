@@ -1,15 +1,26 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.converter.AccountBaseToPlaidAccountConverter;
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.AccountNotFoundException;
+import com.example.aerobankapp.exceptions.UserNotFoundException;
 import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.model.PlaidAccountBalances;
+import com.example.aerobankapp.model.PlaidTransaction;
+import com.example.aerobankapp.model.PlaidTransactionCriteria;
+import com.example.aerobankapp.services.AccountService;
+import com.example.aerobankapp.services.TransactionStatementService;
+import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.plaid.PlaidService;
 import com.plaid.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +37,21 @@ import java.util.stream.Collectors;
 public class PlaidController {
 
     private final PlaidService plaidService;
+    private final UserService userService;
+    private final AccountService accountService;
+    private final TransactionStatementService transactionStatementService;
     private Logger LOGGER = LoggerFactory.getLogger(PlaidController.class);
 
     @Autowired
-    public PlaidController(PlaidService plaidService)
+    public PlaidController(PlaidService plaidService,
+                           UserService userService,
+                           AccountService accountService,
+                           TransactionStatementService transactionStatementService)
     {
         this.plaidService = plaidService;
+        this.userService = userService;
+        this.accountService = accountService;
+        this.transactionStatementService = transactionStatementService;
     }
 
 
@@ -132,14 +152,37 @@ public class PlaidController {
     @GetMapping("/transactions")
     public ResponseEntity<?> getTransactions(@RequestParam int userId,
                                              @RequestParam @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate startDate,
-                                             @RequestParam @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
+                                             @RequestParam @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                             @RequestParam int pageSize) throws Exception {
         if(userId < 1 || startDate == null || endDate == null)
         {
             return ResponseEntity.badRequest().body("Invalid request");
         }
 
-       return ResponseEntity.ok().body(plaidService.getTransactions(userId, startDate, endDate));
+        Pageable pageable = PageRequest.of(0, pageSize);
+
+        List<Transaction> transactionsGetResponse = plaidService.getTransactions(userId, startDate, endDate).getTransactions();
+
+        Page<PlaidTransactionCriteria> transactions = plaidService.getPaginatedFilteredTransactionsFromResponse(userId, startDate, endDate, pageable);
+        List<PlaidTransactionCriteria> plaidTransactionCriteriaList = transactions.stream().toList();
+        UserEntity user = userService.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("UserId: " + userId + " not found."));
+
+        List<AccountEntity> accounts = accountService.findByUserId(user.getUserID());
+        //TODO: Store transactions to plaid Transactions table
+        for(PlaidTransactionCriteria plaidTransactionCriteria : plaidTransactionCriteriaList)
+        {
+            for(AccountEntity accountEntity : accounts)
+            {
+                plaidService.createAndSavePlaidTransactionEntity(user, accountEntity, plaidTransactionCriteria);
+            }
+        }
+
+        //TODO: Store PlaidTransactionCriteria transactions to TransactionStatement table
+
+       return ResponseEntity.ok().body(plaidService.getPaginatedFilteredTransactionsFromResponse(userId, startDate, endDate, pageable));
     }
+
 
 
     @PostMapping("/exchange_public_token")

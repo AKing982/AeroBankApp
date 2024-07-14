@@ -92,6 +92,11 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    public List<AccountEntity> findByUserId(int userId) {
+        return accountRepository.findByUserId(userId);
+    }
+
+    @Override
     public List<AccountEntity> findByUserName(String user) {
        return accountRepository.findByUserName(user);
     }
