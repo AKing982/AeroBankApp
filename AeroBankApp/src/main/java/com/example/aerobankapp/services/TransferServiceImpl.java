@@ -7,6 +7,8 @@ import com.example.aerobankapp.exceptions.NullTransferEntityFoundException;
 import com.example.aerobankapp.exceptions.StatusNotFoundException;
 import com.example.aerobankapp.repositories.TransferRepository;
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class TransferServiceImpl implements TransferService
 {
 
     private final TransferRepository transferRepository;
+    private final Logger LOGGER = LoggerFactory.getLogger(TransferServiceImpl.class);
 
     @Autowired
     public TransferServiceImpl(TransferRepository transferRepository)
@@ -40,6 +43,7 @@ public class TransferServiceImpl implements TransferService
         if(obj == null){
             throw new NullTransferEntityFoundException("Caught Null Transfer Entity.");
         }
+        LOGGER.info("Saving Transfer Entity: {}", obj.toString());
         transferRepository.save(obj);
     }
 

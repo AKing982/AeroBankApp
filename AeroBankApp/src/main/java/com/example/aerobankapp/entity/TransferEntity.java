@@ -45,12 +45,23 @@ public class TransferEntity
     private AccountEntity toAccount;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="transactionCriteriaID")
-    private TransactionCriteriaEntity transactionCriteria;
+    @JoinColumn(name="criteriaID")
+    private TransactionCriteriaEntity criteria;
 
     @Column(name="transferType")
     @Enumerated(EnumType.STRING)
     private TransferType transferType;
 
-
+    @Override
+    public String toString() {
+        return "TransferEntity{" +
+                "transferID=" + transferID +
+                ", toUser=" + toUser +
+                ", fromUser=" + fromUser +
+                ", fromAccount=" + fromAccount +
+                ", toAccount=" + toAccount +
+                ", criteria=" + criteria +
+                ", transferType=" + transferType +
+                '}';
+    }
 }

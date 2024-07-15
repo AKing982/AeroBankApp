@@ -51,8 +51,8 @@ public class TransactionCriteriaEntity {
     @Column(name="posted")
     private LocalDate posted;
 
-    @Column(name="notificationEnabled")
-    private boolean notificationEnabled;
+    @Column(name="notificationsEnabled")
+    private boolean notificationsEnabled;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="transactionScheduleID")

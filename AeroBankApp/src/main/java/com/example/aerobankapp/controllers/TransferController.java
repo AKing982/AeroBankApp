@@ -3,11 +3,10 @@ package com.example.aerobankapp.controllers;
 import com.example.aerobankapp.converter.TransferConverter;
 import com.example.aerobankapp.dto.TransferDTO;
 import com.example.aerobankapp.entity.*;
-import com.example.aerobankapp.services.AccountService;
-import com.example.aerobankapp.services.TransferService;
-import com.example.aerobankapp.services.UserService;
+import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.utilities.TransactionStatus;
 import com.example.aerobankapp.workbench.utilities.TransferStatus;
+import com.example.aerobankapp.workbench.utilities.conversion.TransferMapper;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,78 +27,30 @@ import java.time.LocalDate;
 public class TransferController
 {
     private TransferService transferService;
-    private AccountService accountService;
-    private UserService userService;
+    private TransferMapper transferMapper;
 
     private Logger LOGGER = LoggerFactory.getLogger(TransferController.class);
 
     @Autowired
     public TransferController(TransferService transferService,
-                              AccountService accountService,
-                              UserService userService){
+                              TransferMapper transferMapper){
         this.transferService = transferService;
-        this.accountService = accountService;
-        this.userService = userService;
+        this.transferMapper = transferMapper;
     }
 
     @PostMapping("/save")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> saveTransfer(@RequestBody @Valid TransferDTO transferDTO)
-    {
+    public ResponseEntity<?> saveTransfer(@RequestBody @Valid TransferDTO transferDTO) {
+        if (transferDTO == null){
+            return ResponseEntity.badRequest().body("TransferDTO is null");
+        }
+
         LOGGER.info("Transfer DTO type: " + transferDTO.transferType());
-        TransferEntity transfer = buildTransferEntity(transferDTO);
+        TransferEntity transfer = transferMapper.fromDTO(transferDTO);
 
         transferService.save(transfer);
 
-        return ResponseEntity.ok("Transfer Request submitted successfully.");
+       return ResponseEntity.ok("Transfer Request submitted successfully.");
     }
 
-    private TransactionCriteriaEntity buildTransactionCriteria(TransferDTO transferDTO, TransactionScheduleCriteriaEntity criteria){
-        TransactionCriteriaEntity transactionCriteria = new TransactionCriteriaEntity();
-        transactionCriteria.setAmount(transferDTO.transferAmount());
-        transactionCriteria.setDescription(transferDTO.transferDescription());
-        transactionCriteria.setPosted(LocalDate.now());
-        transactionCriteria.setTransactionScheduleCriteria(criteria);
-        transactionCriteria.setNotificationEnabled(transactionCriteria.isNotificationEnabled());
-        transactionCriteria.setTransactionStatus(TransactionStatus.PENDING);
-        return transactionCriteria;
-    }
-
-    private TransactionScheduleCriteriaEntity buildTransactionSchedule(TransferDTO transferDTO){
-        TransactionScheduleCriteriaEntity transactionScheduleCriteria = new TransactionScheduleCriteriaEntity();
-        transactionScheduleCriteria.setScheduledDate(transferDTO.transferDate());
-        transactionScheduleCriteria.setScheduledTime(transferDTO.transferTime());
-        return transactionScheduleCriteria;
-    }
-
-    private TransferEntity buildTransferEntity(TransferDTO transferDTO){
-        TransferEntity transfer = new TransferEntity();
-        transfer.setTransferID(transferDTO.transferID()); // Make sure getters are properly named
-
-        TransactionScheduleCriteriaEntity transactionScheduleCriteria = buildTransactionSchedule(transferDTO);
-        TransactionCriteriaEntity transactionCriteria = buildTransactionCriteria(transferDTO, transactionScheduleCriteria);
-        transfer.setTransactionCriteria(transactionCriteria);
-
-        // Fetch and set the user entities
-        UserEntity toUser = userService.findById(transferDTO.toUserID())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid toUserID: " + transferDTO.toUserID()));
-        UserEntity fromUser = userService.findById(transferDTO.fromUserID())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid fromUserID: " + transferDTO.fromUserID()));
-        transfer.setToUser(toUser);
-        transfer.setFromUser(fromUser);
-
-        // Fetch and set the account entities
-        AccountEntity toAccount = accountService.findById(transferDTO.toAccountID())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid toAccountID: " + transferDTO.toAccountID()));
-        AccountEntity fromAccount = accountService.findById(transferDTO.fromAccountID())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid fromAccountID: " + transferDTO.fromAccountID()));
-
-        transfer.setToAccount(toAccount);
-        transfer.setFromAccount(fromAccount);
-
-        transfer.setTransferType(transferDTO.transferType());
-        LOGGER.info("Transfer Type: " + transfer.getTransferType());
-
-        return transfer;
-    }
 }

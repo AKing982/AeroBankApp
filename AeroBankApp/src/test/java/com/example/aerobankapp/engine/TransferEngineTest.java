@@ -478,8 +478,8 @@ class TransferEngineTest {
         transfer.setFromAccountID(entity.getFromAccount().getAcctID());
         transfer.setFromUserID(entity.getFromUser().getUserID());
         transfer.setToUserID(entity.getToUser().getUserID());
-        transfer.setAmount(entity.getTransactionCriteria().getAmount());
-        transfer.setDescription(entity.getTransactionCriteria().getDescription());
+        transfer.setAmount(entity.getCriteria().getAmount());
+        transfer.setDescription(entity.getCriteria().getDescription());
         transfer.setPosted(LocalDate.now());
         transfer.setToAccountID(entity.getToAccount().getAcctID());
       //  transfer.setToAccountCode(entity.getToAccount().getAccountCode());

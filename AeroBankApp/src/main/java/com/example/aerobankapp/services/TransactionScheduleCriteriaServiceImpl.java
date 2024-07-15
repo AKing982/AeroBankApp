@@ -1,6 +1,8 @@
 package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.TransactionScheduleCriteriaEntity;
+import com.example.aerobankapp.repositories.TransactionScheduleCriteriaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,6 +11,13 @@ import java.util.Optional;
 @Service
 public class TransactionScheduleCriteriaServiceImpl implements TransactionScheduleCriteriaService
 {
+    private TransactionScheduleCriteriaRepository transactionScheduleCriteriaRepository;
+
+    @Autowired
+    public TransactionScheduleCriteriaServiceImpl(TransactionScheduleCriteriaRepository transactionScheduleCriteriaRepository)
+    {
+        this.transactionScheduleCriteriaRepository = transactionScheduleCriteriaRepository;
+    }
 
     @Override
     public List<TransactionScheduleCriteriaEntity> findAll() {
@@ -17,7 +26,7 @@ public class TransactionScheduleCriteriaServiceImpl implements TransactionSchedu
 
     @Override
     public void save(TransactionScheduleCriteriaEntity obj) {
-
+        transactionScheduleCriteriaRepository.save(obj);
     }
 
     @Override
