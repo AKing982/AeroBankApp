@@ -31,10 +31,9 @@ public class PlaidTransactionServiceImpl implements PlaidTransactionService
     }
 
     @Override
-    public PlaidTransactionEntity createPlaidTransactionEntity(UserEntity userEntity, AccountEntity accountEntity, PlaidTransactionCriteria transactionCriteria)
+    public PlaidTransactionEntity createPlaidTransactionEntity(UserEntity userEntity, PlaidTransactionCriteria transactionCriteria)
     {
         PlaidTransactionEntity plaidTransactionEntity = new PlaidTransactionEntity();
-        plaidTransactionEntity.setAccount(accountEntity);
         plaidTransactionEntity.setUser(userEntity);
         plaidTransactionEntity.setMerchantName(transactionCriteria.getMerchantName());
         plaidTransactionEntity.setCreatedAt(LocalDateTime.now());
@@ -66,7 +65,6 @@ public class PlaidTransactionServiceImpl implements PlaidTransactionService
 
     private void assertPlaidTransactionParametersAreNull(PlaidTransactionEntity obj)
     {
-        Assert.isNull(obj.getAccount(), "Account cannot be null");
         Assert.isNull(obj.getAmount(), "Amount cannot be null");
         Assert.isNull(obj.getId(), "Id cannot be null");
         Assert.isNull(obj.getDate(), "Date cannot be null");
@@ -116,19 +114,6 @@ public class PlaidTransactionServiceImpl implements PlaidTransactionService
         }
     }
 
-    @Override
-    public List<PlaidTransactionEntity> getTransactionsByAccount(AccountEntity account) {
-        if(account == null)
-        {
-            throw new IllegalArgumentException("Invalid AccountEntity");
-        }
-
-        if(account.getAcctID() < 1)
-        {
-            throw new InvalidAccountIDException("Account ID Is invalid");
-        }
-        return plaidTransactionRepository.findByAccountId(account.getAcctID());
-    }
 
     @Override
     public List<PlaidTransactionEntity> getPendingTransactionsByUser(UserEntity user) {

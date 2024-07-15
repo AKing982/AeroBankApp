@@ -14,10 +14,8 @@ import java.util.Optional;
 
 public interface PlaidTransactionService extends ServiceDAOModel<PlaidTransactionEntity>
 {
-    PlaidTransactionEntity createPlaidTransactionEntity(UserEntity user, AccountEntity account, PlaidTransactionCriteria plaidTransactionCriteria);
+    PlaidTransactionEntity createPlaidTransactionEntity(UserEntity user, PlaidTransactionCriteria plaidTransactionCriteria);
     List<PlaidTransactionEntity> getTransactionsByUser(UserEntity user);
-
-    List<PlaidTransactionEntity> getTransactionsByAccount(AccountEntity account);
 
     List<PlaidTransactionEntity> getPendingTransactionsByUser(UserEntity user);
     Optional<PlaidTransactionEntity> getTransactionByExternalAcctId(String externalAcctId);

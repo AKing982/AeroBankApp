@@ -149,8 +149,8 @@ public class PlaidController {
      * @return A ResponseEntity object representing the result of the request.
      * @throws Exception if an error occurs while retrieving the transactions.
      */
-    @GetMapping("/transactions")
-    public ResponseEntity<?> getTransactions(@RequestParam int userId,
+    @GetMapping("/filtered/transactions")
+    public ResponseEntity<?> getFilteredTransactions(@RequestParam int userId,
                                              @RequestParam @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate startDate,
                                              @RequestParam @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate endDate,
                                              @RequestParam int pageSize) throws Exception {
@@ -168,19 +168,23 @@ public class PlaidController {
         UserEntity user = userService.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("UserId: " + userId + " not found."));
 
-        List<AccountEntity> accounts = accountService.findByUserId(user.getUserID());
+//        List<AccountEntity> accounts = accountService.findByUserId(user.getUserID());
         //TODO: Store transactions to plaid Transactions table
         for(PlaidTransactionCriteria plaidTransactionCriteria : plaidTransactionCriteriaList)
         {
-            for(AccountEntity accountEntity : accounts)
-            {
-                plaidService.createAndSavePlaidTransactionEntity(user, accountEntity, plaidTransactionCriteria);
-            }
+            plaidService.createAndSavePlaidTransactionEntity(user, plaidTransactionCriteria);
         }
 
         //TODO: Store PlaidTransactionCriteria transactions to TransactionStatement table
 
        return ResponseEntity.ok().body(plaidService.getPaginatedFilteredTransactionsFromResponse(userId, startDate, endDate, pageable));
+    }
+
+    @GetMapping("/transactions")
+    public ResponseEntity<?> getTransactions(@RequestParam int userId,
+                                             @RequestParam LocalDate startDate,
+                                             @RequestParam LocalDate endDate) throws Exception {
+        return ResponseEntity.ok().body(plaidService.getTransactions(userId, startDate, endDate));
     }
 
 

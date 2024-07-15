@@ -21,9 +21,6 @@ public interface PlaidTransactionRepository extends JpaRepository<PlaidTransacti
     @Query("SELECT e FROM PlaidTransactionEntity e WHERE e.user.userID =:id")
     List<PlaidTransactionEntity> findByUserId(@Param("id") int userId);
 
-    @Query("SELECT e FROM PlaidTransactionEntity e WHERE e.account.acctID =:id")
-    List<PlaidTransactionEntity> findByAccountId(@Param("id") int accountId);
-
     @Query("SELECT e FROM PlaidTransactionEntity e WHERE e.externalAcctID =:id")
     Optional<PlaidTransactionEntity> findByExternalAcctID(@Param("id") String externalAcctID);
 

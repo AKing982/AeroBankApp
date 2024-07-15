@@ -166,9 +166,9 @@ public class PlaidService
     }
 
     // TODO: Test method
-    public void createAndSavePlaidTransactionEntity(UserEntity user, AccountEntity account, PlaidTransactionCriteria plaidTransactionCriteria)
+    public void createAndSavePlaidTransactionEntity(UserEntity user, PlaidTransactionCriteria plaidTransactionCriteria)
     {
-        PlaidTransactionEntity plaidTransactionEntity =  plaidTransactionService.createPlaidTransactionEntity(user, account, plaidTransactionCriteria);
+        PlaidTransactionEntity plaidTransactionEntity =  plaidTransactionService.createPlaidTransactionEntity(user, plaidTransactionCriteria);
         plaidTransactionService.save(plaidTransactionEntity);
     }
 }

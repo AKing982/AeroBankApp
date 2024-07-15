@@ -150,42 +150,6 @@ class PlaidTransactionServiceImplTest {
         assertNotNull(actual);
     }
 
-    @Test
-    @DisplayName("Test GetTransactionsByAccount when account is null, then throw exception")
-    public void testGetTransactionsByAccount_whenAccountIsNull_thenThrowException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            plaidTransactionService.getTransactionsByAccount(null);
-        });
-    }
-
-    @Test
-    @DisplayName("Test GetTransactionsByAccount when account is valid return plaid transactions")
-    public void testGetTransactionsByAccount_whenAccountIsValid_PlaidTransactions_thenReturnPlaidTransactions() {
-        List<PlaidTransactionEntity> plaidTransactionEntities = new ArrayList<>();
-        plaidTransactionEntities.add(createPlaidTransactionEntity());
-
-        when(plaidTransactionRepository.findByAccountId(1)).thenReturn(plaidTransactionEntities);
-
-        List<PlaidTransactionEntity> actual = plaidTransactionService.getTransactionsByAccount(createAccountEntity());
-        assertEquals(1, actual.size());
-        assertEquals(createPlaidTransactionEntity().getAccount().getAcctID(), actual.get(0).getAccount().getAcctID());
-        assertEquals(createPlaidTransactionEntity().getAmount(), actual.get(0).getAmount());
-        assertEquals(createPlaidTransactionEntity().getDate(), actual.get(0).getDate());
-        assertEquals(createPlaidTransactionEntity().getId(), actual.get(0).getId());
-        assertEquals(createPlaidTransactionEntity().getName(), actual.get(0).getName());
-        assertEquals(createPlaidTransactionEntity().getMerchantName(), actual.get(0).getMerchantName());
-        assertNotNull(actual);
-    }
-
-    @Test
-    @DisplayName("Test GetTransactionsByAccount when Account ID is invalid, then throw exception")
-    public void testGetTransactionsByAccount_whenAcctIDIsInvalid_thenThrowException() {
-        int acctID = -1;
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            plaidTransactionService.getTransactionsByAccount(createAccountEntityWithInvalidAcctID());;
-        });
-    }
 
     private UserEntity createUserEntityWithInvalidUserId()
     {
@@ -233,7 +197,6 @@ class PlaidTransactionServiceImplTest {
         plaidTransactionEntity.setId(1L);
         plaidTransactionEntity.setDate(LocalDate.of(2024, 6, 1));
         plaidTransactionEntity.setAmount(null);
-        plaidTransactionEntity.setAccount(accountEntity);
         plaidTransactionEntity.setName("Test Transaction #33333");
         plaidTransactionEntity.setPending(false);
         plaidTransactionEntity.setUser(null);
@@ -251,7 +214,6 @@ class PlaidTransactionServiceImplTest {
         plaidTransactionEntity.setId(1L);
         plaidTransactionEntity.setDate(LocalDate.of(2024, 6, 1));
         plaidTransactionEntity.setAmount(BigDecimal.valueOf(200));
-        plaidTransactionEntity.setAccount(createAccountEntity());
         plaidTransactionEntity.setName("Test Transaction #33333");
         plaidTransactionEntity.setPending(false);
         plaidTransactionEntity.setUser(createUserEntity());
@@ -269,7 +231,6 @@ class PlaidTransactionServiceImplTest {
         plaidTransactionEntity.setId(1L);
         plaidTransactionEntity.setDate(null);
         plaidTransactionEntity.setAmount(null);
-        plaidTransactionEntity.setAccount(null);
         plaidTransactionEntity.setName(null);
         plaidTransactionEntity.setPending(false);
         plaidTransactionEntity.setUser(null);
