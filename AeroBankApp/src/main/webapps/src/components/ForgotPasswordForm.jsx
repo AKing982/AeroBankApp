@@ -38,7 +38,7 @@ export default function ForgotPasswordForm()
     const [dialogTitle, setDialogTitle] = useState('');
     const [dialogAction, setDialogAction] = useState(() => () => setOpenDialog(false));
 
-    const handleCloseDialog = () => {
+    const handleCloseDialog = (): void => {
         setOpenDialog(false);
     };
 
@@ -315,6 +315,93 @@ export default function ForgotPasswordForm()
 
         }
     };
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        if (!isUsernameVerified) {
+            const userExists = await verifyUsername();
+            if (userExists) {
+                const userEmail = await fetchUsersEmail(username);
+                if (userEmail) {
+                    const generatedCode = await generateValidationCode();
+                    setGeneratedValidationCode(generatedCode);  // Store the generated code in state
+                    const emailSent = await sendValidationCodeToEmail(generatedCode, userEmail);
+                    if (emailSent) {
+                        setIsUsernameVerified(true);
+                        setShowVerificationField(true);
+                        console.log("Verification code sent to " + userEmail);
+                    } else {
+                        console.error("Failed to send verification email.");
+                    }
+                } else {
+                    console.error('User email not found');
+                }
+            } else {
+                setOpenDialog(true);
+                setDialogTitle("UserName Not Found");
+                setDialogMessage("We couldn't find the username in our system. Please try again with another user.");
+                setDialogBtnTitle("Try again.");
+                console.error('Username does not exist');
+            }
+        } else if (showVerificationField && !isVerificationCodeValid) {
+            const codeIsValid = checkValidationCode(verificationCode, generatedValidationCode);
+            console.log('Code is valid: ', codeIsValid);
+            if (codeIsValid) {
+                setIsVerificationCodeValid(true);
+                setShowPasswordFields(true);
+            } else {
+                setOpenDialog(true);
+                setDialogTitle("Verification Failed");
+                setDialogMessage("We couldn’t verify your code. Please check your email and make sure it’s correct.");
+                setDialogBtnTitle("Try Again");
+                console.error('Invalid verification code');
+            }
+        } else if (isVerificationCodeValid) {
+
+            if (newPassword === confirmPassword) {
+                if(!validatePasswordMeetsRequirements(newPassword)){
+                    setOpenDialog(true);
+                    setDialogBtnTitle("Try Again");
+                    return;
+                }
+                const currentMatchesExistingPassword = await validateNewPassword(newPassword);
+                if(!currentMatchesExistingPassword){
+                    const passwordResetSuccess = await sendPasswordResetToServer(newPassword);
+                    if(passwordResetSuccess){
+                        console.log('Password reset was a success');
+                        setOpenDialog(true);
+                        setDialogTitle("Password Reset Successfully");
+                        setDialogMessage("Your password has been successfully reset. Please wait while we redirect you to the login page.");
+                        setDialogBtnTitle("Go to login.");
+                        setDialogAction(() => handleGoToLogin());
+                    }else{
+                        setOpenDialog(true);
+                        setDialogTitle("Reset Failed");
+                        setDialogMessage("Failed to reset your password. Please try again or contact support if the problem persists.");
+                        setDialogBtnTitle("Try Again");
+                        setDialogAction(() => handleCloseDialog());
+                        return;
+                    }
+                }else{
+                    setOpenDialog(true);
+                    setDialogTitle("Use a different Password");
+                    setDialogMessage("Your new password cannot be the same as your current password. Please choose a different password to ensure your account security.");
+                    setDialogBtnTitle("Try again.");
+                    return;
+                }
+
+            } else if(newPassword !== confirmPassword){
+                setOpenDialog(true);
+                setDialogTitle("Password Mismatch");
+                setDialogMessage("The new password and confirm password do not match. Please try again.");
+                setDialogBtnTitle("Try Again");
+                return; // Stop further execution.
+
+            }
+
+        }
+    };
+
     return (
         <Container component="main" maxWidth="false" sx={{
             height: '100vh',
