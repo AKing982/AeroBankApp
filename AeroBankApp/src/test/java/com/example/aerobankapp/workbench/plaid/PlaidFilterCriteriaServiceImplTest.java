@@ -1,7 +1,9 @@
 package com.example.aerobankapp.workbench.plaid;
 
+import com.example.aerobankapp.converter.AccountBaseToPlaidAccountBalancesConverter;
 import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.model.PlaidTransactionCriteria;
+import com.example.aerobankapp.services.PlaidAccountsService;
 import com.plaid.client.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;

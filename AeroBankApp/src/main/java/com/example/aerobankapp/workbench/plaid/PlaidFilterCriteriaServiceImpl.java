@@ -27,13 +27,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PlaidFilterCriteriaServiceImpl extends AbstractPlaidDataManager implements PlaidFilterCriteriaService
+public class PlaidFilterCriteriaServiceImpl implements PlaidFilterCriteriaService
 {
     private AccountBaseToPlaidAccountBalancesConverter accountBaseToPlaidAccountBalancesConverter;
 
-    @Autowired
-    public PlaidFilterCriteriaServiceImpl(PlaidAccountsService plaidAccountsService, PlaidApi plaidApi) {
-        super(plaidAccountsService, plaidApi);
+    public PlaidFilterCriteriaServiceImpl() {
         this.accountBaseToPlaidAccountBalancesConverter = new AccountBaseToPlaidAccountBalancesConverter();
     }
 
