@@ -31,5 +31,16 @@ public interface TransferService extends ServiceDAOModel<TransferEntity>
     List<TransferEntity> getTransfersByStatus(TransferStatus status);
 
     List<TransferEntity> getSameUserTransferByAccount(int acctID);
-    boolean cancelTransfer(Long transferID);
+
+    boolean updateTransfer(TransferEntity obj);
+
+    Optional<TransferEntity> getTransferById(Long id);
+
+    List<TransferEntity> getTransfersByFromAccount(int acctID);
+
+    List<TransferEntity> getTransfersByToAccount(int acctID);
+
+    List<TransferEntity> getTransfersByUserId(int userId);
+
+    boolean deleteTransferById(Long id);
 }

@@ -111,9 +111,34 @@ public class TransferServiceImpl implements TransferService
         return null;
     }
 
-
     @Override
-    public boolean cancelTransfer(Long transferID) {
+    public boolean updateTransfer(TransferEntity obj) {
         return false;
     }
+
+    @Override
+    public Optional<TransferEntity> getTransferById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<TransferEntity> getTransfersByFromAccount(int acctID) {
+        return List.of();
+    }
+
+    @Override
+    public List<TransferEntity> getTransfersByToAccount(int acctID) {
+        return List.of();
+    }
+
+    @Override
+    public List<TransferEntity> getTransfersByUserId(int userId) {
+        return List.of();
+    }
+
+    @Override
+    public boolean deleteTransferById(Long id) {
+        return false;
+    }
+
 }

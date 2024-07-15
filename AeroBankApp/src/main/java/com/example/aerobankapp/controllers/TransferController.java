@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
@@ -45,12 +42,43 @@ public class TransferController
             return ResponseEntity.badRequest().body("TransferDTO is null");
         }
 
-        LOGGER.info("Transfer DTO type: " + transferDTO.transferType());
+        LOGGER.info("Transfer DTO type: {}" , transferDTO.transferType());
         TransferEntity transfer = transferMapper.fromDTO(transferDTO);
 
         transferService.save(transfer);
 
        return ResponseEntity.ok("Transfer Request submitted successfully.");
+    }
+
+    @GetMapping("/{transferID}")
+    @PreAuthorize("isAuthenticated")
+    public ResponseEntity<?> findTransferById(@PathVariable("transferID") Long transferID) {
+        return ResponseEntity.badRequest().body("Unable to find transfer with ID: " + transferID);
+    }
+
+    @DeleteMapping("/delete/{transferID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> deleteTransfer(@PathVariable("transferID") Long transferID, @PathVariable("userID") int userID) {
+        return ResponseEntity.badRequest().body("Unable to delete transfer with ID: " + transferID);
+    }
+
+    @GetMapping("/user/{userID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> findTransfersByUserID(@PathVariable("userID") int userID)
+    {
+        return ResponseEntity.badRequest().body("Unable to find transfers with user ID: " + userID);
+    }
+
+    @GetMapping("/account/{acctID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> findTransfersByAcctID(@PathVariable("acctID") int acctID){
+        return ResponseEntity.badRequest().body("Transfer not found");
+    }
+
+    @PutMapping("/update/{transferID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> updateTransfer(@PathVariable("transferID") Long transferID, @RequestBody @Valid TransferDTO transferDTO) {
+        return ResponseEntity.badRequest().body("Unable to update transfer with ID: " + transferID);
     }
 
 }

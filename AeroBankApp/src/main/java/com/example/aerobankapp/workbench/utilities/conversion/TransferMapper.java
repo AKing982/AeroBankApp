@@ -38,33 +38,27 @@ public class TransferMapper {
 
     public TransferEntity fromDTO(TransferDTO transferDTO) {
         TransferEntity transfer = new TransferEntity();
+        configureCriteria(transfer, transferDTO);
+        configureUsers(transfer, transferDTO);
+        configureAccounts(transferDTO, transfer);
+        transfer.setTransferType(transfer.getTransferType());
         transfer.setTransferID(transferDTO.transferID());
+        return transfer;
+    }
 
-        TransactionScheduleCriteriaEntity scheduleCriteria = buildTransactionSchedule(transferDTO);
-        saveTransactionScheduleCriteria(scheduleCriteria);
-
-        // Build the confirmationNumber
-        Integer confirmationNumber = confirmationNumberGenerator.generateConfirmationNumber().getConfirmationValue();
-
-        TransactionCriteriaEntity transactionCriteriaEntity = buildTransactionCriteria(transferDTO, scheduleCriteria, confirmationNumber);
-        saveTransactionCriteria(transactionCriteriaEntity);
-
-        transfer.setCriteria(transactionCriteriaEntity);
-
-        UserEntity toUser = getUserEntityFromDatabase(transferDTO.toUserID());
-        UserEntity fromUser = getUserEntityFromDatabase(transferDTO.fromUserID());
-
-        transfer.setToUser(toUser);
-        transfer.setFromUser(fromUser);
-
+    private void configureAccounts(TransferDTO transferDTO, TransferEntity transferEntity) {
         AccountEntity toAccount = getAccountEntityFromDatabase(transferDTO.toAccountID());
         AccountEntity fromAccount = getAccountEntityFromDatabase(transferDTO.fromAccountID());
+        transferEntity.setToAccount(toAccount);
+        transferEntity.setFromAccount(fromAccount);
+    }
 
-        transfer.setToAccount(toAccount);
-        transfer.setFromAccount(fromAccount);
+    private void configureUsers(TransferEntity transferEntity, TransferDTO transferDTO) {
+        UserEntity fromUser = getUserEntityFromDatabase(transferDTO.fromUserID());
+        UserEntity toUser = getUserEntityFromDatabase(transferDTO.toUserID());
 
-        transfer.setTransferType(transferDTO.transferType());
-        return transfer;
+        transferEntity.setFromUser(fromUser);
+        transferEntity.setToUser(toUser);
     }
 
     private void configureCriteria(TransferEntity transferEntity, TransferDTO transferDTO) {
