@@ -1,6 +1,6 @@
-import axios, {AxiosResponse} from "axios";
 
-interface IUserData {
+
+export interface IUserData {
     email: string;
 }
 
@@ -8,7 +8,8 @@ interface IUserData {
 const validateUserName = async(username: string) : Promise<boolean | undefined> => {
     try
     {
-        const validResponse: AxiosResponse<any> = await axios.get(`http://localhost:8080/AeroBankApp/api/users/find/${username}`)
+        const axios = require('axios');
+        const validResponse = await axios.get(`http://localhost:8080/AeroBankApp/api/users/find/${username}`)
         if(validResponse.status === 200 || validResponse.status === 201) {
             return validResponse.data.exists;
         }
@@ -19,6 +20,7 @@ const validateUserName = async(username: string) : Promise<boolean | undefined> 
 
 const generateValidationCode = async() : Promise<boolean | undefined> => {
     try {
+        const axios = require('axios');
         const response = await axios.get(`http://localhost:8080/AeroBankApp/api/validationCode/generate`)
         if(response.status === 200 || response.status === 201) {
             return response.data;
@@ -30,7 +32,8 @@ const generateValidationCode = async() : Promise<boolean | undefined> => {
 
 const fetchUsersEmail = async(username: string) : Promise<string | undefined> => {
     try{
-        const response = await axios.get<IUserData>(`http://localhost:8080/AeroBankApp/api/users/email/${username}`)
+        const axios = getAxios();
+        const response = await axios.get(`http://localhost:8080/AeroBankApp/api/users/email/${username}`)
         if(response.status === 200 || response.status === 201){
             return response.data.email;
         }
@@ -51,6 +54,7 @@ const sendPasswordResetToServer = async(newPassword: string, user: string) : Pro
 
     const request : {password: string, user: string} = buildPasswordResetRequest(newPassword, user);
     try{
+        const axios = getAxios();
         const response = await axios.put(`http://localhost:8080/AeroBankApp/api/users/update-password`, request);
         if(response.status === 200 || response.status === 201){
             return true;
@@ -64,8 +68,13 @@ const sendPasswordResetToServer = async(newPassword: string, user: string) : Pro
     }
 };
 
+const getAxios = () => {
+    return require('axios');
+}
+
 const sendValidationCodeToEmail = async(code: string, email: string) : Promise<boolean> => {
     try{
+        const axios = getAxios();
         const response = await axios.post(`http://localhost:8080/AeroBankApp/api/validationCode/send-verification-email`, {
             email: email, // Email address to which the verification code is sent
             code: code   // Verification code to include in the email

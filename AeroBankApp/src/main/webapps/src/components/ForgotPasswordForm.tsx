@@ -1,6 +1,5 @@
 import {useNavigate} from "react-router-dom";
 import React, {useState, FunctionComponent} from "react";
-import axios, {AxiosResponse} from "axios";
 import {Box, Container} from "@mui/system";
 // @ts-ignore
 import backgroundImage from "./images/pexels-julius-silver-753325.jpg";
@@ -58,7 +57,8 @@ const ForgotPasswordForm: FunctionComponent = () =>
        setIsVerificationCodeValid(true);
    }
 
-   const handleCancel = () : void => {
+   const handleCancel = (event: React.MouseEvent<HTMLButtonElement>) : void => {
+       event.preventDefault();
        setShowVerification(false);
        setUserName('');
        setVerificationCode('');
@@ -75,7 +75,7 @@ const ForgotPasswordForm: FunctionComponent = () =>
         setShowPassword(!showPassword);
     };
 
-    const handleMouseDownPassword = (event) : void => {
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) : void => {
         event.preventDefault();
     };
 
@@ -127,7 +127,6 @@ const ForgotPasswordForm: FunctionComponent = () =>
 
    const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) : Promise<void> => {
        event.preventDefault();
-
 
        if (!isUsernameVerified) {
            const userExists = await apiService.verifyUsername();
@@ -365,16 +364,6 @@ const ForgotPasswordForm: FunctionComponent = () =>
                     </Box>
                 </Box>
             </Box>
-            {/*<Snackbar*/}
-            {/*    open={openSnackbar}*/}
-            {/*    autoHideDuration={6000}*/}
-            {/*    onClose={handleCloseSnackBar}*/}
-            {/*    message="Alert"*/}
-            {/*    >*/}
-            {/*    <Alert onClose={handleCloseSnackBar} severity={snackBarSeverity} variant="filled" sx={{width: '100%'}}>*/}
-            {/*        {snackbarMessage}*/}
-            {/*    </Alert>*/}
-            {/*</Snackbar>*/}
             <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
