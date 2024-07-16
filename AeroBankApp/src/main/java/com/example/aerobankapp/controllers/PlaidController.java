@@ -95,6 +95,11 @@ public class PlaidController {
                 return ResponseEntity.noContent().build();
             }
             List<AccountBase> accountBaseList = accountsGetResponse.getAccounts();
+
+            //TODO: Associate the plaid transactions acctID with the system acctID
+
+            //TODO: Store the associated acctIDs in the ExternalAccounts table
+
             return ResponseEntity.ok().body(accountBaseList);
 
         }catch(Exception ex)
@@ -160,10 +165,10 @@ public class PlaidController {
 
         Pageable pageable = PageRequest.of(0, pageSize);
 
-        List<Transaction> transactionsGetResponse = plaidService.getTransactions(userId, startDate, endDate).getTransactions();
-
         Page<PlaidTransactionCriteria> transactions = plaidService.getPaginatedFilteredTransactionsFromResponse(userId, startDate, endDate, pageable);
         List<PlaidTransactionCriteria> plaidTransactionCriteriaList = transactions.stream().toList();
+
+
         UserEntity user = userService.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("UserId: " + userId + " not found."));
 

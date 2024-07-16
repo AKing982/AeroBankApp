@@ -26,7 +26,7 @@ public class ExternalAccountsServiceImpl implements ExternalAccountsService
 
     @Override
     public void save(ExternalAccountsEntity obj) {
-
+        externalAccountsRepository.save(obj);
     }
 
     @Override
@@ -42,5 +42,10 @@ public class ExternalAccountsServiceImpl implements ExternalAccountsService
     @Override
     public List<ExternalAccountsEntity> findByUserName(String user) {
         return List.of();
+    }
+
+    @Override
+    public ExternalAccountsEntity createExternalAccount(String externalAcctID, int acctID) {
+        return null;
     }
 }

@@ -56,6 +56,11 @@ public class AccountCodeServiceImpl implements AccountCodeService
     }
 
     @Override
+    public Optional<AccountCodeEntity> findByUserIdAndAcctSegment(int userId, int acctSegment) {
+        return accountCodeRepository.findAccountCodeEntityByUserIdAndAcctSegment(userId, acctSegment);
+    }
+
+    @Override
     public List<AccountCodeEntity> findByUserName(String user) {
         return null;
     }
