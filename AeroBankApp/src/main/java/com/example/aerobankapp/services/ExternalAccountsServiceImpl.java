@@ -1,5 +1,6 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.ExternalAccountsEntity;
 import com.example.aerobankapp.repositories.ExternalAccountsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class ExternalAccountsServiceImpl implements ExternalAccountsService
 
     @Override
     public ExternalAccountsEntity createExternalAccount(String externalAcctID, int acctID) {
-        return null;
+        ExternalAccountsEntity externalAccountsEntity = new ExternalAccountsEntity();
+        externalAccountsEntity.setExternalAcctID(externalAcctID);
+        externalAccountsEntity.setAccount(AccountEntity.builder().acctID(1).build());
+        return externalAccountsEntity;
     }
 }

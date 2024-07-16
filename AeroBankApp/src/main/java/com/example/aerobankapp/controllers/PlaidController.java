@@ -5,14 +5,12 @@ import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.AccountNotFoundException;
 import com.example.aerobankapp.exceptions.UserNotFoundException;
-import com.example.aerobankapp.model.PlaidAccount;
-import com.example.aerobankapp.model.PlaidAccountBalances;
-import com.example.aerobankapp.model.PlaidTransaction;
-import com.example.aerobankapp.model.PlaidTransactionCriteria;
+import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.TransactionStatementService;
 import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.plaid.PlaidService;
+import com.example.aerobankapp.workbench.plaid.PlaidAccountToSystemAccountMapper;
 import com.plaid.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,18 +37,21 @@ public class PlaidController {
     private final UserService userService;
     private final AccountService accountService;
     private final TransactionStatementService transactionStatementService;
+    private final PlaidAccountToSystemAccountMapper plaidAccountToSystemAccountMapper;
     private Logger LOGGER = LoggerFactory.getLogger(PlaidController.class);
 
     @Autowired
     public PlaidController(PlaidService plaidService,
                            UserService userService,
                            AccountService accountService,
-                           TransactionStatementService transactionStatementService)
+                           TransactionStatementService transactionStatementService,
+                           PlaidAccountToSystemAccountMapper plaidAccountToSystemAccountMapper)
     {
         this.plaidService = plaidService;
         this.userService = userService;
         this.accountService = accountService;
         this.transactionStatementService = transactionStatementService;
+        this.plaidAccountToSystemAccountMapper = plaidAccountToSystemAccountMapper;
     }
 
 
@@ -95,6 +96,17 @@ public class PlaidController {
                 return ResponseEntity.noContent().build();
             }
             List<AccountBase> accountBaseList = accountsGetResponse.getAccounts();
+
+            // Convert the accounts to a plaid account
+            List<PlaidAccount> plaidAccountList = plaidService.getPlaidAccountsFromAccountBase(accountBaseList);
+
+            Optional<UserEntity> userEntityOptional = userService.findById(userId);
+            if(userEntityOptional.isPresent())
+            {
+                UserEntity userEntity = userEntityOptional.get();
+                List<LinkedAccountInfo> accountMap = plaidAccountToSystemAccountMapper.getLinkedAccountInfoList(userEntity, plaidAccountList);
+                Boolean saveAndCreateExternalAccount = plaidAccountToSystemAccountMapper.executeCreateAndSaveExternalAccountEntity(accountMap);
+            }
 
             //TODO: Associate the plaid transactions acctID with the system acctID
 

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 @Table(name="externalAccounts")
 @Entity
@@ -12,7 +13,9 @@ import lombok.NoArgsConstructor;
 public class ExternalAccountsEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator="uuid2")
+    @GenericGenerator(name="uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "VARCHAR(255)")
     private String externalAcctID;
 
     @ManyToOne(fetch = FetchType.LAZY)

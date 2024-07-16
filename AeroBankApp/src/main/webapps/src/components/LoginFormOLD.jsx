@@ -197,6 +197,7 @@ export default function LoginFormOLD()
                     const { linkToken, showPlaidLink } = await fetchLinkTokenResponse(userID);
                     setLinkToken(linkToken);
                     setShowPlaidLink(showPlaidLink);
+                    await fetchAndLinkPlaidAccounts(userID);
                     console.log("ShowPlaidLink: ", showPlaidLink);
 
                 }catch(error)
@@ -273,6 +274,35 @@ export default function LoginFormOLD()
             });
     }
 
+
+    const fetchAndLinkPlaidAccounts = async(userID) => {
+        try
+        {
+            const response = await axios.get(`http://localhost:8080/AeroBankApp/api/plaid/accounts`, {
+                params:{
+                    userId: userID
+                }
+            });
+
+            if(response.status === 200 || response.status === 201) {
+                console.log('Found response: ', response.data);
+                return response.data;
+            }else{
+                console.log(`Request completed with status: ${response.status}`);
+                return null;
+            }
+        }catch(error)
+        {
+            if(error.response){
+                console.error(`Server responded with status ${error.response.status}: `, error.response.data);
+            }else if(error.request){
+                console.error('No response received for the request: ', error.request);
+            }else{
+                console.error('Error', error.message);
+            }
+            return null;
+        }
+    }
 
 
     const fetchUserID = async (username) => {
@@ -357,6 +387,7 @@ export default function LoginFormOLD()
                 // Store the JWT Token in the sessionStorage
                 await handleLoginResponse(response, data);
 
+                console.log('UserID: ', userID);
                 if (response && response.ok) {
                     console.log('Login Successful');
                     setLoginAttempts(1);

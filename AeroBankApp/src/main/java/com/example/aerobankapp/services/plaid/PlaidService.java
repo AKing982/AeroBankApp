@@ -4,6 +4,7 @@ import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.entity.PlaidTransactionEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.model.PlaidTransactionCriteria;
 import com.example.aerobankapp.repositories.PlaidLinkRepository;
@@ -24,8 +25,10 @@ import retrofit2.Response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PlaidService
@@ -170,5 +173,10 @@ public class PlaidService
     {
         PlaidTransactionEntity plaidTransactionEntity =  plaidTransactionService.createPlaidTransactionEntity(user, plaidTransactionCriteria);
         plaidTransactionService.save(plaidTransactionEntity);
+    }
+
+    public List<PlaidAccount> getPlaidAccountsFromAccountBase(List<AccountBase> accountBaseList)
+    {
+        return new ArrayList<>(plaidAccountManager.getPlaidAccountsSetFromResponse(accountBaseList));
     }
 }
