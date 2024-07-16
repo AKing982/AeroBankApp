@@ -2,7 +2,6 @@ package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.converter.AccountBaseToPlaidAccountConverter;
 import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.AccountNotFoundException;
 import com.example.aerobankapp.exceptions.UserNotFoundException;

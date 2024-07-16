@@ -1,8 +1,9 @@
 package com.example.aerobankapp.services;
 
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
+
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.entity.UserEntity;
-import com.example.aerobankapp.repositories.PlaidAccountsRepository;
+import com.example.aerobankapp.repositories.PlaidLinkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,20 +14,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PlaidAccountsServiceImpl implements PlaidAccountsService
+public class PlaidLinkServiceImpl implements PlaidLinkService
 {
-    private final PlaidAccountsRepository plaidAccountsRepository;
-    private Logger LOGGER = LoggerFactory.getLogger(PlaidAccountsServiceImpl.class);
+    private final PlaidLinkRepository plaidLinkRepository;
+    private Logger LOGGER = LoggerFactory.getLogger(PlaidLinkServiceImpl.class);
 
     @Autowired
-    public PlaidAccountsServiceImpl(PlaidAccountsRepository plaidAccountsRepository)
+    public PlaidLinkServiceImpl(PlaidLinkRepository plaidLinkRepository)
     {
-        this.plaidAccountsRepository = plaidAccountsRepository;
+        this.plaidLinkRepository = plaidLinkRepository;
     }
 
-    public PlaidAccountsEntity buildPlaidAccountsEntity(String access_token, String item_id, int userID, String institutionName)
+    public PlaidLinkEntity buildPlaidLinkEntity(String access_token, String item_id, int userID, String institutionName)
     {
-        return PlaidAccountsEntity.builder()
+        return PlaidLinkEntity.builder()
                 .accessToken(access_token)
                 .item_id(item_id)
                 .user(UserEntity.builder().userID(userID).build())
@@ -37,26 +38,26 @@ public class PlaidAccountsServiceImpl implements PlaidAccountsService
     }
 
     @Override
-    public Boolean hasPlaidAccount(int userID) {
+    public Boolean hasPlaidLink(int userID) {
         if(userID < 1)
         {
             throw new IllegalArgumentException("Invalid UserID found: " + userID);
         }
-        return plaidAccountsRepository.existsByUserId(userID);
+        return plaidLinkRepository.existsByUserId(userID);
     }
 
     @Override
-    public Optional<PlaidAccountsEntity> findPlaidAccountEntityByUserId(int userID) {
-        return plaidAccountsRepository.findByUserId(userID);
+    public Optional<PlaidLinkEntity> findPlaidLinkEntityByUserId(int userID) {
+        return plaidLinkRepository.findByUserId(userID);
     }
 
     @Override
-    public List<PlaidAccountsEntity> findAll() {
+    public List<PlaidLinkEntity> findAll() {
         return List.of();
     }
 
     @Override
-    public void save(PlaidAccountsEntity obj)
+    public void save(PlaidLinkEntity obj)
     {
         if(obj == null)
         {
@@ -69,27 +70,27 @@ public class PlaidAccountsServiceImpl implements PlaidAccountsService
             throw new IllegalArgumentException("Found Null Plaid Account Criteria: " + obj.toString());
         }
 
-        plaidAccountsRepository.save(obj);
+        plaidLinkRepository.save(obj);
     }
 
-    private boolean validatePlaidAccountEntityCriteria(PlaidAccountsEntity criteria)
+    private boolean validatePlaidAccountEntityCriteria(PlaidLinkEntity criteria)
     {
         return criteria.getAccessToken() != null && criteria.getUser() != null && criteria.getInstitution_name() != null
                 && criteria.getItem_id() != null && criteria.getCreatedAt() != null && criteria.getUpdatedAt() != null;
     }
 
     @Override
-    public void delete(PlaidAccountsEntity obj) {
+    public void delete(PlaidLinkEntity obj) {
 
     }
 
     @Override
-    public Optional<PlaidAccountsEntity> findAllById(Long id) {
+    public Optional<PlaidLinkEntity> findAllById(Long id) {
         return Optional.empty();
     }
 
     @Override
-    public List<PlaidAccountsEntity> findByUserName(String user) {
+    public List<PlaidLinkEntity> findByUserName(String user) {
         return List.of();
     }
 }

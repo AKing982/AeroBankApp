@@ -1,18 +1,16 @@
 package com.example.aerobankapp.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="plaidAccounts")
+@Table(name="plaidLink")
 @Data
 @Builder
-public class PlaidAccountsEntity
+public class PlaidLinkEntity
 {
 
     @Id
@@ -38,7 +36,7 @@ public class PlaidAccountsEntity
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
-    public PlaidAccountsEntity(Long id, UserEntity user, String accessToken, String item_id, String institution_name, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public PlaidLinkEntity(Long id, UserEntity user, String accessToken, String item_id, String institution_name, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.user = user;
         this.accessToken = accessToken;
@@ -48,7 +46,7 @@ public class PlaidAccountsEntity
         this.updatedAt = updatedAt;
     }
 
-    public PlaidAccountsEntity()
+    public PlaidLinkEntity()
     {
 
     }

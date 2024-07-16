@@ -1,12 +1,12 @@
 package com.example.aerobankapp.workbench.plaid;
 
 import com.example.aerobankapp.converter.AccountBaseToPlaidAccountConverter;
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.model.PlaidAccountBalances;
-import com.example.aerobankapp.services.PlaidAccountsService;
+import com.example.aerobankapp.services.PlaidLinkService;
 import com.plaid.client.model.AccountBalance;
 import com.plaid.client.model.AccountBase;
 import com.plaid.client.model.AccountsGetRequest;
@@ -48,7 +48,7 @@ class PlaidAccountManagerTest {
     private PlaidApi plaidApi;
 
     @Mock
-    private PlaidAccountsService plaidAccountsService;
+    private PlaidLinkService plaidAccountsService;
 
     @Mock
     private AccountBaseToPlaidAccountConverter accountBaseToPlaidAccountConverter;
@@ -75,8 +75,8 @@ class PlaidAccountManagerTest {
 
         AccountsGetResponse response1 = new AccountsGetResponse();
 
-        Optional<PlaidAccountsEntity> plaidAccountsEntity = Optional.of(createPlaidAccountEntity());
-        when(plaidAccountsService.findPlaidAccountEntityByUserId(userID)).thenReturn(plaidAccountsEntity);
+        Optional<PlaidLinkEntity> plaidAccountsEntity = Optional.of(createPlaidLinkEntity());
+        when(plaidAccountsService.findPlaidLinkEntityByUserId(userID)).thenReturn(plaidAccountsEntity);
 
         AccountsGetRequest accountsGetRequest = new AccountsGetRequest()
                 .accessToken(plaidAccountsEntity.get().getAccessToken());
@@ -95,8 +95,8 @@ class PlaidAccountManagerTest {
     public void testGetAllAccounts_UserHasPlaidAccount_AccessTokenIsNullOrEmpty_thenThrowException() throws IOException {
         int userID = 1;
 
-        Optional<PlaidAccountsEntity> plaidAccountsEntity = Optional.of(createPlaidAccountEntityWithoutAccessToken());
-        when(plaidAccountsService.findPlaidAccountEntityByUserId(userID)).thenReturn(plaidAccountsEntity);
+        Optional<PlaidLinkEntity> plaidAccountsEntity = Optional.of(createPlaidLinkEntityWithoutAccessToken());
+        when(plaidAccountsService.findPlaidLinkEntityByUserId(userID)).thenReturn(plaidAccountsEntity);
 
         AccountsGetRequest accountsGetRequest = new AccountsGetRequest()
                 .accessToken(plaidAccountsEntity.get().getAccessToken());
@@ -117,8 +117,8 @@ class PlaidAccountManagerTest {
     public void testGetAllAccounts_whenUserID_UserHasPlaidAccounts_RequestIsNull_thenThrowException() throws IOException {
         AccountsGetResponse response = new AccountsGetResponse();
 
-        Optional<PlaidAccountsEntity> plaidAccountsEntity = Optional.of(createPlaidAccountEntity());
-        when(plaidAccountsService.findPlaidAccountEntityByUserId(1)).thenReturn(plaidAccountsEntity);
+        Optional<PlaidLinkEntity> plaidAccountsEntity = Optional.of(createPlaidLinkEntity());
+        when(plaidAccountsService.findPlaidLinkEntityByUserId(1)).thenReturn(plaidAccountsEntity);
 
         Call<AccountsGetResponse> callSuccessful = mock(Call.class);
         when(callSuccessful.execute()).thenReturn(Response.success(response));
@@ -132,7 +132,7 @@ class PlaidAccountManagerTest {
     @Test
     @DisplayName("Test GetAllAccounts when userID valid, user has no plaid accounts, then throw exception")
     public void testGetAllAccounts_whenUserIDValid_UserHasNoPlaidAccounts_thenThrowException() throws IOException {
-        when(plaidAccountsService.findPlaidAccountEntityByUserId(1)).thenReturn(Optional.empty());
+        when(plaidAccountsService.findPlaidLinkEntityByUserId(1)).thenReturn(Optional.empty());
         assertThrows(PlaidAccountNotFoundException.class, () -> {
             plaidAccountManager.getAllAccounts(1);
         });
@@ -142,9 +142,9 @@ class PlaidAccountManagerTest {
     @DisplayName("Test GetAllAccounts when userID is valid, user has plaid account, AccountsGetResponse is null, then throw exception")
     public void testGetAllAccounts_whenUserIDValid_UserHasPlaidAccount_AccountsGetResponseIsNull_thenThrowException() throws IOException {
 
-        when(plaidAccountsService.findPlaidAccountEntityByUserId(1)).thenReturn(Optional.of(createPlaidAccountEntity()));
+        when(plaidAccountsService.findPlaidLinkEntityByUserId(1)).thenReturn(Optional.of(createPlaidLinkEntity()));
         AccountsGetRequest accountsGetRequest = new AccountsGetRequest()
-                .accessToken(createPlaidAccountEntity().getAccessToken());
+                .accessToken(createPlaidLinkEntity().getAccessToken());
         Call<AccountsGetResponse> callSuccessful = mock(Call.class);
         when(callSuccessful.execute()).thenReturn(Response.success(null));
 
@@ -326,9 +326,9 @@ class PlaidAccountManagerTest {
     public void testGetBalancesByUserId_whenUserIDIsValid_thenReturnAccountsGetResponse() throws IOException, InterruptedException {
         final int userID = 1;
 
-        when(plaidAccountsService.findPlaidAccountEntityByUserId(userID)).thenReturn(Optional.of(createPlaidAccountEntity()));
+        when(plaidAccountsService.findPlaidLinkEntityByUserId(userID)).thenReturn(Optional.of(createPlaidLinkEntity()));
         AccountsGetRequest accountsGetRequest = new AccountsGetRequest()
-                .accessToken(createPlaidAccountEntity().getAccessToken());
+                .accessToken(createPlaidLinkEntity().getAccessToken());
 
         AccountsGetResponse accountsGetResponse = new AccountsGetResponse();
 
@@ -426,8 +426,8 @@ class PlaidAccountManagerTest {
     }
 
 
-    private PlaidAccountsEntity createPlaidAccountEntity() {
-        PlaidAccountsEntity plaidAccountsEntity = new PlaidAccountsEntity();
+    private PlaidLinkEntity createPlaidLinkEntity() {
+        PlaidLinkEntity plaidAccountsEntity = new PlaidLinkEntity();
         plaidAccountsEntity.setAccessToken("access_token");
         plaidAccountsEntity.setItem_id("e1232323");
         plaidAccountsEntity.setUser(UserEntity.builder().userID(1).build());
@@ -435,13 +435,13 @@ class PlaidAccountManagerTest {
         return plaidAccountsEntity;
     }
 
-    private PlaidAccountsEntity createPlaidAccountEntityWithoutAccessToken(){
-        PlaidAccountsEntity plaidAccountsEntity = new PlaidAccountsEntity();
-        plaidAccountsEntity.setAccessToken(null);
-        plaidAccountsEntity.setItem_id("e1232323");
-        plaidAccountsEntity.setUser(UserEntity.builder().userID(1).build());
-        plaidAccountsEntity.setInstitution_name("sandbox");
-        return plaidAccountsEntity;
+    private PlaidLinkEntity createPlaidLinkEntityWithoutAccessToken(){
+        PlaidLinkEntity plaidLinkEntity = new PlaidLinkEntity();
+        plaidLinkEntity.setAccessToken(null);
+        plaidLinkEntity.setItem_id("e1232323");
+        plaidLinkEntity.setUser(UserEntity.builder().userID(1).build());
+        plaidLinkEntity.setInstitution_name("sandbox");
+        return plaidLinkEntity;
     }
 
 

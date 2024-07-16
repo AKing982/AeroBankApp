@@ -1,12 +1,12 @@
 package com.example.aerobankapp.services.plaid;
 
 import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.entity.PlaidTransactionEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.model.PlaidTransactionCriteria;
-import com.example.aerobankapp.repositories.PlaidAccountsRepository;
+import com.example.aerobankapp.repositories.PlaidLinkRepository;
 import com.example.aerobankapp.services.PlaidTransactionService;
 import com.example.aerobankapp.workbench.plaid.PlaidAccountManager;
 import com.example.aerobankapp.workbench.plaid.PlaidFilterCriteriaService;
@@ -33,7 +33,7 @@ public class PlaidService
     private final PlaidTokenProcessorImpl plaidTokenProcessor;
     private final PlaidTransactionManagerImpl plaidTransactionManager;
     private final PlaidAccountManager plaidAccountManager;
-    private final PlaidAccountsRepository plaidAccountsRepository;
+    private final PlaidLinkRepository plaidLinkRepository;
     private final PlaidTransactionService plaidTransactionService;
     private final PlaidFilterCriteriaService plaidFilterCriteriaService;
     private Logger LOGGER = LoggerFactory.getLogger(PlaidService.class);
@@ -41,22 +41,22 @@ public class PlaidService
     @Autowired
     public PlaidService(PlaidTokenProcessorImpl plaidTokenProcessor,
                         PlaidTransactionManagerImpl plaidTransactionManager,
-                        PlaidAccountsRepository plaidAccountsRepository,
+                        PlaidLinkRepository plaidLinkRepository,
                         PlaidTransactionService plaidTransactionService,
                         PlaidAccountManager plaidAccountManager,
                         PlaidFilterCriteriaService plaidFilterCriteriaService)
     {
         this.plaidTokenProcessor = plaidTokenProcessor;
         this.plaidTransactionManager = plaidTransactionManager;
-        this.plaidAccountsRepository = plaidAccountsRepository;
+        this.plaidLinkRepository = plaidLinkRepository;
         this.plaidTransactionService = plaidTransactionService;
         this.plaidAccountManager = plaidAccountManager;
         this.plaidFilterCriteriaService = plaidFilterCriteriaService;
     }
 
-    public PlaidAccountsEntity buildPlaidAccountsEntity(String accessToken, String item_id, int userID, String institutionName)
+    public PlaidLinkEntity buildPlaidAccountsEntity(String accessToken, String item_id, int userID, String institutionName)
     {
-        return PlaidAccountsEntity.builder()
+        return PlaidLinkEntity.builder()
                 .accessToken(accessToken)
                 .item_id(item_id)
                 .user(UserEntity.builder().userID(userID).build())
@@ -68,14 +68,14 @@ public class PlaidService
 
     public void createAndSavePlaidAccountEntity(String item_id, int userID, String access_token)
     {
-        PlaidAccountsEntity plaidAccountsEntity = buildPlaidAccountsEntity(access_token, item_id, userID, "sandBox");
+        PlaidLinkEntity plaidAccountsEntity = buildPlaidAccountsEntity(access_token, item_id, userID, "sandBox");
 
-        plaidAccountsRepository.save(plaidAccountsEntity);
+        plaidLinkRepository.save(plaidAccountsEntity);
     }
 
-    public Optional<PlaidAccountsEntity> getPlaidAccountEntityByUserId(int userID)
+    public Optional<PlaidLinkEntity> getPlaidLinkEntityByUserId(int userID)
     {
-        return plaidAccountsRepository.findByUserId(userID);
+        return plaidLinkRepository.findByUserId(userID);
     }
 
     /**

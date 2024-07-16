@@ -35,18 +35,18 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
     private UserDetailsService userDetailsService;
     private PasswordEncoder passwordEncoder;
     private UserService userDAO;
-    private PlaidAccountsServiceImpl plaidAccountsService;
+    private PlaidLinkServiceImpl plaidLinkService;
     private JWTUtil jwtUtil = new JWTUtil();
     private Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     @Autowired
     public AuthenticationServiceImpl(@Qualifier("userDetailsServiceImpl") UserDetailsServiceImpl userService,
                                      UserService userDAO,
-                                     PlaidAccountsServiceImpl plaidAccountsService)
+                                     PlaidLinkServiceImpl plaidLinkService)
     {
         this.userDetailsService = userService;
         this.userDAO = userDAO;
-        this.plaidAccountsService = plaidAccountsService;
+        this.plaidLinkService = plaidLinkService;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -91,7 +91,7 @@ public class AuthenticationServiceImpl implements AuthenticationProvider {
 
             String uuidToken = UUID.randomUUID().toString();
             int userID = userDAO.getUserIDByUserName(user);
-            Boolean hasPlaidAccount = plaidAccountsService.hasPlaidAccount(userID);
+            Boolean hasPlaidAccount = plaidLinkService.hasPlaidLink(userID);
             return new AuthDataResponse(uuidToken, "Bearer", hasPlaidAccount, user, authentication.getAuthorities());
         }
         else

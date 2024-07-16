@@ -49,7 +49,7 @@ class AuthenticationServiceImplTest {
     private UserService userService;
 
     @MockBean
-    private PlaidAccountsServiceImpl plaidAccountsService;
+    private PlaidLinkServiceImpl plaidAccountsService;
 
 
 

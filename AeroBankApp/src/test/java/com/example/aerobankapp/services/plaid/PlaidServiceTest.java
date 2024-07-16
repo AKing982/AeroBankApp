@@ -1,6 +1,6 @@
 package com.example.aerobankapp.services.plaid;
 
-import com.example.aerobankapp.services.PlaidAccountsService;
+import com.example.aerobankapp.services.PlaidLinkService;
 import com.plaid.client.request.PlaidApi;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +27,7 @@ class PlaidServiceTest {
     private PlaidApi plaidApi;
 
     @MockBean
-    private PlaidAccountsService plaidAccountsService;
+    private PlaidLinkService plaidAccountsService;
 
     @BeforeEach
     void setUp() {

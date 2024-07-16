@@ -1,10 +1,10 @@
 package com.example.aerobankapp.workbench.plaid;
 
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.exceptions.PlaidAccessTokenNotFoundException;
 import com.example.aerobankapp.model.SearchCriteria;
 import com.example.aerobankapp.model.TransactionStatement;
-import com.example.aerobankapp.services.PlaidAccountsService;
+import com.example.aerobankapp.services.PlaidLinkService;
 import com.plaid.client.model.TransactionsGetRequest;
 import com.plaid.client.model.TransactionsGetResponse;
 import com.plaid.client.model.TransactionsSyncRequest;
@@ -25,9 +25,9 @@ public class PlaidTransactionManagerImpl extends AbstractPlaidDataManager
 {
 
     @Autowired
-    public PlaidTransactionManagerImpl(PlaidAccountsService plaidAccountsService, PlaidApi plaidApi)
+    public PlaidTransactionManagerImpl(PlaidLinkService plaidLinkService, PlaidApi plaidApi)
     {
-        super(plaidAccountsService, plaidApi);
+        super(plaidLinkService, plaidApi);
     }
 
     private TransactionsSyncRequest buildTransactionSyncRequest(String accessToken, String cursor)
@@ -73,11 +73,11 @@ public class PlaidTransactionManagerImpl extends AbstractPlaidDataManager
             throw new IllegalArgumentException("Transaction Request parameters are invalid");
         }
         // Does the user have an access token already?
-        Optional<PlaidAccountsEntity> plaidAccountsEntityOptional = getPlaidAccountEntityByUserId(userID);
-        if(plaidAccountsEntityOptional.isPresent())
+        Optional<PlaidLinkEntity> plaidLinkEntityOptional = getPlaidLinkEntityByUserId(userID);
+        if(plaidLinkEntityOptional.isPresent())
         {
             // Fetch the access Token
-            String accessToken = getAccessTokenFromResponse(plaidAccountsEntityOptional);
+            String accessToken = getAccessTokenFromResponse(plaidLinkEntityOptional);
             if(accessToken == null)
             {
                 throw new PlaidAccessTokenNotFoundException("Plaid access token not found");

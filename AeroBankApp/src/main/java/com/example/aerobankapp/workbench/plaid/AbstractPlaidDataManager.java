@@ -1,9 +1,9 @@
 package com.example.aerobankapp.workbench.plaid;
 
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.exceptions.PlaidApiResponseException;
-import com.example.aerobankapp.services.PlaidAccountsService;
+import com.example.aerobankapp.services.PlaidLinkService;
 import com.plaid.client.request.PlaidApi;
 import retrofit2.Response;
 
@@ -12,13 +12,13 @@ import java.util.function.Supplier;
 
 public abstract class AbstractPlaidDataManager
 {
-    protected PlaidAccountsService plaidAccountsService;
+    protected PlaidLinkService plaidLinkService;
     protected PlaidApi plaidApi;
     protected final int TOTAL_ATTEMPTS = 5;
 
-    public AbstractPlaidDataManager(PlaidAccountsService plaidAccountsService, PlaidApi plaidApi)
+    public AbstractPlaidDataManager(PlaidLinkService plaidLinkService, PlaidApi plaidApi)
     {
-        this.plaidAccountsService = plaidAccountsService;
+        this.plaidLinkService = plaidLinkService;
         this.plaidApi = plaidApi;
     }
 
@@ -31,18 +31,18 @@ public abstract class AbstractPlaidDataManager
     }
 
 
-    protected Optional<PlaidAccountsEntity> getPlaidAccountEntityByUserId(int userID)
+    protected Optional<PlaidLinkEntity> getPlaidLinkEntityByUserId(int userID)
     {
-        return plaidAccountsService.findPlaidAccountEntityByUserId(userID);
+        return plaidLinkService.findPlaidLinkEntityByUserId(userID);
     }
 
-    protected String getAccessTokenFromResponse(Optional<PlaidAccountsEntity> plaidAccountsEntity)
+    protected String getAccessTokenFromResponse(Optional<PlaidLinkEntity> plaidLinkEntity)
     {
-        if(plaidAccountsEntity.isPresent())
+        if(plaidLinkEntity.isPresent())
         {
-            if(plaidAccountsEntity.get().getAccessToken() != null)
+            if(plaidLinkEntity.get().getAccessToken() != null)
             {
-                return plaidAccountsEntity.get().getAccessToken();
+                return plaidLinkEntity.get().getAccessToken();
             }
         }
         return "";

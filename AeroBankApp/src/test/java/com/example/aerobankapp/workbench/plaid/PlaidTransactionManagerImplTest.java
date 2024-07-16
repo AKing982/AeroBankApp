@@ -1,10 +1,10 @@
 package com.example.aerobankapp.workbench.plaid;
 
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.PlaidAccessTokenNotFoundException;
 import com.example.aerobankapp.model.PlaidAccount;
-import com.example.aerobankapp.services.PlaidAccountsService;
+import com.example.aerobankapp.services.PlaidLinkService;
 import com.plaid.client.model.Transaction;
 import com.plaid.client.model.TransactionsGetRequest;
 import com.plaid.client.model.TransactionsGetResponse;
@@ -47,7 +47,7 @@ class PlaidTransactionManagerImplTest {
     private PlaidTransactionManagerImpl spyPlaidTransactionManager;
 
     @Mock
-    private PlaidAccountsService plaidAccountsService;
+    private PlaidLinkService plaidAccountsService;
 
     @BeforeEach
     void setUp() {
@@ -162,7 +162,7 @@ class PlaidTransactionManagerImplTest {
         LocalDate endDate = LocalDate.of(2024, 6, 6);
 
         TransactionsGetRequest request = new TransactionsGetRequest().accessToken(null);
-        when(plaidAccountsService.findPlaidAccountEntityByUserId(userID)).thenReturn(Optional.empty());
+        when(plaidAccountsService.findPlaidLinkEntityByUserId(userID)).thenReturn(Optional.empty());
 
         assertThrows(PlaidAccessTokenNotFoundException.class, () -> {
             plaidTransactionManager.getTransactionResponse(userID, startDate, endDate);
@@ -175,7 +175,7 @@ class PlaidTransactionManagerImplTest {
         int userID = 1;
         LocalDate startDate = LocalDate.of(2024, 6, 1);
         LocalDate endDate = LocalDate.of(2024, 6, 6);
-        when(plaidAccountsService.findPlaidAccountEntityByUserId(userID)).thenReturn(Optional.of(createPlaidAccountEntity()));
+        when(plaidAccountsService.findPlaidLinkEntityByUserId(userID)).thenReturn(Optional.of(createPlaidAccountEntity()));
 
         TransactionsGetResponse response = new TransactionsGetResponse();
         Call<TransactionsGetResponse> callSuccessful = mock(Call.class);
@@ -192,7 +192,7 @@ class PlaidTransactionManagerImplTest {
         int userID = 1;
         LocalDate startDate = LocalDate.of(2024, 6, 1);
         LocalDate endDate = LocalDate.of(2024, 6, 6);
-        when(plaidAccountsService.findPlaidAccountEntityByUserId(userID)).thenReturn(Optional.of(createPlaidAccountEntityWithoutAccessToken()));
+        when(plaidAccountsService.findPlaidLinkEntityByUserId(userID)).thenReturn(Optional.of(createPlaidAccountEntityWithoutAccessToken()));
         assertThrows(PlaidAccessTokenNotFoundException.class, () -> {
             plaidTransactionManager.getTransactionResponse(userID, startDate, endDate);
         });
@@ -204,7 +204,7 @@ class PlaidTransactionManagerImplTest {
         int userID = 1;
         LocalDate startDate = LocalDate.of(2024, 6, 1);
         LocalDate endDate = LocalDate.of(2024, 6, 6);
-        when(plaidAccountsService.findPlaidAccountEntityByUserId(userID)).thenReturn(Optional.of(createPlaidAccountEntity()));
+        when(plaidAccountsService.findPlaidLinkEntityByUserId(userID)).thenReturn(Optional.of(createPlaidAccountEntity()));
 
         Call<TransactionsGetResponse> callUnsuccessful = mock(Call.class);
         when(callUnsuccessful.execute()).thenReturn(Response.success(null));
@@ -218,8 +218,8 @@ class PlaidTransactionManagerImplTest {
         assertEquals(response, result);
     }
 
-    private PlaidAccountsEntity createPlaidAccountEntity() {
-        PlaidAccountsEntity plaidAccountsEntity = new PlaidAccountsEntity();
+    private PlaidLinkEntity createPlaidAccountEntity() {
+        PlaidLinkEntity plaidAccountsEntity = new PlaidLinkEntity();
         plaidAccountsEntity.setAccessToken("access_token");
         plaidAccountsEntity.setItem_id("e1232323");
         plaidAccountsEntity.setUser(UserEntity.builder().userID(1).build());
@@ -227,8 +227,8 @@ class PlaidTransactionManagerImplTest {
         return plaidAccountsEntity;
     }
 
-    private PlaidAccountsEntity createPlaidAccountEntityWithoutAccessToken(){
-        PlaidAccountsEntity plaidAccountsEntity = new PlaidAccountsEntity();
+    private PlaidLinkEntity createPlaidAccountEntityWithoutAccessToken(){
+        PlaidLinkEntity plaidAccountsEntity = new PlaidLinkEntity();
         plaidAccountsEntity.setAccessToken(null);
         plaidAccountsEntity.setItem_id("e1232323");
         plaidAccountsEntity.setUser(UserEntity.builder().userID(1).build());

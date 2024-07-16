@@ -3,7 +3,7 @@ package com.example.aerobankapp.controllers;
 import com.example.aerobankapp.configuration.AppConfig;
 import com.example.aerobankapp.configuration.JpaConfig;
 import com.example.aerobankapp.converter.AccountBaseToPlaidAccountConverter;
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.services.plaid.PlaidService;
@@ -563,8 +563,8 @@ class PlaidControllerTest {
 //                .andExpect(status().isInternalServerError());
 //    }
 
-    private PlaidAccountsEntity createPlaidAccountsEntity() {
-        PlaidAccountsEntity plaidAccountsEntity = new PlaidAccountsEntity();
+    private PlaidLinkEntity createPlaidAccountsEntity() {
+        PlaidLinkEntity plaidAccountsEntity = new PlaidLinkEntity();
         plaidAccountsEntity.setCreatedAt(LocalDateTime.now());
         plaidAccountsEntity.setUpdatedAt(LocalDateTime.now());
         plaidAccountsEntity.setId(1L);
@@ -587,8 +587,8 @@ class PlaidControllerTest {
 
 
 
-    private PlaidAccountsEntity createPlaidAccountsEntityWithNullAccessToken() {
-        PlaidAccountsEntity plaidAccountsEntity = new PlaidAccountsEntity();
+    private PlaidLinkEntity createPlaidAccountsEntityWithNullAccessToken() {
+        PlaidLinkEntity plaidAccountsEntity = new PlaidLinkEntity();
         plaidAccountsEntity.setCreatedAt(LocalDateTime.now());
         plaidAccountsEntity.setUpdatedAt(LocalDateTime.now());
         plaidAccountsEntity.setId(1L);

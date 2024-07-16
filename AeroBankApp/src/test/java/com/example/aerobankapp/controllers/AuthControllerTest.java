@@ -1,7 +1,7 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.services.AuthenticationServiceImpl;
-import com.example.aerobankapp.services.PlaidAccountsServiceImpl;
+import com.example.aerobankapp.services.PlaidLinkServiceImpl;
 import com.example.aerobankapp.workbench.security.authentication.JWTUtil;
 import com.example.aerobankapp.workbench.tokens.AuthTokenResponse;
 import com.example.aerobankapp.workbench.utilities.LoginRequest;
@@ -54,7 +54,7 @@ class AuthControllerTest {
     private AuthenticationServiceImpl authenticationManager;
 
     @MockBean
-    private PlaidAccountsServiceImpl accountsService;
+    private PlaidLinkServiceImpl accountsService;
 
     @MockBean
     private JWTUtil jwtUtil;

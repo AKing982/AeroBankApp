@@ -1,11 +1,11 @@
 package com.example.aerobankapp.workbench.plaid;
 
 import com.example.aerobankapp.converter.AccountBaseToPlaidAccountConverter;
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.model.PlaidAccountBalances;
-import com.example.aerobankapp.services.PlaidAccountsService;
+import com.example.aerobankapp.services.PlaidLinkService;
 import com.plaid.client.model.AccountBase;
 import com.plaid.client.model.AccountsGetRequest;
 import com.plaid.client.model.AccountsGetResponse;
@@ -31,8 +31,8 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
     private Logger LOGGER = LoggerFactory.getLogger(PlaidAccountManager.class);
 
     @Autowired
-    public PlaidAccountManager(PlaidAccountsService plaidAccountsService, PlaidApi plaidApi) {
-        super(plaidAccountsService, plaidApi);
+    public PlaidAccountManager(PlaidLinkService plaidLinkService, PlaidApi plaidApi) {
+        super(plaidLinkService, plaidApi);
         this.accountBaseToPlaidAccountConverter = new AccountBaseToPlaidAccountConverter();
     }
 
@@ -77,7 +77,7 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
 
     public AccountsGetResponse getAllAccounts(final int userId) throws IOException, InterruptedException {
         validateUserID(userId);
-        Optional<PlaidAccountsEntity> optional = getPlaidAccountEntityByUserId(userId);
+        Optional<PlaidLinkEntity> optional = getPlaidLinkEntityByUserId(userId);
         if(optional.isPresent())
         {
            String accessToken = getAccessTokenFromResponse(optional);

@@ -1,13 +1,7 @@
 package com.example.aerobankapp.controllers;
 
 import com.example.aerobankapp.services.AuthenticationServiceImpl;
-import com.example.aerobankapp.services.PlaidAccountsService;
-import com.example.aerobankapp.services.PlaidAccountsServiceImpl;
-import com.example.aerobankapp.services.UserService;
-import com.example.aerobankapp.services.plaid.PlaidService;
-import com.example.aerobankapp.workbench.tokens.AuthTokenResponse;
 import com.example.aerobankapp.workbench.utilities.LoginRequest;
-import com.example.aerobankapp.workbench.utilities.UserProfile;
 import com.example.aerobankapp.workbench.utilities.response.AuthDataResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,9 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 

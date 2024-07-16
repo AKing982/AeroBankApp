@@ -2,7 +2,7 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.configuration.AppConfig;
 import com.example.aerobankapp.configuration.JpaConfig;
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 class PlaidAccountsServiceImplTest {
 
     @MockBean
-    private PlaidAccountsServiceImpl plaidAccountsService;
+    private PlaidLinkServiceImpl plaidAccountsService;
 
 
     @BeforeEach
@@ -47,7 +47,7 @@ class PlaidAccountsServiceImplTest {
     @Test
     @DisplayName("Test Save Plaid AccountsEntity when plaid account criteria is null, then throw exception")
     public void testSavePlaidAccount_whenPlaidAccountCriteriaIsNull_thenThrowException() {
-        PlaidAccountsEntity plaidAccountsEntity = new PlaidAccountsEntity();
+        PlaidLinkEntity plaidAccountsEntity = new PlaidLinkEntity();
         plaidAccountsEntity.setId(1L);
         plaidAccountsEntity.setUser(null);
         plaidAccountsEntity.setAccessToken(null);
@@ -64,7 +64,7 @@ class PlaidAccountsServiceImplTest {
     @Test
     @DisplayName("Test Save Plaid AccountsEntity when plaid account is valid")
     public void testSavePlaidAccount_whenPlaidAccountIsValid_thenThrowException() {
-        PlaidAccountsEntity plaidAccountsEntity = new PlaidAccountsEntity();
+        PlaidLinkEntity plaidAccountsEntity = new PlaidLinkEntity();
         plaidAccountsEntity.setId(1L);
         plaidAccountsEntity.setUser(UserEntity.builder().userID(1).build());
         plaidAccountsEntity.setAccessToken("accessToken");
@@ -83,10 +83,10 @@ class PlaidAccountsServiceImplTest {
     public void testHasPlaidAccount_whenUserIDIsInvalid_thenThrowException() {
         int userID = -1;
 
-        when(plaidAccountsService.hasPlaidAccount(userID)).thenThrow(new IllegalArgumentException("Invalid UserID"));
+        when(plaidAccountsService.hasPlaidLink(userID)).thenThrow(new IllegalArgumentException("Invalid UserID"));
 
         assertThrows(IllegalArgumentException.class, () -> {
-            plaidAccountsService.hasPlaidAccount(userID);
+            plaidAccountsService.hasPlaidLink(userID);
         });
     }
 
@@ -95,9 +95,9 @@ class PlaidAccountsServiceImplTest {
     public void testHasPlaidAccount_whenUserIDIsValid_thenReturnTrue() {
         int userID = 1;
 
-        when(plaidAccountsService.hasPlaidAccount(userID)).thenReturn(true);
+        when(plaidAccountsService.hasPlaidLink(userID)).thenReturn(true);
 
-        boolean result = plaidAccountsService.hasPlaidAccount(userID);
+        boolean result = plaidAccountsService.hasPlaidLink(userID);
         assertTrue(result);
     }
 

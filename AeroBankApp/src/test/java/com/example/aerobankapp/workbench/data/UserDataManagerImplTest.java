@@ -63,7 +63,7 @@ class UserDataManagerImplTest {
     private AccountUsersEntityService accountUsersEntityService;
 
     @Autowired
-    private PlaidAccountsService plaidAccountsService;
+    private PlaidLinkService plaidAccountsService;
 
     @Autowired
     private UserLogService userLogService;

@@ -3,7 +3,6 @@ package com.example.aerobankapp.workbench.plaid;
 import com.example.aerobankapp.converter.AccountBaseToPlaidAccountBalancesConverter;
 import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.model.PlaidTransactionCriteria;
-import com.example.aerobankapp.services.PlaidAccountsService;
 import com.plaid.client.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

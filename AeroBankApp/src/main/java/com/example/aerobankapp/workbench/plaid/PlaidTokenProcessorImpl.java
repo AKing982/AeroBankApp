@@ -1,7 +1,7 @@
 package com.example.aerobankapp.workbench.plaid;
 
 import com.example.aerobankapp.exceptions.InvalidLinkTokenRequestException;
-import com.example.aerobankapp.services.PlaidAccountsService;
+import com.example.aerobankapp.services.PlaidLinkService;
 import com.example.aerobankapp.services.plaid.PlaidService;
 import com.plaid.client.model.*;
 import com.plaid.client.request.PlaidApi;
@@ -22,7 +22,7 @@ public class PlaidTokenProcessorImpl extends AbstractPlaidDataManager implements
     private Logger LOGGER = LoggerFactory.getLogger(PlaidTokenProcessor.class);
 
     @Autowired
-    public PlaidTokenProcessorImpl(PlaidAccountsService plaidAccountsService, PlaidApi plaidApi) {
+    public PlaidTokenProcessorImpl(PlaidLinkService plaidAccountsService, PlaidApi plaidApi) {
         super(plaidAccountsService, plaidApi);
     }
 

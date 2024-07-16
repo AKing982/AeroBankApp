@@ -1,30 +1,19 @@
 package com.example.aerobankapp.workbench.plaid;
 
 import com.example.aerobankapp.converter.AccountBaseToPlaidAccountBalancesConverter;
-import com.example.aerobankapp.entity.PlaidAccountsEntity;
 import com.example.aerobankapp.model.PlaidAccountBalances;
 import com.example.aerobankapp.model.PlaidTransactionCriteria;
-import com.example.aerobankapp.services.PlaidAccountsService;
-import com.example.aerobankapp.workbench.utilities.User;
-import com.example.aerobankapp.workbench.utilities.conversion.AccountBaseToAccountBalancesUtil;
 import com.plaid.client.model.AccountBase;
 import com.plaid.client.model.Transaction;
 import com.plaid.client.model.TransactionsGetResponse;
-import com.plaid.client.request.PlaidApi;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PlaidFilterCriteriaServiceImpl implements PlaidFilterCriteriaService

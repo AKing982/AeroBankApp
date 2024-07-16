@@ -1,7 +1,7 @@
 package com.example.aerobankapp.workbench.plaid;
 
 import com.example.aerobankapp.exceptions.InvalidLinkTokenRequestException;
-import com.example.aerobankapp.services.PlaidAccountsService;
+import com.example.aerobankapp.services.PlaidLinkService;
 import com.plaid.client.model.*;
 import com.plaid.client.request.PlaidApi;
 import okhttp3.MediaType;
@@ -34,7 +34,7 @@ class PlaidTokenProcessorImplTest {
     private PlaidApi plaidApi;
 
     @Mock
-    private PlaidAccountsService accountsService;
+    private PlaidLinkService accountsService;
 
     @InjectMocks
     private PlaidTokenProcessorImpl plaidTokenProcessor;
