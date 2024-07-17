@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -68,6 +70,16 @@ public class AccountEntity
 
     @Column(name="subtype")
     private String subtype;
+
+    @Column(name="mask")
+    @Size(min = 1, max = 5)
+    @NotBlank
+    private String mask;
+
+    @Column(name="type")
+    @Size(min=1, max=12)
+    @NotBlank
+    private String type;
 
     @ManyToMany(mappedBy = "accounts")
     private Set<UserEntity> users = new HashSet<>();

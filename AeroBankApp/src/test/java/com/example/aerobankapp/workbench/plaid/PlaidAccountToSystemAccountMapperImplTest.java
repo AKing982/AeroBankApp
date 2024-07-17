@@ -3,6 +3,7 @@ package com.example.aerobankapp.workbench.plaid;
 import com.example.aerobankapp.configuration.AppConfig;
 import com.example.aerobankapp.configuration.JpaConfig;
 import com.example.aerobankapp.entity.AccountCodeEntity;
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.model.LinkedAccountInfo;
@@ -84,9 +85,9 @@ PlaidAccountToSystemAccountMapperImplTest {
         expected.add(createLinkedAccountInfo("e123123123123", 1));
         expected.add(createLinkedAccountInfo("e123123123123", 2));
 
-        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
-        AccountCodeEntity accountCode1 = createAccountCodeEntity("01", 1, createUserEntity(1));
-        AccountCodeEntity accountCode2 = createAccountCodeEntity("02", 2, createUserEntity(2));
+        List<AccountEntity> accountCodeEntities = new ArrayList<>();
+        AccountEntity accountCode1 = createAccountEntity("01", 1, createUserEntity(1));
+        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(2));
         accountCodeEntities.add(accountCode1);
         accountCodeEntities.add(accountCode2);
 
@@ -113,13 +114,13 @@ PlaidAccountToSystemAccountMapperImplTest {
         expected.add(createLinkedAccountInfo("e123123123123", 1));
         expected.add(createLinkedAccountInfo("e123123123123", 2));
 
-        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
-        AccountCodeEntity accountCode1 = createAccountCodeEntity("01", 1, createUserEntity(1));
-        AccountCodeEntity accountCode2 = createAccountCodeEntity("02", 2, createUserEntity(2));
+        List<AccountEntity> accountCodeEntities = new ArrayList<>();
+        AccountEntity accountCode1 = createAccountEntity("01", 1, createUserEntity(1));
+        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(2));
         accountCodeEntities.add(accountCode1);
         accountCodeEntities.add(accountCode2);
 
-        when(accountCodeService.getAccountCodesListByUserID(1)).thenReturn(accountCodeEntities);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountCodeEntities);
 
         List<LinkedAccountInfo> actual = plaidAccountToSystemAccountMapper.getLinkedAccountInfoList(createUserEntity(1), plaidAccounts);
         assertNotNull(actual);
@@ -140,12 +141,12 @@ PlaidAccountToSystemAccountMapperImplTest {
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 2));
 
-        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
-        AccountCodeEntity accountCode2 = createAccountCodeEntity("02", 2, createUserEntity(2));
+        List<AccountEntity> accountCodeEntities = new ArrayList<>();
+        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(2));
         accountCodeEntities.add(null);
         accountCodeEntities.add(accountCode2);
 
-        when(accountCodeService.getAccountCodesListByUserID(1)).thenReturn(accountCodeEntities);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountCodeEntities);
 
         List<LinkedAccountInfo> actual = plaidAccountToSystemAccountMapper.getLinkedAccountInfoList(createUserEntity(1), plaidAccounts);
         assertNotNull(actual);
@@ -163,13 +164,13 @@ PlaidAccountToSystemAccountMapperImplTest {
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
         plaidAccounts.add(createPlaidAccountWithEmptySubType());
 
-        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
-        AccountCodeEntity accountCode2 = createAccountCodeEntity("02", 2, createUserEntity(1));
-        AccountCodeEntity accountCode = createAccountCodeEntity("01", 1, createUserEntity(1));
+        List<AccountEntity> accountCodeEntities = new ArrayList<>();
+        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(1));
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
         accountCodeEntities.add(accountCode);
         accountCodeEntities.add(accountCode2);
 
-        when(accountCodeService.getAccountCodesListByUserID(1)).thenReturn(accountCodeEntities);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountCodeEntities);
 
         assertThrows(IllegalArgumentException.class, () -> {
             plaidAccountToSystemAccountMapper.getLinkedAccountInfoList(createUserEntity(1), plaidAccounts);
@@ -186,11 +187,11 @@ PlaidAccountToSystemAccountMapperImplTest {
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 1));
 
-        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
-        AccountCodeEntity accountCode = createAccountCodeEntity("01", 1, createUserEntity(1));
+        List<AccountEntity> accountCodeEntities = new ArrayList<>();
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
         accountCodeEntities.add(accountCode);
 
-        when(accountCodeService.getAccountCodesListByUserID(1)).thenReturn(accountCodeEntities);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountCodeEntities);
 
         List<LinkedAccountInfo> actual = plaidAccountToSystemAccountMapper.getLinkedAccountInfoList(createUserEntity(1), plaidAccounts);
         assertNotNull(actual);
@@ -210,11 +211,11 @@ PlaidAccountToSystemAccountMapperImplTest {
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 2));
 
-        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
-        AccountCodeEntity accountCode = createAccountCodeEntity("02", 2, createUserEntity(1));
+        List<AccountEntity> accountCodeEntities = new ArrayList<>();
+        AccountEntity accountCode = createAccountEntity("02", 2, createUserEntity(1));
         accountCodeEntities.add(accountCode);
 
-        when(accountCodeService.getAccountCodesListByUserID(1)).thenReturn(accountCodeEntities);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountCodeEntities);
         List<LinkedAccountInfo> actual = plaidAccountToSystemAccountMapper.getLinkedAccountInfoList(createUserEntity(1), plaidAccounts);
         assertNotNull(actual);
         assertEquals(expected.size(), actual.size());
@@ -233,8 +234,8 @@ PlaidAccountToSystemAccountMapperImplTest {
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 1));
 
-        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
-        AccountCodeEntity accountCode = createAccountCodeEntity("01", 1, createUserEntity(1));
+        List<AccountEntity> accountCodeEntities = new ArrayList<>();
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
         accountCodeEntities.add(accountCode);
 
         when(accountCodeService.getAccountCodesListByUserID(1)).thenReturn(accountCodeEntities);
@@ -258,9 +259,9 @@ PlaidAccountToSystemAccountMapperImplTest {
         expected.add(createLinkedAccountInfo("e123123123123", 1));
         expected.add(createLinkedAccountInfo("e42323-23432-554a2", 2));
 
-        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
-        AccountCodeEntity accountCode = createAccountCodeEntity("01", 1, createUserEntity(1));
-        AccountCodeEntity accountCode2 = createAccountCodeEntity("02", 2, createUserEntity(1));
+        List<AccountEntity> accountCodeEntities = new ArrayList<>();
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
+        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(1));
         accountCodeEntities.add(accountCode);
         accountCodeEntities.add(accountCode2);
 
@@ -286,13 +287,13 @@ PlaidAccountToSystemAccountMapperImplTest {
         expected.add(createLinkedAccountInfo("e123123123123", 1));
         expected.add(createLinkedAccountInfo("e42323-23432-554a2", 2));
 
-        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
-        AccountCodeEntity accountCode = createAccountCodeEntity("01", 1, createUserEntity(1));
-        AccountCodeEntity accountCode2 = createAccountCodeEntity("03", 2, createUserEntity(1));
+        List<AccountEntity> accountCodeEntities = new ArrayList<>();
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
+        AccountEntity accountCode2 = createAccountEntity("03", 2, createUserEntity(1));
         accountCodeEntities.add(accountCode);
         accountCodeEntities.add(accountCode2);
 
-        when(accountCodeService.getAccountCodesListByUserID(1)).thenReturn(accountCodeEntities);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountCodeEntities);
         List<LinkedAccountInfo> actual = plaidAccountToSystemAccountMapper.getLinkedAccountInfoList(createUserEntity(1), plaidAccounts);
         assertNotNull(actual);
         assertEquals(expected.size(), actual.size());
@@ -313,15 +314,15 @@ PlaidAccountToSystemAccountMapperImplTest {
         expected.add(createLinkedAccountInfo("e123123123123", 1));
         expected.add(createLinkedAccountInfo("e42323-23432-554a2", 2));
 
-        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
-        AccountCodeEntity accountCode = createAccountCodeEntity("01", 1, createUserEntity(1));
-        AccountCodeEntity accountCode1 = createAccountCodeEntity("02", 2, createUserEntity(1));
-        AccountCodeEntity accountCode2 = createAccountCodeEntity("03", 2, createUserEntity(1));
+        List<AccountEntity> accountCodeEntities = new ArrayList<>();
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
+        AccountEntity accountCode1 = createAccountEntity("02", 2, createUserEntity(1));
+        AccountEntity accountCode2 = createAccountEntity("03", 2, createUserEntity(1));
         accountCodeEntities.add(accountCode);
         accountCodeEntities.add(accountCode1);
         accountCodeEntities.add(accountCode2);
 
-        when(accountCodeService.getAccountCodesListByUserID(1)).thenReturn(accountCodeEntities);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountCodeEntities);
 
         List<LinkedAccountInfo> actual = plaidAccountToSystemAccountMapper.getLinkedAccountInfoList(createUserEntity(1), plaidAccounts);
         assertNotNull(actual);
@@ -336,19 +337,19 @@ PlaidAccountToSystemAccountMapperImplTest {
     @DisplayName("Test Process Plaid Account By SubType when subType is empty or null then throw exception")
     public void testProcessAccountBySubType_whenSubTypeIsEmptyOrNull_thenThrowException(){
         assertThrows(IllegalArgumentException.class, () ->
-                plaidAccountToSystemAccountMapper.processPlaidAccountBySubType(createPlaidAccount("", "e123123123123"), createAccountCodeEntity("01", 1, createUserEntity(1))));
+                plaidAccountToSystemAccountMapper.processPlaidAccountBySubType(createPlaidAccount("", "e123123123123"), createAccountEntity("01", 1, createUserEntity(1))));
     }
 
     @Test
     @DisplayName("Test Process Plaid Account by subtype when subtype is CHECKING, then return LinkedAccountInfo list")
     public void testProcessAccountBySubType_whenSubtypeEqualsCHECKING_thenReturnLinkedAccountInfoList(){
         PlaidAccount plaidAccount = createPlaidAccount("CHECKING", "e123123123123");
-        AccountCodeEntity accountCode = createAccountCodeEntity("01", 1, createUserEntity(1));
+        AccountEntity account = createAccountEntity("01", 1, createUserEntity(1));
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 1));
 
-        List<LinkedAccountInfo> actual = plaidAccountToSystemAccountMapper.processPlaidAccountBySubType(plaidAccount, accountCode);
+        List<LinkedAccountInfo> actual = plaidAccountToSystemAccountMapper.processPlaidAccountBySubType(plaidAccount, account);
         assertNotNull(actual);
         assertEquals(expected.size(), actual.size());
         for(int i = 0; i < actual.size(); i++) {
@@ -361,7 +362,7 @@ PlaidAccountToSystemAccountMapperImplTest {
     @DisplayName("Test Process Plaid Account By Subtype when subtype is SAVINGS, then return LinkedAccountInfo list")
     public void testProcessAccountBySubType_whenSubtypeEqualsSAVINGS_thenReturnLinkedAccountInfoList(){
         PlaidAccount plaidAccount = createPlaidAccount("SAVINGS", "e123123123123");
-        AccountCodeEntity accountCode = createAccountCodeEntity("02", 2, createUserEntity(1));
+        AccountEntity accountCode = createAccountEntity("02", 2, createUserEntity(1));
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 2));
@@ -375,16 +376,19 @@ PlaidAccountToSystemAccountMapperImplTest {
         }
     }
 
-    @Test
-    @DisplayName("Test Process Plaid Account By Subtype when subtype is paypal ")
+   @Test
+   @DisplayName("Test processPlaidAccountBySubType when account type is checking for plaid sub type checking, then return LinkedAccountInfoList")
+   public void testProcessPlaidAccountsBySubType_whenAccountTypeIsCHECKING_thenReturnLinkedAccountInfoList(){
+
+   }
 
 
 
-    private AccountCodeEntity createAccountCodeEntity(String acctType, int acctID, UserEntity user)
+    private AccountEntity createAccountEntity(String acctType, int acctID, UserEntity user)
     {
-        return AccountCodeEntity.builder()
+        return AccountEntity.builder()
                 .accountType(acctType)
-                .account_segment(acctID)
+                .acctID(acctID)
                 .user(user)
                 .build();
     }

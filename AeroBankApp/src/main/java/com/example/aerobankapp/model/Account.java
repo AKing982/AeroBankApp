@@ -14,6 +14,9 @@ public class Account
 {
     private int accountID;
     private int userID;
+    private String mask;
+    private String subType;
+    private String type;
     private String user;
     private BigDecimal balance;
     private BigDecimal interest;

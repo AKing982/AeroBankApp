@@ -5,12 +5,25 @@ public enum PlaidSubType
     CHECKING("checking"),
     SAVINGS("savings"),
     PAYPAL("paypal"),
-    MONEY_MARKET("money_market");
+    CREDIT_CARD("credit card"),
+    PAYABLE("payable"),
+    STUDENT_LOAN("student"),
+    MORTGAGE("mortgage"),
+    AUTO("auto"),
+    PERSONAL("personal"),
+    BROKERAGE("brokerage"),
+    IRA("ira"),
+    MONEY_MARKET("money market");
 
     private String code;
 
     PlaidSubType(String code)
     {
         this.code = code;
+    }
+
+    public String getCode()
+    {
+        return code;
     }
 }

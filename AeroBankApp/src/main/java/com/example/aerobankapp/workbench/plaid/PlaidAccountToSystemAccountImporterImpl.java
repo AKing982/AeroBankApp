@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.example.aerobankapp.workbench.plaid.PlaidUtil.convertPlaidSubTypeEnumListToStrings;
 
 @Component
 public class PlaidAccountToSystemAccountImporterImpl implements PlaidAccountToSystemAccountImporter {
@@ -23,14 +26,6 @@ public class PlaidAccountToSystemAccountImporterImpl implements PlaidAccountToSy
     private final AccountService accountService;
     private final AccountCodeService accountCodeService;
     private final ExternalAccountsService externalAccountsService;
-    private final String CHECKING = "CHECKING";
-    private final String SAVING = "SAVINGS";
-    private final String RENT = "RENT";
-    private final String INVESTMENT = "INVESTMENT";
-    private final String CHECKING_CODE = "01";
-    private final String SAVINGS_CODE = "02";
-    private final String RENTS_CODE = "03";
-    private final String INVESTMENTS_CODE = "04";
 
     @Autowired
     public PlaidAccountToSystemAccountImporterImpl(AccountService accountService,
@@ -53,72 +48,77 @@ public class PlaidAccountToSystemAccountImporterImpl implements PlaidAccountToSy
         {
             throw new InvalidUserIDException("Invalid UserId caught: " + userID);
         }
-        List<AccountCodeEntity> accountCodeEntities = getAccountCodesForUserId(userID);
+        List<AccountEntity> accountEntities = getAccountCodesForUserId(userID);
 
         //TODO: Fix issue when there's more accountCodes than plaid accounts
-        int loopCount = Math.min(plaidAccounts.size(), accountCodeEntities.size());
+        int accountCodeArrayLength = accountEntities.size();
+        int plaidAccountsArrayLength = plaidAccounts.size();
+        if(accountCodeArrayLength > plaidAccountsArrayLength)
+        {
+
+        }
+
+        int loopCount = Math.min(plaidAccounts.size(), accountEntities.size());
         for(int i = 0; i < loopCount; ++i) {
             PlaidAccount plaidAccount = plaidAccounts.get(i);
-            AccountCodeEntity accountCodeEntity = accountCodeEntities.get(i);
+            AccountEntity accountEntity = accountEntities.get(i);
 
-            if(plaidAccount != null && accountCodeEntity != null){
-                linkedAccountInfos.addAll(processPlaidAccountBySubType(plaidAccount, accountCodeEntity));
+            if(plaidAccount != null && accountEntity != null){
+                linkedAccountInfos.addAll(processPlaidAccountBySubType(plaidAccount, accountEntity));
             }
         }
 
-        if(plaidAccounts.size() != accountCodeEntities.size()){
+        if(plaidAccounts.size() != accountEntities.size()){
             LOGGER.warn("Mismatch in count between Plaid accounts and account codes. Plaid accounts count: {} and account codes count: {}",
-                    plaidAccounts.size(), accountCodeEntities.size());
+                    plaidAccounts.size(), accountEntities.size());
         }
         return linkedAccountInfos;
     }
 
-    public List<LinkedAccountInfo> processPlaidAccountBySubType(final PlaidAccount plaidAccount, final AccountCodeEntity accountCodeEntity) {
-        List<LinkedAccountInfo> linkedAccountInfos = new ArrayList<>();
-        Set<String> validSubTypes = new HashSet<>(Arrays.asList(
-                PlaidLinkedAccountConstants.CHECKING,
-                PlaidLinkedAccountConstants.CHECKING.toLowerCase(),
-                PlaidLinkedAccountConstants.SAVINGS
-//                PlaidLinkedAccountConstants.SAVINGS.toLowerCase()
-        ));
 
+    public List<LinkedAccountInfo> processPlaidAccountBySubType(final PlaidAccount plaidAccount, final AccountEntity accountCodeEntity) {
+        List<LinkedAccountInfo> linkedAccountInfos = new ArrayList<>();
+        Set<String> plaidAccountSubtypes = convertPlaidSubTypeEnumListToStrings();
         String subType = plaidAccount.getSubtype();
         if(subType.isEmpty())
         {
             throw new IllegalArgumentException("Subtype cannot be null or empty");
         }
 
-        if(validSubTypes.contains(subType))
+        // Check that the plaid sub type is supported
+        if(plaidAccountSubtypes.contains(subType))
         {
-            int acctID = accountCodeEntity.getAccount_segment();
+            int acctID = accountCodeEntity.getAcctID();
             LOGGER.info("Account System ID: " + acctID);
             String externalAcctID = plaidAccount.getAccountId();
-            LOGGER.info("External Account ID: " + externalAcctID);
-            LinkedAccountInfo linkedAccountInfo = buildLinkedAccountInfo(acctID, externalAcctID);
-            addLinkedAccountToList(linkedAccountInfos, linkedAccountInfo);
-        }
 
-//        if(!subType.isEmpty() && validSubTypes.contains(subType))
-//        {
-//            int acctID = accountCodeEntity.getAccount_segment();
-//            LOGGER.info("Account System ID: " + acctID);
-//            String externalAcctID = plaidAccount.getAccountId();
-//            LOGGER.info("External Account ID: " + externalAcctID);
-//
-//            String accountType = getAccountTypeFromAccountCodeEntity(accountCodeEntity);
-//            if(accountType.equals(CHECKING_CODE) || accountType.equals(SAVINGS_CODE) || accountType.equals(RENTS_CODE))
-//            {
-//                LinkedAccountInfo linkedAccountInfo = buildLinkedAccountInfo(acctID, externalAcctID);
-//                addLinkedAccountToList(linkedAccountInfos, linkedAccountInfo);
-//            }
-//        }
-//        else
-//        {
-//            throw new IllegalArgumentException("PlaidAccount subtype cannot be null or not supported");
-//        }
-//        return linkedAccountInfos;
+            // Next match the sub type with the user's account
+            // If the sub types are equal, then validate the account Type matches
+            // standard account type
+
+            // TODO: Add verification for AccountType
+            // e.g. does the user's system checking account match the plaid account type DEPOSITORY, etc...
+
+            String accountType = getAccountTypeFromAccountCodeEntity(accountCodeEntity);
+            boolean accountTypeIsValid = validateAccountTypeStructure(accountType);
+            if(accountTypeIsValid)
+            {
+                LinkedAccountInfo linkedAccountInfo = buildLinkedAccountInfo(acctID, externalAcctID);
+                addLinkedAccountToList(linkedAccountInfos, linkedAccountInfo);
+            }
+        }
         return linkedAccountInfos;
     }
+
+
+    public boolean validateAccountTypeStructure(String accountType)
+    {
+        return accountType.equals(PlaidLinkedAccountConstants.CHECKING_CODE) || accountType.equals(PlaidLinkedAccountConstants.SAVINGS_CODE)
+                || accountType.equals(PlaidLinkedAccountConstants.AUTO_CODE) || accountType.equals(PlaidLinkedAccountConstants.PAYPAL_CODE) ||
+                accountType.equals(PlaidLinkedAccountConstants.INVESTMENTS_CODE) || accountType.equals(PlaidLinkedAccountConstants.STUDENT_LOAN_CODE) ||
+                accountType.equals(PlaidLinkedAccountConstants.CREDIT_CARD_CODE);
+    }
+
 
     private LinkedAccountInfo buildLinkedAccountInfo(int acctID, String externalAcctID) {
         return createLinkedAccountInfo(acctID, externalAcctID);
@@ -158,13 +158,13 @@ public class PlaidAccountToSystemAccountImporterImpl implements PlaidAccountToSy
         externalAccountsService.save(externalAccountsEntity);
     }
 
-    private String getAccountTypeFromAccountCodeEntity(AccountCodeEntity accountCodeEntity)
+    private String getAccountTypeFromAccountCodeEntity(AccountEntity accountEntity)
     {
-        return accountCodeEntity.getAccountType();
+        return accountEntity.getAccountType();
     }
 
-    private List<AccountCodeEntity> getAccountCodesForUserId(int userId) {
-        return accountCodeService.getAccountCodesListByUserID(userId);
+    private List<AccountEntity> getAccountCodesForUserId(int userId) {
+        return accountService.getListOfAccountsByUserID(userId);
     }
 
     private LinkedAccountInfo createLinkedAccountInfo(int acctID, String externalAcctID)
