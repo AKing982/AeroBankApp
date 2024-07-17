@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -71,77 +72,39 @@ public class PlaidAccountToSystemAccountMapperImpl implements PlaidAccountToSyst
                     if(accountCode != null)
                     {
                         String plaidAccountSubType = plaidAccount.getSubtype();
-                        if(!plaidAccountSubType.isEmpty())
-                        {
-                            int acctID = accountCode.getAccount_segment();
-                            String externalAcctID = plaidAccount.getAccountId();
-                            if(plaidAccountSubType.equals(CHECKING) || plaidAccountSubType.equals(CHECKING.toLowerCase()))
-                            {
-
-                                LinkedAccountInfo linkedAccountInfo = createLinkedAccountInfo(acctID, externalAcctID);
-                                linkedAccountInfos.add(linkedAccountInfo);
-                            }
-                            else if(plaidAccountSubType.equals(SAVING))
-                            {
-                                LinkedAccountInfo linkedAccountInfo = createLinkedAccountInfo(acctID, externalAcctID);
-                                linkedAccountInfos.add(linkedAccountInfo);
-                            }
-                        }
-                        else
-                        {
-                            throw new IllegalArgumentException("PlaidAccount subtype cannot be null");
-                        }
+                        linkedAccountInfos.addAll(processPlaidAccountBySubType(plaidAccount, plaidAccountSubType, accountCode));
                     }
                 }
             }
         }
-//        Map<Integer, List<LinkedAccountInfo>> accountIdsMap = new HashMap<>();
-//        assertPlaidAccountListIsNull(plaidAccounts);
-//        if (plaidAccounts.isEmpty())
-//        {
-//            return new HashMap<>();
-//        }
-//        int userId = getUserIdFromUserEntity(user);
-//
-//        List<AccountCodeEntity> accountCodeEntities = getAccountCodesForUserId(userId);
-//
-//        for (PlaidAccount plaidAccount : plaidAccounts)
-//        {
-//            for(AccountCodeEntity accountCodeEntity : accountCodeEntities)
-//            {
-//                if(plaidAccount != null && accountCodeEntity != null)
-//                {
-//                    String subType = plaidAccount.getSubtype();
-//                    if(!subType.isEmpty())
-//                    {
-//                        String externalId = plaidAccount.getAccountId();
-//                        if(subType.equals(CHECKING) || subType.equals(CHECKING.toLowerCase()))
-//                        {
-//                            String accountType = getAccountTypeFromAccountCodeEntity(accountCodeEntity);
-//                            if(accountType.equals(CHECKING_CODE))
-//                            {
-//                                // Create an ExternalAccountsEntity with the accountId and plaid accountId
-//                                int acctID = getAccountSegmentFromAccountCodeEntity(accountCodeEntity);
-//                                LinkedAccountInfo linkedAccountInfo = createLinkedAccountInfo(acctID, externalId);
-//                                setAccountsIdsMap(accountIdsMap, userId, linkedAccountInfo);
-//                            }
-//                        }
-//                        else if(subType.equals(SAVING) || subType.equals(SAVING.toLowerCase()))
-//                        {
-//                            String accountType = getAccountTypeFromAccountCodeEntity(accountCodeEntity);
-//                            if(accountType.equals(SAVINGS_CODE))
-//                            {
-//                                // Create an ExternalAccountsEntity with the accountId and plaid accountId
-//                                int acctID = getAccountSegmentFromAccountCodeEntity(accountCodeEntity);
-//                                LinkedAccountInfo linkedAccountInfo = createLinkedAccountInfo(acctID, externalId);
-//                                setAccountsIdsMap(accountIdsMap, userId, linkedAccountInfo);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return accountIdsMap;
+        return linkedAccountInfos;
+    }
+
+    public List<LinkedAccountInfo> processPlaidAccountBySubType(final PlaidAccount plaidAccount, String subType, AccountCodeEntity accountCodeEntity) {
+        List<LinkedAccountInfo> linkedAccountInfos = new ArrayList<>();
+        Set<String> validSubTypes = new HashSet<>(Arrays.asList(
+                PlaidLinkedAccountConstants.CHECKING,
+                PlaidLinkedAccountConstants.CHECKING.toLowerCase(),
+                PlaidLinkedAccountConstants.SAVINGS,
+                PlaidLinkedAccountConstants.SAVINGS.toLowerCase()
+        ));
+
+        if(!subType.isEmpty() && validSubTypes.contains(subType))
+        {
+            int acctID = accountCodeEntity.getAccount_segment();
+            String externalAcctID = plaidAccount.getAccountId();
+
+            String accountType = getAccountTypeFromAccountCodeEntity(accountCodeEntity);
+            if(accountType.equals(CHECKING_CODE))
+            {
+                LinkedAccountInfo linkedAccountInfo = createLinkedAccountInfo(acctID, externalAcctID);
+                linkedAccountInfos.add(linkedAccountInfo);
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException("PlaidAccount subtype cannot be null or not supported");
+        }
         return linkedAccountInfos;
     }
 
@@ -188,18 +151,9 @@ public class PlaidAccountToSystemAccountMapperImpl implements PlaidAccountToSyst
         return accountCodeService.getAccountCodesListByUserID(userId);
     }
 
-    private Optional<AccountCodeEntity> getAccountCodeEntityByUserIdAndAcctId(final int userId, int acctID)
-    {
-        return accountCodeService.findByUserIdAndAcctSegment(userId, acctID);
-    }
-
     private LinkedAccountInfo createLinkedAccountInfo(int acctID, String externalAcctID)
     {
         return new LinkedAccountInfo(acctID, externalAcctID);
-    }
-
-    public void setAccountsIdsMap(Map<Integer, List<LinkedAccountInfo>> accountsIdsMap, int userId, LinkedAccountInfo linkedAccountInfo) {
-        accountsIdsMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(linkedAccountInfo);
     }
 
     private List<AccountEntity> getUserSystemAccountsByUserId(int userId){

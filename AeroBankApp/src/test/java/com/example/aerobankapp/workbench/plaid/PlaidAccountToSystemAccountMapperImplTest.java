@@ -34,7 +34,8 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Import({JpaConfig.class, AppConfig.class})
-class PlaidAccountToSystemAccountMapperImplTest {
+class
+PlaidAccountToSystemAccountMapperImplTest {
 
     @InjectMocks
     private PlaidAccountToSystemAccountMapperImpl plaidAccountToSystemAccountMapper;
@@ -211,6 +212,29 @@ class PlaidAccountToSystemAccountMapperImplTest {
 
         List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
         AccountCodeEntity accountCode = createAccountCodeEntity("02", 2, createUserEntity(1));
+        accountCodeEntities.add(accountCode);
+
+        when(accountCodeService.getAccountCodesListByUserID(1)).thenReturn(accountCodeEntities);
+        List<LinkedAccountInfo> actual = plaidAccountToSystemAccountMapper.getLinkedAccountInfoList(createUserEntity(1), plaidAccounts);
+        assertNotNull(actual);
+        assertEquals(expected.size(), actual.size());
+        for (int i = 0; i < actual.size(); i++) {
+            assertEquals(expected.get(i).getExternalAcctID(), actual.get(i).getExternalAcctID());
+            assertEquals(expected.get(i).getSystemAcctID(), actual.get(i).getSystemAcctID());
+        }
+    }
+
+    @Test
+    @DisplayName("Test getLinkedAccountInfoList when subType is CHECKING, AccountType is 01, then return LinkedAccountInfo list")
+    public void testGetLinkedAccountInfoList_whenSubTypeEqualsCHECKING_AccountTypeIsZeroOne_thenReturnLinkedAccountInfoList(){
+        List<PlaidAccount> plaidAccounts = new ArrayList<>();
+        plaidAccounts.add(createPlaidAccount("CHECKING"));
+
+        List<LinkedAccountInfo> expected = new ArrayList<>();
+        expected.add(createLinkedAccountInfo("e123123123123", 1));
+
+        List<AccountCodeEntity> accountCodeEntities = new ArrayList<>();
+        AccountCodeEntity accountCode = createAccountCodeEntity("01", 1, createUserEntity(1));
         accountCodeEntities.add(accountCode);
 
         when(accountCodeService.getAccountCodesListByUserID(1)).thenReturn(accountCodeEntities);
