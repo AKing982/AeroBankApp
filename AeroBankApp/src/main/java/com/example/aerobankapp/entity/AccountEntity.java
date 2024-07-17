@@ -25,8 +25,8 @@ public class AccountEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int acctID;
 
-    @Column(name="externalId")
-    private String externalId;
+//    @Column(name="externalId")
+//    private String externalId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="accountCodeID")
@@ -85,9 +85,8 @@ public class AccountEntity
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="account")
     private Set<ExternalAccountsEntity> externalAccounts = new HashSet<>();
 
-    public AccountEntity(int acctID, String externalId, AccountCodeEntity accountCode, UserEntity user, AccountSecurityEntity accountSecurity, AccountPropertiesEntity accountProperties, String accountName, BigDecimal balance, BigDecimal interest, String accountType, boolean hasDividend, boolean isRentAccount, boolean hasMortgage, String subtype, Set<UserEntity> users, Set<TransactionStatementEntity> transactions, Set<AccountSecurityEntity> securities, Set<AccountPropertiesEntity> accountPropertiesEntities) {
+    public AccountEntity(int acctID, AccountCodeEntity accountCode, UserEntity user, AccountSecurityEntity accountSecurity, AccountPropertiesEntity accountProperties, String accountName, BigDecimal balance, BigDecimal interest, String accountType, boolean hasDividend, boolean isRentAccount, boolean hasMortgage, String subtype, Set<UserEntity> users, Set<TransactionStatementEntity> transactions, Set<AccountSecurityEntity> securities, Set<AccountPropertiesEntity> accountPropertiesEntities) {
         this.acctID = acctID;
-        this.externalId = externalId;
         this.accountCode = accountCode;
         this.user = user;
         this.accountSecurity = accountSecurity;

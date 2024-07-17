@@ -161,11 +161,14 @@ export default function LoginFormOLD()
     const handlePlaidSuccess = useCallback(async(public_token, metadata) => {
         try
         {
-            let userId = sessionStorage.getItem('userID');
+           let userId = sessionStorage.getItem('userID');
             const response = await axios.post(`http://localhost:8080/AeroBankApp/api/plaid/exchange_public_token`, {
                 public_token: public_token,
                 userId: userId
         });
+            let userID = sessionStorage.getItem('userID');
+
+            await fetchAndLinkPlaidAccounts(userID);
             navigateToHomePage();
         }catch(error)
         {
@@ -197,7 +200,7 @@ export default function LoginFormOLD()
                     const { linkToken, showPlaidLink } = await fetchLinkTokenResponse(userID);
                     setLinkToken(linkToken);
                     setShowPlaidLink(showPlaidLink);
-                    await fetchAndLinkPlaidAccounts(userID);
+
                     console.log("ShowPlaidLink: ", showPlaidLink);
 
                 }catch(error)

@@ -13,8 +13,6 @@ import org.hibernate.annotations.GenericGenerator;
 public class ExternalAccountsEntity {
 
     @Id
-    @GeneratedValue(generator="uuid2")
-    @GenericGenerator(name="uuid2", strategy = "uuid2")
     @Column(columnDefinition = "VARCHAR(255)")
     private String externalAcctID;
 
@@ -25,5 +23,13 @@ public class ExternalAccountsEntity {
     public ExternalAccountsEntity(String id, AccountEntity account) {
         this.externalAcctID = id;
         this.account = account;
+    }
+
+    @Override
+    public String toString() {
+        return "ExternalAccountsEntity{" +
+                "externalAcctID='" + externalAcctID + '\'' +
+                ", account=" + account +
+                '}';
     }
 }

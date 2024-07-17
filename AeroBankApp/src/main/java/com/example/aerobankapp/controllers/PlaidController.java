@@ -10,7 +10,8 @@ import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.TransactionStatementService;
 import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.plaid.PlaidService;
-import com.example.aerobankapp.workbench.plaid.PlaidAccountToSystemAccountMapper;
+import com.example.aerobankapp.workbench.plaid.PlaidAccountToSystemAccountImporter;
+import com.example.aerobankapp.workbench.plaid.PlaidAccountToSystemAccountImporterImpl;
 import com.plaid.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class PlaidController {
     private final UserService userService;
     private final AccountService accountService;
     private final TransactionStatementService transactionStatementService;
-    private final PlaidAccountToSystemAccountMapper plaidAccountToSystemAccountMapper;
+    private final PlaidAccountToSystemAccountImporter plaidAccountToSystemAccountMapper;
     private Logger LOGGER = LoggerFactory.getLogger(PlaidController.class);
 
     @Autowired
@@ -45,7 +46,7 @@ public class PlaidController {
                            UserService userService,
                            AccountService accountService,
                            TransactionStatementService transactionStatementService,
-                           PlaidAccountToSystemAccountMapper plaidAccountToSystemAccountMapper)
+                           PlaidAccountToSystemAccountImporter plaidAccountToSystemAccountMapper)
     {
         this.plaidService = plaidService;
         this.userService = userService;
@@ -104,14 +105,11 @@ public class PlaidController {
             if(userEntityOptional.isPresent())
             {
                 UserEntity userEntity = userEntityOptional.get();
+                //TODO: Associate the plaid transactions acctID with the system acctID
                 List<LinkedAccountInfo> accountMap = plaidAccountToSystemAccountMapper.getLinkedAccountInfoList(userEntity, plaidAccountList);
-                Boolean saveAndCreateExternalAccount = plaidAccountToSystemAccountMapper.executeCreateAndSaveExternalAccountEntity(accountMap);
+                //TODO: Store the associated acctIDs in the ExternalAccounts table
+                plaidAccountToSystemAccountMapper.executeCreateAndSaveExternalAccountEntity(accountMap);
             }
-
-            //TODO: Associate the plaid transactions acctID with the system acctID
-
-            //TODO: Store the associated acctIDs in the ExternalAccounts table
-
             return ResponseEntity.ok().body(accountBaseList);
 
         }catch(Exception ex)

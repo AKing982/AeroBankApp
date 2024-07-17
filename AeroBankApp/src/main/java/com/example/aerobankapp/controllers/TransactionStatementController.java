@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,16 @@ public class TransactionStatementController
         String countOfStr = String.valueOf(countOfPending);
 
         return ResponseEntity.ok(new PendingAmountResponse(countOfStr));
+    }
+
+    @GetMapping("/transactions/{acctID}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getTransactionsByDateRangeAndAcctID(@PathVariable("acctID") int acctID,
+                                                                 @RequestParam LocalDate startDate,
+                                                                 @RequestParam LocalDate endDate,
+                                                                 @RequestParam int limit){
+        return ResponseEntity.ok().body("Getting Transactions");
+
     }
 
 }

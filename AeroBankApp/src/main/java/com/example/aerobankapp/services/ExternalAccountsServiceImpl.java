@@ -49,7 +49,7 @@ public class ExternalAccountsServiceImpl implements ExternalAccountsService
     public ExternalAccountsEntity createExternalAccount(String externalAcctID, int acctID) {
         ExternalAccountsEntity externalAccountsEntity = new ExternalAccountsEntity();
         externalAccountsEntity.setExternalAcctID(externalAcctID);
-        externalAccountsEntity.setAccount(AccountEntity.builder().acctID(1).build());
+        externalAccountsEntity.setAccount(AccountEntity.builder().acctID(acctID).build());
         return externalAccountsEntity;
     }
 }
