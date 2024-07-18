@@ -52,16 +52,4 @@ public class AccountCodeEntity {
 
     }
 
-    @Override
-    public String toString() {
-        return "AccountCodeEntity{" +
-                "acctCodeID=" + acctCodeID +
-                ", first_initial_segment='" + first_initial_segment + '\'' +
-                ", last_initial_segment='" + last_initial_segment + '\'' +
-                ", user=" + user +
-                ", accountType='" + accountType + '\'' +
-                ", year_segment=" + year_segment +
-                ", account_segment=" + account_segment +
-                '}';
-    }
 }

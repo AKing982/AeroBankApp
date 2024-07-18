@@ -15,7 +15,8 @@ public class PlaidTransaction
 {
     private Long id;
     private int userId;
-    private int accountId;
+    private String accountId;
+    private String transactionId;
     private String transactionName;
     private String location;
     private List<String> categories;
@@ -23,7 +24,20 @@ public class PlaidTransaction
     private boolean pending;
     private BigDecimal amount;
 
-    public PlaidTransaction(Long id, int userId, int accountId, String transactionName, String location, List<String> categories, LocalDate date, boolean pending, BigDecimal amount) {
+    public PlaidTransaction(Long id, int userId, String accountId, String transactionId, String transactionName, String location, List<String> categories, LocalDate date, boolean pending, BigDecimal amount) {
+        this.id = id;
+        this.userId = userId;
+        this.accountId = accountId;
+        this.transactionId = transactionId;
+        this.transactionName = transactionName;
+        this.location = location;
+        this.categories = categories;
+        this.date = date;
+        this.pending = pending;
+        this.amount = amount;
+    }
+
+    public PlaidTransaction(Long id, int userId, String accountId, String transactionName, String location, List<String> categories, LocalDate date, boolean pending, BigDecimal amount) {
         this.id = id;
         this.userId = userId;
         this.accountId = accountId;

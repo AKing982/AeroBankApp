@@ -6,7 +6,7 @@ import com.example.aerobankapp.model.PlaidAccount;
 
 import java.util.List;
 
-public interface PlaidAccountToSystemAccountImporter
+public interface PlaidDataImporter
 {
     List<LinkedAccountInfo> getLinkedAccountInfoList(UserEntity user, List<PlaidAccount> plaidAccounts);
     Boolean executeCreateAndSaveExternalAccountEntity(List<LinkedAccountInfo> accountIdsMap);

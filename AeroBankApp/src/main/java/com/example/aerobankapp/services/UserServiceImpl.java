@@ -86,8 +86,9 @@ public class UserServiceImpl implements UserService
 
     @Override
     @Transactional
-    public Optional<UserEntity> findById(int userID) {
-        return userRepository.findById(userID);
+    public UserEntity findById(int userID) {
+        Optional<UserEntity> user = userRepository.findById(userID);
+        return user.orElse(null);
     }
 
     @Override

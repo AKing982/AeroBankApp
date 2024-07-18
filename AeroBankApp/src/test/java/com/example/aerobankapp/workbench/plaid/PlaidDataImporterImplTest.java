@@ -7,13 +7,8 @@ import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
-import com.example.aerobankapp.model.Account;
-import com.example.aerobankapp.model.LinkedAccountInfo;
-import com.example.aerobankapp.model.PlaidAccount;
-import com.example.aerobankapp.services.AccountCodeService;
-import com.example.aerobankapp.services.AccountService;
-import com.example.aerobankapp.services.ExternalAccountsService;
-import com.example.aerobankapp.workbench.data.UserDataManagerImpl;
+import com.example.aerobankapp.model.*;
+import com.example.aerobankapp.services.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,27 +18,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.hateoas.Link;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Import({JpaConfig.class, AppConfig.class})
-class
-PlaidAccountToSystemAccountMapperImplTest {
+class PlaidDataImporterImplTest {
 
     @InjectMocks
-    private PlaidAccountToSystemAccountImporterImpl plaidAccountToSystemAccountMapper;
+    private PlaidDataImporterImpl plaidAccountToSystemAccountMapper;
 
     @Mock
     private AccountService accountService;
@@ -52,14 +44,14 @@ PlaidAccountToSystemAccountMapperImplTest {
     private AccountCodeService accountCodeService;
 
     @Mock
-    private UserDataManagerImpl userDataManager;
+    private UserServiceImpl userDataManager;
 
     @Mock
     private ExternalAccountsService externalAccountsService;
 
     @BeforeEach
     void setUp() {
-        plaidAccountToSystemAccountMapper = new PlaidAccountToSystemAccountImporterImpl(accountService, accountCodeService, userDataManager, externalAccountsService);
+        plaidAccountToSystemAccountMapper = new PlaidDataImporterImpl(accountService, accountCodeService, userDataManager, externalAccountsService);
     }
 
     @Test
@@ -438,8 +430,15 @@ PlaidAccountToSystemAccountMapperImplTest {
         account.setSubType("checking");
         account.setType("depository");
 
-        Boolean result = plaidAccountToSystemAccountMapper.importPlaidDataToSystemAccount(plaidAccount, account);
-        assertTrue(result);
+       AccountEntity accountEntity = createAccountEntity("checking", 1, createUserEntity(1));
+       when(userDataManager.findById(1)).thenReturn(createUserEntity(1));
+       when(accountService.buildAccountEntityByAccountModel(account, createAccountCodeEntity(), createUserEntity(1))).thenReturn(accountEntity);
+       doNothing().when(accountService).save(accountEntity);
+
+        PlaidImportResult expected = new PlaidImportResult(account, true);
+
+        PlaidImportResult actual = plaidAccountToSystemAccountMapper.importPlaidDataToSystemAccount(plaidAccount, account);
+        assertEquals(expected.getResult(), actual.getResult());
         assertEquals(account.getAccountName(), plaidAccount.getOfficialName());
         assertEquals(account.getBalance(), plaidAccount.getCurrentBalance());
    }
@@ -470,15 +469,173 @@ PlaidAccountToSystemAccountMapperImplTest {
        account.setType("depository");
 
        AccountEntity accountEntity = createAccountEntity("checking", 1, createUserEntity(1));
+       when(userDataManager.findById(1)).thenReturn(createUserEntity(1));
        when(accountService.buildAccountEntityByAccountModel(account, createAccountCodeEntity(), createUserEntity(1))).thenReturn(accountEntity);
+       doNothing().when(accountService).save(accountEntity);
+
+       PlaidImportResult expected = new PlaidImportResult(account, true);
+
+       PlaidImportResult actual = plaidAccountToSystemAccountMapper.importPlaidDataToSystemAccount(plaidAccount, account);
+       assertEquals(expected.getResult(), actual.getResult());
+
+       assertEquals(1, account.getUserID());
+       assertEquals(account.getAccountName(), plaidAccount.getOfficialName());
+       assertEquals(account.getBalance(), plaidAccount.getCurrentBalance());
+
+//       verify(accountService).buildAccountEntityByAccountModel(any(Account.class), any(AccountCodeEntity.class), any(UserEntity.class));
+   }
+
+   @Test
+   @DisplayName("Test importPlaidDataToSystemAccount when account entity is null, then throw exception")
+   public void testImportPlaidDataToSystemAccount_whenAccountEntityIsNull_thenThrowException(){
+
+       PlaidAccount plaidAccount = new PlaidAccount();
+       plaidAccount.setAccountId("e123123123123");
+       plaidAccount.setSubtype("checking");
+       plaidAccount.setType("depository");
+       plaidAccount.setMask("1111");
+       plaidAccount.setAvailableBalance(BigDecimal.valueOf(1150));
+       plaidAccount.setCurrentBalance(BigDecimal.valueOf(1200));
+       plaidAccount.setOfficialName("Plaid Checking");
+       plaidAccount.setName("Checking Plaid Account");
+       plaidAccount.setLimit(BigDecimal.valueOf(1000));
+
+       Account account = new Account();
+       account.setAccountID(1);
+       account.setAccountName("Alex's Checking");
+       account.setAccountType(AccountType.CHECKING);
+       account.setMask("1111");
+       account.setBalance(BigDecimal.valueOf(250));
+       account.setUser("AKing94");
+       account.setUserID(1);
+       account.setSubType("checking");
+       account.setType("depository");
+
+       when(userDataManager.findById(1)).thenReturn(createUserEntity(1));
+       when(accountService.buildAccountEntityByAccountModel(account, createAccountCodeEntity(), createUserEntity(1))).thenThrow(new IllegalArgumentException(""));
+
+       assertThrows(IllegalArgumentException.class, () -> {
+           plaidAccountToSystemAccountMapper.importPlaidDataToSystemAccount(plaidAccount, account);
+       });
+   }
+
+   @Test
+   @DisplayName("test validate AccountSubTypeToTypeCriteria when account list is null/empty, then throw exception")
+   public void testValidateAccountSubTypeToTypeCriteria_whenAccountListIsNull_thenThrowException(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            plaidAccountToSystemAccountMapper.validateAccountSubTypeToTypeCriteria(null);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            plaidAccountToSystemAccountMapper.validateAccountSubTypeToTypeCriteria(Collections.emptyList());
+        });
+   }
+
+   @Test
+   @DisplayName("test validate AccountSubTypeToTypeCriteria when account list is valid, subType and type are empty, then throw exception")
+   public void testValidateAccountSubTypeToTypeCriteria_whenAccountListIsValid_AndSubTypeAndTypeAreEmpty_thenThrowException(){
+
+        AccountEntity accountEntity = new AccountEntity();;
+        accountEntity.setAcctID(1);
+        accountEntity.setAccountName("Alex's Checking");
+        accountEntity.setAccountType("");
+        accountEntity.setSubtype("");
+        accountEntity.setBalance(BigDecimal.valueOf(1200));
+
+        List<AccountEntity> accountEntities = Collections.singletonList(accountEntity);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            plaidAccountToSystemAccountMapper.validateAccountSubTypeToTypeCriteria(accountEntities);
+        });
+   }
+
+   @Test
+   @DisplayName("Test validate AccountSubTypeToTypeCriteria when subtype and type are valid, then return true")
+   public void testValidateAccountSubTypeToTypeCriteria_whenSubTypeAndTypeAreValid_thenReturnTrue(){
+       AccountEntity accountEntity = new AccountEntity();;
+       accountEntity.setAcctID(1);
+       accountEntity.setAccountName("Alex's Checking");
+       accountEntity.setAccountType("01");
+       accountEntity.setType("depository");
+       accountEntity.setSubtype("checking");
+       accountEntity.setBalance(BigDecimal.valueOf(1200));
+
+       List<AccountEntity> accountEntities = Collections.singletonList(accountEntity);
+
+       Boolean result = plaidAccountToSystemAccountMapper.validateAccountSubTypeToTypeCriteria(accountEntities);
+       assertTrue(result);
+   }
+
+   @Test
+   @DisplayName("Test validate AccountSubTypeToTypeCriteria when account entity is null, then skip null account and return true")
+   public void testValidateAccountSubTypeToTypeCriteria_whenAccountEntityIsNull_thenSkipAccountAndReturnTrue(){
+       AccountEntity accountEntity = new AccountEntity();;
+       accountEntity.setAcctID(1);
+       accountEntity.setAccountName("Alex's Checking");
+       accountEntity.setAccountType("01");
+       accountEntity.setType("depository");
+       accountEntity.setSubtype("checking");
+       accountEntity.setBalance(BigDecimal.valueOf(1200));
+
+       List<AccountEntity> accountEntityList = new ArrayList<>();
+       accountEntityList.add(accountEntity);
+       accountEntityList.add(null);
+       accountEntityList.add(accountEntity);
+
+       Boolean result = plaidAccountToSystemAccountMapper.validateAccountSubTypeToTypeCriteria(accountEntityList);
+       assertTrue(result);
+   }
+
+   @Test
+   @DisplayName("Test importPlaidTransactionToSystem when plaid transaction is null then throw exception")
+   public void testImportPlaidTransactionToSystem_whenPlaidTransactionIsNull_thenThrowException(){
+        assertThrows(IllegalArgumentException.class, () -> plaidAccountToSystemAccountMapper.importPlaidTransactionToSystem(null));
+   }
+
+   @Test
+   @DisplayName("Test ImportPlaidTransactionToSystem when plaid transaction has invalid parameters, then throw exception")
+   public void testImportPlaidTransactionToSystem_whenPlaidTransactionHasInvalidParameters_thenThrowException(){
+       PlaidTransaction transaction = new PlaidTransaction();
+        transaction.setTransactionName("Test Transaction");
+        transaction.setAccountId(null);
+        transaction.setDate(null);
+        transaction.setAmount(null);
+        transaction.setPending(false);
+
+        assertThrows(IllegalArgumentException.class, () -> plaidAccountToSystemAccountMapper.importPlaidTransactionToSystem(transaction));
+   }
+
+   @Test
+   @DisplayName("Test ImportPlaidTransactionToSystem when plaid transaction is valid, then return PlaidImportResult")
+   public void testImportPlaidTransactionToSystem_whenPlaidTransactionIsValid_thenReturnPlaidImportResult(){
+
+       PlaidTransactionImport plaidTransactionImport = new PlaidTransactionImport();
+       plaidTransactionImport.setTransactionDate(createPlaidTransaction().getDate());
+       plaidTransactionImport.setTransactionId(createPlaidTransaction().getTransactionId());
+       plaidTransactionImport.setReferenceNumber("12121212");
+       plaidTransactionImport.setAmount(BigDecimal.valueOf(1200));
+       plaidTransactionImport.setPending(false);
+       plaidTransactionImport.setTransactionName("Test Transaction");
+       plaidTransactionImport.setPosted(LocalDate.now());
 
 
+
+   }
+
+   private PlaidTransaction createPlaidTransaction(){
+       PlaidTransaction transaction = new PlaidTransaction();
+       transaction.setTransactionName("Test Transaction");
+       transaction.setAccountId("e12123123123");
+       transaction.setDate(LocalDate.of(2024, 6, 14));
+       transaction.setAmount(BigDecimal.valueOf(120));
+       transaction.setPending(false);
+       return transaction;
    }
 
 
     private AccountCodeEntity createAccountCodeEntity(){
         return AccountCodeEntity.builder()
-                .accountType("checking")
+                .accountType("01")
                 .account_segment(1)
                 .first_initial_segment("A")
                 .last_initial_segment("K")

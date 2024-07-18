@@ -10,8 +10,8 @@ import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.TransactionStatementService;
 import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.plaid.PlaidService;
-import com.example.aerobankapp.workbench.plaid.PlaidAccountToSystemAccountImporter;
-import com.example.aerobankapp.workbench.plaid.PlaidAccountToSystemAccountImporterImpl;
+import com.example.aerobankapp.workbench.plaid.PlaidDataImporter;
+import com.example.aerobankapp.workbench.plaid.PlaidDataImporterImpl;
 import com.plaid.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class PlaidController {
     private final UserService userService;
     private final AccountService accountService;
     private final TransactionStatementService transactionStatementService;
-    private final PlaidAccountToSystemAccountImporter plaidAccountToSystemAccountMapper;
+    private final PlaidDataImporter plaidAccountToSystemAccountMapper;
     private Logger LOGGER = LoggerFactory.getLogger(PlaidController.class);
 
     @Autowired
@@ -46,7 +46,7 @@ public class PlaidController {
                            UserService userService,
                            AccountService accountService,
                            TransactionStatementService transactionStatementService,
-                           PlaidAccountToSystemAccountImporter plaidAccountToSystemAccountMapper)
+                           PlaidDataImporter plaidAccountToSystemAccountMapper)
     {
         this.plaidService = plaidService;
         this.userService = userService;
@@ -101,7 +101,7 @@ public class PlaidController {
             // Convert the accounts to a plaid account
             List<PlaidAccount> plaidAccountList = plaidService.getPlaidAccountsFromAccountBase(accountBaseList);
 
-            Optional<UserEntity> userEntityOptional = userService.findById(userId);
+            Optional<UserEntity> userEntityOptional = Optional.ofNullable(userService.findById(userId));
             if(userEntityOptional.isPresent())
             {
                 UserEntity userEntity = userEntityOptional.get();
@@ -179,8 +179,7 @@ public class PlaidController {
         List<PlaidTransactionCriteria> plaidTransactionCriteriaList = transactions.stream().toList();
 
 
-        UserEntity user = userService.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("UserId: " + userId + " not found."));
+        UserEntity user = userService.findById(userId);
 
 //        List<AccountEntity> accounts = accountService.findByUserId(user.getUserID());
         //TODO: Store transactions to plaid Transactions table

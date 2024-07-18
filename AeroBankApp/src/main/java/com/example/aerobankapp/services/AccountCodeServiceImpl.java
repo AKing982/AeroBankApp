@@ -3,6 +3,7 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.exceptions.AccountCodeNotFoundException;
 import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.repositories.AccountCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,14 +57,17 @@ public class AccountCodeServiceImpl implements AccountCodeService
     }
 
     @Override
-    public Optional<AccountCodeEntity> findByUserIdAndAcctSegment(int userId, int acctSegment) {
-        return accountCodeRepository.findAccountCodeEntityByUserIdAndAcctSegment(userId, acctSegment);
+    public AccountCodeEntity findByUserIdAndAcctSegment(int userId, int acctSegment) {
+        Optional<AccountCodeEntity> accountCodeEntityOptional = accountCodeRepository.findAccountCodeEntityByUserIdAndAcctSegment(userId, acctSegment);
+        return accountCodeEntityOptional.orElseThrow(() -> new AccountCodeNotFoundException("Account Code Not Found for userID: " + userId + " and acctID: " + acctSegment));
     }
 
     @Override
     public List<AccountCodeEntity> findByUserName(String user) {
         return null;
     }
+
+
 
     @Override
     public List<AccountCodeEntity> getAccountCodesListByUserID(int userID) {

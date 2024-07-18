@@ -20,6 +20,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>
     @Query(value="SELECT EXISTS(SELECT 1 FROM AccountEntity e JOIN e.users u WHERE u.userDetails.accountNumber =:accountNum)")
     boolean doesAccountNumberExist(@Param("accountNum") String acctNum);
 
+    @Transactional
     @Query("SELECT u FROM UserEntity u WHERE u.userID=:id")
     Optional<UserEntity> findById(@Param("id") int id);
 

@@ -16,7 +16,8 @@ import java.util.Set;
 
 @Entity
 @Table(name="account")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

@@ -79,8 +79,7 @@ public class TransferMapper {
     }
 
     private UserEntity getUserEntityFromDatabase(int userID) {
-        return userService.findById(userID)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid userID: " + userID));
+        return userService.findById(userID);
     }
 
     private void saveTransactionCriteria(TransactionCriteriaEntity transactionCriteria)

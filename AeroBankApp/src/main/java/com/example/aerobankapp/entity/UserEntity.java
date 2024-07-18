@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -82,6 +83,11 @@ public class UserEntity
     {
         accounts.remove(accountEntity);
         accountEntity.getUsers().remove(this);
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(userID);
     }
 
 }

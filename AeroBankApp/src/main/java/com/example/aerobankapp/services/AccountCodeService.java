@@ -28,7 +28,7 @@ public interface AccountCodeService extends ServiceDAOModel<AccountCodeEntity>
     @Override
     Optional<AccountCodeEntity> findAllById(Long id);
 
-    Optional<AccountCodeEntity> findByUserIdAndAcctSegment(int userId, int acctSegment);
+    AccountCodeEntity findByUserIdAndAcctSegment(int userId, int acctSegment);
 
     @Override
     List<AccountCodeEntity> findByUserName(String user);

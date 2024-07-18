@@ -111,7 +111,7 @@ public class UserDataManagerImpl extends AbstractDataManager
 
    public UserEntity findUser(int id){
         assertUserIDNonZero(id);
-        Optional<UserEntity> userEntity = userService.findById(id);
+        Optional<UserEntity> userEntity = Optional.ofNullable(userService.findById(id));
         if(userEntity.isPresent()){
             return userEntity.get();
         }else{
