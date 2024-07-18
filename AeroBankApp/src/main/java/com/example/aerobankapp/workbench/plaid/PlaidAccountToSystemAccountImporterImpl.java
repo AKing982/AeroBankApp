@@ -1,15 +1,18 @@
 package com.example.aerobankapp.workbench.plaid;
 
+
 import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.ExternalAccountsEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
+import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.LinkedAccountInfo;
 import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.services.AccountCodeService;
 import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.ExternalAccountsService;
+import com.example.aerobankapp.workbench.data.UserDataManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +28,17 @@ public class PlaidAccountToSystemAccountImporterImpl implements PlaidAccountToSy
     private static final Logger LOGGER = LoggerFactory.getLogger(PlaidAccountToSystemAccountImporterImpl.class);
     private final AccountService accountService;
     private final AccountCodeService accountCodeService;
+    private final UserDataManagerImpl userDataManager;
     private final ExternalAccountsService externalAccountsService;
 
     @Autowired
     public PlaidAccountToSystemAccountImporterImpl(AccountService accountService,
                                                  AccountCodeService accountCodeService,
+                                                 UserDataManagerImpl userDataManager,
                                                  ExternalAccountsService externalAccountsService) {
         this.accountService = accountService;
         this.accountCodeService = accountCodeService;
+        this.userDataManager = userDataManager;
         this.externalAccountsService = externalAccountsService;
     }
 
@@ -110,6 +116,55 @@ public class PlaidAccountToSystemAccountImporterImpl implements PlaidAccountToSy
         return linkedAccountInfos;
     }
 
+    public Boolean importPlaidDataToSystemAccount(final PlaidAccount plaidAccount, final Account account){
+        if(plaidAccount == null || account == null){
+            LOGGER.error("PlaidAccount cannot be null");
+            throw new IllegalArgumentException("Cannot import plaid account data due to null account data");
+        }
+        try{
+            setSystemAccountProperties(account, plaidAccount);
+
+            // Update the Account table with the modified properties
+
+            return true;
+        }catch(Exception e){
+            LOGGER.error("Failed to import plaid account data for user: {}, due to the error: {}", account.getUserID(), e.getMessage());
+            return false;
+        }
+    }
+
+    private AccountEntity createAccountEntityFromModel(Account account, UserEntity user, AccountCodeEntity accountCodeEntity){
+        return accountService.buildAccountEntityByAccountModel(account, accountCodeEntity, user);
+    }
+
+    private void setSystemAccountProperties(final Account account, final PlaidAccount plaidAccount){
+        account.setType(plaidAccount.getType());
+        account.setBalance(plaidAccount.getCurrentBalance());
+        account.setAccountName(plaidAccount.getOfficialName());
+    }
+
+    public boolean validateAccountMaskAreEqual(String systemAcctMask, String plaidAcctMask){
+        return systemAcctMask.equals(plaidAcctMask);
+    }
+
+    public boolean validateSubTypeMatchesType(String subType, String type)
+    {
+        if(subType.equals("checking") && type.equals("depository")){
+            return true;
+        }else if(subType.equals("savings") && type.equals("depository")){
+            return true;
+        }else if(subType.equals("paypal") && type.equals("credit")){
+            return true;
+        }else if(subType.equals("student") && type.equals("loan")){
+            return true;
+        }else if(subType.equals("auto") && type.equals("loan")){
+            return true;
+        }else if(subType.equals("personal") && type.equals("loan")){
+            return true;
+        }else if(subType.equals("mortgage") && type.equals("loan")){
+            return true;
+        }else return subType.equals("payable") && type.equals("loan");
+    }
 
     public boolean validateAccountTypeStructure(String accountType)
     {
@@ -126,6 +181,10 @@ public class PlaidAccountToSystemAccountImporterImpl implements PlaidAccountToSy
 
     private void addLinkedAccountToList(List<LinkedAccountInfo> linkedAccountInfos, LinkedAccountInfo linkedAccountInfo) {
         linkedAccountInfos.add(linkedAccountInfo);
+    }
+
+    private UserEntity getUserEntityByUserId(int userId){
+        return userDataManager.findUser(userId);
     }
 
     public Boolean executeCreateAndSaveExternalAccountEntity(List<LinkedAccountInfo> accountIdsMap)

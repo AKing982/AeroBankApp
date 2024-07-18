@@ -17,4 +17,14 @@ public final class PlaidUtil
         }
         return plaidSubTypesStrings;
     }
+
+    public static Set<String> convertPlaidAccountTypeEnumListToStrings()
+    {
+        List<PlaidAccountType> plaidAccountTypes = Arrays.stream(PlaidAccountType.values()).toList();
+        Set<String> plaidAccountTypesStrings = new HashSet<>();
+        for(PlaidAccountType plaidAccountType : plaidAccountTypes){
+            plaidAccountTypesStrings.add(plaidAccountType.toString());
+        }
+        return plaidAccountTypesStrings;
+    }
 }
