@@ -1,10 +1,9 @@
 package com.example.aerobankapp.workbench.plaid;
 
 
-import com.example.aerobankapp.entity.AccountCodeEntity;
-import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.entity.ExternalAccountsEntity;
-import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.converter.PlaidTransactionConverter;
+import com.example.aerobankapp.converter.PlaidTransactionToTransactionCriteriaConverter;
+import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.*;
@@ -29,17 +28,30 @@ public class PlaidDataImporterImpl implements PlaidDataImporter {
     private final UserServiceImpl userService;
     private final ExternalAccountsService externalAccountsService;
     private final ReferenceNumberGenerator referenceNumberGenerator;
+    private final PlaidTransactionConverter plaidTransactionConverter;
+    private final PlaidTransactionService plaidTransactionService;
+    private final PlaidTransactionToTransactionCriteriaConverter plaidTransactionToTransactionCriteriaConverter;
+    private final TransactionCriteriaService transactionCriteriaService;
+    private final TransactionStatementService transactionStatementService;
 
     @Autowired
     public PlaidDataImporterImpl(AccountService accountService,
                                                  AccountCodeService accountCodeService,
                                                  UserServiceImpl userService,
-                                                 ExternalAccountsService externalAccountsService) {
+                                                 ExternalAccountsService externalAccountsService,
+                                                 PlaidTransactionService plaidTransactionService,
+                                                 TransactionCriteriaService transactionCriteriaService,
+                                                 TransactionStatementService transactionStatementService) {
         this.accountService = accountService;
         this.accountCodeService = accountCodeService;
         this.userService = userService;
         this.externalAccountsService = externalAccountsService;
         this.referenceNumberGenerator = new ReferenceNumberGeneratorImpl();
+        this.plaidTransactionConverter = new PlaidTransactionConverter();
+        this.plaidTransactionService = plaidTransactionService;
+        this.plaidTransactionToTransactionCriteriaConverter = new PlaidTransactionToTransactionCriteriaConverter();
+        this.transactionCriteriaService = transactionCriteriaService;
+        this.transactionStatementService = transactionStatementService;
     }
 
     @Override
@@ -116,8 +128,36 @@ public class PlaidDataImporterImpl implements PlaidDataImporter {
         return linkedAccountInfos;
     }
 
-    public PlaidImportResult performPlaidTransactionsMigration(final List<PlaidTransaction> plaidTransactions){
+    public List<PlaidImportResult> performPlaidTransactionsMigration(final List<PlaidTransaction> plaidTransactions){
+        List<PlaidImportResult> plaidImportResults = new ArrayList<>();
+        if(plaidTransactions == null)
+        {
+            throw new IllegalArgumentException("Plaid transactions cannot be null");
+        }
 
+        if(plaidTransactions.isEmpty()){
+            return List.of(createPlaidImportResult(null, false));
+        }
+
+        for(PlaidTransaction transaction : plaidTransactions){
+            PlaidImportResult result = importPlaidTransactionToSystem(transaction);
+            plaidImportResults.add(result);
+        }
+
+        for(PlaidImportResult result : plaidImportResults)
+        {
+            if(result != null && result.isSuccessful())
+            {
+                // Convert the plaid transaction to plaid transaction entity
+                PlaidTransactionImport plaidTransaction = (PlaidTransactionImport) result.getResult();
+                PlaidTransactionEntity plaidTransactionEntity = plaidTransactionConverter.convert(plaidTransaction);
+                plaidTransactionService.save(plaidTransactionEntity);
+
+                TransactionCriteriaEntity transactionCriteria = plaidTransactionToTransactionCriteriaConverter.convert(plaidTransaction);
+                transactionCriteriaService.save(transactionCriteria);
+
+            }
+        }
 
         // store all the plaid transactions for the user into the PlaidTransactions table
         // create transaction criteria entity and store to database
@@ -126,7 +166,7 @@ public class PlaidDataImporterImpl implements PlaidDataImporter {
         // Determine which type of transaction this is and create transaction type
         // Create and initialize the TransactionScheduleCriteria
 
-        return null;
+        return plaidImportResults;
     }
 
     public PlaidImportResult importPlaidTransactionToSystem(final PlaidTransaction plaidTransaction){
@@ -142,18 +182,20 @@ public class PlaidDataImporterImpl implements PlaidDataImporter {
         BigDecimal amount = plaidTransaction.getAmount();
         boolean isPending = plaidTransaction.isPending();
         String transactionId = plaidTransaction.getTransactionId();
+        String acctID = plaidTransaction.getAccountId();
         String referenceNumber = referenceNumberGenerator.generateReferenceNumber().getReferenceValue();
-        setPlaidTransactionImport(transactionId, transactionName, amount, isPending, referenceNumber)
-
-        return createPlaidImportResult()
+        LocalDate posted = plaidTransaction.getDate();
+        LocalDate transactionDate = plaidTransaction.getDate();
+        PlaidTransactionImport plaidTransactionImport = createPlaidTransactionImport(transactionId, transactionName, amount, isPending, referenceNumber,acctID, transactionDate, posted);
+        return createPlaidImportResult(plaidTransactionImport, true);
     }
 
-    private PlaidTransactionImport setPlaidTransactionImport(String transactionId,
+    private PlaidTransactionImport createPlaidTransactionImport(String transactionId,
                                                              String name,
                                                              BigDecimal amount,
                                                              boolean isPending,
                                                              String referenceNumber,
-                                                             int acctID,
+                                                             String acctID,
                                                              LocalDate transactionDate,
                                                              LocalDate posted){
         PlaidTransactionImport plaidTransactionImport = new PlaidTransactionImport();

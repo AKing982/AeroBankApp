@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -29,13 +30,13 @@ public class TransactionStatementEntity {
     private String description;
 
     @Column(name="debit")
-    private String debit;
+    private BigDecimal debit;
 
     @Column(name="credit")
-    private String credit;
+    private BigDecimal credit;
 
     @Column(name="balance")
-    private String balance;
+    private BigDecimal balance;
 
     @Column(name="transactionDate")
     private String transactionDate;

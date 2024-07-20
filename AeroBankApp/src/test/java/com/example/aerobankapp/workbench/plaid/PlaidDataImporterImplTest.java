@@ -612,20 +612,49 @@ class PlaidDataImporterImplTest {
        PlaidTransactionImport plaidTransactionImport = new PlaidTransactionImport();
        plaidTransactionImport.setTransactionDate(createPlaidTransaction().getDate());
        plaidTransactionImport.setTransactionId(createPlaidTransaction().getTransactionId());
-       plaidTransactionImport.setReferenceNumber("12121212");
-       plaidTransactionImport.setAmount(BigDecimal.valueOf(1200));
+       plaidTransactionImport.setReferenceNumber("c3952e5f-3e25-4437-92e5-57c1663c533c");
+       plaidTransactionImport.setAcctID("e12123123123");
+       plaidTransactionImport.setAmount(BigDecimal.valueOf(120));
        plaidTransactionImport.setPending(false);
        plaidTransactionImport.setTransactionName("Test Transaction");
        plaidTransactionImport.setPosted(LocalDate.now());
 
+       PlaidImportResult expected = new PlaidImportResult(plaidTransactionImport, true);
+       PlaidImportResult actual = plaidAccountToSystemAccountMapper.importPlaidTransactionToSystem(createPlaidTransaction());
+       assertTrue(expected.equals(actual));
+       assertTrue(actual.isSuccessful());
+   }
 
+   @Test
+   @DisplayName("Test performPlaidTransactionsMigration when transaction list is null, then throw exception")
+   public void testPerformPlaidTransactionsMigration_whenTransactionListIsNull_thenThrowException(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            plaidAccountToSystemAccountMapper.performPlaidTransactionsMigration(null);
+        });
+   }
+
+   @Test
+   @DisplayName("Test performPlaidTransactionMigration when transaction list is empty, then return PlaidImportResult with null and false")
+   public void testPerformPlaidTransactionMigration_whenTransactionListIsEmpty_thenReturnResult(){
+        List<PlaidImportResult> expected = List.of(new PlaidImportResult(null, false));
+        List<PlaidImportResult> actual = plaidAccountToSystemAccountMapper.performPlaidTransactionsMigration(Collections.emptyList());
+        assertTrue(expected.equals(actual));
+        assertFalse(actual.get(0).isSuccessful());
+   }
+
+   @Test
+   @DisplayName("Test performPlaidTransactionMigration when transaction list is valid then return import result")
+   public void testPerformPlaidTransactionMigration_whenTransactionListIsValid_thenReturnImportResult(){
 
    }
+
+
 
    private PlaidTransaction createPlaidTransaction(){
        PlaidTransaction transaction = new PlaidTransaction();
        transaction.setTransactionName("Test Transaction");
        transaction.setAccountId("e12123123123");
+       transaction.setTransactionId("234234234234");
        transaction.setDate(LocalDate.of(2024, 6, 14));
        transaction.setAmount(BigDecimal.valueOf(120));
        transaction.setPending(false);
