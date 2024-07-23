@@ -5,6 +5,7 @@ import com.example.aerobankapp.entity.ExternalAccountsEntity;
 import com.example.aerobankapp.repositories.ExternalAccountsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,13 +27,15 @@ public class ExternalAccountsServiceImpl implements ExternalAccountsService
     }
 
     @Override
+    @Transactional
     public void save(ExternalAccountsEntity obj) {
         externalAccountsRepository.save(obj);
     }
 
     @Override
+    @Transactional
     public void delete(ExternalAccountsEntity obj) {
-
+        externalAccountsRepository.delete(obj);
     }
 
     @Override
@@ -51,5 +54,11 @@ public class ExternalAccountsServiceImpl implements ExternalAccountsService
         externalAccountsEntity.setExternalAcctID(externalAcctID);
         externalAccountsEntity.setAccount(AccountEntity.builder().acctID(acctID).build());
         return externalAccountsEntity;
+    }
+
+    @Override
+    @Transactional
+    public Optional<ExternalAccountsEntity> getExternalAccount(String externalAcctID) {
+        return externalAccountsRepository.findByExternalAcctID(externalAcctID);
     }
 }

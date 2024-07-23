@@ -13,7 +13,7 @@ public interface TransactionStatementService extends ServiceDAOModel<Transaction
     @Override
     List<TransactionStatementEntity> findAll();
 
-    TransactionStatementEntity createTransactionStatementEntity(AccountEntity account, String description, BigDecimal debit, BigDecimal credit, BigDecimal balance)
+    TransactionStatementEntity createTransactionStatementEntity(AccountEntity account, String description, BigDecimal debit, BigDecimal credit, BigDecimal balance);
 
     @Override
     void save(TransactionStatementEntity obj);

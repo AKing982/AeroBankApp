@@ -34,7 +34,6 @@ public class TransactionStatementEntity {
 
     @Column(name="credit")
     private BigDecimal credit;
-
     @Column(name="balance")
     private BigDecimal balance;
 

@@ -1,5 +1,6 @@
 package com.example.aerobankapp.services;
 
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.TransactionStatementEntity;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.repositories.TransactionStatementRepository;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +45,17 @@ public class TransactionStatementServiceImpl implements TransactionStatementServ
             LOGGER.error("There was an error retrieving Transaction Statements: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public TransactionStatementEntity createTransactionStatementEntity(AccountEntity account, String description, BigDecimal debit, BigDecimal credit, BigDecimal balance) {
+        TransactionStatementEntity transactionStatementEntity = new TransactionStatementEntity();
+        transactionStatementEntity.setDescription(description);
+        transactionStatementEntity.setDebit(debit);
+        transactionStatementEntity.setCredit(credit);
+        transactionStatementEntity.setBalance(balance);
+        transactionStatementEntity.setAccountEntity(account);
+        return transactionStatementEntity;
     }
 
     @Override

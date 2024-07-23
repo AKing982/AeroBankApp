@@ -1,5 +1,8 @@
 package com.example.aerobankapp.workbench.plaid;
 
+import com.example.aerobankapp.model.PlaidTransaction;
+import com.example.aerobankapp.model.PlaidTransactionImport;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -26,5 +29,18 @@ public final class PlaidUtil
             plaidAccountTypesStrings.add(plaidAccountType.toString());
         }
         return plaidAccountTypesStrings;
+    }
+
+    public static PlaidTransactionImport createPlaidTransactionImport(PlaidTransaction plaidTransaction, String referenceNumber) {
+        PlaidTransactionImport plaidTransactionImport = new PlaidTransactionImport();
+        plaidTransactionImport.setTransactionId(plaidTransaction.getTransactionId());
+        plaidTransactionImport.setTransactionDate(plaidTransaction.getDate());
+        plaidTransactionImport.setAmount(plaidTransaction.getAmount());
+        plaidTransactionImport.setTransactionName(plaidTransaction.getTransactionName());
+        plaidTransactionImport.setAcctID(plaidTransaction.getAccountId());
+        plaidTransactionImport.setPosted(plaidTransaction.getDate());
+        plaidTransactionImport.setPending(plaidTransaction.isPending());
+        plaidTransactionImport.setReferenceNumber(referenceNumber);
+        return plaidTransactionImport;
     }
 }
