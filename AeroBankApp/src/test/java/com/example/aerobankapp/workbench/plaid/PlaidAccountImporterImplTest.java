@@ -67,19 +67,15 @@ class PlaidAccountImporterImplTest {
     @Test
     @DisplayName("Test Process Plaid Account By Subtype when subtype is SAVINGS, then return LinkedAccountInfo list")
     public void testProcessAccountBySubType_whenSubtypeEqualsSAVINGS_thenReturnLinkedAccountInfoList(){
-        PlaidAccount plaidAccount = createPlaidAccount("SAVINGS", "e123123123123");
-        AccountEntity accountCode = createAccountEntity("02", 2, createUserEntity(1));
+        PlaidAccount plaidAccount = createPlaidAccount("DEPOSITORY", "SAVINGS", "e123123123123");
+        AccountEntity accountCode = createAccountEntity("02", 2, createUserEntity(1), "savings");
 
-        List<LinkedAccountInfo> expected = new ArrayList<>();
-        expected.add(createLinkedAccountInfo("e123123123123", 2));
+        LinkedAccountInfo expected = new LinkedAccountInfo(2, "e123123123123");
 
-        List<LinkedAccountInfo> actual = importer.processPlaidAccountBySubType(plaidAccount, accountCode);
+        LinkedAccountInfo actual = importer.linkAccounts(plaidAccount, accountCode);
         assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
-        for(int i = 0; i < actual.size(); i++) {
-            assertEquals(expected.get(i).getExternalAcctID(), actual.get(i).getExternalAcctID());
-            assertEquals(expected.get(i).getSystemAcctID(), actual.get(i).getSystemAcctID());
-        }
+        assertEquals(expected.getExternalAcctID(), actual.getExternalAcctID());
+        assertEquals(expected.getSystemAcctID(), actual.getSystemAcctID());
     }
 
     @Test
@@ -101,7 +97,7 @@ class PlaidAccountImporterImplTest {
     @DisplayName("Test Process Plaid Account By SubType when subType is empty or null then throw exception")
     public void testProcessAccountBySubType_whenSubTypeIsEmptyOrNull_thenThrowException(){
         assertThrows(IllegalArgumentException.class, () ->
-                importer.processPlaidAccountBySubType(createPlaidAccount("", "e123123123123"), createAccountEntity("01", 1, createUserEntity(1))));
+                importer.linkAccounts(createPlaidAccount("", "","e123123123123"), createAccountEntity("01", 1, createUserEntity(1), "")));
     }
 
 
@@ -130,7 +126,7 @@ class PlaidAccountImporterImplTest {
         account.setSubType("checking");
         account.setType("depository");
 
-        AccountEntity accountEntity = createAccountEntity("checking", 1, createUserEntity(1));
+        AccountEntity accountEntity = createAccountEntity("01", 1, createUserEntity(1), "checking");
         when(userService.findById(1)).thenReturn(createUserEntity(1));
         when(accountService.buildAccountEntityByAccountModel(account, createAccountCodeEntity(), createUserEntity(1))).thenReturn(accountEntity);
         doNothing().when(accountService).save(accountEntity);
@@ -168,7 +164,7 @@ class PlaidAccountImporterImplTest {
         account.setSubType("checking");
         account.setType("depository");
 
-        AccountEntity accountEntity = createAccountEntity("checking", 1, createUserEntity(1));
+        AccountEntity accountEntity = createAccountEntity("01", 1, createUserEntity(1), "checking");
         when(userService.findById(1)).thenReturn(createUserEntity(1));
         when(accountService.buildAccountEntityByAccountModel(account, createAccountCodeEntity(), createUserEntity(1))).thenReturn(accountEntity);
         doNothing().when(accountService).save(accountEntity);
@@ -188,19 +184,17 @@ class PlaidAccountImporterImplTest {
     @Test
     @DisplayName("Test Process Plaid Account by subtype when subtype is CHECKING, then return LinkedAccountInfo list")
     public void testProcessAccountBySubType_whenSubtypeEqualsCHECKING_thenReturnLinkedAccountInfoList(){
-        PlaidAccount plaidAccount = createPlaidAccount("CHECKING", "e123123123123");
-        AccountEntity account = createAccountEntity("01", 1, createUserEntity(1));
+        PlaidAccount plaidAccount = createPlaidAccount("DEPOSITORY", "checking","e123123123123");
+        AccountEntity account = createAccountEntity("01", 1, createUserEntity(1), "checking");
 
-        List<LinkedAccountInfo> expected = new ArrayList<>();
-        expected.add(createLinkedAccountInfo("e123123123123", 1));
+        LinkedAccountInfo expected = new LinkedAccountInfo(1, "e123123123123");
 
-        List<LinkedAccountInfo> actual = importer.processPlaidAccountBySubType(plaidAccount, account);
+        LinkedAccountInfo actual = importer.linkAccounts(plaidAccount, account);
         assertNotNull(actual);
-        assertEquals(expected.size(), actual.size());
-        for(int i = 0; i < actual.size(); i++) {
-            assertEquals(expected.get(i).getExternalAcctID(), actual.get(i).getExternalAcctID());
-            assertEquals(expected.get(i).getSystemAcctID(), actual.get(i).getSystemAcctID());
-        }
+        assertNotEquals(expected, actual);
+        assertEquals(expected.getExternalAcctID(), actual.getExternalAcctID());
+        assertEquals(expected.getSystemAcctID(), actual.getSystemAcctID());
+
     }
 
     @Test
@@ -241,17 +235,17 @@ class PlaidAccountImporterImplTest {
     @DisplayName("Test GetLinkedAccountInfoList when there's more account codes than plaid accounts, then return out of bounds exception")
     public void testGetLinkedAccountInfoList_whenMoreAccountCodesThanPlaidAccounts_thenReturnIndexOutOfBoundsException(){
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
-        plaidAccounts.add(createPlaidAccount("CHECKING", "e123123123123"));
-        plaidAccounts.add(createPlaidAccount("SAVINGS", "e42323-23432-554a2"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY",  "checking", "e123123123123"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "savings", "e42323-23432-554a2"));
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 1));
         expected.add(createLinkedAccountInfo("e42323-23432-554a2", 2));
 
         List<AccountEntity> accountCodeEntities = new ArrayList<>();
-        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
-        AccountEntity accountCode1 = createAccountEntity("02", 2, createUserEntity(1));
-        AccountEntity accountCode2 = createAccountEntity("03", 2, createUserEntity(1));
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1), "checking");
+        AccountEntity accountCode1 = createAccountEntity("02", 2, createUserEntity(1), "savings");
+        AccountEntity accountCode2 = createAccountEntity("03", 2, createUserEntity(1), "rent");
         accountCodeEntities.add(accountCode);
         accountCodeEntities.add(accountCode1);
         accountCodeEntities.add(accountCode2);
@@ -323,15 +317,15 @@ class PlaidAccountImporterImplTest {
     @DisplayName("Test getLinkedAccountInfoList when userId is valid and plaid account list is not empty, then return accountIds map")
     public void testGetLinkedAccountInfoList_whenUserIdIsValidAndPlaidAccountListIsNotEmpty_thenReturnMap() {
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
-        plaidAccounts.add(createPlaidAccount("checking", "e123123123123"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "CHECKING", "e123123123123"));
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 1));
         expected.add(createLinkedAccountInfo("e123123123123", 2));
 
         List<AccountEntity> accountCodeEntities = new ArrayList<>();
-        AccountEntity accountCode1 = createAccountEntity("01", 1, createUserEntity(1));
-        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(2));
+        AccountEntity accountCode1 = createAccountEntity("01", 1, createUserEntity(1), "checking");
+        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(2), "savings");
         accountCodeEntities.add(accountCode1);
         accountCodeEntities.add(accountCode2);
 
@@ -349,9 +343,9 @@ class PlaidAccountImporterImplTest {
     @DisplayName("Test GetLinkedAccountInfo List when userId is valid and plaid account is null then skip to next plaid account, then return linked account list")
     public void testGetLinkedAccountInfoList_whenUserIdIsNull_AndPlaidAccountIsNull_thenSkipToNextPlaidAccount_thenReturnLinkedAccountInfoList(){
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
-        plaidAccounts.add(createPlaidAccount("checking", "e123123123123"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "CHECKING", "e123123123123"));
         plaidAccounts.add(null);
-        plaidAccounts.add(createPlaidAccount("checking", "e123123123123"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "SAVINGS", "e123123123123"));
         plaidAccounts.add(null);
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
@@ -359,8 +353,8 @@ class PlaidAccountImporterImplTest {
         expected.add(createLinkedAccountInfo("e123123123123", 2));
 
         List<AccountEntity> accountCodeEntities = new ArrayList<>();
-        AccountEntity accountCode1 = createAccountEntity("01", 1, createUserEntity(1));
-        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(2));
+        AccountEntity accountCode1 = createAccountEntity("01", 1, createUserEntity(1), "checking");
+        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(2), "savings");
         accountCodeEntities.add(accountCode1);
         accountCodeEntities.add(accountCode2);
 
@@ -377,17 +371,17 @@ class PlaidAccountImporterImplTest {
 
 
     @Test
-    @DisplayName("Test GetLinkedAccountInfo when account Code entity is null, then skip null account code and return LinkedAccountInfo list")
-    public void testGetLinkedAccountInfo_whenAccountCodeEntityIsNull_thenSkipNullAccountCodeEntityAndReturnLinkedAccountInfoList(){
+    @DisplayName("Test GetLinkedAccountInfo when account Code entity is null, then skip null account and return LinkedAccountInfo list")
+    public void testGetLinkedAccountInfo_whenAccountEntityIsNull_thenSkipNullAccountEntityAndReturnLinkedAccountInfoList(){
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
-        plaidAccounts.add(createPlaidAccount("checking", "e123123123123"));
-        plaidAccounts.add(createPlaidAccount("checking", "e123123123123"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "checking" ,"e123123123123"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "savings", "e123123123123"));
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 2));
 
         List<AccountEntity> accountCodeEntities = new ArrayList<>();
-        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(2));
+        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(2), "savings");
         accountCodeEntities.add(null);
         accountCodeEntities.add(accountCode2);
 
@@ -410,8 +404,8 @@ class PlaidAccountImporterImplTest {
         plaidAccounts.add(createPlaidAccountWithEmptySubType());
 
         List<AccountEntity> accountCodeEntities = new ArrayList<>();
-        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(1));
-        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
+        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(1), "savings");
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1), "checking");
         accountCodeEntities.add(accountCode);
         accountCodeEntities.add(accountCode2);
 
@@ -428,13 +422,13 @@ class PlaidAccountImporterImplTest {
     public void testGetLinkedAccountInfoList_whenSubTypeIsValidAndIsCheckingType_thenReturnLinkedAccountList()
     {
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
-        plaidAccounts.add(createPlaidAccount("CHECKING", "e123123123123"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "CHECKING", "e123123123123"));
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 1));
 
         List<AccountEntity> accountCodeEntities = new ArrayList<>();
-        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1), "savings");
         accountCodeEntities.add(accountCode);
 
         when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountCodeEntities);
@@ -454,13 +448,13 @@ class PlaidAccountImporterImplTest {
     @DisplayName("Test getLinkedAccountInfoList when subType is SAVINGS type then return linkedAccountList")
     public void testGetLinkedAccountInfoList_whenSubTypeEqualsSAVINGS_type_thenReturnLinkedAccountList(){
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
-        plaidAccounts.add(createPlaidAccount("SAVINGS", "e42323-23432-554a2"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "SAVINGS" ,"e42323-23432-554a2"));
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 2));
 
         List<AccountEntity> accountCodeEntities = new ArrayList<>();
-        AccountEntity accountCode = createAccountEntity("02", 2, createUserEntity(1));
+        AccountEntity accountCode = createAccountEntity("02", 2, createUserEntity(1), "savings");
         accountCodeEntities.add(accountCode);
 
         when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountCodeEntities);
@@ -477,13 +471,13 @@ class PlaidAccountImporterImplTest {
     @DisplayName("Test getLinkedAccountInfoList when subType is CHECKING, AccountType is 01, then return LinkedAccountInfo list")
     public void testGetLinkedAccountInfoList_whenSubTypeEqualsCHECKING_AccountTypeIsZeroOne_thenReturnLinkedAccountInfoList(){
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
-        plaidAccounts.add(createPlaidAccount("CHECKING", "e123123123123"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "CHECKING", "e123123123123"));
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 1));
 
         List<AccountEntity> accountCodeEntities = new ArrayList<>();
-        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1), "checking");
         accountCodeEntities.add(accountCode);
 
         when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountCodeEntities);
@@ -500,16 +494,16 @@ class PlaidAccountImporterImplTest {
     @DisplayName("Test getLinkedAccountInfoList when subTypes are CHECKING and SAVINGS, return LinkedAccountInfo list")
     public void testGetLinkedAccountInfoList_whenSubTypesAreCheckingAndSavings_thenReturnLinkedAccountInfoList(){
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
-        plaidAccounts.add(createPlaidAccount("CHECKING", "e123123123123"));
-        plaidAccounts.add(createPlaidAccount("SAVINGS", "e42323-23432-554a2"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "CHECKING", "e123123123123"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "SAVINGS", "e42323-23432-554a2"));
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 1));
         expected.add(createLinkedAccountInfo("e42323-23432-554a2", 2));
 
         List<AccountEntity> accountCodeEntities = new ArrayList<>();
-        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
-        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(1));
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1), "checking");
+        AccountEntity accountCode2 = createAccountEntity("02", 2, createUserEntity(1), "savings");
         accountCodeEntities.add(accountCode);
         accountCodeEntities.add(accountCode2);
 
@@ -528,16 +522,16 @@ class PlaidAccountImporterImplTest {
     @DisplayName("Test GetLinkedAccountInfoList when system account type doesn't exist in plaid account subtype, then skip account with type and return linked account info list")
     public void testGetLinkedAccountInfoList_whenAccountTypeDNE_thenSkipAccountWithTypeAndReturnLinkedAccountInfoList(){
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
-        plaidAccounts.add(createPlaidAccount("CHECKING", "e123123123123"));
-        plaidAccounts.add(createPlaidAccount("SAVINGS", "e42323-23432-554a2"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY", "CHECKING", "e123123123123"));
+        plaidAccounts.add(createPlaidAccount("DEPOSITORY",  "SAVINGS", "e42323-23432-554a2"));
 
         List<LinkedAccountInfo> expected = new ArrayList<>();
         expected.add(createLinkedAccountInfo("e123123123123", 1));
         expected.add(createLinkedAccountInfo("e42323-23432-554a2", 2));
 
         List<AccountEntity> accountCodeEntities = new ArrayList<>();
-        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1));
-        AccountEntity accountCode2 = createAccountEntity("03", 2, createUserEntity(1));
+        AccountEntity accountCode = createAccountEntity("01", 1, createUserEntity(1), "checking");
+        AccountEntity accountCode2 = createAccountEntity("03", 2, createUserEntity(1), "rent");
         accountCodeEntities.add(accountCode);
         accountCodeEntities.add(accountCode2);
 
@@ -589,22 +583,24 @@ class PlaidAccountImporterImplTest {
     }
 
 
-    private AccountEntity createAccountEntity(String acctType, int acctID, UserEntity user)
+    private AccountEntity createAccountEntity(String acctType, int acctID, UserEntity user, String subType)
     {
         return AccountEntity.builder()
                 .accountType(acctType)
+                .subtype(subType)
                 .acctID(acctID)
                 .user(user)
                 .build();
     }
 
-    private PlaidAccount createPlaidAccount(String subtype, String acctID)
+    private PlaidAccount createPlaidAccount(String type, String subtype, String acctID)
     {
         PlaidAccount plaidAccount = new PlaidAccount();
         plaidAccount.setCurrentBalance(BigDecimal.valueOf(1200));
         plaidAccount.setAccountId(acctID);
         plaidAccount.setName("Checking");
         plaidAccount.setSubtype(subtype);
+        plaidAccount.setType(type);
         plaidAccount.setAvailableBalance(BigDecimal.valueOf(1100));
         return plaidAccount;
     }

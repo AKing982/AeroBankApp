@@ -19,6 +19,7 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -49,10 +50,10 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
 
     @Override
     public List<LinkedAccountInfo> prepareLinkedAccountInfoList(UserEntity user, List<PlaidAccount> plaidAccounts) {
-        if(user == null || plaidAccounts == null) {
+        if(user == null || plaidAccounts == null)
+        {
             throw new IllegalArgumentException("User cannot be null or PlaidAccounts cannot be null");
         }
-
         int userID = user.getUserID();
         if(userID < 1)
         {
@@ -62,32 +63,40 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
 
         //TODO: Fix issue when there's more accountCodes than plaid accounts
         int accountCodeArrayLength = accountEntities.size();
-        int plaidAccountsArrayLength = plaidAccounts.size();
-        if(accountCodeArrayLength > plaidAccountsArrayLength)
+        if(accountCodeArrayLength == 0)
         {
-
+            throw new RuntimeException("No accounts found for userID: " + userID);
         }
-
+        int plaidAccountsArrayLength = plaidAccounts.size();
+        if(plaidAccountsArrayLength == 0)
+        {
+            return Collections.emptyList();
+        }
         int loopCount = Math.min(plaidAccounts.size(), accountEntities.size());
         for(int i = 0; i < loopCount; ++i) {
             PlaidAccount plaidAccount = plaidAccounts.get(i);
             AccountEntity accountEntity = accountEntities.get(i);
 
             if(plaidAccount != null && accountEntity != null){
-                linkedAccountInfoList.addAll(processPlaidAccountBySubType(plaidAccount, accountEntity));
+                linkedAccountInfoList.add(linkAccounts(plaidAccount, accountEntity));
             }
         }
-
-        if(plaidAccounts.size() != accountEntities.size()){
-            LOGGER.warn("Mismatch in count between Plaid accounts and account codes. Plaid accounts count: {} and account codes count: {}",
-                    plaidAccounts.size(), accountEntities.size());
+        // If there are still plaid accounts left over when we've run out
+        // of Account entities
+        if(loopCount < plaidAccounts.size())
+        {
+            // Do something else wiht the remaining plaid accounts
+            for(int i = loopCount; i < plaidAccounts.size(); ++i) {
+                PlaidAccount plaidAccount = plaidAccounts.get(i);
+            }
         }
         return linkedAccountInfoList;
     }
 
     @Override
-    public List<LinkedAccountInfo> processPlaidAccountBySubType(PlaidAccount plaidAccount, final AccountEntity accountEntity) {
+    public LinkedAccountInfo linkAccounts(final PlaidAccount plaidAccount, final AccountEntity accountEntity) {
         Set<String> plaidAccountSubtypes = convertPlaidSubTypeEnumListToStrings();
+        LinkedAccountInfo linkedAccountInfo = null;
         String subType = plaidAccount.getSubtype();
         if(subType.isEmpty())
         {
@@ -101,22 +110,22 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
             LOGGER.info("Account System ID: " + acctID);
             String externalAcctID = plaidAccount.getAccountId();
 
-            // Next match the sub type with the user's account
-            // If the sub types are equal, then validate the account Type matches
-            // standard account type
-
-            // TODO: Add verification for AccountType
-            // e.g. does the user's system checking account match the plaid account type DEPOSITORY, etc...
-
-            String accountType = getAccountTypeFromAccountEntity(accountEntity);
-            boolean accountTypeIsValid = validateAccountTypeStructure(accountType);
-            if(accountTypeIsValid)
+            String accountSubType = accountEntity.getSubtype();
+            String plaidAcctSubType = plaidAccount.getSubtype();
+            if(accountSubType.equalsIgnoreCase(plaidAcctSubType))
             {
-                LinkedAccountInfo linkedAccountInfo = buildLinkedAccountInfo(acctID, externalAcctID);
-                addLinkedAccountToList(linkedAccountInfoList, linkedAccountInfo);
+                LOGGER.info("Subtypes match");
+                String accountType = getAccountTypeFromAccountEntity(accountEntity);
+                if(accountType.equalsIgnoreCase(plaidAccount.getType()))
+                {
+                    LOGGER.info("Account Types match");
+                    // Validate the Masks match
+                    String sysMask = accountEntity.getMask();
+                    linkedAccountInfo = buildLinkedAccountInfo(acctID, externalAcctID);
+                }
             }
         }
-        return linkedAccountInfoList;
+        return linkedAccountInfo;
     }
 
     @Override

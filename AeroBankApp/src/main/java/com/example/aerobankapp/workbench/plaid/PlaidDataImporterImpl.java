@@ -30,9 +30,14 @@ public class PlaidDataImporterImpl implements PlaidDataImporter {
       this.plaidTransactionImporter = plaidTransactionImporter;
     }
 
+
     @Override
-    public List<LinkedAccountInfo> getLinkedAccountInfoList(final UserEntity user, final List<PlaidAccount> plaidAccounts) {
-        return null;
+    public List<LinkedAccountInfo> getLinkedAccountInfoList(UserEntity user, List<PlaidAccount> plaidAccounts) {
+        return List.of();
     }
 
+    @Override
+    public Boolean executeCreateAndSaveExternalAccountEntity(List<LinkedAccountInfo> accountIdsMap) {
+        return null;
+    }
 }

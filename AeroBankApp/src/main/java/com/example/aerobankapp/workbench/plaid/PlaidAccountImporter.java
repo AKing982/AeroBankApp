@@ -13,7 +13,7 @@ public interface PlaidAccountImporter
 {
     List<LinkedAccountInfo> prepareLinkedAccountInfoList(final UserEntity user, final List<PlaidAccount> plaidAccounts);
 
-    List<LinkedAccountInfo> processPlaidAccountBySubType(final PlaidAccount account, final AccountEntity accountEntity);
+    LinkedAccountInfo linkAccounts(final PlaidAccount account, final AccountEntity accountEntity);
 
     PlaidImportResult importDataFromPlaidAccountToSystemAccount(final PlaidAccount plaidAccount, final Account account);
 

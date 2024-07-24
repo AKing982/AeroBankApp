@@ -42,7 +42,7 @@ class PlaidDataImporterImplTest {
 
     @BeforeEach
     void setUp() {
-        plaidAccountToSystemAccountMapper = new PlaidDataImporterImpl(accountService, accountCodeService, userDataManager, externalAccountsService);
+
     }
 
 
