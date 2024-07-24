@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface PlaidAccountImporter
 {
-    List<LinkedAccountInfo> prepareLinkedAccountInfoList(final UserEntity user, final List<PlaidAccount> plaidAccounts);
+    List<LinkedAccountInfo> prepareLinkedAccounts(final UserEntity user, final List<PlaidAccount> plaidAccounts);
 
     LinkedAccountInfo linkAccounts(final PlaidAccount account, final AccountEntity accountEntity);
 

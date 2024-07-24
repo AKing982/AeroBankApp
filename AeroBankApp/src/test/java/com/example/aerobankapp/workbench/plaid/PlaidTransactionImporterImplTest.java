@@ -5,10 +5,7 @@ import com.example.aerobankapp.converter.PlaidTransactionToTransactionCriteriaCo
 import com.example.aerobankapp.model.PlaidImportResult;
 import com.example.aerobankapp.model.PlaidTransaction;
 import com.example.aerobankapp.model.PlaidTransactionImport;
-import com.example.aerobankapp.services.ExternalAccountsService;
-import com.example.aerobankapp.services.PlaidTransactionService;
-import com.example.aerobankapp.services.TransactionCriteriaService;
-import com.example.aerobankapp.services.TransactionStatementService;
+import com.example.aerobankapp.services.*;
 import org.checkerframework.checker.signedness.qual.SignedPositive;
 import org.junit.experimental.categories.Categories;
 import org.junit.jupiter.api.AfterEach;
@@ -55,10 +52,13 @@ class PlaidTransactionImporterImplTest {
     @Mock
     private ExternalAccountsService externalAccountsService;
 
+    @Mock
+    private PlaidLinkService plaidLinkService;
+
     @BeforeEach
     void setUp() {
         plaidTransactionToTransactionCriteriaConverter = new PlaidTransactionToTransactionCriteriaConverter();
-        plaidTransactionImporter = new PlaidTransactionImporterImpl(converter, plaidTransactionService, transactionCriteriaService, transactionStatementService, externalAccountsService);
+        plaidTransactionImporter = new PlaidTransactionImporterImpl(converter, plaidTransactionService, plaidLinkService, transactionCriteriaService, transactionStatementService, externalAccountsService);
     }
 
     @Test

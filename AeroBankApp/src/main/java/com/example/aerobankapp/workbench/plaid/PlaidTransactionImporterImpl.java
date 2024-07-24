@@ -4,10 +4,7 @@ import com.example.aerobankapp.converter.PlaidTransactionConverter;
 import com.example.aerobankapp.converter.PlaidTransactionToTransactionCriteriaConverter;
 import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.model.*;
-import com.example.aerobankapp.services.ExternalAccountsService;
-import com.example.aerobankapp.services.PlaidTransactionService;
-import com.example.aerobankapp.services.TransactionCriteriaService;
-import com.example.aerobankapp.services.TransactionStatementService;
+import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.generator.ReferenceNumberGenerator;
 import com.example.aerobankapp.workbench.generator.ReferenceNumberGeneratorImpl;
 import org.slf4j.Logger;
@@ -36,10 +33,11 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
     @Autowired
     public PlaidTransactionImporterImpl(PlaidTransactionConverter plaidTransactionConverter,
                                         PlaidTransactionService plaidTransactionService,
+                                        PlaidLinkService plaidLinkService,
                                         TransactionCriteriaService transactionCriteriaService,
                                         TransactionStatementService transactionStatementService,
                                         ExternalAccountsService externalAccountsService) {
-        super(externalAccountsService);
+        super(externalAccountsService, plaidLinkService);
         this.plaidTransactionConverter = plaidTransactionConverter;
         this.plaidTransactionService = plaidTransactionService;
         this.plaidTransactionToTransactionCriteriaConverter = new PlaidTransactionToTransactionCriteriaConverter();

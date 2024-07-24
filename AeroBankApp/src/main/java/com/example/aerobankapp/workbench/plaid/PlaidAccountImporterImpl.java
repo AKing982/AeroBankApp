@@ -4,16 +4,13 @@ import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.ExternalAccountsEntity;
 import com.example.aerobankapp.entity.UserEntity;
-import com.example.aerobankapp.exceptions.InvalidUserIDException;
+import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.LinkedAccountInfo;
 import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.model.PlaidImportResult;
 import com.example.aerobankapp.repositories.ExternalAccountsRepository;
-import com.example.aerobankapp.services.AccountCodeService;
-import com.example.aerobankapp.services.AccountService;
-import com.example.aerobankapp.services.ExternalAccountsService;
-import com.example.aerobankapp.services.UserService;
+import com.example.aerobankapp.services.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -36,132 +33,214 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
     private final UserService userService;
     private final Logger LOGGER = LoggerFactory.getLogger(PlaidAccountImporterImpl.class);
     private List<LinkedAccountInfo> linkedAccountInfoList = new ArrayList<>();
+    private boolean isMatchedSubType;
 
     @Autowired
     public PlaidAccountImporterImpl(ExternalAccountsService externalAccountsService,
+                                    PlaidLinkService plaidLinkService,
                                     AccountService accountService,
                                     AccountCodeService accountCodeService,
                                     UserService userService) {
-        super(externalAccountsService);
+        super(externalAccountsService, plaidLinkService);
         this.accountService = accountService;
         this.accountCodeService = accountCodeService;
         this.userService = userService;
     }
 
     @Override
-    public List<LinkedAccountInfo> prepareLinkedAccountInfoList(UserEntity user, List<PlaidAccount> plaidAccounts) {
-        if(user == null || plaidAccounts == null)
-        {
-            throw new IllegalArgumentException("User cannot be null or PlaidAccounts cannot be null");
-        }
-        int userID = user.getUserID();
-        if(userID < 1)
-        {
-            throw new InvalidUserIDException("Invalid UserId caught: " + userID);
-        }
-        List<AccountEntity> accountEntities = getAccountCodesForUserId(userID);
+    public List<LinkedAccountInfo> prepareLinkedAccounts(UserEntity user, List<PlaidAccount> plaidAccounts)
+    {
+        validateUserAndPlaidAccountList(user, plaidAccounts);
+        validateUser(user);
 
-        //TODO: Fix issue when there's more accountCodes than plaid accounts
-        int accountCodeArrayLength = accountEntities.size();
-        if(accountCodeArrayLength == 0)
+        if(plaidAccounts == null)
         {
-            throw new RuntimeException("No accounts found for userID: " + userID);
+            throw new PlaidAccountNotFoundException("Plaid account not found");
         }
-        int plaidAccountsArrayLength = plaidAccounts.size();
-        if(plaidAccountsArrayLength == 0)
+
+        if(plaidAccounts.isEmpty())
         {
+            LOGGER.warn("No Plaid Accounts were found for userID: {}", user.getUserID());
             return Collections.emptyList();
         }
-        int loopCount = Math.min(plaidAccounts.size(), accountEntities.size());
-        for(int i = 0; i < loopCount; ++i) {
-            PlaidAccount plaidAccount = plaidAccounts.get(i);
-            AccountEntity accountEntity = accountEntities.get(i);
 
-            if(plaidAccount != null && accountEntity != null){
-                linkedAccountInfoList.add(linkAccounts(plaidAccount, accountEntity));
-            }
-        }
-        // If there are still plaid accounts left over when we've run out
-        // of Account entities
-        if(loopCount < plaidAccounts.size())
+//        if(user == null || plaidAccounts == null)
+//        {
+//            throw new IllegalArgumentException("User cannot be null or PlaidAccounts cannot be null");
+//        }
+//        int userID = user.getUserID();
+//        if(userID < 1)
+//        {
+//            throw new InvalidUserIDException("Invalid UserId caught: " + userID);
+//        }
+//        List<AccountEntity> accountEntities = getAccountCodesForUserId(userID);
+//
+//        //TODO: Fix issue when there's more accountCodes than plaid accounts
+//        int accountCodeArrayLength = accountEntities.size();
+//        if(accountCodeArrayLength == 0)
+//        {
+//            throw new RuntimeException("No accounts found for userID: " + userID);
+//        }
+//        int plaidAccountsArrayLength = plaidAccounts.size();
+//        if(plaidAccountsArrayLength == 0)
+//        {
+//            return Collections.emptyList();
+//        }
+//        int loopCount = Math.min(plaidAccounts.size(), accountEntities.size());
+//        for(int i = 0; i < loopCount; ++i) {
+//            PlaidAccount plaidAccount = plaidAccounts.get(i);
+//            AccountEntity accountEntity = accountEntities.get(i);
+//
+//            if(plaidAccount != null && accountEntity != null){
+//                linkedAccountInfoList.add(linkAccounts(plaidAccount, accountEntity));
+//            }
+//        }
+//        // If there are still plaid accounts left over when we've run out
+//        // of Account entities
+//        if(loopCount < plaidAccounts.size())
+//        {
+//            // Do something else wiht the remaining plaid accounts
+//            for(int i = loopCount; i < plaidAccounts.size(); ++i) {
+//                PlaidAccount plaidAccount = plaidAccounts.get(i);
+//            }
+//        }
+//        return linkedAccountInfoList;
+        return null;
+    }
+
+    private void validateUserAndPlaidAccountList(UserEntity user, List<PlaidAccount> plaidAccounts) {
+        if(user == null && plaidAccounts == null)
         {
-            // Do something else wiht the remaining plaid accounts
-            for(int i = loopCount; i < plaidAccounts.size(); ++i) {
-                PlaidAccount plaidAccount = plaidAccounts.get(i);
-            }
+            throw new IllegalArgumentException("User and PlaidAccount cannot be null");
         }
-        return linkedAccountInfoList;
     }
 
     @Override
     public LinkedAccountInfo linkAccounts(final PlaidAccount plaidAccount, final AccountEntity accountEntity) {
-        Set<String> plaidAccountSubtypes = convertPlaidSubTypeEnumListToStrings();
-        LinkedAccountInfo linkedAccountInfo = null;
-        String subType = plaidAccount.getSubtype();
-        if(subType.isEmpty())
-        {
-            throw new IllegalArgumentException("Subtype cannot be null or empty");
+
+        if(plaidAccount == null && accountEntity == null) {
+            throw new IllegalArgumentException("PlaidAccount and accountEntity must not be null");
         }
+        assertPlaidAccountIsNull(plaidAccount);
+        assertAccountIsNull(accountEntity);
 
-        // Check that the plaid sub type is supported
-        if(plaidAccountSubtypes.contains(subType))
+        String plaidSubType = plaidAccount.getSubtype();
+        if(plaidSubType.isEmpty())
         {
-            int acctID = accountEntity.getAcctID();
-            LOGGER.info("Account System ID: " + acctID);
-            String externalAcctID = plaidAccount.getAccountId();
-
-            String accountSubType = accountEntity.getSubtype();
-            String plaidAcctSubType = plaidAccount.getSubtype();
-            if(accountSubType.equalsIgnoreCase(plaidAcctSubType))
+            throw new InvalidPlaidSubTypeException(plaidSubType);
+        }
+        Set<String> plaidAccountSubtypes = convertPlaidSubTypeEnumListToStrings();
+        for(String subType : plaidAccountSubtypes)
+        {
+            if(subType.equalsIgnoreCase(plaidSubType))
             {
-                LOGGER.info("Subtypes match");
-                String accountType = getAccountTypeFromAccountEntity(accountEntity);
-                if(accountType.equalsIgnoreCase(plaidAccount.getType()))
-                {
-                    LOGGER.info("Account Types match");
-                    // Validate the Masks match
-                    String sysMask = accountEntity.getMask();
-                    linkedAccountInfo = buildLinkedAccountInfo(acctID, externalAcctID);
-                }
+                setIsMatchedSubType(true);
+                break;
             }
         }
-        return linkedAccountInfo;
+
+        UserEntity user = getUserEntityByAccountEntity(accountEntity);
+
+        //TODO: Should check if user has an access token before proceeding to import accounts
+        if(!checkPlaidAccessToken(user))
+        {
+            throw new PlaidAccessTokenNotFoundException("Plaid access token not found for userID: " + user.getUserID());
+        }
+
+        if(isMatchedSubType())
+        {
+            int acctID = accountEntity.getAcctID();
+            String externalAcctID = plaidAccount.getAccountId();
+            String acctSubType = accountEntity.getSubtype();
+
+            if(acctSubType.equalsIgnoreCase(plaidSubType))
+            {
+                String type = accountEntity.getType();
+                String plaidAccountType = plaidAccount.getType();
+                if(type.equalsIgnoreCase(plaidAccountType))
+                {
+                    String mask = accountEntity.getMask();
+                    if(mask.equals(plaidAccount.getMask()))
+                    {
+                        return buildLinkedAccountInfo(acctID, externalAcctID);
+                    }
+                }
+                else
+                {
+                    return createLinkedAccountInfo(0, "");
+                }
+
+            }
+            else
+            {
+                return createLinkedAccountInfo(0, "");
+            }
+
+        }
+        return null;
+    }
+
+    private UserEntity getUserEntityByAccountEntity(AccountEntity accountEntity)
+    {
+        return accountEntity.getUser();
+    }
+
+    private void setIsMatchedSubType(boolean isMatch)
+    {
+        isMatchedSubType = isMatch;
+    }
+
+    private void assertAccountIsNull(final AccountEntity accountEntity)
+    {
+        if(accountEntity == null)
+        {
+            throw new AccountNotFoundException("Account Not Found");
+        }
+    }
+
+    private void assertPlaidAccountIsNull(PlaidAccount plaidAccount) {
+        if(plaidAccount == null)
+        {
+            throw new PlaidAccountNotFoundException("Plaid Account Not Found");
+        }
+
     }
 
     @Override
     public PlaidImportResult importDataFromPlaidAccountToSystemAccount(PlaidAccount plaidAccount, Account account) {
-        if(plaidAccount == null || account == null)
-        {
-            LOGGER.error("PlaidAccount cannot be null");
-            throw new IllegalArgumentException("Cannot import plaid account data due to null account data");
-        }
-        setSystemAccountProperties(account, plaidAccount);
-        int userID = account.getUserID();
-        PlaidImportResult result;
-
-        LOGGER.info("UserID: {}", userID);
-        LOGGER.info("AcctID: {}", account.getAccountID());
-        UserEntity userEntity = userService.findById(userID);
-        if(userEntity != null)
-        {
-            AccountCodeEntity accountCode = getAccountCodeByUserIdAndAcctID(userEntity.getUserID(), account.getAccountID());
-            AccountEntity accountEntity = createAccountEntityFromModel(account, userEntity, accountCode);
-            if(accountEntity == null)
-            {
-                throw new IllegalArgumentException("AccountEntity cannot be null");
-            }
-            else
-            {
-                saveAccountEntityToDatabase(accountEntity);
-                result = createPlaidImportResult(account, true);
-            }
-        }
-        else
-        {
-            LOGGER.warn("UserID: {} not found", userID);
-            result = createPlaidImportResult(null, false);
-        }
-        return result;
+//        if(plaidAccount == null || account == null)
+//        {
+//            LOGGER.error("PlaidAccount cannot be null");
+//            throw new IllegalArgumentException("Cannot import plaid account data due to null account data");
+//        }
+//        setSystemAccountProperties(account, plaidAccount);
+//        int userID = account.getUserID();
+//        PlaidImportResult result;
+//
+//        LOGGER.info("UserID: {}", userID);
+//        LOGGER.info("AcctID: {}", account.getAccountID());
+//        UserEntity userEntity = userService.findById(userID);
+//        if(userEntity != null)
+//        {
+//            AccountCodeEntity accountCode = getAccountCodeByUserIdAndAcctID(userEntity.getUserID(), account.getAccountID());
+//            AccountEntity accountEntity = createAccountEntityFromModel(account, userEntity, accountCode);
+//            if(accountEntity == null)
+//            {
+//                throw new IllegalArgumentException("AccountEntity cannot be null");
+//            }
+//            else
+//            {
+//                saveAccountEntityToDatabase(accountEntity);
+//                result = createPlaidImportResult(account, true);
+//            }
+//        }
+//        else
+//        {
+//            LOGGER.warn("UserID: {} not found", userID);
+//            result = createPlaidImportResult(null, false);
+//        }
+//        return result;
+        return null;
     }
 
     public boolean validateAccountTypeStructure(String accountType)
@@ -216,47 +295,49 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
 
     @Override
     public Boolean validateAccountSubTypeToTypeCriteria(List<AccountEntity> accountEntities) {
-        if(accountEntities == null || accountEntities.isEmpty()){
-            throw new IllegalArgumentException("Account List cannot be null or empty.");
-        }
-
-        for(AccountEntity accountEntity : accountEntities)
-        {
-            if(accountEntity != null)
-            {
-                String subtype = accountEntity.getSubtype();
-                String type = accountEntity.getType();
-                LOGGER.info("SubType: {}", subtype);
-                LOGGER.info("Type: {}", type);
-                if(subtype == null || type == null)
-                {
-                    throw new IllegalArgumentException("Subtype or type cannot be null.");
-                }
-                if(!type.equals(subTypeToTypeCriteria.get(subtype)))
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
+//        if(accountEntities == null || accountEntities.isEmpty()){
+//            throw new IllegalArgumentException("Account List cannot be null or empty.");
+//        }
+//
+//        for(AccountEntity accountEntity : accountEntities)
+//        {
+//            if(accountEntity != null)
+//            {
+//                String subtype = accountEntity.getSubtype();
+//                String type = accountEntity.getType();
+//                LOGGER.info("SubType: {}", subtype);
+//                LOGGER.info("Type: {}", type);
+//                if(subtype == null || type == null)
+//                {
+//                    throw new IllegalArgumentException("Subtype or type cannot be null.");
+//                }
+//                if(!type.equals(subTypeToTypeCriteria.get(subtype)))
+//                {
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+        return null;
     }
 
     @Override
     public Boolean executeCreateAndSaveExternalAccountEntity(List<LinkedAccountInfo> accountIdsMap) {
-        try
-        {
-            for(LinkedAccountInfo linkedAccountInfo : accountIdsMap)
-            {
-                int systemAcctID = linkedAccountInfo.getSystemAcctID();
-                String externalAcctID = linkedAccountInfo.getExternalAcctID();
-                createAndSaveExternalAccountEntity(externalAcctID,systemAcctID);
-            }
-            return true;
-        }catch(Exception e)
-        {
-            LOGGER.error("There was an error creating and saving the external account entity: ", e);
-            return false;
-        }
+//        try
+////        {
+////            for(LinkedAccountInfo linkedAccountInfo : accountIdsMap)
+////            {
+////                int systemAcctID = linkedAccountInfo.getSystemAcctID();
+////                String externalAcctID = linkedAccountInfo.getExternalAcctID();
+////                createAndSaveExternalAccountEntity(externalAcctID,systemAcctID);
+////            }
+////            return true;
+////        }catch(Exception e)
+////        {
+////            LOGGER.error("There was an error creating and saving the external account entity: ", e);
+////            return false;
+////        }
+        return null;
     }
 
 

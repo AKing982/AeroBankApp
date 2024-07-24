@@ -5,14 +5,17 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
+/**
+ * Model representing linked account information.
+ */
 @Data
 @NoArgsConstructor
 public class LinkedAccountInfo
 {
-    private int systemAcctID;
+    private Integer systemAcctID;
     private String externalAcctID;
 
-    public LinkedAccountInfo(int systemAcctID, String externalAcctID) {
+    public LinkedAccountInfo(Integer systemAcctID, String externalAcctID) {
         this.systemAcctID = systemAcctID;
         this.externalAcctID = externalAcctID;
     }
