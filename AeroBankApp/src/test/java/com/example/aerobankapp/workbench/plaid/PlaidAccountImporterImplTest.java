@@ -3,6 +3,7 @@ package com.example.aerobankapp.workbench.plaid;
 import com.example.aerobankapp.account.AccountType;
 import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.*;
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -182,18 +184,6 @@ class PlaidAccountImporterImplTest {
         assertEquals(expected.getSystemAcctID(), actual.getSystemAcctID());
     }
 
-    @Test
-    @DisplayName("Test linkAccounts when hasPlaidAccess token is false, then throw exception")
-    public void testLinkAccountsWhenHasPlaidAccessIsFalse_thenThrowException(){
-        PlaidAccount plaidAccount = createPlaidAccountWithMask("Checking Test", "DEPOSITORY", "checking", "e23232323", "");
-        AccountEntity account = createAccountEntityWithMask("DEPOSITORY", "01",1, createUserEntity(1), "checking", "1111");
-
-        when(plaidLinkService.hasPlaidLink(1)).thenReturn(false);
-
-        assertThrows(PlaidAccessTokenNotFoundException.class, () -> {
-            importer.linkAccounts(plaidAccount, account);
-        });
-    }
 
     @Test
     @DisplayName("Test prepareLinkedAccounts when user is null, then throw exception")
@@ -230,6 +220,153 @@ class PlaidAccountImporterImplTest {
         List<LinkedAccountInfo> actual = importer.prepareLinkedAccounts(user, expected);
         assertNotNull(actual);
         assertEquals(0, actual.size());
+    }
+
+    @Test
+    @DisplayName("Test prepareLinkedAccounts when user has two plaid accounts and two accounts, then return linkedAccountInfo list")
+    public void testPrepareLinkedAccounts_whenUserHasTwoPlaidAccountsAndTwoAccount_thenReturnLinkedAccountInfoList(){
+        UserEntity user = createUserEntity(1);
+
+        List<PlaidAccount> plaidAccounts = new ArrayList<>();
+        PlaidAccount checkingPlaid = createPlaidAccountWithMask("Checking Test", "DEPOSITORY", "checking", "e23232323", "1111");
+        PlaidAccount savingsPlaid = createPlaidAccountWithMask("Savings Test", "DEPOSITORY", "savings", "e22222222", "2222");
+        plaidAccounts.add(checkingPlaid);
+        plaidAccounts.add(savingsPlaid);
+
+        List<LinkedAccountInfo> expected = new ArrayList<>();
+        LinkedAccountInfo expected1 = new LinkedAccountInfo(1, "e23232323");
+        LinkedAccountInfo expected2 = new LinkedAccountInfo(2, "e22222222");
+        expected.add(expected1);
+        expected.add(expected2);
+
+        AccountEntity checking = createAccountEntityWithMask("DEPOSITORY", "01", 1, createUserEntity(1), "checking", "1111");
+        AccountEntity savings = createAccountEntityWithMask("DEPOSITORY", "02", 2, createUserEntity(1), "savings", "2222");
+        List<AccountEntity> accounts = new ArrayList<>();
+        accounts.add(checking);
+        accounts.add(savings);
+
+        Optional<PlaidLinkEntity> plaidLinkEntityOptional = mock(Optional.class);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accounts);
+        when(plaidLinkService.findPlaidLinkEntityByUserId(1)).thenReturn(plaidLinkEntityOptional);
+
+        List<LinkedAccountInfo> actual = importer.prepareLinkedAccounts(user, plaidAccounts);
+        assertNotNull(actual);
+        assertEquals(expected.size(), actual.size());
+        for(int i = 0; i < actual.size(); i++){
+            assertEquals(expected.get(i).getExternalAcctID(), actual.get(i).getExternalAcctID());
+            assertEquals(expected.get(i).getSystemAcctID(), actual.get(i).getSystemAcctID());
+        }
+    }
+
+    @Test
+    @DisplayName("Test prepareLinkedAccounts when user has two plaid accounts and one account, then link one account and create one new account")
+    public void testPrepareLinkAccounts_whenUserHasTwoPlaidAccountsAndOneAccount_thenLinkOneAccount_returnLinkedAccountInfoList(){
+
+    }
+
+    @Test
+    @DisplayName("Test prepareLinkedAccounts when user has one plaid account and three accounts, then return one linked account")
+    public void testPrepareLinkedAccounts_whenUserHasOnePlaidAccount_AndThreeAccounts_returnLinkedAccountInfoList(){
+        UserEntity user = createUserEntity(1);
+
+        List<PlaidAccount> plaidAccounts = new ArrayList<>();
+        PlaidAccount checkingPlaid = createPlaidAccountWithMask("Checking Test", "DEPOSITORY", "checking", "e23232323", "1111");
+        plaidAccounts.add(checkingPlaid);
+
+        List<LinkedAccountInfo> expected = new ArrayList<>();
+        LinkedAccountInfo expected1 = new LinkedAccountInfo(1, "e23232323");
+        expected.add(expected1);
+
+        AccountEntity checking = createAccountEntityWithMask("DEPOSITORY", "01", 1, createUserEntity(1), "checking", "1111");
+        AccountEntity savings = createAccountEntityWithMask("DEPOSITORY", "02", 2, createUserEntity(1), "savings", "2222");
+        AccountEntity rent = createAccountEntityWithMask("DEPOSITORY", "03", 3, createUserEntity(1), "rent", "3333");
+        List<AccountEntity> accounts = new ArrayList<>();
+        accounts.add(checking);
+        accounts.add(savings);
+        accounts.add(rent);
+
+        Optional<PlaidLinkEntity> plaidLinkEntityOptional = mock(Optional.class);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accounts);
+        when(plaidLinkService.findPlaidLinkEntityByUserId(1)).thenReturn(plaidLinkEntityOptional);
+
+        List<LinkedAccountInfo> actual = importer.prepareLinkedAccounts(user, plaidAccounts);
+        assertNotNull(actual);
+        assertEquals(expected.size(), actual.size());
+        for(int i = 0; i < actual.size(); i++){
+            assertEquals(expected.get(i).getExternalAcctID(), actual.get(i).getExternalAcctID());
+            assertEquals(expected.get(i).getSystemAcctID(), actual.get(i).getSystemAcctID());
+        }
+    }
+
+    @Test
+    @DisplayName("Test prepareLinkedAccounts when user has null plaid account, then skip to next plaid account and return linkedAccountInfoList")
+    public void testPrepareLinkedAccounts_whenUserHasNullPlaidAccountAndReturnLinkedAccountInfoList(){
+        UserEntity user = createUserEntity(1);
+
+        List<PlaidAccount> plaidAccounts = new ArrayList<>();
+        PlaidAccount checkingPlaid = createPlaidAccountWithMask("Checking Test", "DEPOSITORY", "checking", "e23232323", "1111");
+        PlaidAccount savingsPlaid = createPlaidAccountWithMask("Savings Test", "DEPOSITORY", "savings", "e22222222", "2222");
+        plaidAccounts.add(checkingPlaid);
+        plaidAccounts.add(null);
+        plaidAccounts.add(savingsPlaid);
+
+        List<LinkedAccountInfo> expected = new ArrayList<>();
+        LinkedAccountInfo expected1 = new LinkedAccountInfo(1, "e23232323");
+        LinkedAccountInfo expected2 = new LinkedAccountInfo(2, "e22222222");
+        expected.add(expected1);
+        expected.add(expected2);
+
+        AccountEntity checking = createAccountEntityWithMask("DEPOSITORY", "01", 1, createUserEntity(1), "checking", "1111");
+        AccountEntity savings = createAccountEntityWithMask("DEPOSITORY", "02", 2, createUserEntity(1), "savings", "2222");
+        List<AccountEntity> accounts = new ArrayList<>();
+        accounts.add(checking);
+        accounts.add(savings);
+
+        Optional<PlaidLinkEntity> plaidLinkEntityOptional = mock(Optional.class);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accounts);
+        when(plaidLinkService.findPlaidLinkEntityByUserId(1)).thenReturn(plaidLinkEntityOptional);
+
+        List<LinkedAccountInfo> actual = importer.prepareLinkedAccounts(user, plaidAccounts);
+        assertNotNull(actual);
+        assertEquals(expected.size(), actual.size());
+        for(int i = 0; i < actual.size(); i++){
+            assertEquals(expected.get(i).getExternalAcctID(), actual.get(i).getExternalAcctID());
+            assertEquals(expected.get(i).getSystemAcctID(), actual.get(i).getSystemAcctID());
+        }
+    }
+
+    @Test
+    @DisplayName("Test prepareLinkedAccounts when user has null account and two plaid accounts, then skip null account and return linked account")
+    public void testPrepareLinkedAccounts_whenUserHasNullAccountAndReturnLinkedAccountInfoList(){
+        UserEntity user = createUserEntity(1);
+
+        List<PlaidAccount> plaidAccounts = new ArrayList<>();
+        PlaidAccount checkingPlaid = createPlaidAccountWithMask("Checking Test", "DEPOSITORY", "checking", "e23232323", "1111");
+        PlaidAccount savingsPlaid = createPlaidAccountWithMask("Savings Test", "DEPOSITORY", "savings", "e22222222", "2222");
+        plaidAccounts.add(checkingPlaid);
+        plaidAccounts.add(savingsPlaid);
+
+        List<LinkedAccountInfo> expected = new ArrayList<>();
+        LinkedAccountInfo expected1 = new LinkedAccountInfo(1, "e23232323");
+        expected.add(expected1);
+
+        AccountEntity checking = createAccountEntityWithMask("DEPOSITORY", "01", 1, createUserEntity(1), "checking", "1111");
+        List<AccountEntity> accounts = new ArrayList<>();
+        accounts.add(checking);
+        accounts.add(null);
+
+        Optional<PlaidLinkEntity> plaidLinkEntityOptional = mock(Optional.class);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accounts);
+        when(plaidLinkService.findPlaidLinkEntityByUserId(1)).thenReturn(plaidLinkEntityOptional);
+
+        List<LinkedAccountInfo> actual = importer.prepareLinkedAccounts(user, plaidAccounts);
+        assertNotNull(actual);
+        assertEquals(expected.size(), actual.size());
+        for(int i = 0; i < actual.size(); i++){
+            assertEquals(expected.get(i).getExternalAcctID(), actual.get(i).getExternalAcctID());
+            assertEquals(expected.get(i).getSystemAcctID(), actual.get(i).getSystemAcctID());
+        }
+
     }
 
 

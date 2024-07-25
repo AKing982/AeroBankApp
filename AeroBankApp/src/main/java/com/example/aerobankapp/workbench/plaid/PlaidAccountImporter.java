@@ -20,4 +20,10 @@ public interface PlaidAccountImporter
     Boolean validateAccountSubTypeToTypeCriteria(final List<AccountEntity> accountEntities);
 
     Boolean executeCreateAndSaveExternalAccountEntity(List<LinkedAccountInfo> accountIdsMap);
+
+    List<LinkedAccountInfo> getNonLinkedAccounts(AccountEntity accountEntity);
+
+    void createImportedAccountsFromNonLinkAccountsList(List<LinkedAccountInfo> accountIdsMap, UserEntity user);
+
+    void createImportAccount(PlaidAccount plaidAccount, UserEntity user);
 }

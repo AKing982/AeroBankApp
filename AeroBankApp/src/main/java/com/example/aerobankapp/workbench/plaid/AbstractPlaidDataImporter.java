@@ -1,7 +1,9 @@
 package com.example.aerobankapp.workbench.plaid;
 
 import com.example.aerobankapp.entity.ExternalAccountsEntity;
+import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.exceptions.PlaidAccessTokenNotFoundException;
 import com.example.aerobankapp.exceptions.UserNotFoundException;
 import com.example.aerobankapp.model.PlaidImportResult;
 import com.example.aerobankapp.services.ExternalAccountsService;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class AbstractPlaidDataImporter
 {
@@ -44,16 +47,29 @@ public abstract class AbstractPlaidDataImporter
         }
 
         int userID = userEntity.getUserID();
-
+        boolean isPresent = false;
         try
         {
-            return plaidLinkService.hasPlaidLink(userID);
-
+            Optional<PlaidLinkEntity> plaidLinkEntityOptional = plaidLinkService.findPlaidLinkEntityByUserId(userID);
+            if(plaidLinkEntityOptional.isPresent())
+            {
+                String accessToken = plaidLinkEntityOptional.get().getAccessToken();
+                if(accessToken != null && !accessToken.isEmpty())
+                {
+                    isPresent = true;
+                }
+                else
+                {
+                    LOGGER.warn("No access token found for user ID: " + userID);
+                    throw new PlaidAccessTokenNotFoundException("No Access Token found for user ID: " + userID);
+                }
+            }
         }catch(Exception e)
         {
             LOGGER.error("There was an error validating the plaid access token for userID: {}", userID, e);
             return false;
         }
+        return isPresent;
     }
 
     protected void validateUser(UserEntity user)

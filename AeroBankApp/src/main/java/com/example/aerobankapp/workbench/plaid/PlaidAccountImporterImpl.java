@@ -63,49 +63,46 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
             LOGGER.warn("No Plaid Accounts were found for userID: {}", user.getUserID());
             return Collections.emptyList();
         }
+        int userID = user.getUserID();
+        List<AccountEntity> accountEntities = getAccountsForUserId(userID);
+        int loopCount = Math.max(plaidAccounts.size(), accountEntities.size());
+        try
+        {
 
-//        if(user == null || plaidAccounts == null)
-//        {
-//            throw new IllegalArgumentException("User cannot be null or PlaidAccounts cannot be null");
-//        }
-//        int userID = user.getUserID();
-//        if(userID < 1)
-//        {
-//            throw new InvalidUserIDException("Invalid UserId caught: " + userID);
-//        }
-//        List<AccountEntity> accountEntities = getAccountCodesForUserId(userID);
-//
-//        //TODO: Fix issue when there's more accountCodes than plaid accounts
-//        int accountCodeArrayLength = accountEntities.size();
-//        if(accountCodeArrayLength == 0)
-//        {
-//            throw new RuntimeException("No accounts found for userID: " + userID);
-//        }
-//        int plaidAccountsArrayLength = plaidAccounts.size();
-//        if(plaidAccountsArrayLength == 0)
-//        {
-//            return Collections.emptyList();
-//        }
-//        int loopCount = Math.min(plaidAccounts.size(), accountEntities.size());
-//        for(int i = 0; i < loopCount; ++i) {
-//            PlaidAccount plaidAccount = plaidAccounts.get(i);
-//            AccountEntity accountEntity = accountEntities.get(i);
-//
-//            if(plaidAccount != null && accountEntity != null){
-//                linkedAccountInfoList.add(linkAccounts(plaidAccount, accountEntity));
-//            }
-//        }
-//        // If there are still plaid accounts left over when we've run out
-//        // of Account entities
-//        if(loopCount < plaidAccounts.size())
-//        {
-//            // Do something else wiht the remaining plaid accounts
-//            for(int i = loopCount; i < plaidAccounts.size(); ++i) {
-//                PlaidAccount plaidAccount = plaidAccounts.get(i);
-//            }
-//        }
-//        return linkedAccountInfoList;
-        return null;
+            int accountEntitiesIndex = 0;
+            for(int i = 0; i < loopCount; ++i)
+            {
+                if(i < plaidAccounts.size())
+                {
+                    PlaidAccount plaidAccount = plaidAccounts.get(i);
+                    if(plaidAccount != null && accountEntitiesIndex < accountEntities.size())
+                    {
+                        AccountEntity account = accountEntities.get(accountEntitiesIndex++);
+                        if(account != null)
+                        {
+                            addLinkedAccountInfoToList(linkedAccountInfoList, linkAccounts(plaidAccount, account));
+                        }
+                    }
+                }
+            }
+        }catch(IndexOutOfBoundsException e)
+        {
+            LOGGER.error("Error while linking accounts", e);
+        }
+        // If there are still plaid accounts left over when we've run out
+        // of Account entities
+        if(loopCount < plaidAccounts.size())
+        {
+            // Do something else wiht the remaining plaid accounts
+            for(int i = loopCount; i < plaidAccounts.size(); ++i) {
+                PlaidAccount plaidAccount = plaidAccounts.get(i);
+            }
+        }
+        return linkedAccountInfoList;
+    }
+
+    private void addLinkedAccountInfoToList(List<LinkedAccountInfo> list, LinkedAccountInfo linkedAccountInfo){
+        list.add(linkedAccountInfo);
     }
 
     private void validateUserAndPlaidAccountList(UserEntity user, List<PlaidAccount> plaidAccounts) {
@@ -141,13 +138,7 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
 
         UserEntity user = getUserEntityByAccountEntity(accountEntity);
 
-        //TODO: Should check if user has an access token before proceeding to import accounts
-        if(!checkPlaidAccessToken(user))
-        {
-            throw new PlaidAccessTokenNotFoundException("Plaid access token not found for userID: " + user.getUserID());
-        }
-
-        if(isMatchedSubType())
+        if(isMatchedSubType() || checkPlaidAccessToken(user))
         {
             int acctID = accountEntity.getAcctID();
             String externalAcctID = plaidAccount.getAccountId();
@@ -257,7 +248,7 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
         return accountEntity.getAccountType();
     }
 
-    private List<AccountEntity> getAccountCodesForUserId(int userId) {
+    private List<AccountEntity> getAccountsForUserId(int userId) {
         return accountService.getListOfAccountsByUserID(userId);
     }
 
@@ -338,6 +329,21 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
 ////            return false;
 ////        }
         return null;
+    }
+
+    @Override
+    public List<LinkedAccountInfo> getNonLinkedAccounts(AccountEntity accountEntity) {
+        return List.of();
+    }
+
+    @Override
+    public void createImportedAccountsFromNonLinkAccountsList(List<LinkedAccountInfo> accountIdsMap, UserEntity user) {
+        
+    }
+
+    @Override
+    public void createImportAccount(PlaidAccount plaidAccount, UserEntity user) {
+
     }
 
 
