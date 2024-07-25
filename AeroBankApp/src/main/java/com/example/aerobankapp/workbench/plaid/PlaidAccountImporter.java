@@ -8,6 +8,7 @@ import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.model.PlaidImportResult;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PlaidAccountImporter
 {
@@ -21,9 +22,6 @@ public interface PlaidAccountImporter
 
     Boolean executeCreateAndSaveExternalAccountEntity(List<LinkedAccountInfo> accountIdsMap);
 
-    List<LinkedAccountInfo> getNonLinkedAccounts(AccountEntity accountEntity);
+    void createImportedAccountsFromNonLinkAccountsList(Map<Integer, List<PlaidAccount>> unlinkedPlaidAccounts);
 
-    void createImportedAccountsFromNonLinkAccountsList(List<LinkedAccountInfo> accountIdsMap, UserEntity user);
-
-    void createImportAccount(PlaidAccount plaidAccount, UserEntity user);
 }
