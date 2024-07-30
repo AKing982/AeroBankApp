@@ -90,7 +90,4 @@ public abstract class AbstractPlaidDataImporter
         subTypeToTypeCriteria.put("mortgage", "loan");
         subTypeToTypeCriteria.put("payable", "loan");
     }
-
-
-
 }

@@ -5,6 +5,7 @@ import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.*;
+import com.example.aerobankapp.workbench.AccountBuilder;
 import com.example.aerobankapp.workbench.utilities.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,9 @@ class PlaidAccountImporterImplTest {
     private AccountService accountService;
 
     @Mock
+    private AccountBuilder accountBuilder;
+
+    @Mock
     private AccountCodeService accountCodeService;
 
     @Mock
@@ -51,7 +55,7 @@ class PlaidAccountImporterImplTest {
 
     @BeforeEach
     void setUp() {
-        importer = new PlaidAccountImporterImpl(externalAccountsService,plaidLinkService, accountService, accountCodeService, userService);
+        importer = new PlaidAccountImporterImpl(externalAccountsService,plaidLinkService, accountService, accountBuilder, accountCodeService, userService);
     }
 
     @Test

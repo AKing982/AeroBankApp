@@ -24,4 +24,6 @@ public interface PlaidAccountImporter
 
     void createImportedAccountsFromNonLinkAccountsList(Map<Integer, List<PlaidAccount>> unlinkedPlaidAccounts);
 
+    Map<Integer, List<PlaidAccount>> getPlaidAccountsMap();
+
 }

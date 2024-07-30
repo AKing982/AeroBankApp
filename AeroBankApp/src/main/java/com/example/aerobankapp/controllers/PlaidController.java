@@ -10,8 +10,10 @@ import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.TransactionStatementService;
 import com.example.aerobankapp.services.UserService;
 import com.example.aerobankapp.services.plaid.PlaidService;
+import com.example.aerobankapp.workbench.plaid.PlaidAccountImporter;
 import com.example.aerobankapp.workbench.plaid.PlaidDataImporter;
 import com.example.aerobankapp.workbench.plaid.PlaidDataImporterImpl;
+import com.example.aerobankapp.workbench.runner.PlaidAccountImportRunner;
 import com.plaid.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ public class PlaidController {
     private final AccountService accountService;
     private final TransactionStatementService transactionStatementService;
     private final PlaidDataImporter plaidAccountToSystemAccountMapper;
+    private PlaidAccountImportRunner plaidAccountImporter;
     private Logger LOGGER = LoggerFactory.getLogger(PlaidController.class);
 
     @Autowired
@@ -46,13 +49,15 @@ public class PlaidController {
                            UserService userService,
                            AccountService accountService,
                            TransactionStatementService transactionStatementService,
-                           PlaidDataImporter plaidAccountToSystemAccountMapper)
+                           PlaidDataImporter plaidAccountToSystemAccountMapper,
+                           PlaidAccountImportRunner plaidAccountImporter)
     {
         this.plaidService = plaidService;
         this.userService = userService;
         this.accountService = accountService;
         this.transactionStatementService = transactionStatementService;
         this.plaidAccountToSystemAccountMapper = plaidAccountToSystemAccountMapper;
+        this.plaidAccountImporter = plaidAccountImporter;
     }
 
 
@@ -81,6 +86,16 @@ public class PlaidController {
         }
     }
 
+    @PostMapping("/accounts/import/{userID}")
+    public ResponseEntity<?> importAccounts(@PathVariable int userID) throws IOException, InterruptedException {
+        plaidAccountImporter.importPlaidAccounts(userID);
+        return ResponseEntity.ok("Imported Accounts from plaid successfully.");
+    }
+
+    @PostMapping("/transactions/import/{userID}")
+    public ResponseEntity<?> importTransactions(@PathVariable int userID, @RequestParam int acctID){
+        return null;
+    }
 
     @GetMapping("/accounts")
     public ResponseEntity<?> getAccounts(@RequestParam int userId)

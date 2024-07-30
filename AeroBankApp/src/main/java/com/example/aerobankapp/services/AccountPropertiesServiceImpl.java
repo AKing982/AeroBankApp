@@ -76,6 +76,16 @@ public class AccountPropertiesServiceImpl implements AccountPropertiesService
     }
 
     @Override
+    public String getRandomImageUrl() {
+        return accountPropertiesSelector.selectRandomImageURL();
+    }
+
+    @Override
+    public String getRandomAcctColor() {
+        return accountPropertiesSelector.selectRandomAccountColor();
+    }
+
+    @Override
     public AccountPropertiesEntity buildAccountPropertiesEntity(AccountEntity accountEntity) {
 
         // Randomly select an acct_color from a list

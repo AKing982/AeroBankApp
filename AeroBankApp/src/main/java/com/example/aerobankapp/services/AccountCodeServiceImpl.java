@@ -4,7 +4,9 @@ import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.entity.AccountCodeEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.AccountCodeNotFoundException;
+import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.AccountCode;
+import com.example.aerobankapp.model.User;
 import com.example.aerobankapp.repositories.AccountCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,6 +80,7 @@ public class AccountCodeServiceImpl implements AccountCodeService
     public AccountCodeEntity buildAccountCodeEntity(AccountCode accountCodeDTO, UserEntity user) {
         return getAccountCodeBuilder(accountCodeDTO, user);
     }
+
 
     @Override
     public List<AccountCodeEntity> getAccountCodeEntityList(List<AccountCode> accountCodes, UserEntity user) {

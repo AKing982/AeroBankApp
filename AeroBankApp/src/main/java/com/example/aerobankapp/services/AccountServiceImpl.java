@@ -9,6 +9,7 @@ import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.AccountCode;
+import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.model.UserDTO;
 import com.example.aerobankapp.repositories.AccountRepository;
 import com.example.aerobankapp.repositories.AccountSecurityRepository;
@@ -436,6 +437,8 @@ public class AccountServiceImpl implements AccountService
         account.setUser(user);
         return account;
     }
+
+
 
     @Override
     public AccountEntity buildAccountEntityByAccountModel(Account account, AccountCodeEntity accountCode, UserEntity user) {

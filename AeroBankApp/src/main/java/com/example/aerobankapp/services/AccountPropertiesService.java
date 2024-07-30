@@ -18,6 +18,9 @@ public interface AccountPropertiesService extends ServiceDAOModel<AccountPropert
 
     void deleteAll(Set<AccountPropertiesEntity> accountPropertiesEntities);
 
+    String getRandomImageUrl();
+    String getRandomAcctColor();
+
     AccountPropertiesEntity buildAccountPropertiesEntity(AccountEntity accountEntity);
 
     List<AccountPropertiesEntity> getListOfAccountPropertiesFromAccountEntity(List<AccountEntity> accountEntities);

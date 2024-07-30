@@ -89,10 +89,10 @@ public class AccountEntity
     @JsonBackReference
     private Set<TransactionStatementEntity> transactions;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "account")
     private Set<AccountSecurityEntity> securities;
 
-    @OneToMany(mappedBy="account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="account")
     private Set<AccountPropertiesEntity> accountPropertiesEntities;
 
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="account")

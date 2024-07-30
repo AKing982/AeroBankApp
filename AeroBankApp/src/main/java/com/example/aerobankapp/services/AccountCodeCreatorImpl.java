@@ -3,8 +3,11 @@ package com.example.aerobankapp.services;
 import com.example.aerobankapp.account.AccountType;
 import com.example.aerobankapp.dto.AccountInfoDTO;
 import com.example.aerobankapp.dto.UserDTO;
+import com.example.aerobankapp.entity.AccountCodeEntity;
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.UserNotFoundException;
+import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.User;
 import org.slf4j.Logger;
@@ -71,6 +74,8 @@ public class AccountCodeCreatorImpl implements AccountCodeCreator
        return accountCodes;
     }
 
+
+
     @Override
     public String formatAccountCode(AccountCode accountCode) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -90,6 +95,45 @@ public class AccountCodeCreatorImpl implements AccountCodeCreator
             }
         }
         return stringBuilder.toString();
+    }
+
+    public AccountCodeEntity createAccountCodeEntityFromAccountAndUser(AccountEntity accountEntity, UserEntity user){
+        AccountCodeEntity accountCodeEntity = new AccountCodeEntity();
+        accountCodeEntity.setAccountType(accountEntity.getAccountType());
+
+        String firstInitial = getStartingInitialByName(user.getUserDetails().getFirstName());
+        String lastInitial = getStartingInitialByName(user.getUserDetails().getLastName());
+        int year = getTwoDigitYearSegment(getYearFromCurrentDate());
+        accountCodeEntity.setAccount_segment(accountEntity.getAcctID());
+        accountCodeEntity.setYear_segment(year);
+        accountCodeEntity.setLast_initial_segment(lastInitial);
+        accountCodeEntity.setFirst_initial_segment(firstInitial);
+        accountCodeEntity.setUser(user);
+        return accountCodeEntity;
+    }
+
+    public AccountCodeEntity createAccountCodeEntityFromModel(final AccountCode accountCode){
+        AccountCodeEntity aceCodeEntity = new AccountCodeEntity();
+        UserEntity user = userService.findById(accountCode.getUserID());
+
+        aceCodeEntity.setFirst_initial_segment(accountCode.getFirstInitial());
+        aceCodeEntity.setLast_initial_segment(accountCode.getLastInitial());
+        aceCodeEntity.setAccountType(accountCode.getAccountType().getCode());
+        aceCodeEntity.setAccount_segment(accountCode.getSequence());
+        aceCodeEntity.setUser(user);
+        aceCodeEntity.setYear_segment(accountCode.getYear());
+        return aceCodeEntity;
+    }
+
+    @Override
+    public AccountCode createAccountCode(final User user, final Account account) {
+        String firstName = getStartingInitialByName(user.getFirstName());
+        String lastName = getStartingInitialByName(user.getLastName());
+        int userID = user.getUserID();
+        AccountType accountType = getAccountTypeFromStringType(account.getAccountType().getCode());
+        int year = getTwoDigitYearSegment(getYearFromCurrentDate());
+        int acctID = getSequenceNumber();
+        return getAccountCodeForm(firstName, lastName, userID, accountType, year, acctID);
     }
 
 
