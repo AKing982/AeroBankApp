@@ -28,9 +28,6 @@ public class AccountEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int acctID;
 
-//    @Column(name="externalId")
-//    private String externalId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="accountCodeID")
     @JsonIgnore

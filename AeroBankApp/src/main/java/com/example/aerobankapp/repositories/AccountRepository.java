@@ -78,6 +78,10 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>
     @Query("UPDATE AccountEntity a SET a.balance =:balance WHERE a.acctID =:acctID")
     void updateAccountBalanceByAcctID(@Param("balance") BigDecimal balance, @Param("acctID") int acctID);
 
+    @Modifying
+    @Query("UPDATE AccountEntity a SET a.accountName =:name, a.balance =:bal, a.mask =:mask WHERE a.acctID =:id")
+    void updateAccountEntityByNameAndBalanceAndMask(@Param("name") String name, @Param("bal") BigDecimal balance, @Param("mask") String mask, @Param("id") int acctID);
+
     @Query("SELECT ts.accountEntity.acctID, COUNT(ts) AS NumberOfTransactions " +
            "FROM TransactionStatementEntity ts " +
             "WHERE ts.accountEntity.user.userID=:userID " +

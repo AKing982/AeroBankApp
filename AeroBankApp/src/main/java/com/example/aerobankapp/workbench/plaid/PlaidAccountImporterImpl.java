@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -233,7 +234,7 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
             }
             else
             {
-                saveAccountEntityToDatabase(accountEntity);
+                updateAccountEntity(accountEntity);
                 result = createPlaidImportResult(account, true);
             }
         }
@@ -277,8 +278,12 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
     }
 
 
-    private void saveAccountEntityToDatabase(AccountEntity accountEntity){
-        accountService.save(accountEntity);
+    private void updateAccountEntity(AccountEntity accountEntity){
+        String name = accountEntity.getAccountName();
+        BigDecimal balance = accountEntity.getBalance();
+        String mask = accountEntity.getMask();
+        int acctID = accountEntity.getAcctID();
+        accountService.updateAccountEntityByNameAndBalanceAndMask(name, balance, mask, acctID);
     }
 
     private AccountCodeEntity getAccountCodeByUserIdAndAcctID(int userId, int acctID){

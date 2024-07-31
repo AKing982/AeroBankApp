@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AccountSecurityRepository extends JpaRepository<AccountSecurityEntity, Long>
@@ -43,6 +44,9 @@ public interface AccountSecurityRepository extends JpaRepository<AccountSecurity
 
     @Query("SELECT e.transferLimit FROM AccountSecurityEntity e WHERE e.account.acctID=:acctID")
     int getAccountTransferLimit(@Param("acctID") int acctID);
+
+    @Query("SELECT e FROM AccountSecurityEntity e WHERE e.account.acctID =:id")
+    Optional<AccountSecurityEntity> findByAcctID(@Param("id") int acctID);
 
 }
 

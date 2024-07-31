@@ -88,8 +88,16 @@ public class PlaidController {
 
     @PostMapping("/accounts/import/{userID}")
     public ResponseEntity<?> importAccounts(@PathVariable int userID) throws IOException, InterruptedException {
-        plaidAccountImporter.importPlaidAccounts(userID);
-        return ResponseEntity.ok("Imported Accounts from plaid successfully.");
+
+        try
+        {
+            plaidAccountImporter.importPlaidAccounts(userID);
+            return ResponseEntity.ok("Imported Accounts from plaid successfully.");
+
+        }catch(Exception e)
+        {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping("/transactions/import/{userID}")

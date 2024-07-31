@@ -2,15 +2,13 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.dto.AccountCodeDTO;
 import com.example.aerobankapp.dto.AccountInfoDTO;
-import com.example.aerobankapp.entity.AccountCodeEntity;
-import com.example.aerobankapp.entity.AccountEntity;
-import com.example.aerobankapp.entity.AccountSecurityEntity;
-import com.example.aerobankapp.entity.UserEntity;
+import com.example.aerobankapp.entity.*;
 import com.example.aerobankapp.exceptions.*;
 import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.AccountCode;
 import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.model.UserDTO;
+import com.example.aerobankapp.repositories.AccountPropertiesRepository;
 import com.example.aerobankapp.repositories.AccountRepository;
 import com.example.aerobankapp.repositories.AccountSecurityRepository;
 import jakarta.persistence.EntityManager;
@@ -43,14 +41,16 @@ public class AccountServiceImpl implements AccountService
     private final EntityManager entityManager;
     private final AccountRepository accountRepository;
     private final AccountSecurityRepository accountSecurityRepository;
+    private final AccountPropertiesRepository accountPropertiesRepository;
     private Logger LOGGER = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     @Autowired
-    public AccountServiceImpl(EntityManager entityManager, AccountRepository accountRepository, AccountSecurityRepository accountSecurityRepository)
+    public AccountServiceImpl(EntityManager entityManager, AccountRepository accountRepository, AccountSecurityRepository accountSecurityRepository, AccountPropertiesRepository accountPropertiesRepository)
     {
         this.entityManager = entityManager;
         this.accountRepository = accountRepository;
         this.accountSecurityRepository = accountSecurityRepository;
+        this.accountPropertiesRepository = accountPropertiesRepository;
     }
 
     @Override
@@ -318,6 +318,19 @@ public class AccountServiceImpl implements AccountService
     }
 
     @Override
+    @Transactional
+    public void updateAccountEntityByNameAndBalanceAndMask(String name, BigDecimal balance, String mask, int acctID) {
+        try
+        {
+            accountRepository.updateAccountEntityByNameAndBalanceAndMask(name, balance, mask, acctID);
+
+        }catch(Exception e)
+        {
+            LOGGER.error("There was an error updating the account: {}", e.getMessage());
+        }
+    }
+
+    @Override
     public List<String> getAccountCodeShortSegmentByUser(String user) {
         if(user.isEmpty()){
             throw new InvalidUserStringException("Unable to retrieve short segments for user: " + user);
@@ -456,6 +469,13 @@ public class AccountServiceImpl implements AccountService
 
 
     private AccountEntity buildAccount(Account account, AccountCodeEntity accountCode, UserEntity user){
+
+        AccountSecurityEntity aes = accountSecurityRepository.findByAcctID(account.getAccountID())
+                .orElseThrow(() -> new AccountIDNotFoundException("Account with ID: " + account.getAccountID() + " not found."));
+
+        AccountPropertiesEntity accountPropertiesEntity = accountPropertiesRepository.findByAcctID(account.getAccountID())
+                .orElseThrow(() -> new RuntimeException("Account Properties not found with acctID: " + account.getAccountID()));
+
         return AccountEntity.builder()
                 .accountType(account.getAccountType().getCode())
                 .accountCode(accountCode)
@@ -464,6 +484,11 @@ public class AccountServiceImpl implements AccountService
                 .interest(account.getInterest())
                 .accountName(account.getAccountName())
                 .isRentAccount(account.isRentAccount())
+                .mask(account.getMask())
+                .type(account.getType())
+                .subtype(account.getSubType())
+                .accountSecurity(aes)
+                .accountProperties(accountPropertiesEntity)
                 .hasMortgage(account.isMortgageAccount())
                 .user(user)
                 .build();

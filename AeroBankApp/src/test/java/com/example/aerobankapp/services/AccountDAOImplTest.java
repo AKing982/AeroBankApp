@@ -7,6 +7,7 @@ import com.example.aerobankapp.exceptions.AccountIDNotFoundException;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
 import com.example.aerobankapp.exceptions.InvalidUserStringException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
+import com.example.aerobankapp.repositories.AccountPropertiesRepository;
 import com.example.aerobankapp.repositories.AccountRepository;
 import com.example.aerobankapp.repositories.AccountSecurityRepository;
 import jakarta.persistence.EntityManager;
@@ -61,6 +62,9 @@ class AccountDAOImplTest
     @Autowired
     private AccountSecurityRepository accountSecurityRepository;
 
+    @Autowired
+    private AccountPropertiesRepository accountPropertiesRepository;
+
     private AccountEntity accountEntity;
 
 
@@ -81,7 +85,7 @@ class AccountDAOImplTest
                 .hasMortgage(false)
                 .build();
 
-        accountDAO = new AccountServiceImpl(entityManager,accountRepository, accountSecurityRepository);
+        accountDAO = new AccountServiceImpl(entityManager,accountRepository, accountSecurityRepository, accountPropertiesRepository);
     }
 
     @Test

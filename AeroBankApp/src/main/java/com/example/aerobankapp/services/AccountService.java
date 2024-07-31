@@ -13,6 +13,7 @@ import com.example.aerobankapp.model.ServiceDAOModel;
 import com.example.aerobankapp.model.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -75,6 +76,8 @@ public interface AccountService extends ServiceDAOModel<AccountEntity>
     int getLatestAccountID();
 
     void saveAll(List<AccountEntity> accountEntities);
+
+    void updateAccountEntityByNameAndBalanceAndMask(String name, BigDecimal balance, String mask, int acctID);
 
     List<String> getAccountCodeShortSegmentByUser(String user);
 

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AccountPropertiesRepository extends JpaRepository<AccountPropertiesEntity, Long>
@@ -16,4 +17,7 @@ public interface AccountPropertiesRepository extends JpaRepository<AccountProper
 
     @Query("SELECT ap FROM AccountEntity a JOIN a.accountProperties ap WHERE a.user.userID=:userID")
     List<AccountPropertiesEntity> findAccountPropertiesEntitiesByUserID(@Param("userID") int userID);
+
+    @Query("SELECT ap FROM AccountPropertiesEntity ap WHERE ap.account.acctID =:id")
+    Optional<AccountPropertiesEntity> findByAcctID(@Param("id") int acctID);
 }

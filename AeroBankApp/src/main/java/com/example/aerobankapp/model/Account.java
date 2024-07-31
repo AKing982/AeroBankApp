@@ -14,6 +14,8 @@ public class Account
 {
     private int accountID;
     private int userID;
+    private Long aSecID;
+    private Long propsID;
     private String mask;
     private String subType;
     private String type;
