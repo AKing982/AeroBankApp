@@ -586,7 +586,39 @@ class PlaidAccountImporterImplTest {
     }
 
     @Test
-    @DisplayName("Test checkPlaidAccountsAreLinked when ")
+    @DisplayName("Test execute create and save external account entity when linked account info list is null, then throw exception")
+    public void testExecuteCreateAndSaveExternalAccountEntity_whenLinkedAccountInfoListIsNull_thenThrowException(){
+        assertThrows(LinkedAccountInfoListNullException.class, () -> {
+            importer.executeCreateAndSaveExternalAccountEntity(null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test execute create and save external account when linked account info list is valid, then return true")
+    public void testExecuteCreateAndSaveExternalAccountEntity_whenLinkedAccountInfoListIsValid_thenReturnTrue(){
+
+        List<LinkedAccountInfo> expected = new ArrayList<>();
+        LinkedAccountInfo expected1 = new LinkedAccountInfo(1, "e23232323");
+        expected.add(expected1);
+
+        Boolean result = importer.executeCreateAndSaveExternalAccountEntity(expected);
+        assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("Test execute create and save external account when linked account info object is null, then skip to next and return true")
+    public void testExecuteCreateAndSaveExternalAccountEntity_whenLinkedAccountInfoIsNull_thenSkipToNextAndReturnTrue(){
+        List<LinkedAccountInfo> expected = new ArrayList<>();
+        LinkedAccountInfo expected1 = new LinkedAccountInfo(1, "e23232323");
+        LinkedAccountInfo expected2 = new LinkedAccountInfo(2, "ghtmsdfasdfs");
+        expected.add(expected1);
+        expected.add(null);
+        expected.add(expected2);
+
+        Boolean result = importer.executeCreateAndSaveExternalAccountEntity(expected);
+        assertTrue(result);
+    }
+
 
 
 
@@ -660,6 +692,7 @@ class PlaidAccountImporterImplTest {
 //        Boolean result = importer.validateAccountSubTypeToTypeCriteria(accountEntityList);
 //        assertTrue(result);
 //    }
+
 
     private ExternalAccountsEntity createExternalAccount(int acctID, String plaidAcctID){
         ExternalAccountsEntity externalAccountsEntity = new ExternalAccountsEntity();

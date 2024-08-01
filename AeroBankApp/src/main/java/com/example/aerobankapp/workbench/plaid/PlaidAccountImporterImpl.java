@@ -329,20 +329,35 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
 
     @Override
     public Boolean executeCreateAndSaveExternalAccountEntity(List<LinkedAccountInfo> accountIdsMap) {
-        try
+        if(accountIdsMap == null)
         {
-            for(LinkedAccountInfo linkedAccountInfo : accountIdsMap)
+            throw new LinkedAccountInfoListNullException("Linked Account Info List is null");
+        }
+
+        for(LinkedAccountInfo linkedAccountInfo : accountIdsMap)
+        {
+            if(linkedAccountInfo != null)
             {
                 int systemAcctID = linkedAccountInfo.getSystemAcctID();
                 String externalAcctID = linkedAccountInfo.getExternalAcctID();
-                createAndSaveExternalAccountEntity(externalAcctID,systemAcctID);
+                createAndSaveExternalAccountEntity(externalAcctID, systemAcctID);
             }
-            return true;
-        }catch(Exception e)
-        {
-            LOGGER.error("There was an error creating and saving the external account entity: ", e);
-            return false;
         }
+//        try
+//        {
+//            for(LinkedAccountInfo linkedAccountInfo : accountIdsMap)
+//            {
+//                int systemAcctID = linkedAccountInfo.getSystemAcctID();
+//                String externalAcctID = linkedAccountInfo.getExternalAcctID();
+//                createAndSaveExternalAccountEntity(externalAcctID, systemAcctID);
+//            }
+//            return true;
+//        }catch(Exception e)
+//        {
+//            LOGGER.error("There was an error creating and saving the external account entity: ", e);
+//            return false;
+//        }
+        return true;
     }
 
 

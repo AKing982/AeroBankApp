@@ -2,9 +2,12 @@ package com.example.aerobankapp.workbench.runner;
 
 import com.example.aerobankapp.configuration.AppConfig;
 import com.example.aerobankapp.configuration.JpaConfig;
+import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
+import com.example.aerobankapp.exceptions.LinkedAccountInfoListNullException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.exceptions.PlaidAccountsGetResponseNullPointerException;
+import com.example.aerobankapp.model.LinkedAccountInfo;
 import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.repositories.AccountRepository;
 import com.example.aerobankapp.repositories.UserRepository;
@@ -28,7 +31,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -122,10 +125,108 @@ class PlaidAccountImportRunnerTest {
         });
     }
 
+    @Test
+    public void testImportPlaidAccounts_whenLinkedAccountInfoListIsNull_thenThrowException() throws IOException, InterruptedException {
+
+        int userId = 1;
+        UserEntity userEntity = createUserEntity(userId);
+        PlaidAccount plaidAccount = createPlaidAccount("Test Checking", "DEPOSITORY", "checking", "e232323232");
+        List<PlaidAccount> plaidAccountList = new ArrayList<>();
+        plaidAccountList.add(plaidAccount);
+
+        AccountsGetResponse accountsGetResponse = new AccountsGetResponse();
+        List<AccountBase> accountBaseList = accountsGetResponse.getAccounts();
+
+        when(plaidAccountManager.getAllAccounts(userId)).thenReturn(accountsGetResponse);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
+        when(plaidAccountImporter.prepareLinkedAccounts(any(UserEntity.class), anyList())).thenReturn(null);
+
+        assertThrows(LinkedAccountInfoListNullException.class, () -> {
+            plaidAccountImportRunner.importPlaidAccounts(userId);
+        });
+
+        verify(plaidAccountManager, times(1))
+                .getAllAccounts(userId);
+        verify(userRepository, times(1)).findById(userId);
+        verify(plaidAccountImporter, times(1))
+                .prepareLinkedAccounts(any(UserEntity.class), anyList());
+
+    }
+
+    @Test
+    public void testImportPlaidAccounts_whenLinkedAccountInfoListIsEmpty_thenThrowException() throws IOException, InterruptedException {
+        int userId = 1;
+        UserEntity userEntity = createUserEntity(userId);
+        PlaidAccount plaidAccount = createPlaidAccount("Test Checking", "DEPOSITORY", "checking", "e232323232");
+        List<PlaidAccount> plaidAccountList = new ArrayList<>();
+        plaidAccountList.add(plaidAccount);
+
+        AccountsGetResponse accountsGetResponse = new AccountsGetResponse();
+
+        when(plaidAccountManager.getAllAccounts(userId)).thenReturn(accountsGetResponse);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
+        when(plaidAccountImporter.prepareLinkedAccounts(any(UserEntity.class), anyList())).thenReturn(Collections.emptyList());
+
+        assertThrows(NonEmptyListRequiredException.class, () -> {
+            plaidAccountImportRunner.importPlaidAccounts(userId);
+        });
+
+        verify(plaidAccountManager, times(1))
+                .getAllAccounts(userId);
+        verify(userRepository, times(1)).findById(userId);
+        verify(plaidAccountImporter, times(1))
+                .prepareLinkedAccounts(any(UserEntity.class), anyList());
+
+    }
+
+    @Test
+    public void testImportPlaidAccounts_whenCreateAndSaveStepIsTrue_thenImportPlaidAccounts() throws IOException, InterruptedException {
+        int userId = 1;
+        UserEntity userEntity = createUserEntity(userId);
+        PlaidAccount plaidAccount = createPlaidAccount("Test Checking", "DEPOSITORY", "checking", "e232323232");
+        List<PlaidAccount> plaidAccountList = new ArrayList<>();
+        plaidAccountList.add(plaidAccount);
+
+        List<LinkedAccountInfo> linkedAccountInfoList = new ArrayList<>();
+        LinkedAccountInfo linkedAccountInfo = mock(LinkedAccountInfo.class);
+        linkedAccountInfoList.add(linkedAccountInfo);
+
+        AccountsGetResponse accountsGetResponse = new AccountsGetResponse();
+
+        when(plaidAccountManager.getAllAccounts(userId)).thenReturn(accountsGetResponse);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
+        when(plaidAccountImporter.prepareLinkedAccounts(any(UserEntity.class), anyList())).thenReturn(linkedAccountInfoList);
+        when(plaidAccountImporter.executeCreateAndSaveExternalAccountEntity(linkedAccountInfoList)).thenReturn(true);
+
+        plaidAccountImportRunner.importPlaidAccounts(userId);
+
+        verify(plaidAccountManager, times(1))
+                .getAllAccounts(anyInt());
+        verify(userRepository, times(1)).findById(userId);
+        verify(plaidAccountImporter, times(1))
+                .prepareLinkedAccounts(any(UserEntity.class), anyList());
+        verify(plaidAccountImporter, times(1))
+                .executeCreateAndSaveExternalAccountEntity(linkedAccountInfoList);
+    }
 
 
      @AfterEach
     void tearDown() {
+    }
+
+    private UserEntity createUserEntity(int userID)
+    {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserID(userID);
+        return userEntity;
+    }
+
+    private LinkedAccountInfo createLinkedAccountInfo(String external, int acctID)
+    {
+        LinkedAccountInfo linkedAccountInfo = new LinkedAccountInfo();
+        linkedAccountInfo.setExternalAcctID(external);
+        linkedAccountInfo.setSystemAcctID(acctID);
+        return linkedAccountInfo;
     }
 
     private PlaidAccount createPlaidAccount(String name, String type, String subtype, String acctID)

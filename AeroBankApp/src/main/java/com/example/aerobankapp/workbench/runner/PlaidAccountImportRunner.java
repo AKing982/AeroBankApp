@@ -4,6 +4,7 @@ import com.example.aerobankapp.AeroBankAppApplication;
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.InvalidUserIDException;
+import com.example.aerobankapp.exceptions.LinkedAccountInfoListNullException;
 import com.example.aerobankapp.exceptions.NonEmptyListRequiredException;
 import com.example.aerobankapp.exceptions.PlaidAccountsGetResponseNullPointerException;
 import com.example.aerobankapp.model.Account;
@@ -28,10 +29,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -90,31 +88,30 @@ public class PlaidAccountImportRunner
     }
 
     public void importPlaidAccounts(int userId) throws IOException, InterruptedException {
-//        List<PlaidAccount> plaidAccounts = getUserPlaidAccounts(userId);
-//        UserEntity user = getUserEntityFromRepository(userId);
-//        List<LinkedAccountInfo> linkedAccounts = getPreparedLinkAccountList(user, plaidAccounts);
-//
-//        // Create and save the external accountID
-//        if(linkedAccounts.isEmpty())
-//        {
-//            LOGGER.warn("Linked Accounts was found empty/null");
-//        }
-//
-//        if(createAndSaveExternalAccount(linkedAccounts))
-//        {
-//           List<Account> accounts = getAccountEntityListAsAccountsList(userId);
-//
-//            for(Account account : accounts)
-//            {
-//                for(PlaidAccount plaidAccount : plaidAccounts)
-//                {
-//                    PlaidImportResult plaidImportResult = plaidAccountImporter.importDataFromPlaidAccountToSystemAccount(plaidAccount, account);
-//                }
-//            }
-//
-//           Map<Integer, List<PlaidAccount>> integerListMap = getPlaidAccountsMap();
-//           plaidAccountImporter.createImportedAccountsFromNonLinkAccountsList(integerListMap);
-//        }
+        List<PlaidAccount> plaidAccounts = getUserPlaidAccounts(userId);
+        UserEntity user = getUserEntityFromRepository(userId);
+        List<LinkedAccountInfo> linkedAccounts = getPreparedLinkAccountList(user, plaidAccounts);
+        if(linkedAccounts == null)
+        {
+            throw new LinkedAccountInfoListNullException("Linked Accounts list found null");
+        }
+
+        if(linkedAccounts.isEmpty())
+        {
+            throw new NonEmptyListRequiredException("Linked Accounts list found empty.");
+        }
+
+
+        if(createAndSaveExternalAccount(linkedAccounts))
+        {
+            List<Account> accounts = getAccountEntityListAsAccountsList(userId);
+            for(Account account : accounts)
+            {
+                PlaidAccount plaidAccount = plaidAccountImporter.
+            }
+        }
+           Map<Integer, List<PlaidAccount>> integerListMap = getPlaidAccountsMap();
+           plaidAccountImporter.createImportedAccountsFromNonLinkAccountsList(integerListMap);
     }
 
     public Map<Integer, List<PlaidAccount>> getPlaidAccountsMap(){
