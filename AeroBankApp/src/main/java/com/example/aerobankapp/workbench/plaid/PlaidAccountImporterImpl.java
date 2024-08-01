@@ -130,53 +130,127 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
     @Override
     public LinkedAccountInfo linkAccounts(final PlaidAccount plaidAccount, final AccountEntity accountEntity)
     {
-        if (plaidAccount == null && accountEntity == null) {
-            throw new IllegalArgumentException("PlaidAccount and accountEntity must not be null");
+        validateInputs(plaidAccount, accountEntity);
+        processSubTypeValidation(plaidAccount);
+
+        UserEntity user = getUserEntityByAccountEntity(accountEntity);
+        if(!isMatchedSubType() && !checkPlaidAccessToken(user))
+        {
+            return null;
+        }
+
+        return processAccountLink(plaidAccount, accountEntity);
+
+//        if (plaidAccount == null && accountEntity == null) {
+//            throw new IllegalArgumentException("PlaidAccount and accountEntity must not be null");
+//        }
+//        assertPlaidAccountIsNull(plaidAccount);
+//        assertAccountIsNull(accountEntity);
+//
+//        String plaidSubType = plaidAccount.getSubtype();
+//        if (plaidSubType.isEmpty()) {
+//            throw new InvalidPlaidSubTypeException(plaidSubType);
+//        }
+//        Set<String> plaidAccountSubtypes = convertPlaidSubTypeEnumListToStrings();
+//        for (String subType : plaidAccountSubtypes) {
+//            if (subType.equalsIgnoreCase(plaidSubType)) {
+//                setIsMatchedSubType(true);
+//                break;
+//            }
+//        }
+//
+//        UserEntity user = getUserEntityByAccountEntity(accountEntity);
+//
+//        if(isMatchedSubType() || checkPlaidAccessToken(user))
+//        {
+//            LOGGER.info("User has access token or has matched subtype");
+//            int acctID = accountEntity.getAcctID();
+//            String externalAcctID = plaidAccount.getAccountId();
+//            String acctSubType = accountEntity.getSubtype();
+//
+//            if(acctSubType.equalsIgnoreCase(plaidSubType))
+//            {
+//                LOGGER.info("Account subtype matches PlaidAccount subtype");
+//                String type = accountEntity.getType();
+//                String plaidAccountType = plaidAccount.getType();
+//                if(type.equalsIgnoreCase(plaidAccountType))
+//                {
+//                    LOGGER.info("Account type matches PlaidAccount type");
+//                    String mask = accountEntity.getMask();
+//                    if(mask.equals(plaidAccount.getMask()))
+//                    {
+//                        LOGGER.info("Account mask matches plaid account mask");
+//                        LOGGER.info("Building LinkedAccountInfo");
+//                        return buildLinkedAccountInfo(acctID, externalAcctID);
+//                    }
+//                    LOGGER.info("Account mask doesn't match");
+//                }
+//                else
+//                {
+//                    return createLinkedAccountInfo(0, "");
+//                }
+//
+//            }
+//            else
+//            {
+//                return createLinkedAccountInfo(0, "");
+//            }
+//
+//        }
+//        return null;
+    }
+
+    private void validateInputs(PlaidAccount plaidAccount, AccountEntity accountEntity)
+    {
+        if(plaidAccount == null && accountEntity == null)
+        {
+            throw new IllegalArgumentException("PlaidAccount cannot be null");
         }
         assertPlaidAccountIsNull(plaidAccount);
         assertAccountIsNull(accountEntity);
+    }
 
+
+    private LinkedAccountInfo processAccountLink(PlaidAccount plaidAccount, AccountEntity account)
+    {
+        int sysAcctID = account.getAcctID();
+        String externalAcctID = plaidAccount.getAccountId();
+        String accountSubtype = account.getSubtype();
         String plaidSubType = plaidAccount.getSubtype();
-        if (plaidSubType.isEmpty()) {
+
+        if(!accountSubtype.equalsIgnoreCase(plaidSubType))
+        {
+            return createLinkedAccountInfo(0, "");
+        }
+
+        if(!account.getType().equalsIgnoreCase(plaidAccount.getType()))
+        {
+            return createLinkedAccountInfo(0, "");
+        }
+
+        if(!account.getMask().equalsIgnoreCase(plaidAccount.getMask()))
+        {
+            return createLinkedAccountInfo(0, "");
+        }
+        return buildLinkedAccountInfo(sysAcctID, externalAcctID);
+    }
+
+    private void processSubTypeValidation(PlaidAccount plaidAccount)
+    {
+        String plaidSubType = plaidAccount.getSubtype();
+        if(plaidSubType.isEmpty())
+        {
             throw new InvalidPlaidSubTypeException(plaidSubType);
         }
         Set<String> plaidAccountSubtypes = convertPlaidSubTypeEnumListToStrings();
-        for (String subType : plaidAccountSubtypes) {
-            if (subType.equalsIgnoreCase(plaidSubType)) {
+        for(String subType : plaidAccountSubtypes)
+        {
+            if(subType.equalsIgnoreCase(plaidSubType))
+            {
                 setIsMatchedSubType(true);
                 break;
             }
         }
-
-        UserEntity user = getUserEntityByAccountEntity(accountEntity);
-
-        if(isMatchedSubType() || checkPlaidAccessToken(user))
-        {
-            LOGGER.info("User has access token or has matched subtype");
-            int acctID = accountEntity.getAcctID();
-            String externalAcctID = plaidAccount.getAccountId();
-            String acctSubType = accountEntity.getSubtype();
-
-            if(acctSubType.equalsIgnoreCase(plaidSubType))
-            {
-                LOGGER.info("Account subtype matches PlaidAccount subtype");
-                String type = accountEntity.getType();
-                String plaidAccountType = plaidAccount.getType();
-                if(type.equalsIgnoreCase(plaidAccountType))
-                {
-                    LOGGER.info("Account type matches PlaidAccount type");
-                    String mask = accountEntity.getMask();
-                    if(mask.equals(plaidAccount.getMask()))
-                    {
-                        LOGGER.info("Account mask matches plaid account mask");
-                        LOGGER.info("Building LinkedAccountInfo");
-                        return buildLinkedAccountInfo(acctID, externalAcctID);
-                    }
-                    LOGGER.info("Account mask doesn't match");
-                }
-            }
-        }
-        return null;
     }
 
     private UserEntity getUserEntityByAccountEntity(AccountEntity accountEntity)
