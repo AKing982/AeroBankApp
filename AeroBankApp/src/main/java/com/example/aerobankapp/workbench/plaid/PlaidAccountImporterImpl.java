@@ -152,33 +152,29 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
 
         if(isMatchedSubType() || checkPlaidAccessToken(user))
         {
+            LOGGER.info("User has access token or has matched subtype");
             int acctID = accountEntity.getAcctID();
             String externalAcctID = plaidAccount.getAccountId();
             String acctSubType = accountEntity.getSubtype();
 
             if(acctSubType.equalsIgnoreCase(plaidSubType))
             {
+                LOGGER.info("Account subtype matches PlaidAccount subtype");
                 String type = accountEntity.getType();
                 String plaidAccountType = plaidAccount.getType();
                 if(type.equalsIgnoreCase(plaidAccountType))
                 {
+                    LOGGER.info("Account type matches PlaidAccount type");
                     String mask = accountEntity.getMask();
                     if(mask.equals(plaidAccount.getMask()))
                     {
+                        LOGGER.info("Account mask matches plaid account mask");
+                        LOGGER.info("Building LinkedAccountInfo");
                         return buildLinkedAccountInfo(acctID, externalAcctID);
                     }
+                    LOGGER.info("Account mask doesn't match");
                 }
-                else
-                {
-                    return createLinkedAccountInfo(0, "");
-                }
-
             }
-            else
-            {
-                return createLinkedAccountInfo(0, "");
-            }
-
         }
         return null;
     }
@@ -333,31 +329,31 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
         {
             throw new LinkedAccountInfoListNullException("Linked Account Info List is null");
         }
+        LOGGER.info("Linked Account Info list size: {}", accountIdsMap.size());
 
-        for(LinkedAccountInfo linkedAccountInfo : accountIdsMap)
+        try
         {
-            if(linkedAccountInfo != null)
+            LOGGER.info("Entering loop of LinkedAccountInfos");
+            for(LinkedAccountInfo linkedAccountInfo : accountIdsMap)
             {
-                int systemAcctID = linkedAccountInfo.getSystemAcctID();
-                String externalAcctID = linkedAccountInfo.getExternalAcctID();
-                createAndSaveExternalAccountEntity(externalAcctID, systemAcctID);
+                if(linkedAccountInfo != null)
+                {
+                    LOGGER.info("LinkedAccountInfo is not null");
+                    int systemAcctID = linkedAccountInfo.getSystemAcctID();
+                    String externalAcctID = linkedAccountInfo.getExternalAcctID();
+                    LOGGER.info("SystemAcctID: {}", systemAcctID);
+                    LOGGER.info("ExternalAcctID: {}", externalAcctID);
+                    LOGGER.info("Creating ExternalAccountEntity");
+                    createAndSaveExternalAccountEntity(externalAcctID, systemAcctID);
+                }
+                LOGGER.info("LinkedAccountInfo is found null");
             }
+            return true;
+        }catch(Exception e)
+        {
+            LOGGER.error(String.format("There was an error creating and saving the external account entity: %s - %s ", e.getClass().getSimpleName(), e.getMessage()), e);
+            return false;
         }
-//        try
-//        {
-//            for(LinkedAccountInfo linkedAccountInfo : accountIdsMap)
-//            {
-//                int systemAcctID = linkedAccountInfo.getSystemAcctID();
-//                String externalAcctID = linkedAccountInfo.getExternalAcctID();
-//                createAndSaveExternalAccountEntity(externalAcctID, systemAcctID);
-//            }
-//            return true;
-//        }catch(Exception e)
-//        {
-//            LOGGER.error("There was an error creating and saving the external account entity: ", e);
-//            return false;
-//        }
-        return true;
     }
 
 

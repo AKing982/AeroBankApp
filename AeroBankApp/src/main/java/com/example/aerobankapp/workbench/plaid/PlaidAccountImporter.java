@@ -1,6 +1,7 @@
 package com.example.aerobankapp.workbench.plaid;
 
 import com.example.aerobankapp.entity.AccountEntity;
+import com.example.aerobankapp.entity.ExternalAccountsEntity;
 import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.LinkedAccountInfo;
@@ -25,5 +26,6 @@ public interface PlaidAccountImporter
     void createImportedAccountsFromNonLinkAccountsList(Map<Integer, List<PlaidAccount>> unlinkedPlaidAccounts);
 
     Map<Integer, List<PlaidAccount>> getPlaidAccountsMap();
+    Map<String, Integer> getSingleSysAndPlaidAcctIdMap(final ExternalAccountsEntity externalAccountsEntity);
 
 }

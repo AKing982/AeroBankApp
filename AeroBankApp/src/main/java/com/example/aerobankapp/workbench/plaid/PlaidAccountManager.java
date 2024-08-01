@@ -98,7 +98,7 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
         }
         else
         {
-            throw new PlaidAccountNotFoundException("Plaid account not found");
+            throw new PlaidAccountNotFoundException("Plaid Link not found.");
         }
     }
 

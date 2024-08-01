@@ -10,6 +10,7 @@ import com.example.aerobankapp.exceptions.PlaidAccountsGetResponseNullPointerExc
 import com.example.aerobankapp.model.LinkedAccountInfo;
 import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.repositories.AccountRepository;
+import com.example.aerobankapp.repositories.ExternalAccountsRepository;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.plaid.PlaidAccountImporter;
 import com.example.aerobankapp.workbench.plaid.PlaidAccountManager;
@@ -53,9 +54,12 @@ class PlaidAccountImportRunnerTest {
     @Mock
     private AccountRepository accountRepository;
 
+    @Mock
+    private ExternalAccountsRepository externalAccountsRepository;
+
     @BeforeEach
     void setUp() {
-        plaidAccountImportRunner = new PlaidAccountImportRunner(plaidAccountManager, plaidAccountImporter, userRepository, accountRepository);
+        plaidAccountImportRunner = new PlaidAccountImportRunner(plaidAccountManager, plaidAccountImporter, userRepository, accountRepository, externalAccountsRepository);
     }
 
     @Test
@@ -207,6 +211,18 @@ class PlaidAccountImportRunnerTest {
                 .prepareLinkedAccounts(any(UserEntity.class), anyList());
         verify(plaidAccountImporter, times(1))
                 .executeCreateAndSaveExternalAccountEntity(linkedAccountInfoList);
+    }
+
+    @Test
+    public void testCreateAndSaveExternalAccount() throws IOException, InterruptedException {
+        List<LinkedAccountInfo> linkedAccountInfoList = new ArrayList<>();
+        LinkedAccountInfo linkedAccountInfo = createLinkedAccountInfo("e2323232", 1);
+        LinkedAccountInfo linkedAccountInfo1 = createLinkedAccountInfo("f3432432", 2);
+        linkedAccountInfoList.add(linkedAccountInfo);
+        linkedAccountInfoList.add(linkedAccountInfo1);
+
+        Boolean result = plaidAccountImportRunner.createAndSaveExternalAccount(linkedAccountInfoList);
+        assertTrue(result);
     }
 
 

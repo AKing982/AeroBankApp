@@ -2,7 +2,11 @@ package com.example.aerobankapp.services;
 
 import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.ExternalAccountsEntity;
+import com.example.aerobankapp.exceptions.AccountNotFoundException;
+import com.example.aerobankapp.repositories.AccountRepository;
 import com.example.aerobankapp.repositories.ExternalAccountsRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +18,15 @@ import java.util.Optional;
 public class ExternalAccountsServiceImpl implements ExternalAccountsService
 {
     private ExternalAccountsRepository externalAccountsRepository;
+    private AccountRepository accountRepository;
+    private Logger LOGGER = LoggerFactory.getLogger(ExternalAccountsServiceImpl.class);
 
     @Autowired
-    public ExternalAccountsServiceImpl(ExternalAccountsRepository externalAccountsRepository)
+    public ExternalAccountsServiceImpl(ExternalAccountsRepository externalAccountsRepository,
+                                       AccountRepository accountRepository)
     {
         this.externalAccountsRepository = externalAccountsRepository;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -29,7 +37,16 @@ public class ExternalAccountsServiceImpl implements ExternalAccountsService
     @Override
     @Transactional
     public void save(ExternalAccountsEntity obj) {
-        externalAccountsRepository.save(obj);
+        LOGGER.info("Saving ExternalAccountsEntity: {}", obj);
+        try
+        {
+            externalAccountsRepository.save(obj);
+
+        }catch(Exception e)
+        {
+            LOGGER.error("There was an error saving the ExternalAccountsEntity: {}", obj, e);
+        }
+
     }
 
     @Override
@@ -52,7 +69,12 @@ public class ExternalAccountsServiceImpl implements ExternalAccountsService
     public ExternalAccountsEntity createExternalAccount(String externalAcctID, int acctID) {
         ExternalAccountsEntity externalAccountsEntity = new ExternalAccountsEntity();
         externalAccountsEntity.setExternalAcctID(externalAcctID);
-        externalAccountsEntity.setAccount(AccountEntity.builder().acctID(acctID).build());
+
+        Optional<AccountEntity> accountEntity = Optional.ofNullable(accountRepository.findById(acctID)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found: " + acctID)));
+
+        accountEntity.ifPresent(externalAccountsEntity::setAccount);
+
         return externalAccountsEntity;
     }
 

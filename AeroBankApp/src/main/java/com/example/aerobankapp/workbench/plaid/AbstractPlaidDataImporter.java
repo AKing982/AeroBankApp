@@ -30,15 +30,18 @@ public abstract class AbstractPlaidDataImporter
         initializeSubTypeToTypeMap();
     }
 
-    protected boolean createAndSaveExternalAccountEntity(String externalAcctID, int acctID){
-        try
-        {
-            ExternalAccountsEntity externalAccountsEntity = externalAccountsService.createExternalAccount(externalAcctID, acctID);
-            externalAccountsService.save(externalAccountsEntity);
-            return true;
-        }catch(Exception e){
-            return false;
-        }
+    protected void createAndSaveExternalAccountEntity(String externalAcctID, int acctID){
+         try
+         {
+             ExternalAccountsEntity externalAccountsEntity = externalAccountsService.createExternalAccount(externalAcctID, acctID);
+             LOGGER.info("Created ExternalAccountEntity: {}", externalAccountsEntity.toString());
+             externalAccountsService.save(externalAccountsEntity);
+             LOGGER.info("Saved ExternalAccountEntity: {}", externalAccountsEntity.toString());
+
+         }catch(Exception e)
+         {
+             LOGGER.error("There was an error creating external account entity", e);
+         }
     }
 
     protected PlaidImportResult createPlaidImportResult(Object result, boolean isSuccess){

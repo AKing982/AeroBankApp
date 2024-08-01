@@ -169,6 +169,7 @@ export default function LoginFormOLD()
             let userID = sessionStorage.getItem('userID');
 
             await fetchAndLinkPlaidAccounts(userID);
+            await fetchImportedAccountsResponse(userID);
             navigateToHomePage();
         }catch(error)
         {
@@ -275,6 +276,30 @@ export default function LoginFormOLD()
             .catch(error => {
                 console.error('Unable to send the User Log POST due to the error: ', error);
             });
+    }
+
+    const fetchImportedAccountsResponse = async(userID) => {
+        try
+        {
+            const response = await axios.post(`http://localhost:8080/AeroBankApp/api/plaid/accounts/import/${userID}`);
+            if(response.status === 200 || response.status === 201)
+            {
+                return response.data;
+            }
+            else
+            {
+                console.log(`Request completed with status: ${response.status}`);
+            }
+        } catch (error)
+        {
+            if(error.response){
+                console.error(`Server responded with status ${error.response.status}: `, error.response.data);
+            }else if(error.request){
+                console.error('No response received for the request: ', error.request);
+            }else{
+                console.error('Error', error.message);
+            }
+        }
     }
 
 
