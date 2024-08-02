@@ -107,6 +107,25 @@ class PlaidTransactionImporterImplTest {
         assertNotEquals(expected.isSuccessful(), actual.isSuccessful());
     }
 
+    @Test
+    @DisplayName("Test prepareTransactionStatementEntityFromAmount when account is null, then throw exception")
+    public void testPrepareTransactionStatementEntityFromAmount_whenAccountIsNull_thenThrowException(){
+        PlaidTransactionImport transactionImport = createPlaidTransactionImport();
+        assertThrows(IllegalArgumentException.class, () ->
+                plaidTransactionImporter.prepareTransactionStatementEntityFromAmount(null, transactionImport));
+    }
+
+    @Test
+    @DisplayName("Test prepareTransactionStatementEntityFromAmount when account and transactionImport are null, then throw exception")
+    public void testPrepareTransactionStatementEntityFromAmount_whenAccountAndTransactionImportAreNull_thenThrowException(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            plaidTransactionImporter.prepareTransactionStatementEntityFromAmount(null, null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test prepareTransactionStatementEntityFromAmount when account valid")
+
     @AfterEach
     void tearDown() {
     }

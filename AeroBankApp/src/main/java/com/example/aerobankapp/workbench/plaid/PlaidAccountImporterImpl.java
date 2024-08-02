@@ -73,27 +73,38 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
         int userID = user.getUserID();
         List<AccountEntity> accountEntities = getAccountsForUserId(userID);
         int loopCount = Math.max(plaidAccounts.size(), accountEntities.size());
+
+        // If the plaid accounts size is greater than the account list
         try
         {
-            int accountEntitiesIndex = 0;
-            for(int i = 0; i <= loopCount; ++i)
+            for(int i = 0; i < loopCount; i++)
             {
-
-                if(i < plaidAccounts.size())
+                PlaidAccount plaidAccount = i < plaidAccounts.size() ? plaidAccounts.get(i) : null;
+                AccountEntity accountEntity = i < accountEntities.size() ? accountEntities.get(i) : null;
+                if(plaidAccount != null && accountEntity != null)
                 {
-                    PlaidAccount plaidAccount = plaidAccounts.get(i);
-                    // Is the plaid account linked?
-                    if(plaidAccount != null && accountEntitiesIndex < accountEntities.size())
-                    {
-                        AccountEntity account = accountEntities.get(accountEntitiesIndex);
-                        if(account != null)
-                        {
-                            addLinkedAccountInfoToList(linkedAccountInfoList, linkAccounts(plaidAccount, account));
-                        }
-                        accountEntitiesIndex = accountEntitiesIndex + 1;
-                    }
+                    addLinkedAccountInfoToList(linkedAccountInfoList, linkAccounts(plaidAccount, accountEntity));
                 }
             }
+//            int accountEntitiesIndex = 0;
+//            for(int i = 0; i <= loopCount; ++i)
+//            {
+//
+//                if(i < plaidAccounts.size())
+//                {
+//                    PlaidAccount plaidAccount = plaidAccounts.get(i);
+//                    // Is the plaid account linked?
+//                    if(plaidAccount != null && accountEntitiesIndex < accountEntities.size())
+//                    {
+//                        AccountEntity account = accountEntities.get(accountEntitiesIndex);
+//                        if(account != null)
+//                        {
+//                            addLinkedAccountInfoToList(linkedAccountInfoList, linkAccounts(plaidAccount, account));
+//                        }
+//                        accountEntitiesIndex = accountEntitiesIndex + 1;
+//                    }
+//                }
+//            }
         }catch(IndexOutOfBoundsException e)
         {
             LOGGER.error("Error while linking accounts", e);
@@ -146,6 +157,12 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
     @Override
     public LinkedAccountInfo linkAccounts(final PlaidAccount plaidAccount, final AccountEntity accountEntity)
     {
+//        if(plaidAccount == null)
+//        {
+//            int sysAcctID = accountEntity.getAcctID();
+//            return buildLinkedAccountInfo(sysAcctID, "");
+//        }
+
         validateInputs(plaidAccount, accountEntity);
         processSubTypeValidation(plaidAccount);
 
@@ -259,13 +276,14 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
             {
                 throw new IllegalArgumentException("Account Code Not Found");
             }
-            AccountEntity accountEntity = createAccountEntityFromModel(account, userEntity, accountCode);
-            if(accountEntity == null)
+            Optional<AccountEntity> accountEntityOptional = createAccountEntityFromModel(account, userEntity, accountCode);
+            if(accountEntityOptional.isEmpty())
             {
                 throw new IllegalArgumentException("AccountEntity cannot be null");
             }
             else
             {
+                AccountEntity accountEntity = accountEntityOptional.get();
                 updateAccountEntity(accountEntity);
                 result = createPlaidImportResult(account, true);
             }
@@ -318,12 +336,22 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
         accountService.updateAccountEntityByNameAndBalanceAndMask(name, balance, mask, acctID);
     }
 
-    private AccountCodeEntity getAccountCodeByUserIdAndAcctID(int userId, int acctID){
+    public AccountCodeEntity getAccountCodeByUserIdAndAcctID(int userId, int acctID){
         return accountCodeService.findByUserIdAndAcctSegment(userId, acctID);
     }
 
-    private AccountEntity createAccountEntityFromModel(Account account, UserEntity user, AccountCodeEntity accountCodeEntity){
-        return accountService.buildAccountEntityByAccountModel(account, accountCodeEntity, user);
+    public Optional<AccountEntity> createAccountEntityFromModel(Account account, UserEntity user, AccountCodeEntity accountCodeEntity){
+        if(account == null || user == null || accountCodeEntity == null)
+        {
+            throw new IllegalArgumentException("Cannot create account entity due to null account data");
+        }
+        AccountEntity accountEntity = accountService.buildAccountEntityByAccountModel(account, accountCodeEntity, user);
+        if(accountEntity == null)
+        {
+            throw new IllegalArgumentException("Unable to build AccountEntity from model");
+        }
+        return Optional.of(accountEntity);
+//        return accountService.buildAccountEntityByAccountModel(account, accountCodeEntity, user);
     }
 
     private void setSystemAccountProperties(final Account account, final PlaidAccount plaidAccount){
@@ -457,7 +485,7 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
      */
     public Map<String, Integer> getSysAndExternalAcctIDs(final List<ExternalAccountsEntity> externalAccountsEntities)
     {
-        if(externalAccountsEntities == null || externalAccountsEntities.isEmpty())
+        if(externalAccountsEntities == null)
         {
             throw new IllegalArgumentException("External Accounts List cannot be null or empty.");
         }
@@ -471,7 +499,7 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
         return pairedAcctIds;
     }
 
-    private List<Integer> getSystemAccountIdsForUser(int userID)
+    public List<Integer> getSystemAccountIdsForUser(int userID)
     {
         List<AccountEntity> accountEntities = accountService.getListOfAccountsByUserID(userID);
         return accountEntities.stream()
@@ -527,23 +555,27 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
      * Checks if the Plaid accounts are linked to corresponding system accounts.
      *
      * @param externalAccountsEntities The list of external accounts entities.
-     * @param unlinkedPlaidAccounts The list of unlinked Plaid accounts.
+     * @param plaidAccounts The list of unlinked Plaid accounts.
      * @return True if all the unlinked Plaid accounts are linked to their corresponding system accounts, false otherwise.
      * @throws IllegalArgumentException if externalAccountsEntities or unlinkedPlaidAccounts is null.
      */
-    public Boolean checkPlaidAccountsAreLinked(final List<ExternalAccountsEntity> externalAccountsEntities, final List<PlaidAccount> unlinkedPlaidAccounts)
+    public Boolean checkPlaidAccountsAreLinked(final List<ExternalAccountsEntity> externalAccountsEntities, final List<PlaidAccount> plaidAccounts)
     {
-        if(externalAccountsEntities == null || unlinkedPlaidAccounts == null)
+        if(externalAccountsEntities == null || plaidAccounts == null)
         {
             return false;
         }
         Map<String, Integer> pairedAcctIds = getSysAndExternalAcctIDs(externalAccountsEntities);
+        if(externalAccountsEntities.isEmpty())
+        {
+            return false;
+        }
         AccountEntity account = externalAccountsEntities.get(0).getAccount();
         UserEntity user = account.getUser();
         int userID = user.getUserID();
 
         List<Integer> userSysAcctIDs = getSystemAccountIdsForUser(userID);
-        for(PlaidAccount plaidAccount : unlinkedPlaidAccounts)
+        for(PlaidAccount plaidAccount : plaidAccounts)
         {
             String plaidAcctID = plaidAccount.getAccountId();
             if(!pairedAcctIds.containsKey(plaidAcctID))

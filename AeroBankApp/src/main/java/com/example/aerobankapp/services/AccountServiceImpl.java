@@ -248,10 +248,7 @@ public class AccountServiceImpl implements AccountService
     @Override
     @Transactional
     public List<AccountEntity> getListOfAccountsByUserID(int userID) {
-        if(userID > 0){
-            return accountRepository.findAccountsByUserID(userID);
-        }
-        return List.of();
+        return accountRepository.findAccountsByUserID(userID);
     }
 
     @Override

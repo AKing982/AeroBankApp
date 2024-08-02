@@ -85,23 +85,29 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
         return createPlaidImportResult(plaidTransactionImport, true);
     }
 
-    private TransactionStatementEntity prepareTransactionStatementEntityFromAmount(AccountEntity accountEntity, PlaidTransactionImport plaidTransactionImport) {
+    public TransactionStatementEntity prepareTransactionStatementEntityFromAmount(AccountEntity accountEntity, PlaidTransactionImport plaidTransactionImport) {
+        if(accountEntity == null || plaidTransactionImport == null)
+        {
+            throw new IllegalArgumentException("accountEntity cannot be null");
+        }
+
         // Convert to a string
-        String amountStr = plaidTransactionImport.getAmount().toString();
-        TransactionStatementEntity transactionStatementEntity;
-        String transactionName = plaidTransactionImport.getTransactionName();
-        BigDecimal amount = plaidTransactionImport.getAmount();
-        if(amountStr.startsWith("-"))
-        {
-            // put the amount in the debit field
-            transactionStatementEntity = createTransactionStatementEntity(accountEntity, transactionName, amount, null, null);
-        }
-        else
-        {
-            // put the amount in the credit field
-            transactionStatementEntity = createTransactionStatementEntity(accountEntity, transactionName, null, amount, null);
-        }
-        return transactionStatementEntity;
+        return null;
+//        String amountStr = plaidTransactionImport.getAmount().toString();
+//        TransactionStatementEntity transactionStatementEntity;
+//        String transactionName = plaidTransactionImport.getTransactionName();
+//        BigDecimal amount = plaidTransactionImport.getAmount();
+//        if(amountStr.startsWith("-"))
+//        {
+//            // put the amount in the debit field
+//            transactionStatementEntity = createTransactionStatementEntity(accountEntity, transactionName, amount, null, null);
+//        }
+//        else
+//        {
+//            // put the amount in the credit field
+//            transactionStatementEntity = createTransactionStatementEntity(accountEntity, transactionName, null, amount, null);
+//        }
+//        return transactionStatementEntity;
     }
 
     private TransactionStatementEntity createTransactionStatementEntity(AccountEntity accountEntity, String descr, BigDecimal debit, BigDecimal credit, BigDecimal balance) {

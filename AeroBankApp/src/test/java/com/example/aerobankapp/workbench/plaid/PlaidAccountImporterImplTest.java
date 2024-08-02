@@ -133,7 +133,7 @@ class PlaidAccountImporterImplTest {
 
         when(plaidLinkService.hasPlaidLink(1)).thenReturn(true);
 
-        LinkedAccountInfo expected = new LinkedAccountInfo(0, "");
+        LinkedAccountInfo expected = new LinkedAccountInfo(2, "");
         LinkedAccountInfo actual = importer.linkAccounts(plaidAccount, account);
         assertNotNull(actual);
         assertEquals(expected.getExternalAcctID(), actual.getExternalAcctID());
@@ -178,7 +178,7 @@ class PlaidAccountImporterImplTest {
 
         when(plaidLinkService.hasPlaidLink(1)).thenReturn(true);
 
-        LinkedAccountInfo expected = new LinkedAccountInfo(0, "");
+        LinkedAccountInfo expected = new LinkedAccountInfo(1, "");
         LinkedAccountInfo actual = importer.linkAccounts(plaidAccount, account);
         assertNotNull(actual);
         assertEquals(expected.getExternalAcctID(), actual.getExternalAcctID());
@@ -350,10 +350,8 @@ class PlaidAccountImporterImplTest {
         List<LinkedAccountInfo> expected = new ArrayList<>();
         LinkedAccountInfo checkingLink = new LinkedAccountInfo(1, "e23232323");
         LinkedAccountInfo savingsLink = new LinkedAccountInfo(2, "e22222222");
-        LinkedAccountInfo investmentLink = new LinkedAccountInfo(3, "");
         expected.add(checkingLink);
         expected.add(savingsLink);
-        expected.add(investmentLink);
 
         AccountEntity checking = createAccountEntityWithMask("Alex's Checking", "01", 1, user, "checking", "0000");
         AccountEntity savings = createAccountEntityWithMask("Alex's Savings", "02", 2, user, "savings", "1111");
@@ -460,12 +458,16 @@ class PlaidAccountImporterImplTest {
         account.setSubType("checking");
         account.setType("depository");
 
-        AccountEntity accountEntity = createAccountEntity("DEPOSITORY", "01", 1, createUserEntity(1), "checking");
-        when(userService.findById(1)).thenReturn(createUserEntity(1));
-        when(accountService.buildAccountEntityByAccountModel(account, createAccountCodeEntity(), createUserEntity(1))).thenReturn(accountEntity);
-        doNothing().when(accountService).save(accountEntity);
+        AccountCodeEntity aCodeEntity = createAccountCodeEntity();
+        UserEntity user = createUserEntity(1);
 
         PlaidImportResult expected = new PlaidImportResult(account, true);
+
+        AccountEntity accountEntity = createAccountEntity("DEPOSITORY", "01", 1, createUserEntity(1), "checking");
+        when(userService.findById(1)).thenReturn(createUserEntity(1));
+        when(accountCodeService.findByUserIdAndAcctSegment(1, 1)).thenReturn(aCodeEntity);
+        when(accountService.buildAccountEntityByAccountModel(account, aCodeEntity, user)).thenReturn(accountEntity);
+        doNothing().when(accountService).save(accountEntity);
 
         PlaidImportResult actual = importer.importDataFromPlaidAccountToSystemAccount(plaidAccount, account);
         assertEquals(expected.getResult(), actual.getResult());
@@ -498,9 +500,13 @@ class PlaidAccountImporterImplTest {
         account.setSubType("checking");
         account.setType("depository");
 
+        AccountCodeEntity accountCode = createAccountCodeEntity();
+
         AccountEntity accountEntity = createAccountEntity("DEPOSITORY", "01", 1,  createUserEntity(1), "checking");
         when(userService.findById(1)).thenReturn(createUserEntity(1));
-        when(accountService.buildAccountEntityByAccountModel(account, createAccountCodeEntity(), createUserEntity(1))).thenReturn(accountEntity);
+        when(accountCodeService.findByUserIdAndAcctSegment(1, 1)).thenReturn(createAccountCodeEntity());
+        when(accountService.buildAccountEntityByAccountModel(account, accountCode, createUserEntity(1))).thenReturn(accountEntity);
+
         doNothing().when(accountService).save(accountEntity);
 
         PlaidImportResult expected = new PlaidImportResult(account, true);
@@ -574,6 +580,8 @@ class PlaidAccountImporterImplTest {
         AccountEntity account = createAccountEntity("DEPOSITORY", "01", 1, createUserEntity(1), "checking");
         accountEntities.add(account);
 
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountEntities);
+
         Boolean result = importer.checkPlaidAccountsAreLinked(externalAccountsEntities, plaidAccounts);
         assertTrue(result);
     }
@@ -627,6 +635,63 @@ class PlaidAccountImporterImplTest {
 
         Boolean result = importer.executeCreateAndSaveExternalAccountEntity(expected);
         assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("Test GetSystemAccountIdsForUser when userId valid, then return list of acctIds")
+    public void testGetSystemAccountIdsForUser_whenUserIdIsValid_thenReturnListOfAcctIds(){
+        List<Integer> expected = new ArrayList<>();
+        expected.add(1);
+        expected.add(2);
+        expected.add(3);
+
+        AccountEntity checking = createAccountEntityWithMask("Alex's Checking", "01", 1, createUserEntity(1), "checking", "0000");
+        AccountEntity savings = createAccountEntityWithMask("Alex Savings", "02", 2, createUserEntity(1), "savings", "1111");
+        AccountEntity investment = createAccountEntityWithMask("Alex's Investment", "04", 3, createUserEntity(1), "other", "2222");
+        List<AccountEntity> accountEntities = new ArrayList<>();
+        accountEntities.add(checking);
+        accountEntities.add(savings);
+        accountEntities.add(investment);
+
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accountEntities);
+
+        List<Integer> actual = importer.getSystemAccountIdsForUser(1);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test createAccountEntityFromModel when account, user, or account code are null, then throw exception")
+    public void testCreateAccountEntityFromModel_whenAccountOrUserOrAccountCodeIsNull_thenThrowException(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            importer.createAccountEntityFromModel(null, null, null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test createAccountEntityFromModel when account, user, or account code is valid, then return AccountEntity")
+    public void testCreateAccountEntityFromModel_whenAccountAndUserAndAccountCodeAreValid_thenReturnAccountEntity(){
+        Account account = new Account();
+        account.setAccountID(1);
+        account.setAccountName("Alex's Checking");
+        account.setAccountType(AccountType.CHECKING);
+        account.setMask("1111");
+        account.setBalance(BigDecimal.valueOf(250));
+        account.setUser("AKing94");
+        account.setUserID(1);
+        account.setSubType("checking");
+        account.setType("depository");
+
+        UserEntity user = createUserEntity(1);
+
+        AccountCodeEntity aCode = createAccountCodeEntity();
+        AccountEntity accountEntity = createAccountEntityWithMask("Alex's Checking", "01", 1, createUserEntity(1), "checking", "0000");
+
+        when(accountService.buildAccountEntityByAccountModel(account, aCode, user)).thenReturn(accountEntity);
+
+        Optional<AccountEntity> expectedAccountEntity = Optional.of(accountEntity);
+        Optional<AccountEntity> actual = importer.createAccountEntityFromModel(account, user, aCode);
+        assertEquals(expectedAccountEntity, actual);
+        assertEquals(expectedAccountEntity.get(), accountEntity);
     }
 
 
