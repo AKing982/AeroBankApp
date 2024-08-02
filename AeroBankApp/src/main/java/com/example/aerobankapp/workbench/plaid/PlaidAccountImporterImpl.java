@@ -9,7 +9,6 @@ import com.example.aerobankapp.model.Account;
 import com.example.aerobankapp.model.LinkedAccountInfo;
 import com.example.aerobankapp.model.PlaidAccount;
 import com.example.aerobankapp.model.PlaidImportResult;
-import com.example.aerobankapp.repositories.ExternalAccountsRepository;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.AccountBuilder;
 import lombok.Getter;
@@ -17,7 +16,6 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -78,19 +76,21 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
         try
         {
             int accountEntitiesIndex = 0;
-            for(int i = 0; i < loopCount; ++i)
+            for(int i = 0; i <= loopCount; ++i)
             {
+
                 if(i < plaidAccounts.size())
                 {
                     PlaidAccount plaidAccount = plaidAccounts.get(i);
                     // Is the plaid account linked?
                     if(plaidAccount != null && accountEntitiesIndex < accountEntities.size())
                     {
-                        AccountEntity account = accountEntities.get(accountEntitiesIndex++);
+                        AccountEntity account = accountEntities.get(accountEntitiesIndex);
                         if(account != null)
                         {
                             addLinkedAccountInfoToList(linkedAccountInfoList, linkAccounts(plaidAccount, account));
                         }
+                        accountEntitiesIndex = accountEntitiesIndex + 1;
                     }
                 }
             }
@@ -112,6 +112,22 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
             for(int i = loopCount; i < plaidAccounts.size(); ++i) {
                 PlaidAccount plaidAccount = plaidAccounts.get(i);
                 unlinkedPlaidAccounts.computeIfAbsent(user.getUserID(), k -> new ArrayList<>()).add(plaidAccount);
+            }
+        }
+    }
+
+    public void handleLinkedAccountsWithEmptyPlaidAcctID(final List<LinkedAccountInfo> linkedAccountInfos)
+    {
+        for(LinkedAccountInfo linkedAccountInfo : linkedAccountInfos)
+        {
+            if(linkedAccountInfo != null)
+            {
+                int sysAcctID = linkedAccountInfo.getSystemAcctID();
+                String plaidAcctID = linkedAccountInfo.getExternalAcctID();
+                if(sysAcctID > 0 && plaidAcctID.isEmpty())
+                {
+
+                }
             }
         }
     }
@@ -140,64 +156,6 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
         }
 
         return processAccountLink(plaidAccount, accountEntity);
-
-//        if (plaidAccount == null && accountEntity == null) {
-//            throw new IllegalArgumentException("PlaidAccount and accountEntity must not be null");
-//        }
-//        assertPlaidAccountIsNull(plaidAccount);
-//        assertAccountIsNull(accountEntity);
-//
-//        String plaidSubType = plaidAccount.getSubtype();
-//        if (plaidSubType.isEmpty()) {
-//            throw new InvalidPlaidSubTypeException(plaidSubType);
-//        }
-//        Set<String> plaidAccountSubtypes = convertPlaidSubTypeEnumListToStrings();
-//        for (String subType : plaidAccountSubtypes) {
-//            if (subType.equalsIgnoreCase(plaidSubType)) {
-//                setIsMatchedSubType(true);
-//                break;
-//            }
-//        }
-//
-//        UserEntity user = getUserEntityByAccountEntity(accountEntity);
-//
-//        if(isMatchedSubType() || checkPlaidAccessToken(user))
-//        {
-//            LOGGER.info("User has access token or has matched subtype");
-//            int acctID = accountEntity.getAcctID();
-//            String externalAcctID = plaidAccount.getAccountId();
-//            String acctSubType = accountEntity.getSubtype();
-//
-//            if(acctSubType.equalsIgnoreCase(plaidSubType))
-//            {
-//                LOGGER.info("Account subtype matches PlaidAccount subtype");
-//                String type = accountEntity.getType();
-//                String plaidAccountType = plaidAccount.getType();
-//                if(type.equalsIgnoreCase(plaidAccountType))
-//                {
-//                    LOGGER.info("Account type matches PlaidAccount type");
-//                    String mask = accountEntity.getMask();
-//                    if(mask.equals(plaidAccount.getMask()))
-//                    {
-//                        LOGGER.info("Account mask matches plaid account mask");
-//                        LOGGER.info("Building LinkedAccountInfo");
-//                        return buildLinkedAccountInfo(acctID, externalAcctID);
-//                    }
-//                    LOGGER.info("Account mask doesn't match");
-//                }
-//                else
-//                {
-//                    return createLinkedAccountInfo(0, "");
-//                }
-//
-//            }
-//            else
-//            {
-//                return createLinkedAccountInfo(0, "");
-//            }
-//
-//        }
-//        return null;
     }
 
     private void validateInputs(PlaidAccount plaidAccount, AccountEntity accountEntity)
@@ -220,17 +178,17 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
 
         if(!accountSubtype.equalsIgnoreCase(plaidSubType))
         {
-            return createLinkedAccountInfo(0, "");
+            return buildLinkedAccountInfo(sysAcctID, "");
         }
 
         if(!account.getType().equalsIgnoreCase(plaidAccount.getType()))
         {
-            return createLinkedAccountInfo(0, "");
+            return buildLinkedAccountInfo(sysAcctID, "");
         }
 
         if(!account.getMask().equalsIgnoreCase(plaidAccount.getMask()))
         {
-            return createLinkedAccountInfo(0, "");
+            return buildLinkedAccountInfo(account.getAcctID(), "");
         }
         return buildLinkedAccountInfo(sysAcctID, externalAcctID);
     }
@@ -367,7 +325,7 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
     private void setSystemAccountProperties(final Account account, final PlaidAccount plaidAccount){
         account.setType(plaidAccount.getType());
         account.setBalance(plaidAccount.getCurrentBalance());
-        account.setAccountName(plaidAccount.getOfficialName());
+        account.setAccountName(plaidAccount.getName());
     }
 
     @Override

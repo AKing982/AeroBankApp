@@ -337,6 +337,47 @@ class PlaidAccountImporterImplTest {
     }
 
     @Test
+    @DisplayName("Test prepareLinkedAccounts when user has unmatching account, then skip account and return default linkedAccountInfo")
+    public void testPrepareLinkedAccounts_whenUserHasUnMatchingAccount_thenSkipAccountAndReturnDefaultLinkedAccountInfo(){
+        UserEntity user = createUserEntity(1);
+
+        List<PlaidAccount> plaidAccounts = new ArrayList<>();
+        PlaidAccount checkingPlaid = createPlaidAccountWithMask("Plaid Checking", "DEPOSITORY", "checking", "e23232323", "1111");
+        PlaidAccount savingsPlaid = createPlaidAccountWithMask("Plaid Savings", "DEPOSITORY", "savings", "e22222222", "2222");
+        plaidAccounts.add(checkingPlaid);
+        plaidAccounts.add(savingsPlaid);
+
+        List<LinkedAccountInfo> expected = new ArrayList<>();
+        LinkedAccountInfo checkingLink = new LinkedAccountInfo(1, "e23232323");
+        LinkedAccountInfo savingsLink = new LinkedAccountInfo(2, "e22222222");
+        LinkedAccountInfo investmentLink = new LinkedAccountInfo(3, "");
+        expected.add(checkingLink);
+        expected.add(savingsLink);
+        expected.add(investmentLink);
+
+        AccountEntity checking = createAccountEntityWithMask("Alex's Checking", "01", 1, user, "checking", "0000");
+        AccountEntity savings = createAccountEntityWithMask("Alex's Savings", "02", 2, user, "savings", "1111");
+        AccountEntity investment = createAccountEntityWithMask("Alex's Investment", "04", 3, user, "investment", "2222");
+        List<AccountEntity> accounts = new ArrayList<>();
+        accounts.add(checking);
+        accounts.add(savings);
+        accounts.add(investment);
+
+        Optional<PlaidLinkEntity> plaidLinkEntityOptional = mock(Optional.class);
+        when(accountService.getListOfAccountsByUserID(1)).thenReturn(accounts);
+        when(plaidLinkService.findPlaidLinkEntityByUserId(1)).thenReturn(plaidLinkEntityOptional);
+
+        List<LinkedAccountInfo> actual = importer.prepareLinkedAccounts(user, plaidAccounts);
+        assertNotNull(actual);
+        assertEquals(expected.size(), actual.size());
+        for(int i = 0; i < actual.size(); i++){
+            assertEquals(expected.get(i).getExternalAcctID(), actual.get(i).getExternalAcctID());
+            assertEquals(expected.get(i).getSystemAcctID(), actual.get(i).getSystemAcctID());
+        }
+    }
+
+
+    @Test
     @DisplayName("Test prepareLinkedAccounts when user has null account and two plaid accounts, then skip null account and return linked account")
     public void testPrepareLinkedAccounts_whenUserHasNullAccountAndReturnLinkedAccountInfoList(){
         UserEntity user = createUserEntity(1);
@@ -370,8 +411,6 @@ class PlaidAccountImporterImplTest {
     }
 
 
-
-
     @Test
     @DisplayName("Test import PlaidDataToSystemAccount when plaid account is null, then throw exception")
     public void testImportPlaidDataToSystemAccount_whenPlaidAccountIsNull_thenThrowException(){
@@ -380,21 +419,7 @@ class PlaidAccountImporterImplTest {
             importer.importDataFromPlaidAccountToSystemAccount(null, account);
         });
     }
-//
-//    @Test
-//    @DisplayName("Test Process Plaid Account By Subtype when subtype is SAVINGS, then return LinkedAccountInfo list")
-//    public void testProcessAccountBySubType_whenSubtypeEqualsSAVINGS_thenReturnLinkedAccountInfoList(){
-//        PlaidAccount plaidAccount = createPlaidAccount("DEPOSITORY", "SAVINGS", "e123123123123");
-//        AccountEntity accountCode = createAccountEntity("02", 2, createUserEntity(1), "savings");
-//
-//        LinkedAccountInfo expected = new LinkedAccountInfo(2, "e123123123123");
-//
-//        LinkedAccountInfo actual = importer.linkAccounts(plaidAccount, accountCode);
-//        assertNotNull(actual);
-//        assertEquals(expected.getExternalAcctID(), actual.getExternalAcctID());
-//        assertEquals(expected.getSystemAcctID(), actual.getSystemAcctID());
-//    }
-//
+
     @Test
     @DisplayName("Test importPlaidDataToSystemAccount when both account data and plaid data are null, then throw exception")
     public void testImportPlaidDataToSystemAccount_whenAccountDataAndPlaidDataAreNull_thenThrowException(){
@@ -409,15 +434,7 @@ class PlaidAccountImporterImplTest {
             importer.importDataFromPlaidAccountToSystemAccount(plaidAccount, null);
         });
     }
-//
-//    @Test
-//    @DisplayName("Test Process Plaid Account By SubType when subType is empty or null then throw exception")
-//    public void testProcessAccountBySubType_whenSubTypeIsEmptyOrNull_thenThrowException(){
-//        assertThrows(IllegalArgumentException.class, () ->
-//                importer.linkAccounts(createPlaidAccount("", "","e123123123123"), createAccountEntity("01", 1, createUserEntity(1), "")));
-//    }
-//
-//
+
     @Test
     @DisplayName("Test importPlaidDataToSystemAccount when both account data and plaid data are valid, then return true")
     public void testImportPlaidDataToSystemAccount_whenBothAccountDataAndPlaidDataAreValid_thenReturnTrue(){
@@ -542,18 +559,11 @@ class PlaidAccountImporterImplTest {
     }
 
     @Test
-    @DisplayName("Test checkPlaidAccountsAreLinked when external accounts list is null, then throw exception")
-    public void testCheckPlaidAccountsAreLinked_whenExternalAccountsListIsNull_thenThrowException(){
-        assertThrows(IllegalArgumentException.class, () -> {
-            importer.checkPlaidAccountsAreLinked(null, null);
-        });
-    }
-
-    @Test
     @DisplayName("Test checkPlaidAccountsAreLinked when external account list has one linked account, then return true")
     public void testCheckPlaidAccountsAreLinked_whenExternalAccountsListHasOneLinkedAccount_thenReturnTrue(){
+        UserEntity user = createUserEntity(1);
         List<ExternalAccountsEntity> externalAccountsEntities = new ArrayList<>();
-        ExternalAccountsEntity externalAccountsEntity = createExternalAccount(1, "e232323232");
+        ExternalAccountsEntity externalAccountsEntity = createExternalAccountWithUserId(1, user,"e232323232");
         externalAccountsEntities.add(externalAccountsEntity);
 
         List<PlaidAccount> plaidAccounts = new ArrayList<>();
@@ -693,6 +703,14 @@ class PlaidAccountImporterImplTest {
 //        assertTrue(result);
 //    }
 
+
+    private ExternalAccountsEntity createExternalAccountWithUserId(int acctID, UserEntity user, String plaidAcctID)
+    {
+        ExternalAccountsEntity externalAccountsEntity = new ExternalAccountsEntity();
+        externalAccountsEntity.setAccount(AccountEntity.builder().acctID(acctID).user(user).build());
+        externalAccountsEntity.setExternalAcctID(plaidAcctID);
+        return externalAccountsEntity;
+    }
 
     private ExternalAccountsEntity createExternalAccount(int acctID, String plaidAcctID){
         ExternalAccountsEntity externalAccountsEntity = new ExternalAccountsEntity();

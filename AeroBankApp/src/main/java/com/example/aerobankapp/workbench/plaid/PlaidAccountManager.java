@@ -46,7 +46,6 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
     {
         Set<PlaidAccount> plaidAccounts = new HashSet<>();
         assertAccountBaseListIsNull(accountBaseList);
-       // assertAccountBaseListIsEmpty(accountBaseList);
         for(AccountBase accountBase : accountBaseList)
         {
             if(accountBase != null)
@@ -117,16 +116,6 @@ public class PlaidAccountManager extends AbstractPlaidDataManager {
                 throw new RuntimeException(e);
             }
         });
-    }
-
-
-    public LinkTokenCreateResponse linkAccount(int userId, String linkToken) {
-
-        return null;
-    }
-
-    public Boolean unlinkAccount(String acctId) {
-        return null;
     }
 
     public TreeMap<Integer, Collection<PlaidAccountBalances>> getPlaidBalancesTreeMap(final List<PlaidAccountBalances> plaidAccountBalances)
