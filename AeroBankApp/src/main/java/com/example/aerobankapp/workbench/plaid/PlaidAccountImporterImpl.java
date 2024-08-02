@@ -255,6 +255,10 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
         if(userEntity != null)
         {
             AccountCodeEntity accountCode = getAccountCodeByUserIdAndAcctID(userEntity.getUserID(), account.getAccountID());
+            if(accountCode == null)
+            {
+                throw new IllegalArgumentException("Account Code Not Found");
+            }
             AccountEntity accountEntity = createAccountEntityFromModel(account, userEntity, accountCode);
             if(accountEntity == null)
             {
