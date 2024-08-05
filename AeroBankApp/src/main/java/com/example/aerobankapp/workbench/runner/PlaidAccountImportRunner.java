@@ -15,6 +15,7 @@ import com.example.aerobankapp.repositories.AccountRepository;
 import com.example.aerobankapp.repositories.ExternalAccountsRepository;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.plaid.PlaidAccountImporter;
+import com.example.aerobankapp.workbench.plaid.PlaidAccountImporterImpl;
 import com.example.aerobankapp.workbench.plaid.PlaidAccountManager;
 import com.plaid.client.model.AccountBase;
 
@@ -34,14 +35,14 @@ import java.util.*;
 public class PlaidAccountImportRunner
 {
     private PlaidAccountManager plaidAccountManager;
-    private PlaidAccountImporter plaidAccountImporter;
+    private PlaidAccountImporterImpl plaidAccountImporter;
     private UserRepository userRepository;
     private AccountRepository accountRepository;
     private ExternalAccountsRepository externalAccountsRepository;
     private Logger LOGGER = LoggerFactory.getLogger(PlaidAccountImportRunner.class);
 
     @Autowired
-    public PlaidAccountImportRunner(PlaidAccountManager plaidAccountManager, PlaidAccountImporter plaidAccountImporter,
+    public PlaidAccountImportRunner(PlaidAccountManager plaidAccountManager, PlaidAccountImporterImpl plaidAccountImporter,
                                     UserRepository userRepository,
                                     AccountRepository accountRepository,
                                     ExternalAccountsRepository externalAccountsRepository)
@@ -88,6 +89,8 @@ public class PlaidAccountImportRunner
                 .orElseThrow();
     }
 
+    //TODO: Determine bug that is pulling incorrect userId
+    //TODO: Example if userId 2 is having accounts imported, systemAcctID 1 and systemAcctID 2 are being pulled
     public void importPlaidAccounts(int userId) throws IOException, InterruptedException {
         List<PlaidAccount> plaidAccounts = getUserPlaidAccounts(userId);
         LOGGER.info("Plaid Accounts Size: {}", plaidAccounts.size());

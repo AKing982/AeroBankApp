@@ -54,6 +54,8 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
         this.userService = userService;
     }
 
+    // TODO: Determine bug that causes more linked accounts to appear than actual linked accounts
+    // TODO: In this case if two plaid accounts are found then there are 8 linked accounts
     @Override
     public List<LinkedAccountInfo> prepareLinkedAccounts(UserEntity user, List<PlaidAccount> plaidAccounts)
     {
@@ -463,18 +465,6 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
         return unlinkedPlaidAccounts;
     }
 
-    public Map<String, Integer> getSingleSysAndPlaidAcctIdMap(final ExternalAccountsEntity externalAccountsEntity) {
-        if(externalAccountsEntity == null)
-        {
-            throw new IllegalArgumentException("External Accounts entity cannot be null.");
-        }
-        Map<String, Integer> pairedAcctIds = new LinkedHashMap<>();
-        String externalAcctID = externalAccountsEntity.getExternalAcctID();
-        int sysAcctID = externalAccountsEntity.getAccount().getAcctID();
-        pairedAcctIds.put(externalAcctID, sysAcctID);
-
-        return pairedAcctIds;
-    }
 
     /**
      * Retrieves the mapping of external account IDs to system account IDs.

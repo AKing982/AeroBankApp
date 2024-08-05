@@ -13,6 +13,7 @@ import com.example.aerobankapp.repositories.AccountRepository;
 import com.example.aerobankapp.repositories.ExternalAccountsRepository;
 import com.example.aerobankapp.repositories.UserRepository;
 import com.example.aerobankapp.workbench.plaid.PlaidAccountImporter;
+import com.example.aerobankapp.workbench.plaid.PlaidAccountImporterImpl;
 import com.example.aerobankapp.workbench.plaid.PlaidAccountManager;
 import com.plaid.client.model.AccountBase;
 import com.plaid.client.model.AccountsGetResponse;
@@ -46,7 +47,7 @@ class PlaidAccountImportRunnerTest {
     private PlaidAccountManager plaidAccountManager;
 
     @Mock
-    private PlaidAccountImporter plaidAccountImporter;
+    private PlaidAccountImporterImpl plaidAccountImporter;
 
     @Mock
     private UserRepository userRepository;

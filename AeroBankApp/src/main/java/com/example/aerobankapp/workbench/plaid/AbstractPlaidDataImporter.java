@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,6 +30,20 @@ public abstract class AbstractPlaidDataImporter
         this.plaidLinkService = plaidLinkService;
         initializeSubTypeToTypeMap();
     }
+
+    public Map<String, Integer> getSingleSysAndPlaidAcctIdMap(final ExternalAccountsEntity externalAccountsEntity) {
+        if(externalAccountsEntity == null)
+        {
+            throw new IllegalArgumentException("External Accounts entity cannot be null.");
+        }
+        Map<String, Integer> pairedAcctIds = new LinkedHashMap<>();
+        String externalAcctID = externalAccountsEntity.getExternalAcctID();
+        int sysAcctID = externalAccountsEntity.getAccount().getAcctID();
+        pairedAcctIds.put(externalAcctID, sysAcctID);
+
+        return pairedAcctIds;
+    }
+
 
     protected void createAndSaveExternalAccountEntity(String externalAcctID, int acctID){
          try
