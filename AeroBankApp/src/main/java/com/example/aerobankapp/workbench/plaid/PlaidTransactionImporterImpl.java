@@ -206,6 +206,9 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
             {
                 LinkedTransactionInfo linkedTransactionInfo = linkTransaction(plaidTransaction, accountEntity);
                 addLinkedTransactionInfoToList(linkedTransactionsList, linkedTransactionInfo);
+
+                // comment
+
             }
         }
         return linkedTransactionsList;
