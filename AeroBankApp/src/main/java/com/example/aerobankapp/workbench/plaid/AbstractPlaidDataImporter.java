@@ -1,5 +1,6 @@
 package com.example.aerobankapp.workbench.plaid;
 
+import com.example.aerobankapp.entity.AccountEntity;
 import com.example.aerobankapp.entity.ExternalAccountsEntity;
 import com.example.aerobankapp.entity.PlaidLinkEntity;
 import com.example.aerobankapp.entity.UserEntity;
@@ -38,6 +39,11 @@ public abstract class AbstractPlaidDataImporter
         }
         Map<String, Integer> pairedAcctIds = new LinkedHashMap<>();
         String externalAcctID = externalAccountsEntity.getExternalAcctID();
+        AccountEntity account = externalAccountsEntity.getAccount();
+        if(account == null)
+        {
+            return new HashMap<>();
+        }
         int sysAcctID = externalAccountsEntity.getAccount().getAcctID();
         pairedAcctIds.put(externalAcctID, sysAcctID);
 

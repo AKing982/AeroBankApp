@@ -2,7 +2,9 @@ package com.example.aerobankapp.workbench.plaid;
 
 import com.example.aerobankapp.converter.PlaidTransactionConverter;
 import com.example.aerobankapp.converter.PlaidTransactionToTransactionCriteriaConverter;
+import com.example.aerobankapp.converter.TransactionToPlaidTransactionConverter;
 import com.example.aerobankapp.entity.*;
+import com.example.aerobankapp.exceptions.PlaidTransactionsResponseException;
 import com.example.aerobankapp.model.*;
 import com.example.aerobankapp.services.*;
 import com.example.aerobankapp.workbench.generator.ReferenceNumberGenerator;
@@ -10,35 +12,40 @@ import com.example.aerobankapp.workbench.generator.ReferenceNumberGeneratorImpl;
 import com.example.aerobankapp.workbench.transactions.Deposit;
 import com.example.aerobankapp.workbench.transactions.Transfer;
 import com.example.aerobankapp.workbench.transactions.Withdraw;
+import com.plaid.client.model.Transaction;
+import com.plaid.client.model.TransactionsGetResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.example.aerobankapp.workbench.plaid.PlaidUtil.createPlaidTransactionImport;
 
 @Component
 public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter implements PlaidTransactionImporter {
     private final PlaidTransactionConverter plaidTransactionConverter;
+    private final TransactionToPlaidTransactionConverter transactionToPlaidTransactionConverter;
     private final PlaidTransactionService plaidTransactionService;
+    private final ExternalTransactionService externalTransactionService;
     private final PlaidTransactionToTransactionCriteriaConverter plaidTransactionToTransactionCriteriaConverter;
     private final TransactionCriteriaService transactionCriteriaService;
     private final TransactionStatementService transactionStatementService;
     private final ReferenceNumberGenerator referenceNumberGenerator;
     private final PlaidTransactionManagerImpl plaidTransactionManager;
+
+    private List<LinkedTransactionInfo> linkedTransactionsList = new ArrayList<>();
     private final Logger LOGGER = LoggerFactory.getLogger(PlaidTransactionImporterImpl.class);
 
     @Autowired
     public PlaidTransactionImporterImpl(PlaidTransactionConverter plaidTransactionConverter,
                                         PlaidTransactionService plaidTransactionService,
+                                        ExternalTransactionService externalTransactionService,
                                         PlaidLinkService plaidLinkService,
                                         TransactionCriteriaService transactionCriteriaService,
                                         TransactionStatementService transactionStatementService,
@@ -47,7 +54,9 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
         super(externalAccountsService, plaidLinkService);
         this.plaidTransactionConverter = plaidTransactionConverter;
         this.plaidTransactionService = plaidTransactionService;
+        this.externalTransactionService = externalTransactionService;
         this.plaidTransactionToTransactionCriteriaConverter = new PlaidTransactionToTransactionCriteriaConverter();
+        this.transactionToPlaidTransactionConverter = new TransactionToPlaidTransactionConverter();
         this.transactionCriteriaService = transactionCriteriaService;
         this.transactionStatementService = transactionStatementService;
         this.referenceNumberGenerator = new ReferenceNumberGeneratorImpl();
@@ -63,12 +72,73 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
         return null;
     }
 
-    public List<PlaidTransaction> getPlaidTransactionsForPeriod(LocalDate startDate, LocalDate endDate, int userId) {
-        return null;
+    public List<PlaidTransaction> getPlaidTransactionsForPeriod(final LocalDate startDate, final LocalDate endDate, final int userId) throws IOException {
+        if(startDate == null || endDate == null)
+        {
+            throw new IllegalArgumentException("startDate and endDate cannot be null");
+        }
+        TransactionsGetResponse transactionsGetResponse = getTransactionResponseFromServer(userId, startDate, endDate);
+        try
+        {
+            List<Transaction> transactions = transactionsGetResponse.getTransactions();
+            List<PlaidTransaction> plaidTransactionList = new ArrayList<>();
+            for (Transaction transaction : transactions) {
+                if(transaction != null)
+                {
+                    PlaidTransaction plaidTransaction = convertTransactionToPlaidTransaction(transaction);
+                    plaidTransactionList.add(plaidTransaction);
+                }
+            }
+            return plaidTransactionList;
+
+        }catch(PlaidTransactionsResponseException e)
+        {
+            LOGGER.error("There was an error retrieving Plaid Transaction response from the server: {}", e.getMessage());
+            return Collections.emptyList();
+
+        }catch(Exception e)
+        {
+            LOGGER.error("There was an error retrieving plaid transactions: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+
     }
 
-    public Boolean checkSinglePlaidTransactionIsLinked(PlaidTransaction plaidTransaction) {
-        return null;
+    private PlaidTransaction convertTransactionToPlaidTransaction(Transaction transaction) {
+        return transactionToPlaidTransactionConverter.convert(transaction);
+    }
+
+    public TransactionsGetResponse getTransactionResponseFromServer(int userId, LocalDate startDate, LocalDate endDate) throws IOException {
+        return plaidTransactionManager.getTransactionResponse(userId, startDate, endDate);
+    }
+
+    public Boolean checkSinglePlaidTransactionIsLinked(final PlaidTransaction plaidTransaction) {
+        if(plaidTransaction == null)
+        {
+            return false;
+        }
+        String plaidAcctID = plaidTransaction.getAccountId();
+
+        // Step 1: Verify the PlaidAccountID in the transaction is linked to a system Account
+        String transactionId = plaidTransaction.getTransactionId();
+        Optional<ExternalTransactionEntity> externalTransactionEntity = externalTransactionService.findByTransactionId(transactionId);
+        if(externalTransactionEntity.isPresent())
+        {
+            // This tells us that the transaction is linked to a system account
+            ExternalAccountsEntity externalAccountsEntity = externalTransactionEntity.get().getExternalAccounts();
+            if(externalAccountsEntity != null)
+            {
+                // Retrieve the map
+                Map<String, Integer> sysAcctIDAndPlaidMap = getSingleSysAndPlaidAcctIdMap(externalAccountsEntity);
+                if(sysAcctIDAndPlaidMap.isEmpty())
+                {
+                    return false;
+                }
+                Integer sysAcctID = externalAccountsEntity.getAccount().getAcctID();
+                return sysAcctIDAndPlaidMap.containsKey(plaidAcctID) && sysAcctIDAndPlaidMap.containsValue(sysAcctID);
+            }
+        }
+        return false;
     }
 
     public void createImportedTransactions() {
@@ -114,10 +184,38 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
 
     public List<LinkedTransactionInfo> prepareLinkedTransactions(UserEntity user, List<PlaidTransaction> plaidTransactionList)
     {
-        return null;
+        if(user == null || plaidTransactionList == null)
+        {
+            throw new IllegalArgumentException("User or plaidTransactionList is null");
+        }
+
+        if(plaidTransactionList.isEmpty())
+        {
+            return Collections.emptyList();
+        }
+
+        List<AccountEntity> userAccounts = user.getAccounts().stream().toList();
+        int maxLoop = Math.max(plaidTransactionList.size(), userAccounts.size());
+
+        for(int i = 0; i < maxLoop; i++)
+        {
+            PlaidTransaction plaidTransaction = plaidTransactionList.get(i);
+            AccountEntity accountEntity = userAccounts.get(i);
+
+            if(!checkSinglePlaidTransactionIsLinked(plaidTransaction))
+            {
+                LinkedTransactionInfo linkedTransactionInfo = linkTransaction(plaidTransaction, accountEntity);
+                addLinkedTransactionInfoToList(linkedTransactionsList, linkedTransactionInfo);
+            }
+        }
+        return linkedTransactionsList;
     }
 
-    public LinkedTransactionInfo linkTransaction(PlaidTransaction plaidTransaction)
+    public void addLinkedTransactionInfoToList(List<LinkedTransactionInfo> linkedTransactionInfoList, LinkedTransactionInfo linkedTransactionInfo) {
+        linkedTransactionInfoList.add(linkedTransactionInfo);
+    }
+
+    public LinkedTransactionInfo linkTransaction(PlaidTransaction plaidTransaction, AccountEntity account)
     {
         return null;
     }

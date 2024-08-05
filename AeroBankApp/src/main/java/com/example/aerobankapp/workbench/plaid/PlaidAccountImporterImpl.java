@@ -88,25 +88,6 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
                     addLinkedAccountInfoToList(linkedAccountInfoList, linkAccounts(plaidAccount, accountEntity));
                 }
             }
-//            int accountEntitiesIndex = 0;
-//            for(int i = 0; i <= loopCount; ++i)
-//            {
-//
-//                if(i < plaidAccounts.size())
-//                {
-//                    PlaidAccount plaidAccount = plaidAccounts.get(i);
-//                    // Is the plaid account linked?
-//                    if(plaidAccount != null && accountEntitiesIndex < accountEntities.size())
-//                    {
-//                        AccountEntity account = accountEntities.get(accountEntitiesIndex);
-//                        if(account != null)
-//                        {
-//                            addLinkedAccountInfoToList(linkedAccountInfoList, linkAccounts(plaidAccount, account));
-//                        }
-//                        accountEntitiesIndex = accountEntitiesIndex + 1;
-//                    }
-//                }
-//            }
         }catch(IndexOutOfBoundsException e)
         {
             LOGGER.error("Error while linking accounts", e);
