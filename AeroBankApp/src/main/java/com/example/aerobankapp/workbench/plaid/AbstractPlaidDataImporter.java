@@ -7,30 +7,33 @@ import com.example.aerobankapp.entity.UserEntity;
 import com.example.aerobankapp.exceptions.PlaidAccessTokenNotFoundException;
 import com.example.aerobankapp.exceptions.UserNotFoundException;
 import com.example.aerobankapp.model.PlaidImportResult;
+import com.example.aerobankapp.services.AccountService;
 import com.example.aerobankapp.services.ExternalAccountsService;
 import com.example.aerobankapp.services.PlaidLinkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class AbstractPlaidDataImporter
 {
     protected ExternalAccountsService externalAccountsService;
+    protected AccountService accountService;
     protected PlaidLinkService plaidLinkService;
     protected Map<String, String> subTypeToTypeCriteria = new HashMap<>();
     private Logger LOGGER = LoggerFactory.getLogger(AbstractPlaidDataImporter.class);
 
     public AbstractPlaidDataImporter(ExternalAccountsService externalAccountsService,
+                                     AccountService accountService,
                                      PlaidLinkService plaidLinkService)
     {
         this.externalAccountsService = externalAccountsService;
+        this.accountService = accountService;
         this.plaidLinkService = plaidLinkService;
         initializeSubTypeToTypeMap();
     }
+
+
 
     public Map<String, Integer> getSingleSysAndPlaidAcctIdMap(final ExternalAccountsEntity externalAccountsEntity) {
         if(externalAccountsEntity == null)
@@ -48,6 +51,29 @@ public abstract class AbstractPlaidDataImporter
         pairedAcctIds.put(externalAcctID, sysAcctID);
 
         return pairedAcctIds;
+    }
+
+    protected List<AccountEntity> getListOfAccountsByUser(final UserEntity userEntity)
+    {
+        if(userEntity == null)
+        {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
+        try
+        {
+            int userId = userEntity.getUserID();
+            List<AccountEntity> accountEntities = accountService.getListOfAccountsByUserID(userId);
+            if(accountEntities == null || accountEntities.isEmpty())
+            {
+                return new ArrayList<>();
+            }
+            return accountEntities;
+
+        }catch(Exception e)
+        {
+            LOGGER.error("There was a problem getting the list of accounts.", e);
+            return Collections.emptyList();
+        }
     }
 
 

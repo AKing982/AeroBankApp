@@ -46,12 +46,13 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
     public PlaidTransactionImporterImpl(PlaidTransactionConverter plaidTransactionConverter,
                                         PlaidTransactionService plaidTransactionService,
                                         ExternalTransactionService externalTransactionService,
+                                        AccountService accountService,
                                         PlaidLinkService plaidLinkService,
                                         TransactionCriteriaService transactionCriteriaService,
                                         TransactionStatementService transactionStatementService,
                                         ExternalAccountsService externalAccountsService,
                                         PlaidTransactionManagerImpl plaidTransactionManager) {
-        super(externalAccountsService, plaidLinkService);
+        super(externalAccountsService, accountService, plaidLinkService);
         this.plaidTransactionConverter = plaidTransactionConverter;
         this.plaidTransactionService = plaidTransactionService;
         this.externalTransactionService = externalTransactionService;
@@ -194,7 +195,7 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
             return Collections.emptyList();
         }
 
-        List<AccountEntity> userAccounts = user.getAccounts().stream().toList();
+        List<AccountEntity> userAccounts = getListOfAccountsByUser(user);
         int maxLoop = Math.max(plaidTransactionList.size(), userAccounts.size());
 
         for(int i = 0; i < maxLoop; i++)
@@ -278,17 +279,16 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
     public void createAndSaveTransactionCriteriaEntity(PlaidTransactionImport plaidTransactionImport){
         TransactionCriteriaEntity transactionCriteria = plaidTransactionToTransactionCriteriaConverter.convert(plaidTransactionImport);
         transactionCriteriaService.save(transactionCriteria);
-   }
+    }
 
-   public void createAndSaveTransactionStatement(PlaidTransactionImport plaidTransactionImport)
-   {
-       String externalId = plaidTransactionImport.getAcctID();
-       AccountEntity accountEntity = getAccountEntityFromExternalAccountID(externalId);
+    public void createAndSaveTransactionStatement(PlaidTransactionImport plaidTransactionImport)
+    {
+        String externalId = plaidTransactionImport.getAcctID();
+        AccountEntity accountEntity = getAccountEntityFromExternalAccountID(externalId);
 
-       TransactionStatementEntity transactionStatementEntity = prepareTransactionStatementEntityFromAmount(accountEntity, plaidTransactionImport);
-       transactionStatementService.save(transactionStatementEntity);
-   }
-
+        TransactionStatementEntity transactionStatementEntity = prepareTransactionStatementEntityFromAmount(accountEntity, plaidTransactionImport);
+        transactionStatementService.save(transactionStatementEntity);
+    }
 
 
 

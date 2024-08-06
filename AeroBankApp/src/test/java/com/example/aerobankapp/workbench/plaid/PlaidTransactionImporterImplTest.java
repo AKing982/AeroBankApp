@@ -1,7 +1,5 @@
 package com.example.aerobankapp.workbench.plaid;
 
-import com.example.aerobankapp.configuration.AppConfig;
-import com.example.aerobankapp.configuration.JpaConfig;
 import com.example.aerobankapp.converter.PlaidTransactionConverter;
 import com.example.aerobankapp.converter.PlaidTransactionToTransactionCriteriaConverter;
 import com.example.aerobankapp.converter.TransactionToPlaidTransactionConverter;
@@ -27,7 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.hateoas.Link;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
@@ -43,7 +41,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@Import({AppConfig.class, JpaConfig.class})
 class PlaidTransactionImporterImplTest {
 
     @InjectMocks
@@ -59,7 +56,7 @@ class PlaidTransactionImporterImplTest {
     private PlaidTransactionService plaidTransactionService;
 
     @Mock
-    private ExternalTransactionService externalTransactionService;
+    private AccountService accountService;
 
     @Mock
     private PlaidTransactionToTransactionCriteriaConverter plaidTransactionToTransactionCriteriaConverter;
@@ -77,17 +74,19 @@ class PlaidTransactionImporterImplTest {
     private ExternalAccountsService externalAccountsService;
 
     @Mock
-    private TransactionToPlaidTransactionConverter transactionToPlaidTransactionConverter;
+    private ExternalTransactionService externalTransactionService;
 
     @Mock
     private PlaidLinkService plaidLinkService;
+
+    private TransactionToPlaidTransactionConverter transactionToPlaidTransactionConverter;
 
     @BeforeEach
     void setUp() {
 
         transactionToPlaidTransactionConverter = new TransactionToPlaidTransactionConverter();
         plaidTransactionToTransactionCriteriaConverter = new PlaidTransactionToTransactionCriteriaConverter();
-        plaidTransactionImporter = new PlaidTransactionImporterImpl(converter, plaidTransactionService, externalTransactionService, plaidLinkService, transactionCriteriaService, transactionStatementService,  externalAccountsService, plaidTransactionManager);
+        plaidTransactionImporter = new PlaidTransactionImporterImpl(converter, plaidTransactionService, externalTransactionService,accountService, plaidLinkService, transactionCriteriaService, transactionStatementService,  externalAccountsService, plaidTransactionManager);
     }
 
     @Test
@@ -222,10 +221,18 @@ class PlaidTransactionImporterImplTest {
         plaidTransactions.add(plaidTransaction1);
 
         List<LinkedTransactionInfo> expected = new ArrayList<>();
-        LinkedTransactionInfo linkedTransactionInfo1 = new LinkedTransactionInfo();
-        linkedTransactionInfo1.setTransactionId(plaidTransaction.getTransactionId());
-        linkedTransactionInfo1.setSysAcctID(1);
+        LinkedTransactionInfo linkedTransactionInfo1 = new LinkedTransactionInfo(plaidTransaction.getTransactionId(), 1);
+        LinkedTransactionInfo linkedTransactionInfo2 = new LinkedTransactionInfo(plaidTransaction.getTransactionId(), 2);
         expected.add(linkedTransactionInfo1);
+        expected.add(linkedTransactionInfo2);
+
+        AccountEntity account1 = createAccountEntity("depository", "01", 1, user, "checking");
+        AccountEntity account2 = createAccountEntity("depository", "02", 2, user, "savings");
+        List<AccountEntity> accounts = new ArrayList<>();
+        accounts.add(account1);
+        accounts.add(account2);
+
+        when(accountService.getListOfAccountsByUserID(user.getUserID())).thenReturn(accounts);
 
         List<LinkedTransactionInfo> actual = plaidTransactionImporter.prepareLinkedTransactions(user, plaidTransactions);
         assertNotNull(actual);
@@ -235,6 +242,11 @@ class PlaidTransactionImporterImplTest {
             assertEquals(expected.get(i).getTransactionId(), actual.get(i).getTransactionId());
             assertEquals(expected.get(i).getSysAcctID(), actual.get(i).getSysAcctID());
         }
+    }
+
+    @Test
+    @DisplayName("Test linkTransaction when plaidTransaction is null or AccountEntity is null, then throw exception")
+    public void testLinkTransaction_whenPlaidTransactionIsNullOrAccountEntityIsNull_thenThrowException(){
 
     }
 
@@ -242,6 +254,17 @@ class PlaidTransactionImporterImplTest {
 
     @AfterEach
     void tearDown() {
+    }
+
+    private AccountEntity createAccountEntity(String type, String acctType, int acctID, UserEntity user, String subType)
+    {
+        return AccountEntity.builder()
+                .accountType(acctType)
+                .subtype(subType)
+                .type(type)
+                .acctID(acctID)
+                .user(user)
+                .build();
     }
 
     private UserEntity createUserEntity() {
@@ -301,4 +324,5 @@ class PlaidTransactionImporterImplTest {
         return plaidTransaction;
 
     }
+
 }

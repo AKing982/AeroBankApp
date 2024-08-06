@@ -29,7 +29,6 @@ import static com.example.aerobankapp.workbench.plaid.PlaidUtil.convertPlaidSubT
 @Getter
 public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implements PlaidAccountImporter
 {
-    private final AccountService accountService;
     private final AccountBuilder accountBuilder;
     private final AccountCodeService accountCodeService;
     private final UserService userService;
@@ -47,8 +46,7 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
                                     AccountBuilder accountBuilder,
                                     AccountCodeService accountCodeService,
                                     UserService userService) {
-        super(externalAccountsService, plaidLinkService);
-        this.accountService = accountService;
+        super(externalAccountsService,accountService, plaidLinkService);
         this.accountBuilder = accountBuilder;
         this.accountCodeService = accountCodeService;
         this.userService = userService;
