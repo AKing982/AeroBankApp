@@ -1,0 +1,50 @@
+.vertical-line {
+    width: 1px;
+    background-color: #000000;
+    height: 100%;
+}
+
+.transaction-view-container {
+    display:flex;
+    align-items: flex-start;
+}
+
+.account-list-body{
+    display: block;
+    padding: 16px;
+}
+
+.transaction-pending-table{
+    flex: 1;
+    padding: 16px;
+}
+
+.transaction-view-right{
+    flex: 2;
+    padding: 16px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td{
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.transaction-view-table-body {
+    flex: 2;
+    padding: 20px;
+}

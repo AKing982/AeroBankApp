@@ -1,0 +1,133 @@
+.home-container {
+    font-family: Arial, sans-serif;
+
+}
+
+.home-tabs{
+    display:flex;
+    justify-content: center;
+    margin:0;
+    padding:0;
+    background-color: #f2f2f2;
+}
+
+.logout-button-header{
+    margin-left: 190px;
+    margin-top: 10px;
+}
+
+.home-tab {
+    flex-grow: 1;
+    padding: 20px 0;
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    margin: 5px;
+    background-color: #4a90e2;
+    color:white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.account-number{
+    font-size: 1.5em;
+}
+
+.home-tab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.home-tab:not(:first-of-type)
+{
+    border-left: none;
+}
+
+.home-tab.active {
+    background-image: linear-gradient(to right, #4b6cb7, #182848);
+    border-top: 2px solid #4CAF50;
+    margin-top: -2px;
+}
+
+
+.home-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-image: linear-gradient(to right, #000000, #4B0082);
+    color: white;
+    padding: 15px;
+}
+
+.home-header > div {
+    margin: 5px;
+    white-space: nowrap;
+}
+
+.logout-button {
+    padding: 8px 16px;
+    margin-left: 20px;
+    background-color: #d9d9d9;
+    color: black;
+    border:none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.logout-button:hover{
+    background-image: linear-gradient(to right, #c2e9fb, #a1c4fd);
+}
+
+.welcome-message{
+    align-self: flex-start;
+    font-size: 1.2em;
+    margin-bottom:25px;
+}
+
+.account-details{
+    display: flex;
+    flex-direction: column;
+    font-size: 1.5em;
+}
+
+.date-info{
+    font-size: 0.9em;
+}
+
+.welcome-section, .account-info-section{
+    display:flex;
+    flex-direction: column;
+}
+
+.date-info{
+    align-self: flex-start;
+}
+
+.account-info-section{
+    text-align: right;
+}
+
+.balance-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.current-balance,
+.account-number,
+.total-accounts {
+    margin: 0;
+}
+
+.date-info,.current-time {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+
+.home-tab.active {
+    background-color: white;
+    border-top: 2px solid #4CAF50;
+}

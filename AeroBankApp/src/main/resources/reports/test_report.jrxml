@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SimpleReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenNoDataType="AllSectionsNoDetail">
+    <style name="Table">
+        <box>
+            <pen lineWidth="1.0" lineColor="#666666"/>
+        </box>
+    </style>
+    <style name="Table_TH" mode="Opaque" backcolor="#CCCCCC">
+        <box>
+            <pen lineWidth="0.5" lineColor="#666666"/>
+        </box>
+    </style>
+    <style name="Table_CH" mode="Opaque" backcolor="#ECECEC">
+        <box>
+            <pen lineWidth="0.5" lineColor="#666666"/>
+        </box>
+    </style>
+    <queryString>
+        <![CDATA[]]>
+    </queryString>
+    <field name="Item" class="java.lang.String"/>
+    <field name="Value" class="java.lang.String"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <title>
+        <band height="50" splitType="Stretch">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="30"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="Arial" size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Test Report]]></text>
+            </staticText>
+        </band>
+    </title>
+    <detail>
+        <band height="20" splitType="Stretch">
+            <frame>
+                <reportElement mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#FFFFFF"/>
+                <textField>
+                    <reportElement style="Table" x="0" y="0" width="275" height="20" forecolor="#000000"/>
+                    <textElement textAlignment="Left" verticalAlignment="Middle">
+                        <font fontName="Arial" size="10"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{Item}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement style="Table" x="280" y="0" width="275" height="20" forecolor="#000000"/>
+                    <textElement textAlignment="Left" verticalAlignment="Middle">
+                        <font fontName="Arial" size="10"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{Value}]]></textFieldExpression>
+                </textField>
+            </frame>
+        </band>
+    </detail>
+</jasperReport>

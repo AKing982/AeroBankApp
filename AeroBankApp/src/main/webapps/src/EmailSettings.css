@@ -1,0 +1,59 @@
+.email-settings-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.email-settings-panel {
+    width: 100%;
+    max-width: 500px; /* Adjust as needed */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Align items in the same row at the same height */
+.outgoing-mail-server-port,
+.email-username-field,
+.email-password-field,
+.confirm-password-field,
+.test-connection-email,
+.test-email-field{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Ensure the MailServerField and PortField are aligned correctly */
+.outgoing-mail-server-port > div {
+    flex: 1; /* Adjust the flex ratio if necessary */
+    margin-right: 10px; /* Spacing between the fields */
+}
+
+/* Removes the margin from the last element to avoid extra spacing */
+.outgoing-mail-server-port > div:last-child {
+    margin-right: 0;
+}
+
+/* Center the TLS Checkbox */
+.email-TLS-checkbox {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+/* Center the Save and Test buttons */
+.save-connection-button,
+.test-connection-email-button {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+/* Full-width inputs */
+.email-username-field > div,
+.email-password-field > div,
+.test-connection-email > div {
+    width: 100%;
+}

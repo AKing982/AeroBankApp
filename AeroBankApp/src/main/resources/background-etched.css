@@ -1,0 +1,12 @@
+.root{
+    -fx-border-base: rgb(128, 128, 128);
+    -fx-border-shadow:black;
+    -fx-light-border: derive(-fx-border-base, 100%);
+    -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border, transparent;
+    -fx-border-insets: 10 10 10 10;
+    -fx-background-color: -fx-border-shadow, -fx-background;
+    -fx-background-insets: 5 8 8 8, 2;
+    -fx-padding: 4;
+    -fx-background-image: url("background.jpg");
+    /*-fx-effect: innershadow(gaussian, rgba(557, 255, 255, 0.5), 1, 10, 0, 0); */
+}

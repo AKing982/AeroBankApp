@@ -1,0 +1,12 @@
+connections:
+  - name: default
+  - dbServer: localhost
+  - dbPort: 3306
+  - dbName: aerobankapp
+  - dbDriver: com.mysql.cj.jdbc.Driver
+  - dbUser: root
+  - dbPass: pass
+  - dbProtocol: jdbc:mysql
+  - dbUrl: jdbc:mysql://localhost:3306/aerobankapp
+  - dbType: MYSQL
+  - dateModified: '2023-10-12'

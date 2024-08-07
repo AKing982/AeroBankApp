@@ -1,0 +1,221 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.form-field p {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+.registration-container {
+  background-color: lightblue; /* Your chosen color */
+  padding: 20px;
+  max-width: 800px; /* Adjust as needed */
+  margin: auto;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between; /* Distributes space evenly between fields */
+  margin-bottom: 15px; /* Space between rows */
+}
+
+.form-field {
+  flex-basis: calc(20% - 10px); /* Adjusts width of each field */
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  margin-bottom: 5px;
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+  padding: 5px;
+}
+
+.form-field input[type="checkbox"]
+{
+  margin-right: 5px;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.welcome-text {
+  font-size: 32px;
+  font-family: "Arial Black", sans-serif;
+  color: #818181;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  text-align:center;
+  margin-bottom: 30px;
+}
+
+.background-image {
+  background-image: url("background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100%;
+}
+
+.links-container{
+  padding: 10px;
+  background-color: #f4f4f4;
+  text-align: left;
+}
+
+.links-container a {
+  color: blue;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+.links-container a:hover {
+  text-decoration: underline;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+
+label {
+  margin-right: 10px;
+}
+
+input[type="text"], input[type="password"]
+{
+  padding: 5px;
+  margin-left: 5px;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.button {
+  color: white;
+  font-family: "Arial Narrow", sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+  background-image: linear-gradient(#61a2b1, #2A5058);
+  margin-right: 15px;
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  border:none;
+  cursor: pointer;
+}
+
+.custom-alert-dialog {
+  position:fixed;
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialog-content {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+}
+
+
+
+/**
+.button2 {
+  background-color: #c3c4c4;
+  background-image:
+    linear-gradient(to bottom, #d6d6d6 50%, white 100%),
+    radial-gradient(circle at center, #e6e6e6 45%, rgba(230, 230, 230, 0) 50%);
+    border-radius: 30px;
+  color: black;
+  font-family: "Arial Narrow", sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  margin-right: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+**/
+
+
+
+
+
+.form-button {
+  margin-right: 15px;
+
+}
+
+.button-container .form-button:last-child
+{
+  margin-right: 0;
+}
+.button2:hover {
+  background-image: linear-gradient(#2A5058, #61a2b1);
+}
+
+.button:active {
+
+}
+
+a:link, a:visited {
+  color: blue;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: darkblue;
+  text-decoration: none;
+}
+
+a:active {
+  color:navy;
+}
+
+
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

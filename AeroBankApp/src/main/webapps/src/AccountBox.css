@@ -1,0 +1,50 @@
+.account-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    width: 340px;
+    margin-bottom: 10px;
+    background-color: aliceblue;
+    cursor: pointer;
+}
+
+.account-box:hover {
+    background-color: #f0f0f0;
+}
+
+.account-box:active {
+    background-color: #e0e0e0;
+
+}
+
+.account-code-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #4CAF50; /* Example color */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.account-details-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-item {
+    margin-bottom: 5px;
+}
+
+.account-label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.account-value {
+    font-size: 14px;
+}

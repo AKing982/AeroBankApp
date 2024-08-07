@@ -1,0 +1,54 @@
+.user-setup-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-setup-left {
+    display: flex;
+}
+
+.user-setup-form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Adjust as needed */
+}
+
+.user-setup-form-group > div {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.user-setup-form-group label {
+    margin-right: 5px;
+    white-space: nowrap;
+    text-align: left;
+    width: 150px; /* Adjust width as needed */
+}
+
+.user-setup-right {
+    margin-left: 20px;
+    /* Additional styles for UserList */
+}
+
+.user-setup-buttons{
+    display: flex;
+    justify-content: center; /* Or 'flex-start' to keep them close together */
+    align-items: center;
+}
+
+.user-setup-buttons button {
+    margin: 0 10px;
+}
+
+/* Style for Save button */
+.user-setup-save-button {
+    display: flex;
+    justify-content: center;
+}
+
+/* Styles for the CheckBoxIcon, if necessary */
+.user-setup-admin-checkbox {
+    display: flex;
+    align-items: center;
+}

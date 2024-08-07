@@ -1,0 +1,171 @@
+<mxfile host="app.diagrams.net" modified="2024-02-09T18:21:09.055Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="wAljOLNlHGOb-9eipD35" version="23.1.2" type="github">
+  <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
+    <mxGraphModel dx="2074" dy="671" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-2" value="" style="rounded=0;html=1;jettySize=auto;orthogonalLoop=1;fontSize=11;endArrow=block;endFill=0;endSize=8;strokeWidth=1;shadow=0;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="WIyWlLk6GJQsqaUBKTNV-3" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="220" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-3" value="Start" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="160" y="80" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-0" value="User inputs Deposit" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="160" y="170" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-1" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="0tt2j9dx02x_ed0wSsve-0" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="320" as="sourcePoint" />
+            <mxPoint x="220" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-2" value="User Submits deposit" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="160" y="270" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-3" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="0tt2j9dx02x_ed0wSsve-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="320" as="sourcePoint" />
+            <mxPoint x="220" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-4" value="Deposit Request is sent to Deposit Controller /submit" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="160" y="370" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-6" value="Build the scheduleCriteria" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="354" y="370" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="0tt2j9dx02x_ed0wSsve-8" target="0tt2j9dx02x_ed0wSsve-10" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-8" value="Sent the scheduleCriteria to the ScheduleParser" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="500" y="370" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-10" value="Create the TriggerCriteria" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="500" y="480" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-12" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="0tt2j9dx02x_ed0wSsve-10" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="410" y="430" as="sourcePoint" />
+            <mxPoint x="660" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-13" value="Create the CronExpression" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="660" y="480" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-15" value="Run SchedulerEngine" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="970" y="480" width="133" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-17" value="Get Trigger Beans" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="810" y="480" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-18" value="Sent Deposit to DepositQueue" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="310" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-19" value="Call the TransactionsController and post the deposit data to the Transactions table&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="2520" y="940" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-22" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="0tt2j9dx02x_ed0wSsve-4" target="0tt2j9dx02x_ed0wSsve-18" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="490" as="sourcePoint" />
+            <mxPoint x="650" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-23" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="0tt2j9dx02x_ed0wSsve-18" target="0tt2j9dx02x_ed0wSsve-6" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="490" as="sourcePoint" />
+            <mxPoint x="650" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-24" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="0tt2j9dx02x_ed0wSsve-6" target="0tt2j9dx02x_ed0wSsve-8" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="490" as="sourcePoint" />
+            <mxPoint x="650" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-30" value="Schedule Deposit" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1170" y="480" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0tt2j9dx02x_ed0wSsve-34" value="Wait/Timeout till schedule fires" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1170" y="580" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-2" value="Send Message via RabbitMQ" style="rhombus;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1140" y="680" width="180" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-8" value="Calculate the deposit" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1710" y="730" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-10" value="Load Deposits from Deposit Queue" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1370" y="730" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-13" value="Execute Deposit Engine" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1710" y="580" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-16" value="Get the new Balance" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1710" y="830" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-18" value="Save the balance through the Account Controller /{acctID}/balance endpoint" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1710" y="930" width="150" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-20" value="Execute the BalanceHistory Engine" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1910" y="940" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-22" value="Call the BalanceHistoryController and persist the balance histories to the /save endpoint" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="2080" y="940" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-24" value="Store final Deposit into Deposits Table" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="2350" y="950" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-25" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y_lWkLaHVjZ2EOGm8Hay-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1320" y="640" as="sourcePoint" />
+            <mxPoint x="1230" y="890" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-28" value="Store Deposit in DepositQueue table" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1420" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-30" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y_lWkLaHVjZ2EOGm8Hay-24" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="2290" y="930" as="sourcePoint" />
+            <mxPoint x="2520" y="980" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-31" value="is the depositQueue size &amp;gt; 1" style="rhombus;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1510" y="680" width="170" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-32" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y_lWkLaHVjZ2EOGm8Hay-22" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="2390" y="1070" as="sourcePoint" />
+            <mxPoint x="2190" y="1090" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-33" value="Store the AccountDetails in the accountdetails table" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="2130" y="1090" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="y_lWkLaHVjZ2EOGm8Hay-40" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y_lWkLaHVjZ2EOGm8Hay-31" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1810" y="840" as="sourcePoint" />
+            <mxPoint x="1595" y="910" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zhOZXe3fPzr29_ATNVKf-5" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1540" y="910" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bCJb58eng4lD-iUspJQA-0" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="0tt2j9dx02x_ed0wSsve-19" target="bCJb58eng4lD-iUspJQA-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="2490" y="960" as="sourcePoint" />
+            <mxPoint x="2710" y="980" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bCJb58eng4lD-iUspJQA-1" value="Send request to the Transactions table&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="2730" y="950" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bCJb58eng4lD-iUspJQA-2" value="Validate Schedule Parser dates" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="1420" y="170" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
