@@ -40,6 +40,7 @@ jobs:
 
     - name: Build and test Java application
       run: |
+        cd AeroBankApp
         if [ -f "./mvnw" ]; then
           ./mvnw clean install
         else
@@ -53,7 +54,7 @@ jobs:
 
     - name: Build and test React application
       run: |
-        cd src/main/webapps
+        cd AeroBankApp/src/main/webapps
         npm ci
         npm run build
         npm test
