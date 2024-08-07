@@ -2,9 +2,9 @@ name: AeroBank CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature-plaidTransactions ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, feature-PlaidTransactions ]
 
 jobs:
   build-and-test:
