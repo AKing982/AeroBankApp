@@ -54,7 +54,7 @@ jobs:
 
     - name: Build and test React application
       run: |
-        cd AeroBankApp/src/main/webapps
+        cd src/main/webapps
         npm ci
         npm run build
         npm test
