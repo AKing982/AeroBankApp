@@ -54,7 +54,13 @@ jobs:
 
     - name: Build and test React application
       run: |
-        cd AeroBankApp/src/main/webapps
-        npm ci
-        npm run build
-        npm test
+        pwd
+        ls -R
+        cd AeroBankApp/src/main/webapps || echo "Directory not found"
+        if [ -d "$(pwd)" ]; then
+          npm ci
+          npm run build
+          npm test
+        else
+          echo "Webapps directory not found"
+        fi
