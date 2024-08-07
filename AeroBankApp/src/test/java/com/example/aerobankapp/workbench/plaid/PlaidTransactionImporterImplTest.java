@@ -237,7 +237,7 @@ class PlaidTransactionImporterImplTest {
         List<LinkedTransactionInfo> actual = plaidTransactionImporter.prepareLinkedTransactions(user, plaidTransactions);
         assertNotNull(actual);
         assertEquals(plaidTransactions.size(), actual.size());
-        for(int i = 0; i < actual.size(); i++)
+        for(int  i = 0; i < actual.size(); i++)
         {
             assertEquals(expected.get(i).getTransactionId(), actual.get(i).getTransactionId());
             assertEquals(expected.get(i).getSysAcctID(), actual.get(i).getSysAcctID());
@@ -247,6 +247,19 @@ class PlaidTransactionImporterImplTest {
     @Test
     @DisplayName("Test linkTransaction when plaidTransaction is null or AccountEntity is null, then throw exception")
     public void testLinkTransaction_whenPlaidTransactionIsNullOrAccountEntityIsNull_thenThrowException(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            plaidTransactionImporter.linkTransaction(null, null);
+        });
+    }
+
+    @Test
+    @DisplayName("Test linkTransaction when plaid transaction and account are valid, then return linkedTransactionInfo")
+    public void testLinkTransaction_whenPlaidTransactionAndAccountAreValid_thenReturnLinkedTransactionInfo(){
+        PlaidTransaction plaidTransaction = createPlaidTransaction();
+        AccountEntity accountEntity = createAccountEntity("depository", "01", 1, createUserEntity(), "checking");
+
+        LinkedTransactionInfo expected = new LinkedTransactionInfo("e2323232", 1);
+        LinkedTransactionInfo actual = plaidTransactionImporter.linkTransaction(plaidTransaction, accountEntity);
 
     }
 

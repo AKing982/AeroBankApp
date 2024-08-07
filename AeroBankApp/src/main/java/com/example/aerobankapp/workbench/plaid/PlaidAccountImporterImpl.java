@@ -138,11 +138,6 @@ public class PlaidAccountImporterImpl extends AbstractPlaidDataImporter implemen
     @Override
     public LinkedAccountInfo linkAccounts(final PlaidAccount plaidAccount, final AccountEntity accountEntity)
     {
-//        if(plaidAccount == null)
-//        {
-//            int sysAcctID = accountEntity.getAcctID();
-//            return buildLinkedAccountInfo(sysAcctID, "");
-//        }
 
         validateInputs(plaidAccount, accountEntity);
         processSubTypeValidation(plaidAccount);

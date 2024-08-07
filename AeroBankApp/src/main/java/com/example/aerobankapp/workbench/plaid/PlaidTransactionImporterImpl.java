@@ -203,14 +203,8 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
             PlaidTransaction plaidTransaction = plaidTransactionList.get(i);
             AccountEntity accountEntity = userAccounts.get(i);
 
-            if(!checkSinglePlaidTransactionIsLinked(plaidTransaction))
-            {
-                LinkedTransactionInfo linkedTransactionInfo = linkTransaction(plaidTransaction, accountEntity);
-                addLinkedTransactionInfoToList(linkedTransactionsList, linkedTransactionInfo);
-
-                // comment
-
-            }
+            LinkedTransactionInfo linkedTransactionInfo = linkTransaction(plaidTransaction, accountEntity);
+            addLinkedTransactionInfoToList(linkedTransactionsList, linkedTransactionInfo);
         }
         return linkedTransactionsList;
     }
@@ -221,7 +215,31 @@ public class PlaidTransactionImporterImpl extends AbstractPlaidDataImporter impl
 
     public LinkedTransactionInfo linkTransaction(PlaidTransaction plaidTransaction, AccountEntity account)
     {
+        if(plaidTransaction == null || account == null)
+        {
+            throw new IllegalArgumentException("PlaidTransaction or account is null");
+        }
+
+        // Link the transaction to the correct account
+        String transactionId = plaidTransaction.getTransactionId();
+        String plaidAcctID = plaidTransaction.getAccountId();
+
+        // Check to see if the plaid transaction is already linked
+
+        // If the plaid transaction is not linked
+        if(!checkSinglePlaidTransactionIsLinked(plaidTransaction))
+        {
+            // Link the Plaid Transaction
+
+
+        }
+
         return null;
+    }
+
+    private LinkedTransactionInfo buildLinkedTransactionInfo(String transactionId, int sysAcctID)
+    {
+        return new LinkedTransactionInfo(transactionId, sysAcctID);
     }
 
     public Map<String, Integer> getTransactionIdToSysAcctIDMap(ExternalAccountsEntity externalAccountsEntity)
